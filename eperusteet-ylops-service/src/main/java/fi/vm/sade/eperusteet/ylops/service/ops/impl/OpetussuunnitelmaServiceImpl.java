@@ -945,6 +945,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             tila = Tila.VALMIS;
         }
 
+        if (ops.getTyyppi() == Tyyppi.OPS && ops.getTila() == Tila.JULKAISTU && tila == Tila.VALMIS) {
+            ops.setTila(tila);
+            ops = repository.save(ops);
+        }
+
         if (tila != ops.getTila() && ops.getTila().mahdollisetSiirtymat(ops.getTyyppi()
                 == Tyyppi.POHJA).contains(tila)) {
             if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU)) {

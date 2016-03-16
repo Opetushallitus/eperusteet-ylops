@@ -45,7 +45,7 @@ public enum Tila {
     JULKAISTU("julkaistu") {
         @Override
         public Set<Tila> mahdollisetSiirtymat(boolean isPohja) {
-            return new HashSet<>();
+            return EnumSet.of(LUONNOS);
         }
     };
 

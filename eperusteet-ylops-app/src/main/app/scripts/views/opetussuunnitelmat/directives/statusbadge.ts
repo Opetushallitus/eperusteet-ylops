@@ -23,7 +23,7 @@
 * Sama avainsana pitää olla käytössä tyyleissä ja lokalisoinnissa.
 */
 ylopsApp
-.directive('statusbadge', function () {
+.directive('statusbadge', () => {
   var OFFSET = 4;
   return {
     templateUrl: 'views/opetussuunnitelmat/directives/statusbadge.html',
@@ -36,16 +36,15 @@ ylopsApp
       model: '='
     },
     controller: 'StatusbadgeController',
-    link: function (scope: any, element) {
+    link: (scope: any, element) => {
       // To fit long status names into the badge, adjust letter spacing
-      var el = element.find('.status-name');
-
-      function adjust() {
+      const el = element.find('.status-name');
+      const adjust = () => {
         if (scope.status && scope.status.length > 8) {
-          var spacing = 1 - ((scope.status.length - OFFSET) * 0.2);
+          const spacing = 1 - ((scope.status.length - OFFSET) * 0.2);
           el.css('letter-spacing', spacing + 'px');
         }
-      }
+      };
       scope.$watch('status', adjust);
       adjust();
     }
@@ -65,11 +64,11 @@ ylopsApp
       poistettu: 'folder-open',
     };
 
-    var OPSTILAT = ['luonnos', 'valmis', 'julkaistu', 'poistettu'];
-    var POHJATILAT = ['luonnos', 'valmis', 'poistettu'];
+    const OPSTILAT = ['luonnos', 'valmis', 'julkaistu', 'poistettu'];
+    const POHJATILAT = ['luonnos', 'valmis', 'poistettu'];
 
-    function getTilat(isPohja, current) {
-      var tilat = _.without(isPohja ? POHJATILAT : OPSTILAT, current);
+    const getTilat = (isPohja, current) => {
+      const tilat = _.without(isPohja ? POHJATILAT : OPSTILAT, current);
       switch(current) {
         case 'valmis':
           return isPohja ? ['luonnos', 'poistettu'] : tilat;
@@ -78,32 +77,30 @@ ylopsApp
         default:
           return _.without(tilat, 'julkaistu');
       }
-    }
+    };
 
-    $scope.appliedClasses = function () {
-      var classes = {editable: $scope.editable};
+    $scope.appliedClasses = () => {
+      const classes = {editable: $scope.editable};
       classes[$scope.status] = true;
       return classes;
     };
 
-    $scope.iconClasses = function () {
-      return 'glyphicon glyphicon-' + $scope.iconMapping[$scope.status];
-    };
+    $scope.iconClasses = () => 'glyphicon glyphicon-' + $scope.iconMapping[$scope.status];
 
-    $scope.startEditing = function() {
-      var isPohja = $scope.model.tyyppi === 'pohja';
+    $scope.startEditing = () => {
+      const isPohja = $scope.model.tyyppi === 'pohja';
       if (!OpetussuunnitelmaOikeudetService.onkoOikeudet(isPohja ? 'pohja' : 'opetussuunnitelma', 'tilanvaihto')) {
         return;
       }
-      if ($scope.model.tila === 'julkaistu')
-        return;
+      //if ($scope.model.tila === 'julkaistu')
+      //  return;
 
       OpsinTilanvaihto.start({
         currentStatus: $scope.status,
         mahdollisetTilat: getTilat(isPohja, $scope.status),
         isPohja: isPohja
-      }, function (newStatus) {
-        OpsinTila.save($scope.model, newStatus, function(res) {
+      }, (newStatus) => {
+        OpsinTila.save($scope.model, newStatus, (res) => {
           Notifikaatiot.onnistui('tallennettu-ok');
           $scope.status = res.tila;
           $state.go($state.current, {}, {reload: true});
