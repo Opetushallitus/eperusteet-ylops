@@ -650,6 +650,31 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
+    public Boolean palautettavissa(@P("opsId") Long opsId, Long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        if( ops == null ){
+            return false;
+        }
+
+        Opetussuunnitelma pohja = ops.getPohja();
+        if (pohja == null) {
+            return false;
+        }
+
+        Oppiaine oppiaine = oppiaineet.findOne(id);
+        if (oppiaine == null) {
+            return false;
+        }
+
+        final UUID tunniste = oppiaine.getTunniste();
+        List<OpsOppiaine> pohjanOppiaineet = pohja.getOppiaineet().stream()
+                .filter(a -> (a.getOppiaine().getTunniste().compareTo(tunniste) == 0))
+                .collect(Collectors.toList());
+
+        return pohjanOppiaineet.size() == 1;
+    }
+
+    @Override
     public List<RevisionDto> getVersions(Long opsId, Long id) {
         List<Revision> versions = oppiaineet.getRevisions(id);
         return mapper.mapAsList(versions, RevisionDto.class);

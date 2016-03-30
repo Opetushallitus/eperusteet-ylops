@@ -19,28 +19,24 @@
 ylopsApp
 .service('OppiaineService', function (VuosiluokatService, $rootScope, MurupolkuData, $q, OppiaineCRUD, OppiaineenVlk,
   Notifikaatiot, VuosiluokkaCRUD) {
-  var vlkTunniste = null;
-  var oppiaineenVlk = null;
-  var oppiaine = null;
-  var opetussuunnitelma = null;
+  let vlkTunniste = null;
+  let oppiaineenVlk = null;
+  let oppiaine = null;
+  let opetussuunnitelma = null;
 
-  function setup(ops, vlkId, oppiaineModel) {
+  const setup = (ops, vlkId, oppiaineModel) => {
     return $q((resolve, reject) => {
       opetussuunnitelma = ops;
       oppiaine = oppiaineModel;
       MurupolkuData.set('oppiaineNimi', oppiaine.nimi);
-      var opsVlk = _.find(ops.vuosiluokkakokonaisuudet, function (vlk) {
-        return '' + vlk.vuosiluokkakokonaisuus.id === vlkId;
-      });
+      const opsVlk = _.find(ops.vuosiluokkakokonaisuudet, (vlk) => '' + vlk.vuosiluokkakokonaisuus.id === vlkId);
       vlkTunniste = opsVlk ? opsVlk.vuosiluokkakokonaisuus._tunniste : null;
-      oppiaineenVlk = _.find(oppiaine.vuosiluokkakokonaisuudet, function (opVlk) {
-        return opVlk._vuosiluokkakokonaisuus === vlkTunniste;
-      });
+      oppiaineenVlk = _.find(oppiaine.vuosiluokkakokonaisuudet, (opVlk) => opVlk._vuosiluokkakokonaisuus === vlkTunniste);
       resolve();
     });
-  }
+  };
 
-  this.getParent = function() {
+  this.getParent = () => {
     return OppiaineCRUD.getParent({
       opsId: opetussuunnitelma.id,
       oppiaineId: oppiaine.id
@@ -59,60 +55,60 @@ ylopsApp
   this.palauta = (params) => {
     return OppiaineCRUD.palautaOppiaine({opsId: params.opsId, oppiaineId: params.id, oppimaara: params.oppimaara}, {}).$promise;
   };
-  this.refresh = function (ops, oppiaineId, vlkId, versio) {
+  this.refresh = (ops, oppiaineId, vlkId, versio) => {
     return $q((resolve, reject) => {
       VuosiluokatService.getOppiaine(oppiaineId, versio).$promise
-        .then(function (res) {
+        .then( (res) => {
           setup(ops, vlkId, res).then(resolve);
           $rootScope.$broadcast('oppiainevlk:updated', oppiaineenVlk);
         })
         .catch(reject);
     });
   };
-  this.getOpVlk = function () {
+  this.getOpVlk =  () => {
     return oppiaineenVlk;
   };
-  this.getOppiaine = function () {
+  this.getOppiaine =  () => {
     return oppiaine;
   };
   this.saveVlk = (model) => $q((resolve) => {
     OppiaineenVlk.save({
       opsId: opetussuunnitelma.id,
       oppiaineId: oppiaine.id
-    }, model, function () {
+    }, model, () => {
       Notifikaatiot.onnistui('tallennettu-ok');
       $rootScope.$broadcast('oppiaine:reload');
       resolve();
     }, Notifikaatiot.serverCb);
   });
-  this.fetchVlk = function (vlkId, cb) {
+  this.fetchVlk = (vlkId, cb) => {
     return OppiaineenVlk.get({
       opsId: opetussuunnitelma.id,
       oppiaineId: oppiaine.id,
       vlkId: vlkId
     }, cb, Notifikaatiot.serverCb).$promise;
   };
-  this.saveVuosiluokka = function (model, cb) {
+  this.saveVuosiluokka = (model, cb) => {
     VuosiluokkaCRUD.save({
       opsId: opetussuunnitelma.id,
       vlkId: oppiaineenVlk.id,
       oppiaineId: oppiaine.id
-    }, model, function (res) {
+    }, model, (res) => {
       Notifikaatiot.onnistui('tallennettu-ok');
       cb(res);
     }, Notifikaatiot.serverCb);
   };
-  this.saveValinnainenVuosiluokka = function (vlId, model, cb) {
+  this.saveValinnainenVuosiluokka = (vlId, model, cb) => {
     VuosiluokkaCRUD.saveValinnainen({
       opsId: opetussuunnitelma.id,
       vlkId: oppiaineenVlk.id,
       oppiaineId: oppiaine.id,
       vvlId: vlId
-    }, model, function (res) {
+    }, model, (res) => {
       cb(res);
     }, Notifikaatiot.serverCb);
   };
-  this.fetchVuosiluokka = function (vlId, cb) {
+  this.fetchVuosiluokka = (vlId, cb) => {
     VuosiluokkaCRUD.get({
       opsId: opetussuunnitelma.id,
       oppiaineId: oppiaine.id,
@@ -120,4 +116,11 @@ ylopsApp
       vlId: vlId
     }, cb, Notifikaatiot.serverCb);
   };
+  this.palautettavissa = (params) => {
+    return $q((resolve, reject) => {
+      OppiaineCRUD.palautettavissa({opsId: params.opsId, oppiaineId: params.oppiaineId}, {}).$promise.then( (res) => {
+        resolve(res.palautettavissa);
+      }, reject);
+    });
+  }
 });

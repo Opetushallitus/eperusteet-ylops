@@ -29,6 +29,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,20 +159,6 @@ public class OppiaineController {
         oppiaineService.delete(opsId, id);
     }
 
-//    @RequestMapping(value = "/{id}/versions", method = RequestMethod.GET)
-//    @ApiIgnore
-//    @ResponseBody
-//    public List<OppiaineLaajaDto> getAllVersions(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-//        return oppiaineService.getAllVersions(opsId, id);
-//    }
-//
-//    @RequestMapping(value = "/{id}/restore", method = RequestMethod.POST)
-//    @ApiIgnore
-//    @ResponseBody
-//    public OppiaineLaajaDto restore(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-//        return oppiaineService.restore(opsId, id);
-//    }
-
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     public ResponseEntity<PerusteOppiaineDto> getPerusteSisalto(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
         PerusteDto p = ops.getPeruste(opsId);
@@ -187,8 +174,14 @@ public class OppiaineController {
 
     @RequestMapping(value = "/{id}/palautaYlempi", method = RequestMethod.POST)
     public UnwrappedOpsOppiaineDto palautaYlempi(@PathVariable("opsId") final Long opsId,
-                                                       @PathVariable("id") final Long id) {
+                                                 @PathVariable("id") final Long id) {
         return new UnwrappedOpsOppiaineDto(oppiaineService.palautaYlempi(opsId, id));
+    }
+
+    @RequestMapping(value = "/{id}/palautettavissa", method = RequestMethod.GET)
+    public HashMap<String, Boolean> palautettavissa(@PathVariable("opsId") final Long opsId,
+                                   @PathVariable("id") final Long id) {
+        return new HashMap<String, Boolean>(1){{put("palautettavissa", oppiaineService.palautettavissa(opsId, id));}};
     }
 
 }

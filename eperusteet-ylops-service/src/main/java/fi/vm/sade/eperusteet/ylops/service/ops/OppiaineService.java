@@ -102,6 +102,9 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OpsOppiaineDto palautaYlempi(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    Boolean palautettavissa(@P("opsId") Long opsId, Long id);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<RevisionDto> getVersions(Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
