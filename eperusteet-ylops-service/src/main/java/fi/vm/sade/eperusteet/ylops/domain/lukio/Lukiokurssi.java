@@ -24,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml.WhitelistType;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioKurssiParentDto;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,6 +32,7 @@ import java.util.UUID;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -43,20 +45,20 @@ import org.hibernate.envers.RelationTargetAuditMode;
  */
 @Entity
 @Audited
-@Table(name ="lukiokurssi", schema = "public")
+@Table(name = "lukiokurssi", schema = "public")
 @SqlResultSetMappings({
-    @SqlResultSetMapping(
-            name = "lukioKurssiParentDto",
-            classes = {
-                    @ConstructorResult(
-                            targetClass = LukioKurssiParentDto.class,
-                            columns = {
-                                    @ColumnResult(name = "id", type = Long.class),
-                                    @ColumnResult(name = "parent_id", type = Long.class)
-                            }
-                    )
-            }
-    )
+        @SqlResultSetMapping(
+                name = "lukioKurssiParentDto",
+                classes = {
+                        @ConstructorResult(
+                                targetClass = LukioKurssiParentDto.class,
+                                columns = {
+                                        @ColumnResult(name = "id", type = Long.class),
+                                        @ColumnResult(name = "parent_id", type = Long.class)
+                                }
+                        )
+                }
+        )
 })
 @NamedNativeQueries({
         @NamedNativeQuery(name = "parentViewByOps",
@@ -65,7 +67,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
                         " where oa_lk.opetussuunnitelma_id = ?1" +
                         " group by oa_lk.kurssi_id order by oa_lk.kurssi_id",
                 resultSetMapping = "lukioKurssiParentDto"
-            )
+        )
 })
 public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
 
@@ -139,13 +141,26 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
         return lukiokurssi;
     }
 
-    public void validoiTavoitteetJaKeskeinenSisalto(Validointi validointi, Set<Kieli> julkaisukielet){
-        if( tavoitteetJaKeskeinenSisalto != null){
-            Tekstiosa.validoi(validointi, tavoitteetJaKeskeinenSisalto, julkaisukielet, this.getNimi());
+    public void validoiTavoitteetJaKeskeinenSisalto(Validointi validointi, Set<Kieli> julkaisukielet) {
+        if (tavoitteetJaKeskeinenSisalto != null) {
+            LokalisoituTeksti concat = LokalisoituTeksti.concat(this.getNimi(), "(");
+            if (lokalisoituKoodi != null) {
+                Tekstiosa.validoi(validointi, tavoitteetJaKeskeinenSisalto, julkaisukielet,
+                        LokalisoituTeksti.concat(this.getNimi(), " (", lokalisoituKoodi, ")"));
+            } else {
+                Tekstiosa.validoi(validointi, tavoitteetJaKeskeinenSisalto, julkaisukielet, this.getNimi());
+            }
             return;
-        }else if( keskeinenSisalto != null && tavoitteet != null){
-            Tekstiosa.validoi(validointi, keskeinenSisalto, julkaisukielet, this.getNimi());
-            Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet, this.getNimi());
+        } else if (keskeinenSisalto != null && tavoitteet != null) {
+            if (lokalisoituKoodi != null) {
+                Tekstiosa.validoi(validointi, keskeinenSisalto, julkaisukielet,
+                        LokalisoituTeksti.concat(this.getNimi(), " (", lokalisoituKoodi, ")"));
+                Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet,
+                        LokalisoituTeksti.concat(this.getNimi(), " (", lokalisoituKoodi, ")"));
+            } else {
+                Tekstiosa.validoi(validointi, keskeinenSisalto, julkaisukielet, this.getNimi());
+                Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet, this.getNimi());
+            }
             return;
         }
         validointi.varoitus("lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat", this.getNimi());

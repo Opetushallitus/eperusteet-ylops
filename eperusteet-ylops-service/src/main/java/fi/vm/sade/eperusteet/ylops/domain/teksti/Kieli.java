@@ -54,5 +54,4 @@ public enum Kieli {
         }
         throw new IllegalArgumentException(koodi + " ei ole kelvollinen kielikoodi");
     }
-
 }

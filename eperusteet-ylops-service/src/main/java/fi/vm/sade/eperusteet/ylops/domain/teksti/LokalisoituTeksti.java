@@ -120,6 +120,33 @@ public class LokalisoituTeksti implements Serializable {
         return new LokalisoituTeksti(tmp, tunniste);
     }
 
+    public static LokalisoituTeksti concat(Object... objs) {
+        HashSet<Teksti> tekstit = new HashSet<>();
+        for (Kieli kieli : Kieli.values()) {
+            StringBuilder builder = new StringBuilder();
+
+            for (Object obj : objs) {
+                if (obj instanceof LokalisoituTeksti) {
+                    LokalisoituTeksti lt1 = (LokalisoituTeksti) obj;
+                    if (lt1.getTeksti() != null && lt1.getTeksti().get(kieli) != null) {
+                        builder.append(lt1.getTeksti().get(kieli));
+                    }
+                } else if (obj instanceof String) {
+                    String s = (String) obj;
+                    builder.append(s);
+                }
+            }
+
+            tekstit.add(new Teksti(kieli, builder.toString()));
+        }
+
+        return new LokalisoituTeksti(tekstit, null);
+    }
+
+    public static class LokalisoituTekstiBuilder {
+
+    }
+
     public static LokalisoituTeksti of(Map<Kieli, String> tekstit) {
         return of(tekstit, null);
     }

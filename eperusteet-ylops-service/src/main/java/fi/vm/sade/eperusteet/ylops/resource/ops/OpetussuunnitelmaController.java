@@ -182,9 +182,8 @@ public class OpetussuunnitelmaController {
     public ResponseEntity<OpetussuunnitelmaDto> updateTila(
         @PathVariable final Long id,
         @PathVariable Tila tila) {
-        return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, TILAMUUTOS), (Void) -> {
-            return new ResponseEntity<>(opetussuunnitelmaService.updateTila(id, tila), HttpStatus.OK);
-        });
+        return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, TILAMUUTOS),
+                (Void) -> new ResponseEntity<>(opetussuunnitelmaService.updateTila(id, tila), HttpStatus.OK));
     }
 
     @RequestMapping(value = "/{id}/validoi", method = RequestMethod.GET)
@@ -200,9 +199,8 @@ public class OpetussuunnitelmaController {
     @Timed
     public ResponseEntity<OpetussuunnitelmaDto> restore(
         @PathVariable("id") final Long id) {
-        return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, PALAUTUS), (Void) -> {
-            return new ResponseEntity<>(opetussuunnitelmaService.restore(id), HttpStatus.OK);
-        });
+        return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, PALAUTUS),
+                (Void) -> new ResponseEntity<>(opetussuunnitelmaService.restore(id), HttpStatus.OK));
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)

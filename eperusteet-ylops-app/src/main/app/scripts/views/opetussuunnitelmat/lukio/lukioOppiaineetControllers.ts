@@ -1083,7 +1083,8 @@ ylopsApp
             !$scope.$type || $scope.$type == "uskonto"
                 ? _.cloneDeep($scope.$valittu.nimi)
                 : LukioControllerHelpers.kielella("");
-        $scope.$concretet = _.reject(oppiaine.perusteen.oppimaarat, om => om.abstrakti);
+        $scope.$concretet = _.reject(oppiaine.perusteen != null ? oppiaine.perusteen.oppimaarat : [],
+                om => om.abstrakti);
         $scope.openKieliKoodisto = LukioControllerHelpers.openOppiaineKieliKoodisto($scope.$valittu, koodi => {
             var osat = Kaanna.kaanna($scope.$valittu.nimi).split(/\s*,\s*/),
                 kaannettyKieli = Kaanna.kaanna(koodi.nimi);
