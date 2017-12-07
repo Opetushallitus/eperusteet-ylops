@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import java.util.Set;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class OpetussuunnitelmaKevytDto extends OpetussuunnitelmaBaseDto {
-    private OpetussuunnitelmaNimiDto pohja;
+    private OpetussuunnitelmaBaseDto pohja;
     private Set<OpsVuosiluokkakokonaisuusKevytDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineKevytDto> oppiaineet;
 }

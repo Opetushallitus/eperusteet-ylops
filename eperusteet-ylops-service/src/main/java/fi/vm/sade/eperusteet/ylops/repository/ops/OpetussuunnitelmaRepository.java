@@ -43,9 +43,9 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     @Query(value = "SELECT NEW java.lang.Boolean(o.esikatseltavissa) from Opetussuunnitelma o where o.id = ?1")
     Boolean isEsikatseltavissa(long id);
 
-    Opetussuunnitelma findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
+    Set<Opetussuunnitelma> findOneByTyyppiAndTila(Tyyppi tyyppi, Tila tila);
 
-    Opetussuunnitelma findOneByTyyppiAndTilaAndKoulutustyyppi(Tyyppi tyyppi, Tila tila, KoulutusTyyppi kt);
+    Set<Opetussuunnitelma> findOneByTyyppiAndTilaAndKoulutustyyppi(Tyyppi tyyppi, Tila tila, KoulutusTyyppi kt);
 
     Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
 

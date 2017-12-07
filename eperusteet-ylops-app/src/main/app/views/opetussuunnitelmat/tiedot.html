@@ -138,7 +138,6 @@
 
   </div>
 
-
   <div ng-if="(luonnissa || editMode) && !loading" class="data-container" ng-form="opsForm">
     <div class="row">
       <div class="col-sm-3 formfield-label">
@@ -150,19 +149,21 @@
       <div class="col-sm-4 formfield-data" ng-class="{viewmode: !(editMode || luonnissa)}">
         <div ng-if="!(editMode || luonnissa)" ng-bind="editableModel.koulutustyyppi"></div>
 
-        <ui-select ng-if="(luonnissa)" on-select="avataInputs($item)" ng-disabled="editMode || ($$isOps && $$pohja)" class="ui-select" ng-model="editableModel.koulutustyyppi">
-          <ui-select-choices repeat="koulutustyyppi in sallitutKoulutustyypit">
-            <div ng-bind-html="koulutustyyppi | kaanna"></div>
+        <ui-select ng-if="(luonnissa)" ng-disabled="editMode || ($$isOps && $$pohja)" class="ui-select" ng-model="editableModel.$$pohja">
+          <ui-select-choices repeat="pohja in pohjat">
+            {{ pohja.nimi | kaanna }}
+            ({{ pohja.perusteenDiaarinumero }})
           </ui-select-choices>
           <ui-select-match class="ui-select-match" placeholder="{{'valitse' | kaanna}}">
-            {{$select.selected | kaanna}} {{$select.selected.diaarinumero}}
+            {{ editableModel.$$pohja.nimi | kaanna }}
+            ({{ editableModel.$$pohja.perusteenDiaarinumero }})
           </ui-select-match>
         </ui-select>
         <p class="alert alert-error" ng-if="pohjaVaroitus" kaanna="'ei-pohjaa-koulutustyypille'"></p>
       </div>
     </div>
 
-    <div ng-show="(!luonnissa || koulutustyyppiOnValittu) && !pohjaVaroitus">
+    <div ng-show="!luonnissa || editableModel.$$pohja">
       <div ng-if="editableModel.koulutustyyppi === 'koulutustyyppi_16' && editVuosiluokkakokonaisuudet" class="row">
         <div class="col-sm-3 formfield-label">
           <label><span kaanna="'vuosiluokkakokonaisuudet'"></span>*</label>
@@ -174,15 +175,6 @@
             <span ng-bind="vlk.vuosiluokkakokonaisuus.nimi | kaanna"></span>
           </label>
           <ohje teksti="luonti-vuosiluokka-valinta-info"></ohje>
-        </div>
-      </div>
-
-      <div class="row" ng-show="editableModel._pohja && luonnissa">
-        <div class="col-sm-3 formfield-label">
-          <label><span kaanna="'pohja-ops'"></span></label>
-        </div>
-        <div class="col-sm-9 formfield-label">
-          {{pohjanNimi|kaanna}}
         </div>
       </div>
 

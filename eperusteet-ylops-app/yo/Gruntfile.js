@@ -374,7 +374,7 @@ module.exports = grunt => {
 
   grunt.registerTask('dev', [
     'clean:server',
-    'tsd:refresh',
+    // 'tsd:refresh',
     'ts:sources',
     'concurrent:server',
     'copy:fonts',

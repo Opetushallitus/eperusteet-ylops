@@ -269,13 +269,15 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         } else {
             opetussuunnitelmat = repository.findAllByTyyppi(tyyppi, organisaatiot);
         }
-        final List<OpetussuunnitelmaInfoDto> dtot = mapper.mapAsList(opetussuunnitelmat,
-                OpetussuunnitelmaInfoDto.class);
-        dtot.forEach(dto -> {
-            fetchKuntaNimet(dto);
-            fetchOrganisaatioNimet(dto);
-        });
-        return dtot;
+
+        return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class).stream()
+            .filter(ops -> tila == null || ops.getTila() == tila)
+            .map(dto -> {
+                fetchKuntaNimet(dto);
+                fetchOrganisaatioNimet(dto);
+                return dto;
+            })
+            .collect(Collectors.toList());
     }
 
     @Override
@@ -483,8 +485,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma pohja = ops.getPohja();
 
         if (pohja == null) {
-            pohja = repository.findOneByTyyppiAndTilaAndKoulutustyyppi(Tyyppi.POHJA,
-                    Tila.VALMIS, opetussuunnitelmaDto.getKoulutustyyppi());
+            Set<Opetussuunnitelma> pohjat = repository.findOneByTyyppiAndTilaAndKoulutustyyppi(
+                    Tyyppi.POHJA,
+                    Tila.VALMIS,
+                    opetussuunnitelmaDto.getKoulutustyyppi());
+            if (pohjat.isEmpty()) {
+                throw new BusinessRuleViolationException("koulutustyypin-pohjaa-ei-ole");
+            }
+            else if (pohjat.size() == 1) {
+                pohja = pohjat.iterator().next();
+            }
         }
 
         if (pohja != null) {
@@ -1068,7 +1078,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 validointi.tuomitse();
             }
 
-            if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA) {
+            if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA && ops.getKoulutustyyppi() != KoulutusTyyppi.TPO) {
                 // Arkistoidaan vanhat valmiit pohjat
                 List<Opetussuunnitelma> pohjat = repository.findAllByTyyppiAndTilaAndKoulutustyyppi(
                         Tyyppi.POHJA, Tila.VALMIS, ops.getKoulutustyyppi());
