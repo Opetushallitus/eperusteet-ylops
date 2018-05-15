@@ -51,7 +51,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
         } else if ($scope.editableModel.koulutustyyppi === "koulutustyyppi_999907") {
             oppilaitostyyppi.push(1, 61);
         } else if ($scope.editableModel.koulutustyyppi === "koulutustyyppi_17") {
-            oppilaitostyyppi.push(11, 15, 24, 63);
+            oppilaitostyyppi.push(11, 15, 21, 22, 23, 24, 63);
         } else {
             oppilaitostyyppi.push(11);
         }
