@@ -23,24 +23,24 @@ import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
-
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPETUSSUUNNITELMA;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.GENEROI;
-
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
-
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
-
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
+
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPETUSSUUNNITELMA;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.GENEROI;
 
 /**
  * @author iSaul
@@ -159,6 +159,9 @@ public class DokumenttiController {
         }
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "dokumenttiId", dataType = "string", paramType = "path", required = true)
+    })
     @RequestMapping(value = "/{dokumenttiId}/dokumentti", method = RequestMethod.GET)
     public ResponseEntity<DokumenttiDto> query(@PathVariable final Long dokumenttiId) {
         DokumenttiDto dto = service.query(dokumenttiId);
@@ -168,6 +171,9 @@ public class DokumenttiController {
             return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "dokumenttiId", dataType = "string", paramType = "path", required = true)
+    })
     @RequestMapping(value = "/{dokumenttiId}/tila", method = RequestMethod.GET)
     public ResponseEntity<DokumenttiTila> exist(
             @RequestParam final Long opsId,
