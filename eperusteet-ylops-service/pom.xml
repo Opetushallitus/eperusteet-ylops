@@ -30,6 +30,8 @@
         <springfox.version>2.6.0</springfox.version>
         <schema.file>${project.basedir}/target/schema.ddl</schema.file>
         <hibernate.export.type>CREATE</hibernate.export.type>
+        <eperusteet.resources>fi.vm.sade.eperusteet.ylops.resource</eperusteet.resources>
+        <swagger-maven-plugin-version>3.1.7</swagger-maven-plugin-version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -431,6 +433,40 @@
                         <version>${postgresql.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>${swagger-maven-plugin-version}</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>true</springmvc>
+                            <schemes>
+                                <scheme>http</scheme>
+                                <scheme>https</scheme>
+                            </schemes>
+                            <basePath>/api</basePath>
+                            <locations>
+                                <location>${eperusteet.resources}.ops.OpetussuunnitelmaController</location>
+                            </locations>
+                            <info>
+                                <title>ePerusteet lukio api</title>
+                                <version>v1</version>
+                            </info>
+                            <swaggerFileName>ylops.spec</swaggerFileName>
+                            <swaggerDirectory>target/openapi</swaggerDirectory>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
