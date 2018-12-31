@@ -48,7 +48,7 @@ import static com.google.common.base.Predicates.not;
 @Configuration
 @EnableSwagger
 @EnableSwagger2
-@Profile(value = {"!dev"})
+@Profile("default")
 public class SwaggerConfig {
     private static final Logger LOG = LoggerFactory.getLogger(SwaggerConfig.class);
 
@@ -121,7 +121,6 @@ public class SwaggerConfig {
      * API Info as it appears on the swagger-ui page
      */
     private ApiInfo apiInfo() {
-        Collection<VendorExtension> vendorExtensions = new ArrayList<>();
         return new ApiInfo(
                 "Oppijan verkkopalvelukokonaisuus / ePerusteet-ylops rajapinta",
                 "",
@@ -130,7 +129,7 @@ public class SwaggerConfig {
                 null,
                 "EUPL 1.1",
                 "http://ec.europa.eu/idabc/eupl",
-                vendorExtensions);
+                new ArrayList<>());
     }
     
 }
