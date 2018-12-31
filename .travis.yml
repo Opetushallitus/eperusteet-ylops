@@ -42,7 +42,16 @@ script:
   - ./ci-tools/build/build-war.sh ${ARTIFACT_NAME}
 
 deploy:
-  provider: script
-  script: ./ci-tools/build/upload-image.sh ${ARTIFACT_NAME}
-  on:
-    all_branches: true
+  - provider: script
+    script: ./ci-tools/build/upload-image.sh ${ARTIFACT_NAME}
+    on:
+      all_branches: true
+  - provider: releases
+    api_key:
+      secure: EU/79xd4Lnw6qaxOvD35aneN6edqFhua9z+VYkI6/jhT3onWZXiXc6ZuUx/76iEV479xjFJqfbJg/vUcyj0nwyW1p1XdueZlhHVXafn2WgqOw5ZTYXYCaE6zgnaaRDZaafsiXUPzZyuWtzgFQ3TC+uwt3ohNh3LkRQvezbSLbUY=
+    file:
+      - "eperusteet-ylops-service/target/openapi/ylops.spec.json"
+    skip_cleanup: true
+    on:
+      # Käytä tageja
+      branch: "master"

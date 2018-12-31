@@ -19,14 +19,6 @@ module.exports = grunt => {
 
   grunt.initConfig({
     yeoman: yeomanConfig,
-    tsd: {
-      refresh: {
-        options: {
-          command: 'reinstall',
-          config: 'tsd.json'
-        }
-      }
-    },
     ts: {
       tests: {
         files: [{
@@ -374,7 +366,6 @@ module.exports = grunt => {
 
   grunt.registerTask('dev', [
     'clean:server',
-    // 'tsd:refresh',
     'ts:sources',
     'concurrent:server',
     'copy:fonts',
@@ -386,7 +377,6 @@ module.exports = grunt => {
 
   grunt.registerTask('test', [
     'clean:server',
-    'tsd:refresh',
     'ts:tests',
     'copy:fonts',
     'concurrent:test',
@@ -397,7 +387,6 @@ module.exports = grunt => {
 
   grunt.registerTask('build', [
     'clean:dist',
-    'tsd:refresh',
     'ts:sources',
     'useminPrepare',
     'concurrent:dist',

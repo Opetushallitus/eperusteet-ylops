@@ -3,10 +3,12 @@
         "module": "commonjs",
         "target": "es3",
         "lib": ["dom", "es2015", "es5"],
-        "alwaysStrict": true
+        "alwaysStrict": true,
+        "types": [
+            "jquery"
+        ]
     },
     "files": [
-        "typings/tsd.d.ts",
         "constants.ts",
         "scripts/types/lokalisointi.d.ts",
         "scripts/types/lukio.d.ts",
