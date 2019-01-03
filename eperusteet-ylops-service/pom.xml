@@ -18,7 +18,7 @@
         <spring.data.jpa.version>1.11.13.RELEASE</spring.data.jpa.version>
         <logback.version>1.2.0</logback.version>
         <postgresql.version>9.4.1211</postgresql.version>
-        <jackson.version>2.9.7</jackson.version>
+        <jackson.version>2.9.8</jackson.version>
         <eperusteet-ylops.devdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.devdb.user}</eperusteet-ylops.devdb.jdbcurl>
         <eperusteet-ylops.ittestdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.ittestdb.user}</eperusteet-ylops.ittestdb.jdbcurl>
         <buildhelper.skipAttach>true</buildhelper.skipAttach>
