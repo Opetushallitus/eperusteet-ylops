@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet")
-@Api(value = "Opetussuunnitelmat")
+@Api(value = "Vuosiluokkakokonaisuudet")
 public class VuosiluokkakokonaisuusController {
     @Autowired
     private EperusteetYlopsAudit audit;

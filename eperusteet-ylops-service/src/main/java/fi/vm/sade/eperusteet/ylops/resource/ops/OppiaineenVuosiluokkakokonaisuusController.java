@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +53,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet")
 @ApiIgnore
+@Api(value = "OppiaineenVuosiluokkakokonaisuudet")
 public class OppiaineenVuosiluokkakokonaisuusController {
     @Autowired
     private EperusteetYlopsAudit audit;

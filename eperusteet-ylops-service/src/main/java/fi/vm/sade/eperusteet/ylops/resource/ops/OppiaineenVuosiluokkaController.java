@@ -41,7 +41,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat")
 @ApiIgnore
-@Api(value = "Opetussuunnitelmat")
+@Api(value = "OppiaineenVuosiluokat")
 public class OppiaineenVuosiluokkaController {
     @Autowired
     private EperusteetYlopsAudit audit;

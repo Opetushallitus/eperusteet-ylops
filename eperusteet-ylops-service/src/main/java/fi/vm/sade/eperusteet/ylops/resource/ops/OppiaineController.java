@@ -51,7 +51,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet")
-@Api(value = "Opetussuunnitelmat")
+@Api(value = "Oppiaineet")
 public class OppiaineController {
     @Autowired
     private EperusteetYlopsAudit audit;

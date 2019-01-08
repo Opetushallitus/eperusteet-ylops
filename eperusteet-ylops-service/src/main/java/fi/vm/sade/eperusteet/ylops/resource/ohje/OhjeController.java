@@ -29,6 +29,7 @@ import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 import java.util.List;
 import java.util.UUID;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +42,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/ohjeet")
 @ApiIgnore
+@Api("Ohjeet")
 public class OhjeController {
     @Autowired
     private EperusteetYlopsAudit audit;

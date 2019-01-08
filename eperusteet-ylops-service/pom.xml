@@ -458,6 +458,7 @@
                                 <location>${eperusteet.resources}.external.*</location>
                                 <location>${eperusteet.resources}.dokumentti.*</location>
                             </locations>
+                            <modelSubstitute>/substitutes.map</modelSubstitute>
                             <info>
                                 <title>ePerusteet lukio api</title>
                                 <version>v1</version>

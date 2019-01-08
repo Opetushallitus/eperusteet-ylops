@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import java.util.List;
@@ -42,6 +43,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/ulkopuoliset")
 @ApiIgnore
+@Api("Ulkopuoliset")
 public class UlkopuolisetController {
 
     @Autowired

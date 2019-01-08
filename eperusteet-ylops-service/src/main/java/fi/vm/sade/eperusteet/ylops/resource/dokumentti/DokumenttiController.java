@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import org.apache.commons.lang.time.DateUtils;
@@ -47,6 +48,7 @@ import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation
  */
 @RestController
 @RequestMapping("/dokumentit")
+@Api("Dokumentit")
 public class DokumenttiController {
     private static final int MAX_TIME_IN_MINUTES = 2;
 

@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +55,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RestController
 @RequestMapping("/kommentit")
 @ApiIgnore
+@Api("Kommentit")
 public class KommenttiController {
     @Autowired
     private EperusteetYlopsAudit audit;

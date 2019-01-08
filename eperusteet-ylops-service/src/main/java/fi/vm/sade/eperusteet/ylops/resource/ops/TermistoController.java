@@ -29,6 +29,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
 
 import java.util.List;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,6 +49,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}")
 @InternalApi
+@Api(value = "Termisto")
 public class TermistoController {
     @Autowired
     private EperusteetYlopsAudit audit;
