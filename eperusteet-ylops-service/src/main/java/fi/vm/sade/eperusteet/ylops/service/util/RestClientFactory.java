@@ -28,6 +28,9 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class RestClientFactory {
+
+    private static final String CLIENT_SUBSYSTEM_CODE = "eperusteetYlops";
+
     private static final int TIMEOUT = 60000;
 
     @Value("${fi.vm.sade.eperusteet.ylops.oph_username:''}")
@@ -63,12 +66,12 @@ public class RestClientFactory {
                         .casServiceUrl(service)
                         .build();
 
-                client = new OphHttpClient.Builder(service)
+                client = new OphHttpClient.Builder(CLIENT_SUBSYSTEM_CODE)
                         .authenticator(casAuthenticator)
                         .timeoutMs(TIMEOUT)
                         .build();
             } else {
-                client = new OphHttpClient.Builder(service)
+                client = new OphHttpClient.Builder(CLIENT_SUBSYSTEM_CODE)
                         .timeoutMs(TIMEOUT)
                         .build();
             }

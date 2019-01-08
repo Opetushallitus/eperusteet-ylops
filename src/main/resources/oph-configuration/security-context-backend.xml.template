@@ -87,12 +87,13 @@
     <!--<custom-filter ref="singleLogoutFilter" before="CAS_FILTER" />-->
 
     <!--  ===== end of mappings ===== -->
-    
-    <beans:bean id="casFilter" class="fi.vm.sade.security.CustomCasAuthenticationFilter">
+
+    <beans:bean id="casFilter" class="fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter">
+        <beans:constructor-arg ref="casServiceProperties"/>
         <beans:property name="authenticationManager" ref="authenticationManager"/>
-        <beans:property name="serviceProperties" ref="casServiceProperties"/>
         <beans:property name="proxyGrantingTicketStorage" ref="pgtStorage"/>
         <beans:property name="proxyReceptorUrl" value="/j_spring_cas_security_proxyreceptor"/>
+        <beans:property name="filterProcessesUrl" value="/j_spring_cas_security_check"/>
     </beans:bean>
 
     <!-- This filter handles a Single Logout Request from the CAS Server -->
@@ -182,7 +183,7 @@
     <!-- TODO: cacheasetukset ihan arvalla nyt, statelessTicketCache kuitenkin sallii saman proxytiketin kayttamisen, joka vahentaa huomattavasti cas-liikennetta -->   
     <beans:bean id="casTicketCache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
         <beans:property name="configLocation" value="file://${user.home}/oph-configuration/ehcache.xml" />
-        <beans:property name="shared" value="true" />
+        <beans:property name="shared" value="false" />
         <beans:property name="cacheManagerName" value="casTicketCache" />
     </beans:bean>
     
