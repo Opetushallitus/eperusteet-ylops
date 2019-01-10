@@ -16,12 +16,15 @@
 package fi.vm.sade.eperusteet.ylops.resource.external;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.dokumentti.LokalisointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.LokalisointiService;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -30,6 +33,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +62,9 @@ public class UlkopuolisetController {
 
     @Autowired
     private KayttajanTietoService kayttajanTietoService;
+
+    @Autowired
+    private LokalisointiService lokalisointiService;
 
     @RequestMapping(value = "/kayttajatiedot/{oid:.+}", method = GET)
     @ResponseBody
@@ -203,5 +211,17 @@ public class UlkopuolisetController {
         List<JsonNode> ryhmat = organisaatioService.getRyhmat();
         return new ResponseEntity<>(ryhmat, HttpStatus.OK);
     }
+
+    /**
+     * Lataa palvelun käännösavaimet
+     *
+     * @return Organisaatioryhmät
+     */
+    @RequestMapping(value = "/lokalisoinnit", method = GET)
+    @ResponseBody
+    public ResponseEntity<Map<Kieli, List<LokalisointiDto>>> getLokalisoinnit() {
+        return ResponseEntity.ok(lokalisointiService.getAll());
+    }
+
 
 }

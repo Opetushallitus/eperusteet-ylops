@@ -17,16 +17,20 @@ package fi.vm.sade.eperusteet.ylops.resource.util;
 
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.annotations.ApiIgnore;
 
 /**
  * @author jhyoty
  */
 @RestController
 @RequestMapping("/kayttaja")
+@Api("Kayttajat")
+@ApiIgnore
 public class KayttajaController {
 
     @Autowired

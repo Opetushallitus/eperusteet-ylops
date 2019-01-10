@@ -16,8 +16,10 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.LokalisointiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LokalisointiService;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,9 +28,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 /**
  * @author iSaul
  */
+@Slf4j
 @Service
 public class LokalisointiServiceImpl implements LokalisointiService {
 
@@ -64,4 +71,37 @@ public class LokalisointiServiceImpl implements LokalisointiService {
         return null;
     }
 
+    @Override
+    @Cacheable("ylops-lokalisoinnit")
+    public Map<Kieli, List<LokalisointiDto>> getAll() {
+        Map<Kieli, List<LokalisointiDto>> result = new HashMap<>();
+        for (LokalisointiDto l : getAllByCategoryAndLocale("eperusteet-ylops")) {
+            Kieli locale = Kieli.of(l.getLocale());
+            if (!result.containsKey(locale)) {
+                result.put(locale, new ArrayList<>());
+            }
+            result.get(locale).add(l);
+        }
+        return result;
+    }
+
+    public List<LokalisointiDto> getAllByCategoryAndLocale(String category) {
+        return getAllByCategoryAndLocale(category, null);
+    }
+
+    public List<LokalisointiDto> getAllByCategoryAndLocale(String category, String locale) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = lokalisointiServiceUrl + "category=" + category;
+        if (locale != null) {
+           url += "&locale=" + locale;
+        }
+
+        try {
+            LokalisointiDto[] result = restTemplate.getForObject(url, LokalisointiDto[].class);
+            return Arrays.asList(result);
+        } catch (RestClientException e) {
+            log.error(e.getLocalizedMessage());
+            return new ArrayList<>();
+        }
+    }
 }

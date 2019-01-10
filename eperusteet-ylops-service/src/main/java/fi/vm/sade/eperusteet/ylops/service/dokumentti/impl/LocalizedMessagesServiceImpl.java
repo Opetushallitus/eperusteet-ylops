@@ -35,18 +35,29 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.LokalisointiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LokalisointiService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * @author iSaul
  */
+@Slf4j
 @Service
 public class LocalizedMessagesServiceImpl implements LocalizedMessagesService {
+    @Value("${lokalisointi.service.url:https://virkailija.opintopolku.fi/lokalisointi/cxf/rest/v1/localisation?}")
+    private String lokalisointiServiceUrl;
+
     @Autowired
     private MessageSource messageSource;
 
@@ -68,4 +79,7 @@ public class LocalizedMessagesServiceImpl implements LocalizedMessagesService {
             return "[" + kieli.toString() + " " + key + "]";
         }
     }
+
+
+
 }

@@ -457,6 +457,7 @@
                                 <location>${eperusteet.resources}.ohje.*</location>
                                 <location>${eperusteet.resources}.external.*</location>
                                 <location>${eperusteet.resources}.dokumentti.*</location>
+                                <location>${eperusteet.resources}.util.KayttajaController</location>
                             </locations>
                             <modelSubstitute>/substitutes.map</modelSubstitute>
                             <info>
