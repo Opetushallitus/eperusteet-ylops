@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "engines": {
-    "node": "6.11.2"
+    "node": "10.15.0"
   },
   "scripts": {
     "dev": "grunt dev",
