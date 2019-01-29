@@ -30,6 +30,7 @@ public class KoodistoKoodiDto {
     private String koodiUri;
     private String koodiArvo;
     private String versio;
+    private String voimassaAlkuPvm;
     private String voimassaLoppuPvm;
     private KoodistoMetadataDto[] metadata;
 }
