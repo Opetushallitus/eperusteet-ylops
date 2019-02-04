@@ -22,31 +22,23 @@ import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
-
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPETUSSUUNNITELMA;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.RAKENNE;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LUONTI;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.PALAUTUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.REKURSIIVINENMUOKKAUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.SYNKRONOINTI;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.TILAMUUTOS;
-
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import io.swagger.annotations.Api;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPETUSSUUNNITELMA;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.RAKENNE;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.*;
 
 /**
  * @author mikkom
@@ -204,15 +196,6 @@ public class OpetussuunnitelmaController {
             @PathVariable("id") final Long id) {
         return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, PALAUTUS),
                 (Void) -> new ResponseEntity<>(opetussuunnitelmaService.restore(id), HttpStatus.OK));
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    @Timed
-    public void deleteOpetussuunnitelma(@PathVariable("id") final Long id) {
-        audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, POISTO), (Void) -> {
-            opetussuunnitelmaService.removeOpetussuunnitelma(id);
-            return null;
-        });
     }
 
     @RequestMapping(value = "/oikeudet", method = RequestMethod.GET)

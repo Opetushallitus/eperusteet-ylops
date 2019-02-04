@@ -44,7 +44,6 @@
         "scripts/views/opetussuunnitelmat/lista.ts",
         "scripts/views/opetussuunnitelmat/esikatselu.ts",
         "scripts/views/opetussuunnitelmat/kasite.ts",
-        "scripts/views/opetussuunnitelmat/opetussuunnitelma.ts",
         "scripts/views/opetussuunnitelmat/tekstikappale.ts",
         "scripts/views/opetussuunnitelmat/directives/header.ts",
         "scripts/views/opetussuunnitelmat/directives/oikeustarkastelu.ts",

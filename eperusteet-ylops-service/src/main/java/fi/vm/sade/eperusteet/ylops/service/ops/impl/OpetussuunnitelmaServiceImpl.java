@@ -1261,16 +1261,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public void removeOpetussuunnitelma(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
-        if (ops != null) {
-            kommenttiService.getAllByOpetussuunnitelma(id)
-                    .forEach(k -> kommenttiService.deleteReally(k.getId()));
-        }
-        repository.delete(ops);
-    }
-
-    @Override
     @Transactional(readOnly = true)
     public <T> T getTekstit(Long opsId, Class<T> t) {
         Opetussuunnitelma ops = repository.findOne(opsId);
