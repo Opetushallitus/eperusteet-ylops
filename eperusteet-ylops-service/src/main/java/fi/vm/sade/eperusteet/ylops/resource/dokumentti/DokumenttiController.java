@@ -16,9 +16,11 @@
 
 package fi.vm.sade.eperusteet.ylops.resource.dokumentti;
 
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -126,13 +128,17 @@ public class DokumenttiController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
-        Optional.ofNullable(dokumenttiRepository.findOne(dokumenttiId))
-                .filter(Objects::nonNull)
-                .map(dokumentti -> opetussuunnitelmaRepository.findOne(dokumentti.getOpsId()))
-                .filter(Objects::nonNull)
-                .map(Opetussuunnitelma::getNimi)
-                .filter(Objects::nonNull)
-                .ifPresent(nimi -> headers.set("Content-disposition", "inline; filename=\"" + nimi + ".pdf\""));
+        Dokumentti dokumentti = dokumenttiRepository.findOne(dokumenttiId);
+        if (dokumentti != null) {
+            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
+            if (ops != null) {
+                LokalisoituTeksti nimi = ops.getNimi();
+                if (nimi != null && nimi.getTeksti().containsKey(dokumentti.getKieli())) {
+                    headers.set("Content-disposition", "inline; filename=\""
+                            + nimi.getTeksti().get(dokumentti.getKieli()) + ".pdf\"");
+                }
+            }
+        }
 
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }
