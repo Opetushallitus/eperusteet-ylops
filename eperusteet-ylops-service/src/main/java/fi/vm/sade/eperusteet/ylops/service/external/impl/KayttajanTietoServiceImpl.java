@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.concurrent.Future;
 
 import static fi.vm.sade.eperusteet.ylops.service.external.impl.KayttajanTietoParser.parsiKayttaja;
+import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 
@@ -120,7 +121,7 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
                     .build();
 
             return client.<KayttajanTietoDto>execute(request)
-                    .handleErrorStatus(SC_UNAUTHORIZED)
+                    .handleErrorStatus(SC_UNAUTHORIZED, SC_FORBIDDEN)
                     .with((res) -> Optional.of(new KayttajanTietoDto(oid)))
                     .expectedStatus(SC_OK)
                     .mapWith(text -> {
