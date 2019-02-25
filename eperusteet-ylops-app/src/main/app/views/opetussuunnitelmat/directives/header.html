@@ -10,7 +10,7 @@
   <div class="ops-header-tiedot">
 
     <div class="pull-right" ng-if="model.tyyppi !== 'pohja'">
-      <a class="action-link" ng-href="{{createUrl(model)}}" icon-role="sunglasses" kaanna="'esikatselu'"></a>
+      <a class="action-link" ng-href="{{createUrl(model)}}" ng-if="model.esikatseltavissa" icon-role="sunglasses" kaanna="'esikatselu'"></a>
       <a class="action-link" ng-click="luoPdf()" icon-role="save" kaanna="'lataa-ops-pdf-muodossa'" style="margin-left: 16px"></a>
       <a class="action-link" ng-click="validoiOps()" icon-role="tasks" kaanna="'tarkista-ops'" style="margin-left: 16px"></a>
     </div>
