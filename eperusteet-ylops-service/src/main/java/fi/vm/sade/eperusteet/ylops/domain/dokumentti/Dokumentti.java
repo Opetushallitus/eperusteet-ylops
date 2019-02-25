@@ -64,6 +64,18 @@ public class Dokumentti {
     @Column(name = "dokumenttidata")
     private byte[] data;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] kansikuva;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] ylatunniste;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    private byte[] alatunniste;
+
     @Column(name = "virhekoodi")
     private String virhekoodi;
 }

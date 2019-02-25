@@ -19,6 +19,7 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.utils.dto.dokumentti.DokumenttiMetaDto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -116,7 +117,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private LocalizedMessagesService messages;
 
     @Override
-    public byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
+    public byte[] generatePdf(Opetussuunnitelma ops, Dokumentti dokumentti, Kieli kieli)
             throws TransformerException, IOException, SAXException,
             ParserConfigurationException, NullPointerException, DokumenttiException {
 
@@ -149,6 +150,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         docBase.setOps(ops);
         docBase.setGenerator(new CharapterNumberGenerator());
         docBase.setKieli(kieli);
+        docBase.setDokumentti(dokumentti);
         docBase.setMapper(mapper);
 
         // Kansilehti & Infosivu
@@ -183,6 +185,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Kuvat
         buildImages(docBase);
+        buildKansi(docBase);
 
         LOG.info("Generate PDF (opsId=" + docBase.getOps().getId() + ")");
 
@@ -409,4 +412,22 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             LOG.error(e.getLocalizedMessage());
         }
     }
+
+    private void buildKansi(DokumenttiBase docBase) {
+        Element head = docBase.getHeadElement();
+        Element kansikuva = docBase.getDocument().createElement("kansikuva");
+        Element kuva = docBase.getDocument().createElement("img");
+
+        byte[] image = docBase.getDokumentti().getKansikuva();
+        if (image == null) {
+            return;
+        }
+
+        String base64 = Base64.getEncoder().encodeToString(image);
+        kuva.setAttribute("src", "data:image/jpg;base64," + base64);
+
+        kansikuva.appendChild(kuva);
+        head.appendChild(kansikuva);
+    }
+
 }

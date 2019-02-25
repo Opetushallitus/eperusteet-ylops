@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util;
 
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
@@ -37,5 +38,6 @@ public class DokumenttiBase {
     PerusteDto perusteDto;
     CharapterNumberGenerator generator;
     Kieli kieli;
+    Dokumentti dokumentti;
     DtoMapper mapper;
 }

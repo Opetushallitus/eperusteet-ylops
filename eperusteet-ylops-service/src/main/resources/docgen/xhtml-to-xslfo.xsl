@@ -952,6 +952,7 @@
     <xsl:template name="cover">
         <fo:block font-weight="bold" font-size="28pt" text-align="center">
             <xsl:value-of select="/html/head/title"/>
+            <xsl:apply-templates select="/html/head/kansikuva"/>
         </fo:block>
     </xsl:template>
 

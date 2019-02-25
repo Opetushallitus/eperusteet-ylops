@@ -16,18 +16,16 @@
 
 package fi.vm.sade.eperusteet.ylops.resource.dokumentti;
 
-import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
-import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
-import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -35,22 +33,23 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
 
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPETUSSUUNNITELMA;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.GENEROI;
+import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.*;
 
 /**
  * @author iSaul
  */
+@Api("Dokumentit")
 @RestController
 @RequestMapping("/dokumentit")
-@Api("Dokumentit")
 public class DokumenttiController {
     private static final int MAX_TIME_IN_MINUTES = 2;
 
@@ -61,10 +60,7 @@ public class DokumenttiController {
     DokumenttiService service;
 
     @Autowired
-    DokumenttiRepository dokumenttiRepository;
-
-    @Autowired
-    OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+    OpetussuunnitelmaService opetussuunnitelmaService;
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity<DokumenttiDto> create(
@@ -76,12 +72,14 @@ public class DokumenttiController {
         DokumenttiDto dtoForDokumentti = service.getDto(opsId, Kieli.of(kieli));
 
         // Jos dokumentti ei löydy valmiiksi niin koitetaan tehdä uusi
-        if (dtoForDokumentti == null)
+        if (dtoForDokumentti == null) {
             dtoForDokumentti = service.createDtoFor(opsId, Kieli.of(kieli));
+        }
 
         // Jos tila epäonnistunut, opsia ei löytynyt
-        if (dtoForDokumentti == null)
+        if (dtoForDokumentti == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         // Aloitetaan luonti jos luonti ei ole jo päällä tai maksimi luontiaika ylitetty
         if (isTimePass(dtoForDokumentti) || dtoForDokumentti.getTila() != DokumenttiTila.LUODAAN) {
@@ -99,7 +97,7 @@ public class DokumenttiController {
 
         // Uusi objekti dokumentissa, jossa päivitetyt tiedot
         final DokumenttiDto dtoDokumentti = service.getDto(dtoForDokumentti.getId());
-        audit.withAudit(LogMessage.builder(opsId, OPETUSSUUNNITELMA, GENEROI));
+        LogMessage.builder(opsId, OPETUSSUUNNITELMA, GENEROI).log();
 
         return new ResponseEntity<>(dtoDokumentti, status);
     }
@@ -128,14 +126,14 @@ public class DokumenttiController {
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
-        Dokumentti dokumentti = dokumenttiRepository.findOne(dokumenttiId);
-        if (dokumentti != null) {
-            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
-            if (ops != null) {
-                LokalisoituTeksti nimi = ops.getNimi();
-                if (nimi != null && nimi.getTeksti().containsKey(dokumentti.getKieli())) {
+        DokumenttiDto dokumenttiDto = service.getDto(dokumenttiId);
+        if (dokumenttiDto != null) {
+            OpetussuunnitelmaKevytDto opsDto = opetussuunnitelmaService.getOpetussuunnitelma(dokumenttiDto.getOpsId());
+            if (opsDto != null) {
+                LokalisoituTekstiDto nimi = opsDto.getNimi();
+                if (nimi != null && nimi.getTekstit().containsKey(dokumenttiDto.getKieli())) {
                     headers.set("Content-disposition", "inline; filename=\""
-                            + nimi.getTeksti().get(dokumentti.getKieli()) + ".pdf\"");
+                            + nimi.getTekstit().get(dokumenttiDto.getKieli()) + ".pdf\"");
                 }
             }
         }
@@ -173,10 +171,11 @@ public class DokumenttiController {
     @RequestMapping(value = "/{dokumenttiId}/dokumentti", method = RequestMethod.GET)
     public ResponseEntity<DokumenttiDto> query(@PathVariable final Long dokumenttiId) {
         DokumenttiDto dto = service.query(dokumenttiId);
-        if (dto == null)
+        if (dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        else
+        } else {
             return new ResponseEntity<>(dto, HttpStatus.OK);
+        }
     }
 
     @ApiImplicitParams({
@@ -194,5 +193,70 @@ public class DokumenttiController {
         } else {
             return ResponseEntity.ok(tila);
         }
+    }
+
+    @RequestMapping(value = "/kuva", method = RequestMethod.POST)
+    public ResponseEntity<DokumenttiDto> addImage(
+            @RequestParam Long opsId,
+            @RequestParam String tyyppi,
+            @RequestParam(defaultValue = "fi") String kieli,
+            @RequestPart MultipartFile file
+    ) throws IOException {
+        LogMessage.builder(opsId, OPETUSSUUNNITELMA, DOKUMENTTI_KUVAN_LISAYS).log();
+
+        Kieli k = Kieli.of(kieli);
+
+        DokumenttiDto dokumenttiDto = service.getDto(opsId, Kieli.of(kieli));
+
+        // Jos dokumentti ei löydy valmiiksi niin koitetaan tehdä uusi
+        if (dokumenttiDto == null) {
+            dokumenttiDto = service.createDtoFor(opsId, Kieli.of(kieli));
+        }
+
+        // Jos tila epäonnistunut, opsia ei löytynyt
+        if (dokumenttiDto == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        // Lisää kuva dokumenttiin
+        DokumenttiDto dto = service.addImage(opsId, dokumenttiDto, tyyppi, k, file);
+
+        if (dto != null) {
+            return ResponseEntity.ok(dto);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/kuva", method = RequestMethod.GET)
+    public ResponseEntity<Object> getImage(
+            @RequestParam Long opsId,
+            @RequestParam String tyyppi,
+            @RequestParam(defaultValue = "fi") String kieli
+    ) {
+        Kieli k = Kieli.of(kieli);
+        byte[] image = service.getImage(opsId, tyyppi, k);
+        if (image == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        headers.setContentLength(image.length);
+
+        return new ResponseEntity<>(image, headers, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/kuva", method = RequestMethod.DELETE)
+    public ResponseEntity<Object> deleteImage(
+            @RequestParam Long opsId,
+            @RequestParam String tyyppi,
+            @RequestParam(defaultValue = "fi") String kieli
+    ) {
+        LogMessage.builder(opsId, OPETUSSUUNNITELMA, DOKUMENTTI_KUVAN_POISTO).log();
+        Kieli k = Kieli.of(kieli);
+        service.deleteImage(opsId, tyyppi, k);
+
+        return ResponseEntity.noContent().build();
     }
 }

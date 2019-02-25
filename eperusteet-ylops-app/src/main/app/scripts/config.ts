@@ -28,7 +28,7 @@ ylopsApp
         $urlRouterProvider.when("/", "/" + preferred);
         $translateProvider.useLoader("LokalisointiLoader");
         $translateProvider.preferredLanguage(preferred);
-        moment.lang(preferred);
+        moment.locale(preferred);
     })
     .config(function($httpProvider) {
         $httpProvider.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";

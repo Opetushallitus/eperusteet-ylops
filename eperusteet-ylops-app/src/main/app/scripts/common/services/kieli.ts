@@ -76,7 +76,7 @@ ylopsApp
                     $state.go($state.current.name, _.merge($stateParams, { lang: kielikoodi }), { reload: true });
                 }
                 uikieli = kielikoodi;
-                moment.lang(kielikoodi);
+                moment.locale(kielikoodi);
                 $translate.use(kielikoodi);
                 $rootScope.$broadcast("changed:uikieli", kielikoodi);
             }

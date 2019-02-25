@@ -222,6 +222,11 @@ ylopsApp.config(function($stateProvider) {
             controller: "KasitteetController",
             resolve: {}
         })
+        .state("root.opetussuunnitelmat.yksi.dokumentti", {
+            url: "/dokumentti",
+            templateUrl: "views/opetussuunnitelmat/dokumentti.html",
+            controller: "DokumenttiController"
+        })
         .state("root.pohjat", {
             url: "/pohjat",
             template: "<div ui-view></div>",

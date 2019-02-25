@@ -16,6 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.service.dokumentti;
 
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
@@ -34,7 +35,7 @@ import java.io.IOException;
 public interface DokumenttiBuilderService {
 
     @PreAuthorize("isAuthenticated()")
-    byte[] generatePdf(Opetussuunnitelma ops, Kieli kieli)
+    byte[] generatePdf(Opetussuunnitelma ops, Dokumentti dokumentti, Kieli kieli)
             throws TransformerException, IOException, SAXException, JAXBException,
             ParserConfigurationException, NullPointerException, DokumenttiException;
 }

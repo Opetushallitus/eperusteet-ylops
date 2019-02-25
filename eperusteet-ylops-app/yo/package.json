@@ -12,9 +12,9 @@
     "prettier": "./node_modules/prettier/bin/prettier.js --config .prettierrc --write \"../src/main/app/{localisation,scripts,styles}/**/*.{ts,json,scss}\""
   },
   "devDependencies": {
-    "@types/angular": "^1.6.53",
-    "@types/angular-ui-router": "^1.1.40",
-    "@types/jquery": "^3.3.29",
+    "@types/angular": "1.6.53",
+    "@types/angular-ui-router": "1.1.40",
+    "@types/jquery": "3.3.29",
     "bower": "1.8.0",
     "connect-livereload": "0.6.0",
     "grunt": "0.4.5",

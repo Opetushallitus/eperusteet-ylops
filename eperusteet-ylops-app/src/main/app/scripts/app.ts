@@ -29,20 +29,21 @@ var ylopsApp = angular.module("ylopsApp", [
     "ui.sortable",
     "ngFileUpload",
     "eGenericTree",
-    "angular-loading-bar"
+    "angular-loading-bar",
+    "angularFileUpload",
+    "ngCookies"
 ]);
 
 ylopsApp
     .run(function(
         $rootScope,
-        VirheService,
+        $state,
         $window,
+        VirheService,
         Editointikontrollit,
         Kaanna,
         Varmistusdialogi,
-        $state,
-        paginationConfig,
-        $log
+        paginationConfig
     ) {
         paginationConfig.firstText = "";
         paginationConfig.previousText = "";
