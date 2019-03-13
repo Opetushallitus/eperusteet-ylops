@@ -512,9 +512,9 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>com.googlecode.flyway</groupId>
+                <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>4.0.3</version>
+                <version>5.2.4</version>
                 <configuration>
                     <url>${eperusteet-ylops.devdb.jdbcurl}</url>
                     <user>${eperusteet-ylops.devdb.user}</user>
