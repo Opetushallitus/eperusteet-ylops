@@ -11,6 +11,8 @@ import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,6 +24,11 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
     @Getter
     @Setter
     private String koodi;
+
+    @Getter
+    @Setter
+    @NotNull
+    private String oppiaineUri;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -59,7 +66,6 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
     private LokalisoituTeksti laajaAlainenOsaaminen;
 
     @Getter
-    @Setter
     @OrderColumn
     @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinTable(name = "lops2019_opintojakso_moduuli",
@@ -67,4 +73,8 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
             inverseJoinColumns = @JoinColumn(name = "moduuli_id"))
     private Set<Lops2019OpintojaksonModuuli> moduulit = new HashSet<>();
 
+    public void setModuulit(Set<Lops2019OpintojaksonModuuli> moduulit) {
+        this.moduulit.clear();
+        this.moduulit.addAll(moduulit);
+    }
 }

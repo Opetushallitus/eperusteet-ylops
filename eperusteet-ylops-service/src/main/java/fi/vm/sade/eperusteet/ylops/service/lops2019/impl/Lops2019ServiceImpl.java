@@ -5,13 +5,16 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -35,6 +41,9 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Autowired
+    private DtoMapper mapper;
+
+    @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     private Opetussuunnitelma getOpetussuunnitelma(Long opsId) {
@@ -45,10 +54,40 @@ public class Lops2019ServiceImpl implements Lops2019Service {
         return ops;
     }
 
-    private PerusteDto getPeruste(Long opsId) {
+    private PerusteDto getPerusteImpl(Long opsId) {
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         PerusteCache perusteCached = ops.getCachedPeruste();
         return eperusteetService.getPerusteById(perusteCached.getId());
+    }
+
+    @Override
+    public PerusteInfoDto getPeruste(Long opsId) {
+        return mapper.map(getPerusteImpl(opsId), PerusteInfoDto.class);
+    }
+
+    @Override
+    public Lops2019SisaltoDto getSisalto(Long opsId) {
+        return getPerusteImpl(opsId).getLops2019();
+    }
+
+    private List<Lops2019OppiaineDto> getOppiaineetAndOppimaarat(Long opsId) {
+        PerusteDto peruste = getPerusteImpl(opsId);
+        return peruste.getLops2019().getOppiaineet().stream()
+                .map(oa -> oa.getOppimaarat().stream())
+                .flatMap(Function.identity())
+                .collect(Collectors.toList());
+    }
+
+    private List<Lops2019ModuuliDto> getModuulit(Long opsId) {
+        PerusteDto peruste = getPerusteImpl(opsId);
+        return peruste.getLops2019().getOppiaineet().stream()
+                .map(oa -> Stream.concat(
+                        oa.getModuulit().stream(),
+                        oa.getOppimaarat().stream()
+                                .map(om -> om.getModuulit().stream())
+                                .flatMap(Function.identity())))
+                .flatMap(Function.identity())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -58,24 +97,22 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Override
     public List<Lops2019OppiaineDto> getPerusteOppiaineet(Long opsId) {
-        PerusteDto perusteDto = getPeruste(opsId);
+        PerusteDto perusteDto = getPerusteImpl(opsId);
         return perusteDto.getLops2019()
                 .getOppiaineet();
     }
 
     @Override
-    public List<Lops2019OppiaineDto> getPerusteOppiaine(Long opsId, Long oppiaineId) {
-        return getPeruste(opsId).getLops2019().getOppiaineet().stream()
-                .filter(oa -> Objects.equals(oppiaineId, oa.getId()))
-                .map(Lops2019OppiaineDto::getOppimaarat)
-                .findFirst()
-                    .orElse(null);
+    public Lops2019OppiaineDto getPerusteOppiaine(Long opsId, Long oppiaineId) {
+        return getOppiaineetAndOppimaarat(opsId).stream()
+                .filter(oa -> oppiaineId.equals(oa.getId()))
+                .findFirst().orElseThrow(() -> new BusinessRuleViolationException("oppiainetta-ei-loytynyt"));
     }
 
     @Override
     public Lops2019ModuuliDto getPerusteModuuli(Long opsId, Long oppiaineId, Long moduuliId) {
         return CollectionUtil.treeToStream(
-                getPeruste(opsId).getLops2019().getOppiaineet(),
+                getPerusteImpl(opsId).getLops2019().getOppiaineet(),
                 Lops2019OppiaineDto::getOppimaarat)
                 .filter((oa) -> Objects.equals(oppiaineId, oa.getId()))
                 .findFirst()
@@ -87,14 +124,35 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     }
 
     @Override
+    public Lops2019ModuuliDto getPerusteModuuli(Long opsId, String koodiUri) {
+        return getModuulit(opsId).stream()
+                .filter(moduuli -> koodiUri.equals(moduuli.getKoodi().getUri()))
+                .findFirst().orElse(null);
+    }
+
+    @Override
+    public List<Lops2019ModuuliDto> getOppiaineenModuulit(Long opsId, String oppiaineUri) {
+        Lops2019OppiaineDto oppiaine = getPerusteOppiaine(opsId, oppiaineUri);
+        return oppiaine.getModuulit();
+    }
+
+    @Override
+    public Lops2019OppiaineDto getPerusteOppiaine(Long opsId, String koodiUri) {
+        return getOppiaineetAndOppimaarat(opsId).stream()
+                .filter(oa -> koodiUri.equals(oa.getKoodi().getUri()))
+                .findFirst()
+                .orElseThrow(() -> new BusinessRuleViolationException("oppiainetta-ei-ole"));
+    }
+
+    @Override
     public PerusteTekstiKappaleViiteDto getPerusteTekstikappaleet(Long opsId) {
-        return getPeruste(opsId).getLops2019().getSisalto();
+        return getPerusteImpl(opsId).getLops2019().getSisalto();
     }
 
     @Override
     public PerusteTekstiKappaleViiteMatalaDto getPerusteTekstikappale(Long opsId, Long tekstikappaleId) {
         return CollectionUtil.treeToStream(
-                getPeruste(opsId).getLops2019().getSisalto(),
+                getPerusteImpl(opsId).getLops2019().getSisalto(),
                 PerusteTekstiKappaleViiteDto::getLapset)
                     .filter(viiteDto -> Objects.equals(tekstikappaleId, viiteDto.getId()))
                     .findFirst()

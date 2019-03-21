@@ -2,17 +2,20 @@ package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonModuuli;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
@@ -23,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -39,6 +43,9 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
+    @Autowired
+    private Lops2019Service lopsService;
 
     @Autowired
     private DtoMapper mapper;
@@ -94,7 +101,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     public Lops2019OpintojaksoDto updateOpintojakso(Long opsId, Long opintojaksoId, UpdateWrapperDto<Lops2019OpintojaksoDto> opintojaksoDto) {
         opintojaksoDto.getData().setId(opintojaksoId);
         Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
-        opintojakso = mapper.map(opintojaksoDto, opintojakso);
+        opintojakso = mapper.map(opintojaksoDto.getData(), opintojakso);
         opintojakso = opintojaksoRepository.save(opintojakso);
         return mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
     }
@@ -128,5 +135,16 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     @Override
     public Lops2019OpintojaksoDto revertTo(Long opsId, Long opintojaksoId, Integer versio) {
         throw new UnsupportedOperationException("not implemented yet");
+    }
+
+    @Override
+    public Lops2019OpintojaksoPerusteDto getOpintojaksonPeruste(Long opsId, Long opintojaksoId) {
+        Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
+        Lops2019OpintojaksoPerusteDto opintojaksoPerusteDto = new Lops2019OpintojaksoPerusteDto();
+        opintojaksoPerusteDto.setModuulit(opintojakso.getModuulit().stream()
+                .map(Lops2019OpintojaksonModuuli::getKoodiUri)
+                .map(koodi -> lopsService.getPerusteModuuli(opsId, koodi))
+                .collect(Collectors.toList()));
+        return opintojaksoPerusteDto;
     }
 }

@@ -83,7 +83,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThat(perusteet.size()).isGreaterThan(0);
         PerusteDto peruste = eperusteetService.getPeruste("1/2/3");
         assertThat(peruste.getLops2019()).isNotNull();
-        List<Lops2019ModuuliDto> moduulit = peruste.getLops2019().getOppiaineet().get(0).getOppimaarat().get(0).getModuulit();
+        List<Lops2019ModuuliDto> moduulit = peruste.getLops2019().getOppiaineet().get(1).getOppimaarat().get(0).getModuulit();
         assertThat(moduulit.size()).isNotEqualTo(0);
     }
 
@@ -127,6 +127,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .nimi(LokalisoituTekstiDto.of("Geometriat"))
                 .kuvaus(LokalisoituTekstiDto.of("Geometriaan liittyvät moduulit toteutetaan yhtenä opintojaksona"))
                 .koodi("1234")
+                .oppiaineUri("oppiaineet_maa")
                 .moduuli(Lops2019OpintojaksonModuuliDto.builder()
                         .koodiUri("moduuli_maa3")
                         .kuvaus(LokalisoituTekstiDto.of("X"))

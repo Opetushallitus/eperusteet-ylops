@@ -13,8 +13,12 @@ import java.util.Set;
 public class Lops2019OpintojaksoDto {
     private Long id;
     private String koodi;
+    private String oppiaineUri;
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto kuvaus;
+    private LokalisoituTekstiDto tavoitteet;
+    private LokalisoituTekstiDto keskeisetSisallot;
+    private LokalisoituTekstiDto laajaAlainenOsaaminen;
 
     @Singular("moduuli")
     private Set<Lops2019OpintojaksonModuuliDto> moduulit;

@@ -1,0 +1,1103 @@
+{
+  "id" : 4550,
+  "globalVersion": {
+    "aikaleima": 1234
+  },
+  "nimi" : {
+    "fi" : "TESTIDATA",
+    "_id" : "5265"
+  },
+  "koulutustyyppi" : "koulutustyyppi_16",
+  "koulutukset" : [ ],
+  "kielet" : [ "fi" ],
+  "kuvaus" : null,
+  "diaarinumero" : "mock-diaarinumero",
+  "voimassaoloAlkaa" : 1422741600000,
+  "siirtymaPaattyy" : null,
+  "voimassaoloLoppuu" : null,
+  "muokattu" : 1423731441288,
+  "tila" : "valmis",
+  "tyyppi" : "normaali",
+  "korvattavatDiaarinumerot" : [ ],
+  "osaamisalat" : [ ],
+  "perusopetus" : {
+    "sisalto" : {
+      "id" : 4570,
+      "lapset" : [ {
+        "id" : 4571,
+        "perusteenOsa" : {
+          "osanTyyppi" : "tekstikappale",
+          "id" : 5280,
+          "luotu" : 1423731373885,
+          "muokattu" : 1423731384691,
+          "muokkaaja" : "test",
+          "nimi" : {
+            "fi" : "Teksti",
+            "_id" : "5263"
+          },
+          "tila" : "valmis",
+          "teksti" : {
+            "fi" : "<p>Kuvaus</p>",
+            "_id" : "5264"
+          },
+          "osaamisala" : null
+        },
+        "lapset" : [ ],
+        "_perusteenOsa" : "5280"
+      } ]
+    },
+    "laajaalaisetosaamiset" : [ {
+      "id" : 4600,
+      "tunniste" : "2d17efc7-dfac-44ea-8185-ec4a2abb3a16",
+      "nimi" : {
+        "fi" : "L1",
+        "_id" : "4611"
+      },
+      "kuvaus" : {
+        "fi" : "<p>L1 teksti</p>",
+        "_id" : "4610"
+      }
+    }, {
+      "id" : 4601,
+      "tunniste" : "a989794c-6872-4dd2-b7cf-4c5dec86daf0",
+      "nimi" : {
+        "fi" : "L2",
+        "_id" : "4613"
+      },
+      "kuvaus" : {
+        "fi" : "<p>L2 teksti</p>",
+        "_id" : "4612"
+      }
+    }, {
+      "id" : 4602,
+      "tunniste" : "86eb7bb2-840c-44c1-9579-e8595dc03b54",
+      "nimi" : {
+        "fi" : "L3",
+        "_id" : "4615"
+      },
+      "kuvaus" : {
+        "fi" : "<p>L3 teksti</p>",
+        "_id" : "4614"
+      }
+    } ],
+    "oppiaineet" : [ {
+      "id" : 4801,
+      "tunniste" : "43ef4c26-28dc-41ae-b038-a890294b151d",
+      "koosteinen" : true,
+      "abstrakti" : false,
+      "nimi" : {
+        "fi" : "Äidinkieli ja kirjallisuus",
+        "_id" : "5045"
+      },
+      "tehtava" : {
+        "id" : 4838,
+        "otsikko" : {
+          "fi" : "Oppiaineen tehtävä",
+          "_id" : "5046"
+        },
+        "teksti" : null
+      },
+      "oppimaarat" : [ {
+        "id" : 4802,
+        "tunniste" : "681eead3-37b9-4f21-ace2-562fac8ac32e",
+        "_oppiaine" : "4801",
+        "koosteinen" : false,
+        "abstrakti" : null,
+        "nimi" : {
+          "fi" : "Suomen kieli ja kirjallisuus",
+          "_id" : "5089"
+        },
+        "tehtava" : {
+          "id" : 5091,
+          "otsikko" : {
+            "fi" : "Oppiaineen tehtävä",
+            "_id" : "5110"
+          },
+          "teksti" : null
+        },
+        "kohdealueet" : [ {
+          "id" : 4872,
+          "nimi" : {
+            "fi" : "K2",
+            "_id" : "5138"
+          }
+        }, {
+          "id" : 4871,
+          "nimi" : {
+            "fi" : "K1",
+            "_id" : "5137"
+          }
+        } ],
+        "vuosiluokkakokonaisuudet" : [ {
+          "id" : 4816,
+          "_vuosiluokkaKokonaisuus" : "4650",
+          "tehtava" : {
+            "id" : 5094,
+            "otsikko" : {
+              "fi" : "Oppiaineen tehtävä",
+              "sv" : "Oppiaineen tehtävä",
+              "_id" : "5113"
+            },
+            "teksti" : null
+          },
+          "tyotavat" : {
+            "id" : 5095,
+            "otsikko" : {
+              "fi" : "Oppimisympäristöt ja työtavat",
+              "sv" : "Oppimisympäristöt ja työtavat",
+              "_id" : "5114"
+            },
+            "teksti" : null
+          },
+          "ohjaus" : {
+            "id" : 5093,
+            "otsikko" : {
+              "fi" : "Ohjaus ja tuki",
+              "sv" : "Ohjaus ja tuki",
+              "_id" : "5112"
+            },
+            "teksti" : null
+          },
+          "arviointi" : {
+            "id" : 5092,
+            "otsikko" : {
+              "fi" : "Oppilaan oppimisen arviointi",
+              "sv" : "Oppilaan oppimisen arviointi",
+              "_id" : "5111"
+            },
+            "teksti" : null
+          },
+          "tavoitteet" : [ {
+            "id" : 4966,
+            "tunniste" : "c74650ee-9972-4620-987a-61c83c83a8fd",
+            "tavoite" : {
+              "fi" : "<p>T1</p>",
+              "_id" : "5139"
+            },
+            "sisaltoalueet" : [ "4937" ],
+            "laajattavoitteet" : [ "4600", "4601" ],
+            "kohdealueet" : [ "4871" ],
+            "arvioinninkohteet" : [ ]
+          }, {
+            "id" : 4967,
+            "tunniste" : "a8f04474-8164-4171-91ca-67e026e05d10",
+            "tavoite" : {
+              "fi" : "<p>T2</p>",
+              "_id" : "5200"
+            },
+            "sisaltoalueet" : [ "4937", "4938" ],
+            "laajattavoitteet" : [ "4602" ],
+            "kohdealueet" : [ "4872" ],
+            "arvioinninkohteet" : [ ]
+          } ],
+          "sisaltoalueet" : [ {
+            "id" : 4937,
+            "tunniste" : "b0308e6e-89af-4e26-8f3b-7ab65673da0d",
+            "nimi" : {
+              "fi" : "S1",
+              "_id" : "5134"
+            },
+            "kuvaus" : {
+              "fi" : "<p>s1</p>",
+              "_id" : "5133"
+            }
+          }, {
+            "id" : 4938,
+            "tunniste" : "bfdc7fde-d6e4-424b-a7e7-6c40c8cfb63e",
+            "nimi" : {
+              "fi" : "S2",
+              "_id" : "5136"
+            },
+            "kuvaus" : {
+              "fi" : "<p>s2</p>",
+              "_id" : "5135"
+            }
+          } ]
+        }, {
+          "id" : 4817,
+          "_vuosiluokkaKokonaisuus" : "4651",
+          "tehtava" : {
+            "id" : 5098,
+            "otsikko" : {
+              "fi" : "Oppiaineen tehtävä",
+              "sv" : "Oppiaineen tehtävä",
+              "_id" : "5117"
+            },
+            "teksti" : null
+          },
+          "tyotavat" : {
+            "id" : 5099,
+            "otsikko" : {
+              "fi" : "Oppimisympäristöt ja työtavat",
+              "sv" : "Oppimisympäristöt ja työtavat",
+              "_id" : "5118"
+            },
+            "teksti" : null
+          },
+          "ohjaus" : {
+            "id" : 5097,
+            "otsikko" : {
+              "fi" : "Ohjaus ja tuki",
+              "sv" : "Ohjaus ja tuki",
+              "_id" : "5116"
+            },
+            "teksti" : null
+          },
+          "arviointi" : {
+            "id" : 5096,
+            "otsikko" : {
+              "fi" : "Oppilaan oppimisen arviointi",
+              "sv" : "Oppilaan oppimisen arviointi",
+              "_id" : "5115"
+            },
+            "teksti" : null
+          },
+          "tavoitteet" : [ {
+            "id" : 4968,
+            "tunniste" : "f7a091dc-0de6-45c9-a096-3fec6111c979",
+            "tavoite" : {
+              "fi" : "<p>T1</p>",
+              "_id" : "5205"
+            },
+            "sisaltoalueet" : [ "5220", "5221" ],
+            "laajattavoitteet" : [ "4600", "4601", "4602" ],
+            "kohdealueet" : [ "4871" ],
+            "arvioinninkohteet" : [ {
+              "id" : 5023,
+              "arvioinninKohde" : {
+                "fi" : "kohde",
+                "_id" : "5206"
+              },
+              "hyvanOsaamisenKuvaus" : {
+                "fi" : "osaaminen",
+                "_id" : "5207"
+              }
+            } ]
+          } ],
+          "sisaltoalueet" : [ {
+            "id" : 5220,
+            "tunniste" : "397d643d-1b9c-4951-980a-f9bf6e0aaf32",
+            "nimi" : {
+              "fi" : "S1",
+              "_id" : "5202"
+            },
+            "kuvaus" : {
+              "fi" : "<p>s1</p>",
+              "_id" : "5201"
+            }
+          }, {
+            "id" : 5221,
+            "tunniste" : "e3c0cdb8-dd6e-4aa0-875b-55f3874584a1",
+            "nimi" : {
+              "fi" : "S2",
+              "_id" : "5204"
+            },
+            "kuvaus" : {
+              "fi" : "<p>s2</p>",
+              "_id" : "5203"
+            }
+          } ]
+        }, {
+          "id" : 4818,
+          "_vuosiluokkaKokonaisuus" : "4652",
+          "tehtava" : {
+            "id" : 5122,
+            "otsikko" : {
+              "fi" : "Oppiaineen tehtävä",
+              "sv" : "Oppiaineen tehtävä",
+              "_id" : "5131"
+            },
+            "teksti" : null
+          },
+          "tyotavat" : {
+            "id" : 5123,
+            "otsikko" : {
+              "fi" : "Oppimisympäristöt ja työtavat",
+              "sv" : "Oppimisympäristöt ja työtavat",
+              "_id" : "5132"
+            },
+            "teksti" : null
+          },
+          "ohjaus" : {
+            "id" : 5121,
+            "otsikko" : {
+              "fi" : "Ohjaus ja tuki",
+              "sv" : "Ohjaus ja tuki",
+              "_id" : "5130"
+            },
+            "teksti" : null
+          },
+          "arviointi" : {
+            "id" : 5120,
+            "otsikko" : {
+              "fi" : "Oppilaan oppimisen arviointi",
+              "sv" : "Oppilaan oppimisen arviointi",
+              "_id" : "5119"
+            },
+            "teksti" : null
+          },
+          "tavoitteet" : [ {
+            "id" : 4969,
+            "tunniste" : "413f0e89-3a52-4731-9577-80f53f51f7f4",
+            "tavoite" : {
+              "fi" : "<p>T1</p>",
+              "_id" : "5260"
+            },
+            "sisaltoalueet" : [ "5222" ],
+            "laajattavoitteet" : [ "4600", "4601", "4602" ],
+            "kohdealueet" : [ "4872" ],
+            "arvioinninkohteet" : [ {
+              "id" : 5024,
+              "arvioinninKohde" : {
+                "fi" : "kohde",
+                "_id" : "5261"
+              },
+              "hyvanOsaamisenKuvaus" : {
+                "fi" : "osaaminen",
+                "_id" : "5262"
+              }
+            } ]
+          } ],
+          "sisaltoalueet" : [ {
+            "id" : 5222,
+            "tunniste" : "1c97cbd0-0dae-403a-aebc-a070753f959d",
+            "nimi" : {
+              "fi" : "S1",
+              "_id" : "5209"
+            },
+            "kuvaus" : {
+              "fi" : "<p>s1</p>",
+              "_id" : "5208"
+            }
+          } ]
+        } ],
+        "koodiUri" : "oppiaineetyleissivistava_ai",
+        "koodiArvo" : "AI"
+      } ],
+      "kohdealueet" : [ ],
+      "vuosiluokkakokonaisuudet" : [ {
+        "id" : 4815,
+        "_vuosiluokkaKokonaisuus" : "4651",
+        "tehtava" : {
+          "id" : 5079,
+          "otsikko" : {
+            "fi" : "Oppiaineen tehtävä",
+            "sv" : "Oppiaineen tehtävä",
+            "_id" : "5087"
+          },
+          "teksti" : null
+        },
+        "tyotavat" : {
+          "id" : 5090,
+          "otsikko" : {
+            "fi" : "Oppimisympäristöt ja työtavat",
+            "sv" : "Oppimisympäristöt ja työtavat",
+            "_id" : "5088"
+          },
+          "teksti" : null
+        },
+        "ohjaus" : {
+          "id" : 5078,
+          "otsikko" : {
+            "fi" : "Ohjaus ja tuki",
+            "sv" : "Ohjaus ja tuki",
+            "_id" : "5086"
+          },
+          "teksti" : null
+        },
+        "arviointi" : {
+          "id" : 5077,
+          "otsikko" : {
+            "fi" : "Oppilaan oppimisen arviointi",
+            "sv" : "Oppilaan oppimisen arviointi",
+            "_id" : "5085"
+          },
+          "teksti" : null
+        },
+        "tavoitteet" : [ ],
+        "sisaltoalueet" : [ ]
+      }, {
+        "id" : 4813,
+        "_vuosiluokkaKokonaisuus" : "4650",
+        "tehtava" : {
+          "id" : 5071,
+          "otsikko" : {
+            "fi" : "Oppiaineen tehtävä",
+            "sv" : "Oppiaineen tehtävä",
+            "_id" : "5049"
+          },
+          "teksti" : null
+        },
+        "tyotavat" : {
+          "id" : 5072,
+          "otsikko" : {
+            "fi" : "Oppimisympäristöt ja työtavat",
+            "sv" : "Oppimisympäristöt ja työtavat",
+            "_id" : "5080"
+          },
+          "teksti" : null
+        },
+        "ohjaus" : {
+          "id" : 5070,
+          "otsikko" : {
+            "fi" : "Ohjaus ja tuki",
+            "sv" : "Ohjaus ja tuki",
+            "_id" : "5048"
+          },
+          "teksti" : null
+        },
+        "arviointi" : {
+          "id" : 4839,
+          "otsikko" : {
+            "fi" : "Oppilaan oppimisen arviointi",
+            "sv" : "Oppilaan oppimisen arviointi",
+            "_id" : "5047"
+          },
+          "teksti" : null
+        },
+        "tavoitteet" : [ ],
+        "sisaltoalueet" : [ ]
+      }, {
+        "id" : 4814,
+        "_vuosiluokkaKokonaisuus" : "4652",
+        "tehtava" : {
+          "id" : 5075,
+          "otsikko" : {
+            "fi" : "Oppiaineen tehtävä",
+            "sv" : "Oppiaineen tehtävä",
+            "_id" : "5083"
+          },
+          "teksti" : null
+        },
+        "tyotavat" : {
+          "id" : 5076,
+          "otsikko" : {
+            "fi" : "Oppimisympäristöt ja työtavat",
+            "sv" : "Oppimisympäristöt ja työtavat",
+            "_id" : "5084"
+          },
+          "teksti" : null
+        },
+        "ohjaus" : {
+          "id" : 5074,
+          "otsikko" : {
+            "fi" : "Ohjaus ja tuki",
+            "sv" : "Ohjaus ja tuki",
+            "_id" : "5082"
+          },
+          "teksti" : null
+        },
+        "arviointi" : {
+          "id" : 5073,
+          "otsikko" : {
+            "fi" : "Oppilaan oppimisen arviointi",
+            "sv" : "Oppilaan oppimisen arviointi",
+            "_id" : "5081"
+          },
+          "teksti" : null
+        },
+        "tavoitteet" : [ ],
+        "sisaltoalueet" : [ ]
+      } ],
+      "koodiUri" : "oppiaineetyleissivistava_ai",
+      "koodiArvo" : "AI"
+    }, {
+      "id" : 4800,
+      "tunniste" : "7c80cb45-3947-4a5c-bf8e-fb3a16b21a7a",
+      "koosteinen" : false,
+      "abstrakti" : null,
+      "nimi" : {
+        "fi" : "Matematiikka",
+        "_id" : "4788"
+      },
+      "tehtava" : {
+        "id" : 4775,
+        "otsikko" : {
+          "fi" : "Oppiaineen tehtävä",
+          "_id" : "4789"
+        },
+        "teksti" : {
+          "fi" : "<p>Tehtävä</p>",
+          "_id" : "4842"
+        }
+      },
+      "kohdealueet" : [ {
+        "id" : 4870,
+        "nimi" : {
+          "fi" : "Kohdealue",
+          "_id" : "4843"
+        }
+      } ],
+      "vuosiluokkakokonaisuudet" : [ {
+        "id" : 4810,
+        "_vuosiluokkaKokonaisuus" : "4652",
+        "tehtava" : {
+          "id" : 4778,
+          "otsikko" : {
+            "fi" : "Oppiaineen tehtävä",
+            "sv" : "Oppiaineen tehtävä",
+            "_id" : "4822"
+          },
+          "teksti" : null
+        },
+        "tyotavat" : {
+          "id" : 4779,
+          "otsikko" : {
+            "fi" : "Oppimisympäristöt ja työtavat",
+            "sv" : "Oppimisympäristöt ja työtavat",
+            "_id" : "4823"
+          },
+          "teksti" : null
+        },
+        "ohjaus" : {
+          "id" : 4777,
+          "otsikko" : {
+            "fi" : "Ohjaus ja tuki",
+            "sv" : "Ohjaus ja tuki",
+            "_id" : "4821"
+          },
+          "teksti" : null
+        },
+        "arviointi" : {
+          "id" : 4776,
+          "otsikko" : {
+            "fi" : "Oppilaan oppimisen arviointi",
+            "sv" : "Oppilaan oppimisen arviointi",
+            "_id" : "4820"
+          },
+          "teksti" : null
+        },
+        "tavoitteet" : [ {
+          "id" : 4965,
+          "tunniste" : "93dedfed-be72-4519-84ec-4d99c23ae897",
+          "tavoite" : {
+            "fi" : "<p>T1</p>",
+            "_id" : "5042"
+          },
+          "sisaltoalueet" : [ "4935", "4936" ],
+          "laajattavoitteet" : [ "4600", "4601", "4602" ],
+          "kohdealueet" : [ "4870" ],
+          "arvioinninkohteet" : [ {
+            "id" : 5022,
+            "arvioinninKohde" : {
+              "fi" : "Kohde",
+              "_id" : "5043"
+            },
+            "hyvanOsaamisenKuvaus" : {
+              "fi" : "Kriteerit",
+              "_id" : "5044"
+            }
+          } ]
+        } ],
+        "sisaltoalueet" : [ {
+          "id" : 4935,
+          "tunniste" : "42ff4bda-dc8a-4750-8625-51794fcb919d",
+          "nimi" : {
+            "fi" : "S1",
+            "_id" : "5009"
+          },
+          "kuvaus" : {
+            "fi" : "<p>s1</p>",
+            "_id" : "5008"
+          }
+        }, {
+          "id" : 4936,
+          "tunniste" : "a015d472-524d-4647-a00f-b1dcf7643945",
+          "nimi" : {
+            "fi" : "S2",
+            "_id" : "5041"
+          },
+          "kuvaus" : {
+            "fi" : "<p>s2</p>",
+            "_id" : "5040"
+          }
+        } ]
+      }, {
+        "id" : 4812,
+        "_vuosiluokkaKokonaisuus" : "4651",
+        "tehtava" : {
+          "id" : 4836,
+          "otsikko" : {
+            "fi" : "Oppiaineen tehtävä",
+            "sv" : "Oppiaineen tehtävä",
+            "_id" : "4840"
+          },
+          "teksti" : {
+            "fi" : "<p>Tehtävä</p>",
+            "_id" : "4946"
+          }
+        },
+        "tyotavat" : {
+          "id" : 4837,
+          "otsikko" : {
+            "fi" : "Oppimisympäristöt ja työtavat",
+            "sv" : "Oppimisympäristöt ja työtavat",
+            "_id" : "4841"
+          },
+          "teksti" : null
+        },
+        "ohjaus" : {
+          "id" : 4835,
+          "otsikko" : {
+            "fi" : "Ohjaus ja tuki",
+            "sv" : "Ohjaus ja tuki",
+            "_id" : "4829"
+          },
+          "teksti" : null
+        },
+        "arviointi" : {
+          "id" : 4834,
+          "otsikko" : {
+            "fi" : "Oppilaan oppimisen arviointi",
+            "sv" : "Oppilaan oppimisen arviointi",
+            "_id" : "4828"
+          },
+          "teksti" : null
+        },
+        "tavoitteet" : [ {
+          "id" : 4962,
+          "tunniste" : "d9200898-0853-4ab5-8c5c-56d8aef4c730",
+          "tavoite" : {
+            "fi" : "<p>T1</p>",
+            "_id" : "5001"
+          },
+          "sisaltoalueet" : [ "4933" ],
+          "laajattavoitteet" : [ "4600" ],
+          "kohdealueet" : [ "4870" ],
+          "arvioinninkohteet" : [ {
+            "id" : 5020,
+            "arvioinninKohde" : {
+              "fi" : "Kohde",
+              "_id" : "5002"
+            },
+            "hyvanOsaamisenKuvaus" : {
+              "fi" : "Kuvaus",
+              "_id" : "5003"
+            }
+          } ]
+        }, {
+          "id" : 4963,
+          "tunniste" : "170aa09e-8303-43c4-b28e-65664cde8a49",
+          "tavoite" : {
+            "fi" : "<p>T2</p>",
+            "_id" : "5004"
+          },
+          "sisaltoalueet" : [ "4934" ],
+          "laajattavoitteet" : [ "4601" ],
+          "kohdealueet" : [ "4870" ],
+          "arvioinninkohteet" : [ ]
+        }, {
+          "id" : 4964,
+          "tunniste" : "490ff0ca-78de-473a-8724-1b4864080b18",
+          "tavoite" : {
+            "fi" : "<p>T3</p>",
+            "_id" : "5005"
+          },
+          "sisaltoalueet" : [ "4933", "4934" ],
+          "laajattavoitteet" : [ "4602" ],
+          "kohdealueet" : [ "4870" ],
+          "arvioinninkohteet" : [ {
+            "id" : 5021,
+            "arvioinninKohde" : {
+              "fi" : "Kohde",
+              "_id" : "5006"
+            },
+            "hyvanOsaamisenKuvaus" : {
+              "fi" : "Hyvä",
+              "_id" : "5007"
+            }
+          } ]
+        } ],
+        "sisaltoalueet" : [ {
+          "id" : 4933,
+          "tunniste" : "cd72c3ae-f7ac-40b7-be04-a269f2f23f40",
+          "nimi" : {
+            "fi" : "S1",
+            "_id" : "4948"
+          },
+          "kuvaus" : {
+            "fi" : "<p>s1</p>",
+            "_id" : "4947"
+          }
+        }, {
+          "id" : 4934,
+          "tunniste" : "d2279269-c57e-45f3-902e-e7018ae64dde",
+          "nimi" : {
+            "fi" : "S2",
+            "_id" : "5000"
+          },
+          "kuvaus" : {
+            "fi" : "<p>s2</p>",
+            "_id" : "4949"
+          }
+        } ]
+      }, {
+        "id" : 4811,
+        "_vuosiluokkaKokonaisuus" : "4650",
+        "tehtava" : {
+          "id" : 4832,
+          "otsikko" : {
+            "fi" : "Oppiaineen tehtävä",
+            "sv" : "Oppiaineen tehtävä",
+            "_id" : "4826"
+          },
+          "teksti" : {
+            "fi" : "<p>Tehtävä vuosiluokilla 1-2</p>",
+            "_id" : "4844"
+          }
+        },
+        "tyotavat" : {
+          "id" : 4833,
+          "otsikko" : {
+            "fi" : "Oppimisympäristöt ja työtavat",
+            "sv" : "Oppimisympäristöt ja työtavat",
+            "_id" : "4827"
+          },
+          "teksti" : {
+            "fi" : "<p>Kuvaus</p>",
+            "_id" : "4846"
+          }
+        },
+        "ohjaus" : {
+          "id" : 4831,
+          "otsikko" : {
+            "fi" : "Ohjaus ja tuki",
+            "sv" : "Ohjaus ja tuki",
+            "_id" : "4825"
+          },
+          "teksti" : {
+            "fi" : "<p>Kuvaus</p>",
+            "_id" : "4845"
+          }
+        },
+        "arviointi" : {
+          "id" : 4830,
+          "otsikko" : {
+            "fi" : "Oppilaan oppimisen arviointi",
+            "sv" : "Oppilaan oppimisen arviointi",
+            "_id" : "4824"
+          },
+          "teksti" : {
+            "fi" : "<p>Kuvaus</p>",
+            "_id" : "4847"
+          }
+        },
+        "tavoitteet" : [ {
+          "id" : 4960,
+          "tunniste" : "76747734-e999-4b80-b789-380c9863523e",
+          "tavoite" : {
+            "fi" : "<p>Tavoite 1</p>",
+            "_id" : "4944"
+          },
+          "sisaltoalueet" : [ "4930", "4931" ],
+          "laajattavoitteet" : [ "4600", "4601" ],
+          "kohdealueet" : [ "4870" ],
+          "arvioinninkohteet" : [ ]
+        }, {
+          "id" : 4961,
+          "tunniste" : "f8213173-1030-4e4f-bd0a-d317801e98d6",
+          "tavoite" : {
+            "fi" : "<p>Tavoite 2</p>",
+            "_id" : "4945"
+          },
+          "sisaltoalueet" : [ "4931", "4932" ],
+          "laajattavoitteet" : [ "4602" ],
+          "kohdealueet" : [ "4870" ],
+          "arvioinninkohteet" : [ ]
+        } ],
+        "sisaltoalueet" : [ {
+          "id" : 4930,
+          "tunniste" : "4fd94520-b737-4088-b46a-7b8dc3995caa",
+          "nimi" : {
+            "fi" : "S1",
+            "_id" : "4849"
+          },
+          "kuvaus" : {
+            "fi" : "<p>S1</p>",
+            "_id" : "4848"
+          }
+        }, {
+          "id" : 4931,
+          "tunniste" : "8bd1adcb-9c5a-4d02-a9c0-3a92503a52cb",
+          "nimi" : {
+            "fi" : "S2",
+            "_id" : "4941"
+          },
+          "kuvaus" : {
+            "fi" : "<p>S2</p>",
+            "_id" : "4940"
+          }
+        }, {
+          "id" : 4932,
+          "tunniste" : "1c799314-7b4a-4fb8-b8f3-1ea724e6b6a1",
+          "nimi" : {
+            "fi" : "S3",
+            "_id" : "4943"
+          },
+          "kuvaus" : {
+            "fi" : "<p>S3</p>",
+            "_id" : "4942"
+          }
+        } ]
+      } ],
+      "koodiUri" : "oppiaineetyleissivistava_ma",
+      "koodiArvo" : "MA"
+    } ],
+    "vuosiluokkakokonaisuudet" : [ {
+      "id" : 4650,
+      "tunniste" : "625533e3-c2e4-4fbd-953e-2b5c201b2b90",
+      "vuosiluokat" : [ "vuosiluokka_1", "vuosiluokka_2" ],
+      "nimi" : {
+        "fi" : "Vuosiluokat 1-2",
+        "_id" : "4616"
+      },
+      "siirtymaEdellisesta" : {
+        "id" : 4672,
+        "otsikko" : {
+          "fi" : "Siirtymä edellisestä vaiheesta",
+          "_id" : "4619"
+        },
+        "teksti" : {
+          "fi" : "<p>Siirtymä</p>",
+          "_id" : "4697"
+        }
+      },
+      "tehtava" : {
+        "id" : 4674,
+        "otsikko" : {
+          "fi" : "Vuosiluokkakokonaisuuden tehtävä",
+          "_id" : "4691"
+        },
+        "teksti" : {
+          "fi" : "<p>Tehtävä</p>",
+          "_id" : "4699"
+        }
+      },
+      "siirtymaSeuraavaan" : {
+        "id" : 4673,
+        "otsikko" : {
+          "fi" : "Siirtymä seuraavaan vaiheeseen",
+          "_id" : "4690"
+        },
+        "teksti" : {
+          "fi" : "<p>Siirtymä</p>",
+          "_id" : "4698"
+        }
+      },
+      "laajaalainenOsaaminen" : {
+        "id" : 4670,
+        "otsikko" : {
+          "fi" : "Laaja-alaisen osaamisen kuvaus",
+          "_id" : "4617"
+        },
+        "teksti" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4692"
+        }
+      },
+      "laajaalaisetOsaamiset" : [ {
+        "id" : 4681,
+        "_laajaalainenOsaaminen" : "4602",
+        "kuvaus" : {
+          "fi" : "<p>L3 kuvaus</p>",
+          "_id" : "4694"
+        }
+      }, {
+        "id" : 4682,
+        "_laajaalainenOsaaminen" : "4601",
+        "kuvaus" : {
+          "fi" : "<p>L2 kuvaus</p>",
+          "_id" : "4693"
+        }
+      }, {
+        "id" : 4680,
+        "_laajaalainenOsaaminen" : "4600",
+        "kuvaus" : {
+          "fi" : "<p>L1 kuvaus</p>",
+          "_id" : "4695"
+        }
+      } ],
+      "paikallisestiPaatettavatAsiat" : {
+        "id" : 4671,
+        "otsikko" : {
+          "fi" : "Paikallisesti päätettävät asiat",
+          "_id" : "4618"
+        },
+        "teksti" : {
+          "fi" : "<p>Paikallisesti päätettävä seuraavaa</p>",
+          "_id" : "4696"
+        }
+      }
+    }, {
+      "id" : 4651,
+      "tunniste" : "c1caadc4-bbb0-4541-92fc-79667792113f",
+      "vuosiluokat" : [ "vuosiluokka_3", "vuosiluokka_6", "vuosiluokka_4", "vuosiluokka_5" ],
+      "nimi" : {
+        "fi" : "Vuosiluokat 3-6",
+        "_id" : "4720"
+      },
+      "siirtymaEdellisesta" : {
+        "id" : 4677,
+        "otsikko" : {
+          "fi" : "Siirtymä edellisestä vaiheesta",
+          "_id" : "4728"
+        },
+        "teksti" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4729"
+        }
+      },
+      "tehtava" : {
+        "id" : 4679,
+        "otsikko" : {
+          "fi" : "Vuosiluokkakokonaisuuden tehtävä",
+          "_id" : "4742"
+        },
+        "teksti" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4743"
+        }
+      },
+      "siirtymaSeuraavaan" : {
+        "id" : 4678,
+        "otsikko" : {
+          "fi" : "Siirtymä seuraavaan vaiheeseen",
+          "_id" : "4740"
+        },
+        "teksti" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4741"
+        }
+      },
+      "laajaalainenOsaaminen" : {
+        "id" : 4675,
+        "otsikko" : {
+          "fi" : "Laaja-alaisen osaamisen kuvaus",
+          "_id" : "4721"
+        },
+        "teksti" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4722"
+        }
+      },
+      "laajaalaisetOsaamiset" : [ {
+        "id" : 4683,
+        "_laajaalainenOsaaminen" : "4601",
+        "kuvaus" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4723"
+        }
+      }, {
+        "id" : 4684,
+        "_laajaalainenOsaaminen" : "4600",
+        "kuvaus" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4724"
+        }
+      }, {
+        "id" : 4685,
+        "_laajaalainenOsaaminen" : "4602",
+        "kuvaus" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4725"
+        }
+      } ],
+      "paikallisestiPaatettavatAsiat" : {
+        "id" : 4676,
+        "otsikko" : {
+          "fi" : "Paikallisesti päätettävät asiat",
+          "_id" : "4726"
+        },
+        "teksti" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4727"
+        }
+      }
+    }, {
+      "id" : 4652,
+      "tunniste" : "488b0e5d-96cc-465f-be0e-5c7bbd93f113",
+      "vuosiluokat" : [ "vuosiluokka_7", "vuosiluokka_8", "vuosiluokka_9" ],
+      "nimi" : {
+        "fi" : "Vuosiluokat 7-9",
+        "_id" : "4744"
+      },
+      "siirtymaEdellisesta" : {
+        "id" : 4772,
+        "otsikko" : {
+          "fi" : "Siirtymä edellisestä vaiheesta",
+          "_id" : "4782"
+        },
+        "teksti" : {
+          "fi" : "<p>Siirtymä</p>",
+          "_id" : "4783"
+        }
+      },
+      "tehtava" : {
+        "id" : 4774,
+        "otsikko" : {
+          "fi" : "Vuosiluokkakokonaisuuden tehtävä",
+          "_id" : "4786"
+        },
+        "teksti" : {
+          "fi" : "<p>Tehtävä</p>",
+          "_id" : "4787"
+        }
+      },
+      "siirtymaSeuraavaan" : {
+        "id" : 4773,
+        "otsikko" : {
+          "fi" : "Siirtymä seuraavaan vaiheeseen",
+          "_id" : "4784"
+        },
+        "teksti" : {
+          "fi" : "<p>Siirtymä</p>",
+          "_id" : "4785"
+        }
+      },
+      "laajaalainenOsaaminen" : {
+        "id" : 4770,
+        "otsikko" : {
+          "fi" : "Laaja-alaisen osaamisen kuvaus",
+          "_id" : "4745"
+        },
+        "teksti" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4746"
+        }
+      },
+      "laajaalaisetOsaamiset" : [ {
+        "id" : 4688,
+        "_laajaalainenOsaaminen" : "4600",
+        "kuvaus" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4749"
+        }
+      }, {
+        "id" : 4686,
+        "_laajaalainenOsaaminen" : "4601",
+        "kuvaus" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4747"
+        }
+      }, {
+        "id" : 4687,
+        "_laajaalainenOsaaminen" : "4602",
+        "kuvaus" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4748"
+        }
+      } ],
+      "paikallisestiPaatettavatAsiat" : {
+        "id" : 4771,
+        "otsikko" : {
+          "fi" : "Paikallisesti päätettävät asiat",
+          "_id" : "4780"
+        },
+        "teksti" : {
+          "fi" : "<p>Kuvaus</p>",
+          "_id" : "4781"
+        }
+      }
+    } ]
+  }
+}

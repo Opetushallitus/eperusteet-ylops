@@ -173,11 +173,6 @@ alter table lops2019_opintojakso_moduuli
     references lops2019_opintojakson_moduuli;
 
 alter table lops2019_opintojakso_moduuli_AUD 
-    add constraint FK_ev3cjm133axbcp6n0cj3cux08 
-    foreign key (moduuli_id, REV) 
-    references lops2019_opintojakson_moduuli_AUD;
-
-alter table lops2019_opintojakso_moduuli_AUD 
     add constraint FK_adhqpajkw7mppyhe4w5dmxept 
     foreign key (REV) 
     references revinfo;

@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.service.lops2019;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.method.P;
@@ -37,4 +38,7 @@ public interface Lops2019OpintojaksoService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     Lops2019OpintojaksoDto revertTo(@P("opsId") Long opsId, Long opintojaksoId, Integer versio);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    Lops2019OpintojaksoPerusteDto getOpintojaksonPeruste(Long opsId, Long opintojaksoId);
 }
