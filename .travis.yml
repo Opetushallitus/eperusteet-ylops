@@ -29,12 +29,13 @@ install:
   - git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
   - source ci-tools/common/setup-tools.sh
   - export ARTIFACT_NAME="eperusteet-ylops"
-  - export YLOPS_SERVICE_DIR="$HOME/eperusteet-ylops-service"
+  - export YLOPS_SERVICE_DIR="${$TRAVIS_BUILD_DIR}/eperusteet-ylops-service"
 
 script:
   # Rakennetaan uuden lukion front end
+  - ls
   - cd eperusteet-ylops-lukio
-  - npm ci
+  - npm install
   - npm run gen:api 
   - npm run build
   - cd ..
