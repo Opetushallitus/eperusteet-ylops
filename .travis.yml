@@ -25,11 +25,21 @@ env:
     - secure: "KqrSR15Pz3UN51NYl70J6og0A0tgwufnR96S6cVXWBu8lt8Ez5JOR8Sn0F850wrVX2ioQsPHxqrU8Plpp0Cn5KGR7QB/6iu9dcIuoaS18J1V0VWhc85mRrkLAjhZSvCkWxfAKk/FAsdYIspTf63iOKvxQYkdMHJa+nOgHWdKxzM="
 
 install:
-  - git clone https://github.com/Opetushallitus/ci-tools.git
+  - git clone --depth 1 https://github.com/Opetushallitus/eperusteet-ylops-lukio.git
+  - git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
   - source ci-tools/common/setup-tools.sh
   - export ARTIFACT_NAME="eperusteet-ylops"
+  - export YLOPS_SERVICE_DIR="$HOME/eperusteet-ylops-service"
 
 script:
+  # Rakennetaan uuden lukion front end
+  - cd eperusteet-ylops-lukio
+  - npm ci
+  - npm run gen:api 
+  - npm run build
+  - cd ..
+
+  # Rakennetaan palvelu
   - mvn clean install -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER}
 
   - mv ${ARTIFACT_NAME}-service/target/${ARTIFACT_NAME}-service.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-service.war
