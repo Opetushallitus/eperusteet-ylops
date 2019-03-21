@@ -32,9 +32,7 @@ install:
 
 script:
   # Rakennetaan uuden lukion front end
-  - pwd ${TRAVIS_BUILD_DIR}
   - export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
-  - ls
   - cd eperusteet-ylops-lukio
   - npm install
   - npm run gen:api 
