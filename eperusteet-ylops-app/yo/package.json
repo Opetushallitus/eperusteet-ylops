@@ -10,7 +10,7 @@
     "build": "grunt build",
     "test": "grunt test",
     "prettier": "./node_modules/prettier/bin/prettier.js --config .prettierrc --write \"../src/main/app/{localisation,scripts,styles}/**/*.{ts,json,scss}\"",
-    "build:uusi": "mkdir -p ../target/yo/dist/uusi && cp -R ~/eperusteet-ylops-lukio/dist/ ../target/yo/dist/uusi/"
+    "copy": "cp -R ~/eperusteet-ylops-lukio/dist/ ../target/yo/dist/uusi/"
   },
   "devDependencies": {
     "@types/angular": "1.6.53",
