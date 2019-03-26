@@ -73,7 +73,7 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     private List<Lops2019OppiaineDto> getOppiaineetAndOppimaarat(Long opsId) {
         PerusteDto peruste = getPerusteImpl(opsId);
         return peruste.getLops2019().getOppiaineet().stream()
-                .map(oa -> oa.getOppimaarat().stream())
+                .map(oa -> Stream.concat(Stream.of(oa), oa.getOppimaarat().stream()))
                 .flatMap(Function.identity())
                 .collect(Collectors.toList());
     }
@@ -111,23 +111,23 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Override
     public Lops2019ModuuliDto getPerusteModuuli(Long opsId, Long oppiaineId, Long moduuliId) {
-        return CollectionUtil.treeToStream(
-                getPerusteImpl(opsId).getLops2019().getOppiaineet(),
-                Lops2019OppiaineDto::getOppimaarat)
+        List<Lops2019ModuuliDto> moduulit = getOppiaineetAndOppimaarat(opsId).stream()
                 .filter((oa) -> Objects.equals(oppiaineId, oa.getId()))
                 .findFirst()
-                    .map(Lops2019OppiaineDto::getModuulit)
-                    .orElse(new ArrayList<>())
-                .stream()
-                    .filter((moduuli) -> Objects.equals(oppiaineId, moduuli.getId()))
-                    .findFirst().orElse(null);
+                .map(Lops2019OppiaineDto::getModuulit)
+                .orElse(new ArrayList<>());
+        return moduulit.stream()
+            .filter((moduuli) -> Objects.equals(moduuliId, moduuli.getId()))
+            .findFirst()
+            .orElseThrow(() -> new BusinessRuleViolationException("moduulia-ei-loytynyt"));
     }
 
     @Override
     public Lops2019ModuuliDto getPerusteModuuli(Long opsId, String koodiUri) {
         return getModuulit(opsId).stream()
                 .filter(moduuli -> koodiUri.equals(moduuli.getKoodi().getUri()))
-                .findFirst().orElse(null);
+                .findFirst()
+                .orElseThrow(() -> new BusinessRuleViolationException("moduulia-ei-loytynyt"));
     }
 
     @Override

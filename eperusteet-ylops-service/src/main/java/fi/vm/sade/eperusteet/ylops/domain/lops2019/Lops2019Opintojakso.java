@@ -9,6 +9,7 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -27,8 +28,11 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
+    @NotEmpty
     @NotNull
-    private String oppiaineUri;
+    @ElementCollection
+    // FIXME: @Koodi("oppiaineet")
+    private Set<String> oppiaineet = new HashSet<>();
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)

@@ -132,7 +132,7 @@
         "fi": "Biologia"
       },
       "koodi": {
-        "uri": "oppiaine_bi",
+        "uri": "oppiaineet_bi",
         "arvo": "bi",
         "nimi": {
           "fi": "Biologia"
@@ -177,6 +177,7 @@
         }]
       },
       "moduulit": [{
+        "id": 100001,
         "nimi": {
           "fi": "Elämä ja evoluutio" 
         },
@@ -232,7 +233,7 @@
         "fi": "Matematiikka"
       },
       "koodi": {
-        "uri": "oppiaine_ma",
+        "uri": "oppiaineet_ma",
         "arvo": "ma",
         "nimi": {
           "fi": "Matematiikka"
@@ -271,6 +272,7 @@
         }]
       },
       "oppimaarat": [{
+        "id": 1004,
         "nimi": {
           "fi": "Matematiikan pitkä oppimäärä"
         },
@@ -283,6 +285,7 @@
           }
         },
         "moduulit": [{
+          "id": 100002,
           "nimi": {
             "fi": "Algebralliset funktiot ja yhtälöt" 
           },
@@ -319,6 +322,7 @@
             }]
           }]
         }, {
+          "id": 100003,
           "nimi": {
             "fi": "3D-geometria" 
           },

@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.dto.lops2019;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -13,7 +14,7 @@ import java.util.Set;
 public class Lops2019OpintojaksoDto {
     private Long id;
     private String koodi;
-    private String oppiaineUri;
+    private Set<String> oppiaineet = new HashSet<>();
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto kuvaus;
     private LokalisoituTekstiDto tavoitteet;
