@@ -4,11 +4,10 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.ObjectUtils;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.lang.reflect.Field;
-import java.util.Collection;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 
 @Getter
 @Setter
@@ -23,21 +22,21 @@ public class TiedoteQueryDto {
     private Boolean yleinen; // Jos halutaan esittää mm. etusivulla
 
     public String toRequestParams() {
-        StringJoiner joiner = new StringJoiner("&");
+        UriComponentsBuilder builder = UriComponentsBuilder.newInstance();
 
-        for (Field field : TiedoteQueryDto.class.getDeclaredFields()) {
+        for (Field field : this.getClass().getDeclaredFields()) {
             String name = field.getName();
             try {
                 Object value = field.get(this);
                 if (value instanceof Collection<?>){
                     for (Object element : (Collection<?>) value) {
                         if (!ObjectUtils.isEmpty(value)) {
-                            joiner.add(name.concat("=").concat(element.toString()));
+                            builder.queryParam(name, element);
                         }
                     }
                 } else {
                     if (!ObjectUtils.isEmpty(value)) {
-                        joiner.add(name.concat("=").concat(value.toString()));
+                        builder.queryParam(name, value);
                     }
                 }
             } catch (IllegalAccessException e) {
@@ -45,6 +44,6 @@ public class TiedoteQueryDto {
             }
         }
 
-        return joiner.toString();
+        return builder.build().encode().toUriString();
     }
 }

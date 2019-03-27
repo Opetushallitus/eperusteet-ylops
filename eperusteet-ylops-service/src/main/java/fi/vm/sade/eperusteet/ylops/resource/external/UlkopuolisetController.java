@@ -25,6 +25,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
+import fi.vm.sade.eperusteet.ylops.resource.util.KieliConverter;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LokalisointiService;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
@@ -41,6 +42,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import springfox.documentation.annotations.ApiIgnore;
@@ -68,6 +70,11 @@ public class UlkopuolisetController {
 
     @Autowired
     private LokalisointiService lokalisointiService;
+
+    @InitBinder
+    public void initBinder(final WebDataBinder webdataBinder) {
+        webdataBinder.registerCustomEditor(Kieli.class, new KieliConverter());
+    }
 
     @RequestMapping(value = "/kayttajatiedot/{oid:.+}", method = GET)
     @ResponseBody

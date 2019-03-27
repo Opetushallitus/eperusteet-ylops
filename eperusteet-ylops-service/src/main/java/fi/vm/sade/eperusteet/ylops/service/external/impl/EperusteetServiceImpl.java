@@ -304,10 +304,9 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto) {
-
-
         return client.getForObject(eperusteetServiceUrl
-                + "/api/tiedotteet/haku?" + queryDto.toRequestParams(), JsonNode.class);
+                .concat("/api/tiedotteet/haku")
+                .concat(queryDto.toRequestParams()), JsonNode.class);
     }
 
     @Getter
