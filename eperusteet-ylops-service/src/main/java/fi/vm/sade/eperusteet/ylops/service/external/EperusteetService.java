@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
 
 import java.util.List;
 import java.util.Set;
@@ -42,4 +43,6 @@ public interface EperusteetService {
     PerusteDto getPerusteById(final Long id);
 
     JsonNode getTiedotteet(Long jalkeen);
+
+    JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto);
 }

@@ -11,6 +11,7 @@ import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -176,6 +177,12 @@ public class EperusteetServiceE2EMock implements EperusteetService {
 
     @Override
     public JsonNode getTiedotteet(Long jalkeen) {
+        JsonNodeFactory foo = new JsonNodeFactory(false);
+        return foo.arrayNode();
+    }
+
+    @Override
+    public JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto) {
         JsonNodeFactory foo = new JsonNodeFactory(false);
         return foo.arrayNode();
     }

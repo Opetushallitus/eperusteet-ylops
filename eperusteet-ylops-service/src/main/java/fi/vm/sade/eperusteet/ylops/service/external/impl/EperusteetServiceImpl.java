@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -298,8 +299,15 @@ public class EperusteetServiceImpl implements EperusteetService {
         if (jalkeen != null) {
             params = "?alkaen=" + String.valueOf(jalkeen);
         }
-        JsonNode tiedotteet = client.getForObject(eperusteetServiceUrl + "/api/tiedotteet" + params, JsonNode.class);
-        return tiedotteet;
+        return client.getForObject(eperusteetServiceUrl + "/api/tiedotteet" + params, JsonNode.class);
+    }
+
+    @Override
+    public JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto) {
+
+
+        return client.getForObject(eperusteetServiceUrl
+                + "/api/tiedotteet/haku?" + queryDto.toRequestParams(), JsonNode.class);
     }
 
     @Getter
