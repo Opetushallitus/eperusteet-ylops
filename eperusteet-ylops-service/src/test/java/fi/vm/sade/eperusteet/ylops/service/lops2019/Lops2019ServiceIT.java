@@ -27,6 +27,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -127,7 +130,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .nimi(LokalisoituTekstiDto.of("Geometriat"))
                 .kuvaus(LokalisoituTekstiDto.of("Geometriaan liittyvät moduulit toteutetaan yhtenä opintojaksona"))
                 .koodi("1234")
-                .oppiaineUri("oppiaineet_maa")
+                .oppiaineet(Collections.singleton("oppiaineet_maa"))
                 .moduuli(Lops2019OpintojaksonModuuliDto.builder()
                         .koodiUri("moduuli_maa3")
                         .kuvaus(LokalisoituTekstiDto.of("X"))

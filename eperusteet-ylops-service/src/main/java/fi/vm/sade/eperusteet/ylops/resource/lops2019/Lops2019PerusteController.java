@@ -42,7 +42,14 @@ public class Lops2019PerusteController {
         return lopsService.getPerusteOppiaineet(opsId);
     }
 
-    @RequestMapping(value = "/oppiaineet/{oppiaineUri}", method = RequestMethod.GET)
+    @RequestMapping(value = "/oppiaineet/{oppiaineId}", method = RequestMethod.GET)
+    public Lops2019OppiaineDto getAllLops2019PerusteOppiaineById(
+            @PathVariable final Long opsId,
+            @PathVariable final Long oppiaineId) {
+        return lopsService.getPerusteOppiaine(opsId, oppiaineId);
+    }
+
+    @RequestMapping(value = "/oppiaineet/uri/{oppiaineUri}", method = RequestMethod.GET)
     public Lops2019OppiaineDto getAllLops2019PerusteOppiaine(
             @PathVariable final Long opsId,
             @PathVariable final String oppiaineUri) {

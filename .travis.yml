@@ -32,12 +32,12 @@ install:
 
 script:
   # Rakennetaan uuden lukion front end
-  - export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
-  - cd eperusteet-ylops-lukio
-  - npm install
-  - npm run gen:api 
-  - npm run build
-  - cd ..
+  # - export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
+  # - cd eperusteet-ylops-lukio
+  # - npm install
+  # - npm run gen:api
+  # - npm run build
+  # - cd ..
 
   # Rakennetaan palvelu
   - mvn clean install -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER}

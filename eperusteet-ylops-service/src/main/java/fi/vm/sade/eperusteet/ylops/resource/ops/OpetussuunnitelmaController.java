@@ -20,6 +20,9 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteBaseDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
@@ -39,6 +42,7 @@ import java.util.Set;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPETUSSUUNNITELMA;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.RAKENNE;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.*;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * @author mikkom
@@ -63,6 +67,13 @@ public class OpetussuunnitelmaController {
             @RequestParam(value = "tyyppi", required = false) Tyyppi tyyppi,
             @RequestParam(value = "tila", required = false) Tila tila) {
         return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi, tila);
+    }
+
+
+    @RequestMapping(value = "/peruste", method = GET)
+    @ResponseBody
+    public PerusteInfoDto getOpetussuunnitelmanPeruste(@PathVariable(value = "id") final Long id) {
+        return opetussuunnitelmaService.getPerusteBase(id);
     }
 
     @RequestMapping(value = "/tilastot", method = RequestMethod.GET)

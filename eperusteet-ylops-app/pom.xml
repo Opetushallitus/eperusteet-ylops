@@ -58,15 +58,15 @@
                             <arguments>build --no-color</arguments>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>npm copy</id>
-                        <goals>
-                            <goal>npm</goal>
-                        </goals>
-                        <configuration>
-                            <arguments>run copy</arguments>
-                        </configuration>
-                    </execution>
+                    <!-- <execution> -->
+                    <!--     <id>npm copy</id> -->
+                    <!--     <goals> -->
+                    <!--         <goal>npm</goal> -->
+                    <!--     </goals> -->
+                    <!--     <configuration> -->
+                    <!--         <arguments>run copy</arguments> -->
+                    <!--     </configuration> -->
+                    <!-- </execution> -->
                 </executions>
             </plugin>
             <plugin>
