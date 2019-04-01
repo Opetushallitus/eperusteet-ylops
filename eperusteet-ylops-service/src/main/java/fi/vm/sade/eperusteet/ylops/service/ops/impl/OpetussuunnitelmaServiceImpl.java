@@ -27,17 +27,13 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.*;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
@@ -885,6 +881,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private Opetussuunnitelma addPohjaLops2019(Opetussuunnitelma ops, PerusteDto peruste) {
+        lisaaTekstipuuPerusteesta(peruste.getLops2019().getSisalto(), ops);
+        ops = repository.save(ops);
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
         ops.setToteutus(KoulutustyyppiToteutus.LOPS2019);
         ops.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
@@ -938,14 +936,43 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         lisaaTekstipuunJuuri(pohja);
         pohja = repository.save(pohja);
 
-        if (!Objects.equals(peruste.getToteutus(), "lops2019")) {
+        if (!KoulutustyyppiToteutus.LOPS2019.equals(peruste.getToteutus())) {
+            lisaaTekstipuunJuuri(pohja);
+            pohja = repository.save(pohja);
             lisaaTekstipuunLapset(pohja);
         }
 
         pohja.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
         pohja.setKoulutustyyppi(peruste.getKoulutustyyppi() != null ? peruste.getKoulutustyyppi()
                 : KoulutusTyyppi.PERUSOPETUS);
-        return mapper.map(lisaaPerusteenSisalto(pohja, peruste), OpetussuunnitelmaDto.class);
+        pohja = lisaaPerusteenSisalto(pohja, peruste);
+        return mapper.map(pohja, OpetussuunnitelmaDto.class);
+    }
+
+    private void lisaaTekstipuuPerusteesta(PerusteTekstiKappaleViiteDto sisalto, Opetussuunnitelma pohja) {
+        TekstiKappaleViite tekstiKappaleViite = CollectionUtil.mapRecursive(sisalto,
+                PerusteTekstiKappaleViiteDto::getLapset,
+                TekstiKappaleViite::getLapset,
+                viiteDto -> {
+                    TekstiKappale kpl = new TekstiKappale();
+                    TekstiKappaleViite result = new TekstiKappaleViite();
+                    ofNullable(mapper.map(viiteDto.getPerusteenOsa(), TekstiKappale.class))
+                            .ifPresent(osa -> {
+                                result.setPerusteTekstikappaleId(osa.getId());
+                                kpl.setNimi(osa.getNimi());
+                            });
+                    kpl.setId(null);
+                    kpl.setTila(Tila.LUONNOS);
+                    kpl.setValmis(false);
+                    result.setTekstiKappale(tekstiKappaleRepository.save(kpl));
+                    result.setPakollinen(true);
+                    result.setOmistussuhde(Omistussuhde.OMA);
+                    result.setLapset(new ArrayList<>());
+                    return result;
+                });
+        tekstiKappaleViite.kiinnitaHierarkia(null);
+        TekstiKappaleViite viite = viiteRepository.saveAndFlush(tekstiKappaleViite);
+        pohja.setTekstit(viite);
     }
 
     private void lisaaTekstipuunJuuri(Opetussuunnitelma ops) {

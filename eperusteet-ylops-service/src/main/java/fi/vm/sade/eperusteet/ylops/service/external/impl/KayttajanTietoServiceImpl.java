@@ -63,13 +63,11 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     public String haeKayttajanimi(String oid) {
         if (oid != null) {
             KayttajanTietoDto tiedot = client.hae(oid);
-            if (tiedot != null) {
-                String nimi = (tiedot.getEtunimet() != null) ? tiedot.getEtunimet() : "";
-                nimi += " " + ((tiedot.getSukunimi() != null) ? tiedot.getSukunimi() : "");
-                return nimi;
+            if (tiedot != null && tiedot.getKutsumanimi() != null && tiedot.getSukunimi() != null) {
+                return tiedot.getKutsumanimi() + " " + tiedot.getSukunimi();
             }
         }
-        return null;
+        return oid;
     }
 
     @Override

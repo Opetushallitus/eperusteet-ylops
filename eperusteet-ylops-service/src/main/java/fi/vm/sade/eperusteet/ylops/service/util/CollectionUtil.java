@@ -68,4 +68,21 @@ public class CollectionUtil {
     public static <T> Stream<T> treeToStream(T root, Function<T, Collection<T>> mapper) {
         return treeToStream(Collections.singleton(root), mapper);
     }
+
+    public static <T, R> R mapRecursive(
+            T root,
+            Function<T, Collection<T>> getSource,
+            Function<R, Collection<R>> getTarget,
+            Function<T, R> map) {
+        R result = map.apply(root);
+        Collection<T> children = getSource.apply(root);
+        if (children != null) {
+            for (T next : getSource.apply(root)) {
+                R r = mapRecursive(next, getSource, getTarget, map);
+                getTarget.apply(result).add(r);
+            }
+        }
+        return result;
+    }
+
 }

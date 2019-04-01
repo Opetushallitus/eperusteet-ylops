@@ -24,19 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedNativeQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 import lombok.Getter;
@@ -105,11 +93,25 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @BatchSize(size = 100)
     private List<TekstiKappaleViite> lapset;
 
+    @Getter
+    @Setter
+    @Column(name = "peruste_tekstikappale_id")
+    private Long perusteTekstikappaleId;
+
     public TekstiKappaleViite() {
     }
 
     public TekstiKappaleViite(Omistussuhde omistussuhde) {
         this.omistussuhde = omistussuhde;
+    }
+
+    public void kiinnitaHierarkia(TekstiKappaleViite parent) {
+        this.setVanhempi(parent);
+        if (lapset != null) {
+            for (TekstiKappaleViite child : lapset) {
+                child.kiinnitaHierarkia(this);
+            }
+        }
     }
 
     // Kopioi viitehierarkian ja siirtää irroitetut paikoilleen

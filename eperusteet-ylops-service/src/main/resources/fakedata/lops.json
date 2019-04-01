@@ -59,7 +59,225 @@
     "tutkinnostaPaattavaViranomainen" : null
   },
   "lops2019": {
-    "sisalto": { },
+    "sisalto" : {
+      "id" : 20001,
+      "lapset" : [{
+        "id" : 20002,
+        "perusteenOsa" : {
+          "id" : 30002,
+          "luotu" : 1449736763770,
+          "muokattu" : 1450450639080,
+          "tunniste" : "normaali",
+          "nimi" : {
+            "fi" : "Opetussuunnitelman laatiminen ja sisältö"
+          },
+          "teksti" : {
+            "fi" : "Teksti 1"
+          },
+          "osanTyyppi" : "tekstikappale"
+        },
+        "lapset" : [{
+          "id" : 20004,
+          "perusteenOsa" : {
+            "id" : 30004,
+            "luotu" : 1449736763770,
+            "muokattu" : 1450450639080,
+            "tunniste" : "normaali",
+            "nimi" : {
+              "fi" : "Uudistuva lukiokoulutus"
+            },
+            "teksti" : {
+              "fi" : ""
+            },
+            "osanTyyppi" : "tekstikappale"
+          }
+        }, {
+          "id" : 20015,
+          "perusteenOsa" : {
+            "id" : 30015,
+            "luotu" : 1449736763770,
+            "muokattu" : 1450450639080,
+            "tunniste" : "normaali",
+            "nimi" : {
+              "fi" : "Opetussuunnitelman laatiminen"
+            },
+            "teksti" : {
+              "fi" : ""
+            },
+            "osanTyyppi" : "tekstikappale"
+          }
+        }, {
+          "id" : 20016,
+          "perusteenOsa" : {
+            "id" : 30016,
+            "luotu" : 1449736763770,
+            "muokattu" : 1450450639080,
+            "tunniste" : "normaali",
+            "nimi" : {
+              "fi" : "Opetussuunnitelman sisältö"
+            },
+            "teksti" : {
+              "fi" : ""
+            },
+            "osanTyyppi" : "tekstikappale"
+          }
+        }, {
+          "id" : 20016,
+          "perusteenOsa" : {
+            "id" : 30016,
+            "luotu" : 1449736763770,
+            "muokattu" : 1450450639080,
+            "tunniste" : "normaali",
+            "nimi" : {
+              "fi" : "Lukiokoulutuksen tehtävä"
+            },
+            "teksti" : {
+              "fi" : ""
+            },
+            "osanTyyppi" : "tekstikappale"
+          }
+        }]
+      }, {
+        "id" : 20003,
+        "perusteenOsa" : {
+          "id" : 30003,
+          "luotu" : 1449736763770,
+          "muokattu" : 1450450639080,
+          "tunniste" : "normaali",
+          "nimi" : {
+            "fi" : "Lukiokoulutuksen tehtävä ja arvoperusta"
+          },
+          "teksti" : {
+            "fi" : "Teksti 2"
+          },
+          "osanTyyppi" : "tekstikappale"
+        },
+        "lapset" : [{
+          "id" : 20020,
+          "perusteenOsa" : {
+            "id" : 30020,
+            "luotu" : 1449736763770,
+            "muokattu" : 1450450639080,
+            "tunniste" : "normaali",
+            "nimi" : {
+              "fi" : "Lukiokoulutuksen tehtävä"
+            },
+            "teksti" : {
+              "fi" : ""
+            },
+            "osanTyyppi" : "tekstikappale"
+          }
+        }, {
+          "id" : 20021,
+          "perusteenOsa" : {
+            "id" : 30021,
+            "luotu" : 1449736763770,
+            "muokattu" : 1450450639080,
+            "tunniste" : "normaali",
+            "nimi" : {
+              "fi" : "Arvoperusta"
+            },
+            "teksti" : {
+              "fi" : ""
+            },
+            "osanTyyppi" : "tekstikappale"
+          }
+        }]
+      }, {
+        "id" : 20011,
+        "perusteenOsa" : {
+          "id" : 30011,
+          "luotu" : 1449736763770,
+          "muokattu" : 1450450639080,
+          "tunniste" : "normaali",
+          "nimi" : {
+            "fi" : "Lukiokoulutuksen tehtävä ja arvoperusta"
+          },
+          "teksti" : {
+            "fi" : "Teksti 2"
+          },
+          "osanTyyppi" : "tekstikappale"
+        }
+      }, {
+        "id" : 20010,
+        "perusteenOsa" : {
+          "id" : 30010,
+          "luotu" : 1449736763770,
+          "muokattu" : 1450450639080,
+          "tunniste" : "normaali",
+          "nimi" : {
+            "fi" : "Opetuksen toteuttaminen"
+          },
+          "teksti" : {
+            "fi" : "Teksti 2"
+          },
+          "osanTyyppi" : "tekstikappale"
+        }
+      }, {
+        "id" : 20012,
+        "perusteenOsa" : {
+          "id" : 30012,
+          "luotu" : 1449736763770,
+          "muokattu" : 1450450639080,
+          "tunniste" : "normaali",
+          "nimi" : {
+            "fi" : "Opetuksen ohjaus ja tukeminen"
+          },
+          "teksti" : {
+            "fi" : "Teksti 2"
+          },
+          "osanTyyppi" : "tekstikappale"
+        },
+        "lapset" : [{
+          "id" : 20040,
+          "perusteenOsa" : {
+            "id" : 30040,
+            "luotu" : 1449736763770,
+            "muokattu" : 1450450639080,
+            "tunniste" : "normaali",
+            "nimi" : {
+              "fi" : "Opiskeluhuolto"
+            },
+            "teksti" : {
+              "fi" : ""
+            },
+            "osanTyyppi" : "tekstikappale"
+          },
+          "lapset" : [{
+            "id" : 20050,
+            "perusteenOsa" : {
+              "id" : 30050,
+              "luotu" : 1449736763770,
+              "muokattu" : 1450450639080,
+              "tunniste" : "normaali",
+              "nimi" : {
+                "fi" : "Opiskeluhuollon keskeiset periaatteet"
+              },
+              "teksti" : {
+                "fi" : ""
+              },
+              "osanTyyppi" : "tekstikappale"
+            }
+          }]
+        }]
+      }, {
+        "id" : 20013,
+        "perusteenOsa" : {
+          "id" : 30013,
+          "luotu" : 1449736763770,
+          "muokattu" : 1450450639080,
+          "tunniste" : "normaali",
+          "nimi" : {
+            "fi" : "Opiskelijan oppimisen ja osaasmisen arviointi"
+          },
+          "teksti" : {
+            "fi" : "Teksti 2"
+          },
+          "osanTyyppi" : "tekstikappale"
+        }
+      }
+      ]
+    },
     "laajaAlainenOsaaminen": {
       "laajaAlaisetOsaamiset": [{
         "id": 101,

@@ -31,8 +31,6 @@ public class PerusteTekstiKappaleDto {
     private Long id;
     private Date luotu;
     private Date muokattu;
-    private String muokkaaja;
-    private String muokkaajanNimi;
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto teksti;
     private String tila;

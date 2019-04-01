@@ -130,7 +130,7 @@ public class OpetussuunnitelmaController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaDto> addOpetussuunnitelma(
+    public ResponseEntity<OpetussuunnitelmaBaseDto> addOpetussuunnitelma(
             @RequestBody OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
         return audit.withAudit(LogMessage.builder(null, OPETUSSUUNNITELMA, LUONTI), (Void) -> {
             if (opetussuunnitelmaDto.getTyyppi() == null) {

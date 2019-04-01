@@ -5,18 +5,23 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -88,6 +93,10 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThat(peruste.getLops2019()).isNotNull();
         List<Lops2019ModuuliDto> moduulit = peruste.getLops2019().getOppiaineet().get(1).getOppimaarat().get(0).getModuulit();
         assertThat(moduulit.size()).isNotEqualTo(0);
+        PerusteTekstiKappaleDto viite = peruste.getLops2019().getSisalto().getLapset().get(1).getPerusteenOsa();
+        assertThat(viite.getNimi().get(Kieli.FI)).isEqualTo("Otsikko 1");
+        assertThat(viite.getTeksti().get(Kieli.FI)).isEqualTo("Teksti 1");
+        assertThat(viite.getOsanTyyppi()).isEqualTo("Otsikko 1");
     }
 
     @Test
@@ -99,6 +108,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThat(pohjaDto)
                 .extracting("toteutus", "koulutustyyppi", "perusteenDiaarinumero", "tyyppi")
                 .containsExactly(KoulutustyyppiToteutus.LOPS2019, KoulutusTyyppi.LUKIOKOULUTUS, "1/2/3", Tyyppi.POHJA);
+
+        TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(pohjaDto.getId(), TekstiKappaleViiteDto.Puu.class);
+        assertThat(tekstit.getLapset().size()).isEqualTo(2);
     }
 
     @Test

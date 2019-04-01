@@ -13,6 +13,7 @@ import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoReposi
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -44,6 +45,9 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     @Autowired
     private Lops2019Service lopsService;
+
+    @Autowired
+    private KayttajanTietoService kayttajanTietoService;
 
     @Autowired
     private DtoMapper mapper;
@@ -114,8 +118,12 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     @Override
     public List<RevisionDto> getVersions(Long opsId, Long opintojaksoId) {
         getOpintojakso(opsId, opintojaksoId);
-        List<Revision> revisions = opintojaksoRepository.getRevisions(opintojaksoId);
-        return mapper.mapAsList(revisions, RevisionDto.class);
+        return mapper.mapAsList(opintojaksoRepository.getRevisions(opintojaksoId), RevisionDto.class).stream()
+                .peek(rev -> {
+                    String nimi = kayttajanTietoService.haeKayttajanimi(rev.getMuokkaajaOid());
+                    rev.setNimi(nimi);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
