@@ -94,9 +94,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         List<Lops2019ModuuliDto> moduulit = peruste.getLops2019().getOppiaineet().get(1).getOppimaarat().get(0).getModuulit();
         assertThat(moduulit.size()).isNotEqualTo(0);
         PerusteTekstiKappaleDto viite = peruste.getLops2019().getSisalto().getLapset().get(1).getPerusteenOsa();
-        assertThat(viite.getNimi().get(Kieli.FI)).isEqualTo("Otsikko 1");
-        assertThat(viite.getTeksti().get(Kieli.FI)).isEqualTo("Teksti 1");
-        assertThat(viite.getOsanTyyppi()).isEqualTo("Otsikko 1");
+        assertThat(viite.getNimi().get(Kieli.FI)).isEqualTo("Lukiokoulutuksen tehtävä ja arvoperusta");
+        assertThat(viite.getTeksti().get(Kieli.FI)).isEqualTo("Teksti 2");
+        assertThat(viite.getOsanTyyppi()).isEqualTo("tekstikappale");
     }
 
     @Test
@@ -110,7 +110,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .containsExactly(KoulutustyyppiToteutus.LOPS2019, KoulutusTyyppi.LUKIOKOULUTUS, "1/2/3", Tyyppi.POHJA);
 
         TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(pohjaDto.getId(), TekstiKappaleViiteDto.Puu.class);
-        assertThat(tekstit.getLapset().size()).isEqualTo(2);
+        assertThat(tekstit.getLapset().size()).isEqualTo(6);
     }
 
     @Test
