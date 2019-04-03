@@ -4,6 +4,7 @@ import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
+import fi.vm.sade.eperusteet.ylops.resource.util.AuditLogged;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import io.swagger.annotations.Api;
@@ -21,12 +22,14 @@ public class Lops2019OpintojaksoController {
     private Lops2019OpintojaksoService opintojaksoService;
 
     @RequestMapping(method = RequestMethod.GET)
+    @AuditLogged
     public List<Lops2019OpintojaksoDto> getAllOpintojaksot(
             @PathVariable final Long opsId) {
         return opintojaksoService.getAll(opsId);
     }
 
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.GET)
+    @AuditLogged
     public Lops2019OpintojaksoDto getOpintojakso(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
@@ -34,6 +37,7 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}/peruste", method = RequestMethod.GET)
+    @AuditLogged
     public Lops2019OpintojaksoPerusteDto getOpintojaksonPeruste(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
@@ -41,6 +45,7 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
+    @AuditLogged
     public Lops2019OpintojaksoDto addOpintojakso(
             @PathVariable final Long opsId,
             @RequestBody final Lops2019OpintojaksoDto opintojaksoDto) {
@@ -48,6 +53,7 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.POST)
+    @AuditLogged
     public Lops2019OpintojaksoDto updateOpintojakso(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId,
@@ -57,6 +63,7 @@ public class Lops2019OpintojaksoController {
 
 
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.DELETE)
+    @AuditLogged
     public void removeOpintojakso(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
@@ -64,6 +71,7 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}/versiot", method = RequestMethod.GET)
+    @AuditLogged
     public List<RevisionDto> getVersionHistory(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
@@ -71,12 +79,14 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/poistetut", method = RequestMethod.GET)
+    @AuditLogged
     public List<PoistettuDto> getRemoved(
             @PathVariable final Long opsId) {
         return opintojaksoService.getRemoved(opsId);
     }
 
     @RequestMapping(value = "/{opintojaksoId}/versiot/{versio}", method = RequestMethod.GET)
+    @AuditLogged
     public Lops2019OpintojaksoDto getVersion(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId,
@@ -85,6 +95,7 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}/versiot/{versio}", method = RequestMethod.POST)
+    @AuditLogged
     public Lops2019OpintojaksoDto revertToVersion(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId,
