@@ -30,8 +30,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
-import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
-import fi.vm.sade.eperusteet.ylops.service.external.impl.EperusteetServiceE2EMock;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.EperusteetLocalService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteVersionDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -46,7 +45,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -56,7 +54,7 @@ import javax.annotation.PostConstruct;
  */
 @Service
 @SuppressWarnings("TransactionalAnnotations")
-public class EperusteetServiceMock extends EperusteetServiceE2EMock {
+public class EperusteetServiceMock extends EperusteetLocalService {
 
     public static final String DIAARINUMERO = "mock-diaarinumero";
     private EperusteetPerusteDto perusteDto = null;

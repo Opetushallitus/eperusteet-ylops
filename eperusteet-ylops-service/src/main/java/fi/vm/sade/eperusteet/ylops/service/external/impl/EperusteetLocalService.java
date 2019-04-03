@@ -36,9 +36,8 @@ import java.util.stream.Collectors;
 
 
 @Service
-@Profile("e2e")
 @Transactional
-public class EperusteetServiceE2EMock implements EperusteetService {
+public class EperusteetLocalService implements EperusteetService {
 
     @Autowired
     private PerusteCacheRepository perusteCacheRepository;
