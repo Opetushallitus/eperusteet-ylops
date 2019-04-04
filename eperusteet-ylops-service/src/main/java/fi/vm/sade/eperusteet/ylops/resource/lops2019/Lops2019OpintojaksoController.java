@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/opintojaksot")
+@RequestMapping("/opetussuunnitelmat/{opsId}/lops2019/opintojaksot")
 @Api("Lops2019Opintojaksot")
 public class Lops2019OpintojaksoController {
 

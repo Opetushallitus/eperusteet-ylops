@@ -133,7 +133,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     @Override
     public Lops2019OpintojaksoDto getVersion(Long opsId, Long opintojaksoId, Integer versio) {
-        Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
+        getOpintojakso(opsId, opintojaksoId);
         Lops2019Opintojakso revision = opintojaksoRepository.findRevision(opintojaksoId, versio);
         return mapper.map(revision, Lops2019OpintojaksoDto.class);
     }

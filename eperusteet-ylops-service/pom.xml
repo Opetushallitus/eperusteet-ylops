@@ -481,6 +481,7 @@
                     <url>${eperusteet-ylops.devdb.jdbcurl}</url>
                     <user>${eperusteet-ylops.devdb.user}</user>
                     <password>${eperusteet-ylops.devdb.password}</password>
+                    <outOfOrder>true</outOfOrder>
                 </configuration>
                 <dependencies>
                     <dependency>
