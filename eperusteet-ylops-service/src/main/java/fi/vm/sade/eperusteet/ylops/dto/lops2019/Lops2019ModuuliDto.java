@@ -14,6 +14,7 @@ import java.util.List;
 public class Lops2019ModuuliDto {
     private Long id;
     private LokalisoituTekstiDto nimi;
+    private LokalisoituTekstiDto kuvaus;
     private KoodiDto koodi;
     private Integer laajuus;
     private boolean pakollinen;

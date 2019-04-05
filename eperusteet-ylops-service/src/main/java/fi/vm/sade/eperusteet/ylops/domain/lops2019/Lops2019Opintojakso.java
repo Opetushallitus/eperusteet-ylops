@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.lops2019;
 
+import com.google.common.primitives.UnsignedLong;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -22,6 +23,9 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
     @Getter
     @Setter
     private String koodi;
+
+    @Setter
+    private Long laajuus;
 
     @Getter
     @Setter
@@ -68,7 +72,7 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @OrderColumn
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinTable(name = "lops2019_opintojakso_moduuli",
             joinColumns = @JoinColumn(name = "opintojakso_id"),
             inverseJoinColumns = @JoinColumn(name = "moduuli_id"))
@@ -77,5 +81,14 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
     public void setModuulit(Set<Lops2019OpintojaksonModuuli> moduulit) {
         this.moduulit.clear();
         this.moduulit.addAll(moduulit);
+    }
+
+    public Long getLaajuus() {
+        if (this.getModuulit().size() > 0) {
+            return null;
+        }
+        else {
+            return laajuus;
+        }
     }
 }

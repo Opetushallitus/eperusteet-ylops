@@ -27,10 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -47,6 +44,17 @@ public class EperusteetLocalService implements EperusteetService {
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    private List<JsonNode> perusteet = new ArrayList<>();
+    private JsonNode tiedotteet = null;
+
+    private Optional<JsonNode> readJson(String file) {
+        try {
+            return Optional.ofNullable(objectMapper.readTree(getClass().getResourceAsStream("/fakedata/tiedotteet.json")));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
     @PostConstruct
     public void init() {
         objectMapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
@@ -54,12 +62,12 @@ public class EperusteetLocalService implements EperusteetService {
         perusteet.add(openFakeData("/fakedata/varhaiskasvatus.json"));
         perusteet.add(openFakeData("/fakedata/peruste.json"));
         perusteet.add(openFakeData("/fakedata/lops.json"));
+        tiedotteet = readJson("/fakedata/tiedotteet.json")
+            .orElse((new JsonNodeFactory(false)).objectNode());
     }
 
     private JsonNode openFakeData(String file) {
         try {
-            Resource resource = new ClassPathResource(file);
-            InputStream resourceInputStream = resource.getInputStream();
             JsonNode result = objectMapper.readTree(getClass().getResourceAsStream(file));
             PerusteCache peruste = perusteCacheRepository.findNewestEntryForPerusteByDiaarinumero(result.get("diaarinumero").asText());
             if (peruste == null) {
@@ -71,8 +79,6 @@ public class EperusteetLocalService implements EperusteetService {
         }
         return null;
     }
-
-    private List<JsonNode> perusteet = new ArrayList<>();
 
     // FIXME pilko service kahteen osaan
     private void savePerusteCahceEntry(EperusteetPerusteDto peruste) {
@@ -177,12 +183,11 @@ public class EperusteetLocalService implements EperusteetService {
     @Override
     public JsonNode getTiedotteet(Long jalkeen) {
         JsonNodeFactory foo = new JsonNodeFactory(false);
-        return foo.arrayNode();
+        return tiedotteet;
     }
 
     @Override
     public JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto) {
-        JsonNodeFactory foo = new JsonNodeFactory(false);
-        return foo.arrayNode();
+        return tiedotteet;
     }
 }

@@ -12,6 +12,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -151,12 +152,14 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Override
     public PerusteTekstiKappaleViiteMatalaDto getPerusteTekstikappale(Long opsId, Long tekstikappaleId) {
+        PerusteTekstiKappaleViiteDto sisalto = getPerusteImpl(opsId).getLops2019().getSisalto();
         return CollectionUtil.treeToStream(
-                getPerusteImpl(opsId).getLops2019().getSisalto(),
+                sisalto,
                 PerusteTekstiKappaleViiteDto::getLapset)
-                    .filter(viiteDto -> Objects.equals(tekstikappaleId, viiteDto.getId()))
+                    .filter(viiteDto -> viiteDto.getPerusteenOsa() != null
+                            && Objects.equals(tekstikappaleId, viiteDto.getPerusteenOsa().getId()))
                     .findFirst()
-                    .orElse(null);
+                    .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
     }
 
 }

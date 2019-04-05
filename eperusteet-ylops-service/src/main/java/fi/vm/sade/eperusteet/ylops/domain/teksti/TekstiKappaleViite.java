@@ -94,9 +94,14 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     private List<TekstiKappaleViite> lapset;
 
     @Getter
-    @Setter
     @Column(name = "peruste_tekstikappale_id")
     private Long perusteTekstikappaleId;
+
+    @Getter
+    @Setter
+    @Column(name = "nayta_perusteen_teksti")
+    private boolean naytaPerusteenTeksti = true;
+
 
     public TekstiKappaleViite() {
     }
@@ -163,6 +168,12 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
                 }
             }
             validoi(validointi, lapsi, julkaisukielet);
+        }
+    }
+
+    public void setPerusteTekstikappaleId(Long perusteTekstikappaleId) {
+        if (this.perusteTekstikappaleId == null) {
+            this.perusteTekstikappaleId = perusteTekstikappaleId;
         }
     }
 }

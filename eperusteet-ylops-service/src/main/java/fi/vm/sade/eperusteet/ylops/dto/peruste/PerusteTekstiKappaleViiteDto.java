@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Getter;
@@ -26,5 +27,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PerusteTekstiKappaleViiteDto extends PerusteTekstiKappaleViiteMatalaDto {
-    private List<PerusteTekstiKappaleViiteDto> lapset;
+    private List<PerusteTekstiKappaleViiteDto> lapset = new ArrayList<>();
 }

@@ -119,6 +119,8 @@ public class OpetussuunnitelmanSisaltoController {
         });
     }
 
+
+
     @RequestMapping(value = "/tekstit/{viiteId}/lapsi", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<TekstiKappaleViiteDto.Matala> addTekstiKappaleLapsi(
@@ -185,7 +187,6 @@ public class OpetussuunnitelmanSisaltoController {
         }
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
-
 
     @RequestMapping(value = "/tekstit/{viiteId}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
