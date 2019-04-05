@@ -94,7 +94,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         List<Lops2019ModuuliDto> moduulit = peruste.getLops2019().getOppiaineet().get(1).getOppimaarat().get(0).getModuulit();
         assertThat(moduulit.size()).isNotEqualTo(0);
         PerusteTekstiKappaleDto viite = peruste.getLops2019().getSisalto().getLapset().get(1).getPerusteenOsa();
-        assertThat(viite.getNimi().get(Kieli.FI)).isEqualTo("Lukiokoulutuksen tehtävä ja arvoperusta");
+        assertThat(viite.getNimi().get(Kieli.FI)).isEqualTo("Arvoperusta");
         assertThat(viite.getTeksti().get(Kieli.FI)).isEqualTo("Teksti 2");
         assertThat(viite.getOsanTyyppi()).isEqualTo("tekstikappale");
     }
