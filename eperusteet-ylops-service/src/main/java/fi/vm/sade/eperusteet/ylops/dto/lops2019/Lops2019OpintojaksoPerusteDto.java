@@ -11,5 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Lops2019OpintojaksoPerusteDto {
+    @Builder.Default
     private List<Lops2019ModuuliDto> moduulit = new ArrayList<>();
 }
