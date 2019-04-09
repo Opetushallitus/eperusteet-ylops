@@ -11,7 +11,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Lops2019OppiaineenTavoitteet {
+public class Lops2019OppiaineenTavoitteetDto {
     private LokalisoituTekstiDto kuvaus;
-    private List<Lops2019OppiaineenTavoitealue> tavoitealueet = new ArrayList<>();
+    private List<Lops2019OppiaineenTavoitealueDto> tavoitealueet = new ArrayList<>();
 }

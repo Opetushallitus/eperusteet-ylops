@@ -6,12 +6,10 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ModuuliDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
@@ -55,6 +53,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private Lops2019Service lopsService;
+
+    @Autowired
+    private Lops2019OppiaineService oppiaineService;
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
@@ -158,5 +159,20 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThat(opintojaksot.size()).isEqualTo(1);
         assertThat(opintojaksot.get(0).getId()).isEqualTo(opintojaksoDto.getId());
     }
+
+    @Test
+    public void testOppiaineidenLisays() {
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+
+        Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
+                .nimi(LokalisoituTekstiDto.of("Robotiikka"))
+                .kuvaus(LokalisoituTekstiDto.of("Kuvaus"))
+                .koodi("1234")
+                .build();
+
+        oppiaineDto = oppiaineService.addOppiaine(ops.getId(), oppiaineDto);
+        assertThat(oppiaineDto.getId()).isNotNull();
+    }
+
 
 }

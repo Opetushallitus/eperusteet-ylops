@@ -93,6 +93,7 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         Lops2019Oppiaine oppiaine = mapper.map(oppiaineDto, Lops2019Oppiaine.class);
         oppiaine.setId(null);
         oppiaine.setSisalto(opetussuunnitelma.getLops2019());
+        oppiaine = oppiaineRepository.save(oppiaine);
         return mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
     }
 

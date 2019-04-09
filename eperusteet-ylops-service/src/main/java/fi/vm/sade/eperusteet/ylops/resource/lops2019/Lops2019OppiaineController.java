@@ -22,14 +22,14 @@ public class Lops2019OppiaineController {
 
     @RequestMapping(method = RequestMethod.GET)
     @AuditLogged
-    public List<Lops2019PaikallinenOppiaineDto> getAllOppiainet(
+    public List<Lops2019PaikallinenOppiaineDto> getAllLops2019PaikallisetOppiainet(
             @PathVariable final Long opsId) {
         return oppiaineService.getAll(opsId);
     }
 
     @RequestMapping(value = "/{oppiaineId}", method = RequestMethod.GET)
     @AuditLogged
-    public Lops2019PaikallinenOppiaineDto getOppiaine(
+    public Lops2019PaikallinenOppiaineDto getLops2019PaikallinenOppiaine(
             @PathVariable final Long opsId,
             @PathVariable final Long oppiaineId) {
         return oppiaineService.getOne(opsId, oppiaineId);
@@ -37,7 +37,7 @@ public class Lops2019OppiaineController {
 
     @RequestMapping(method = RequestMethod.POST)
     @AuditLogged
-    public Lops2019PaikallinenOppiaineDto addOppiaine(
+    public Lops2019PaikallinenOppiaineDto addLops2019PaikallinenOppiaine(
             @PathVariable final Long opsId,
             @RequestBody final Lops2019PaikallinenOppiaineDto oppiaineDto) {
         return oppiaineService.addOppiaine(opsId, oppiaineDto);
@@ -45,7 +45,7 @@ public class Lops2019OppiaineController {
 
     @RequestMapping(value = "/{oppiaineId}", method = RequestMethod.POST)
     @AuditLogged
-    public Lops2019PaikallinenOppiaineDto updateOppiaine(
+    public Lops2019PaikallinenOppiaineDto updateLops2019PaikallinenOppiaine(
             @PathVariable final Long opsId,
             @PathVariable final Long oppiaineId,
             @RequestBody final UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> oppiaineDto) {
@@ -55,7 +55,7 @@ public class Lops2019OppiaineController {
 
     @RequestMapping(value = "/{oppiaineId}", method = RequestMethod.DELETE)
     @AuditLogged
-    public void removeOppiaine(
+    public void removeLops2019PaikallinenOppiaine(
             @PathVariable final Long opsId,
             @PathVariable final Long oppiaineId) {
         oppiaineService.removeOne(opsId, oppiaineId);
@@ -63,7 +63,7 @@ public class Lops2019OppiaineController {
 
     @RequestMapping(value = "/{oppiaineId}/versiot", method = RequestMethod.GET)
     @AuditLogged
-    public List<RevisionDto> getVersionHistory(
+    public List<RevisionDto> getLops2019PaikallinenVersionHistory(
             @PathVariable final Long opsId,
             @PathVariable final Long oppiaineId) {
         return oppiaineService.getVersions(opsId, oppiaineId);
@@ -71,14 +71,14 @@ public class Lops2019OppiaineController {
 
     @RequestMapping(value = "/poistetut", method = RequestMethod.GET)
     @AuditLogged
-    public List<PoistettuDto> getRemoved(
+    public List<PoistettuDto> getLops2019PaikallinenRemoved(
             @PathVariable final Long opsId) {
         return oppiaineService.getRemoved(opsId);
     }
 
     @RequestMapping(value = "/{oppiaineId}/versiot/{versio}", method = RequestMethod.GET)
     @AuditLogged
-    public Lops2019PaikallinenOppiaineDto getVersion(
+    public Lops2019PaikallinenOppiaineDto getLops2019PaikallinenVersion(
             @PathVariable final Long opsId,
             @PathVariable final Long oppiaineId,
             @PathVariable final Integer versio) {
@@ -87,7 +87,7 @@ public class Lops2019OppiaineController {
 
     @RequestMapping(value = "/{oppiaineId}/versiot/{versio}", method = RequestMethod.POST)
     @AuditLogged
-    public Lops2019PaikallinenOppiaineDto revertToVersion(
+    public Lops2019PaikallinenOppiaineDto revertLops2019PaikallinenToVersion(
             @PathVariable final Long opsId,
             @PathVariable final Long oppiaineId,
             @PathVariable final Integer versio) {

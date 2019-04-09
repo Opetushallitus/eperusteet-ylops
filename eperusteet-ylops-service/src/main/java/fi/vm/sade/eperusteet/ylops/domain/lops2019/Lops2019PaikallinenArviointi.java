@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.lops2019;
 
+
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -8,14 +9,15 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
-import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Audited
-@Table(name = "lops2019_oppiaine_tavoitteet")
-public class Lops2019Tavoitteet extends AbstractAuditedReferenceableEntity {
+@Table(name = "lops2019_oppiaine_arviointi")
+public class Lops2019PaikallinenArviointi extends AbstractAuditedReferenceableEntity {
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -23,15 +25,5 @@ public class Lops2019Tavoitteet extends AbstractAuditedReferenceableEntity {
     @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
-
-    @Getter
-    @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
-    @JoinTable(name = "lops2019_tavoitteiden_tavoitealueet")
-    private Set<Lops2019OppiaineenTavoitealue> tavoitealueet = new HashSet<>();
-
-    public void setTavoitealueet(Set<Lops2019OppiaineenTavoitealue> tavoitealueet) {
-        this.tavoitealueet.clear();
-        this.tavoitealueet.addAll(tavoitealueet);
-    }
 
 }

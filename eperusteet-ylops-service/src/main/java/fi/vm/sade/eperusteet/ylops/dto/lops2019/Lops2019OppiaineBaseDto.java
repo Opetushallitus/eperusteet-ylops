@@ -15,5 +15,5 @@ public class Lops2019OppiaineBaseDto {
     private Lops2019OppiaineenArviointi arviointi;
     private Lops2019OppiaineenTehtava tehtava;
     private Lops2019OppimaaranLaajaAlaisetOsaamisetDto laajaAlainenOsaaminen;
-//    private Lops2019OppiaineenTavoitteet tavoitteet;
+    private Lops2019OppiaineenTavoitteetDto tavoitteet;
 }
