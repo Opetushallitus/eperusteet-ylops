@@ -25,6 +25,11 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @Setter
+    @Column(name = "perusteen_oppiaine_uri", updatable = false)
+    private String perusteenOppiaineUri;
+
+    @Getter
+    @Setter
     private String koodi;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
@@ -40,6 +45,20 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity {
     @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @Getter
+    @Setter
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
+    private LokalisoituTeksti pakollistenModuulienKuvaus;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @Getter
+    @Setter
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
+    private LokalisoituTeksti valinnaistenModuulienKuvaus;
 
     @Getter
     @Setter

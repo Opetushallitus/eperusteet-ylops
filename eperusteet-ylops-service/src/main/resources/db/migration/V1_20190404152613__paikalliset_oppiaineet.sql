@@ -5,10 +5,13 @@ create table lops2019_oppiaine (
     muokattu timestamp,
     muokkaaja varchar(255),
     koodi varchar(255),
+    perusteen_oppiaine_uri varchar(255),
     kuvaus_id int8,
     arviointi_id int8,
     laajaAlainenOsaaminen_id int8,
     nimi_id int8,
+    pakollistenModuulienKuvaus_id int8,
+    valinnaistenModuulienKuvaus_id int8,
     sisalto_id int8 not null,
     tehtava_id int8,
     primary key (id)
@@ -47,9 +50,12 @@ create table lops2019_oppiaine_AUD (
     muokattu timestamp,
     muokkaaja varchar(255),
     koodi varchar(255),
+    perusteen_oppiaine_uri varchar(255),
     kuvaus_id int8,
     arviointi_id int8,
     laajaAlainenOsaaminen_id int8,
+    pakollistenModuulienKuvaus_id int8,
+    valinnaistenModuulienKuvaus_id int8,
     nimi_id int8,
     sisalto_id int8,
     tehtava_id int8,
@@ -203,6 +209,76 @@ create table lops2019_tavoitealue_tavoite_AUD (
     tavoite_id int8,
     primary key (id, REV)
 );
+
+create table lops2019_opintojakso_oppiaine (
+    opintojakso_id int8 not null,
+    oj_oppiaine_id int8 not null,
+    primary key (opintojakso_id, oj_oppiaine_id)
+);
+
+create table lops2019_opintojakso_oppiaine_AUD (
+    REV int4 not null,
+    opintojakso_id int8 not null,
+    oj_oppiaine_id int8 not null,
+    REVTYPE int2,
+    REVEND int4,
+    primary key (REV, opintojakso_id, oj_oppiaine_id)
+);
+
+create table lops2019_opintojakson_oppiaine (
+    id int8 not null,
+    luoja varchar(255),
+    luotu timestamp,
+    muokattu timestamp,
+    muokkaaja varchar(255),
+    koodi varchar(255),
+    laajuus int8,
+    primary key (id)
+);
+
+create table lops2019_opintojakson_oppiaine_AUD (
+    id int8 not null,
+    REV int4 not null,
+    REVTYPE int2,
+    REVEND int4,
+    luoja varchar(255),
+    luotu timestamp,
+    muokattu timestamp,
+    muokkaaja varchar(255),
+    koodi varchar(255),
+    laajuus int8,
+    primary key (id, REV)
+);
+
+alter table lops2019_opintojakso_oppiaine 
+    add constraint FK_qstcu05ba4582cxpwcax0deir 
+    foreign key (oj_oppiaine_id) 
+    references lops2019_opintojakson_oppiaine;
+
+alter table lops2019_opintojakson_oppiaine_AUD 
+    add constraint FK_6xwoh7f6rt1br0322rpi009mu 
+    foreign key (REV) 
+    references revinfo;
+
+alter table lops2019_opintojakson_oppiaine_AUD 
+    add constraint FK_pnhvshpdylvjpagxgyt2lmvvi 
+    foreign key (REVEND) 
+    references revinfo;
+
+alter table lops2019_opintojakso_oppiaine 
+    add constraint FK_djtxjge12q33pypnof9any7u5 
+    foreign key (opintojakso_id) 
+    references lops2019_opintojakso;
+
+alter table lops2019_opintojakso_oppiaine_AUD 
+    add constraint FK_f59eq6e9ycb3mtgwg834ugtq5 
+    foreign key (REV) 
+    references revinfo;
+
+alter table lops2019_opintojakso_oppiaine_AUD 
+    add constraint FK_e9g2u0d2kdmdftndb3de8gk22 
+    foreign key (REVEND) 
+    references revinfo;
 
 alter table lops2019_oppiaine 
     add constraint FK_diapowdmdpsv2s031yi42qddk 
@@ -389,4 +465,14 @@ alter table lops2019_oppiaine_arviointi_AUD
     add constraint FK_9racq4sicclb32qvvrnp8k6sn 
     foreign key (REVEND) 
     references revinfo;
+
+alter table lops2019_oppiaine 
+    add constraint FK_orbuj75mew39hg638gau4jggu 
+    foreign key (pakollistenModuulienKuvaus_id) 
+    references lokalisoituteksti;
+
+alter table lops2019_oppiaine 
+    add constraint FK_4icqui6cwwdb1lhjleafwnu32 
+    foreign key (valinnaistenModuulienKuvaus_id) 
+    references lokalisoituteksti;
 

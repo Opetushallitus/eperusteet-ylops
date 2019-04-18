@@ -13,6 +13,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -23,17 +24,6 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
     @Getter
     @Setter
     private String koodi;
-
-    @Setter
-    private Long laajuus;
-
-    @Getter
-    @Setter
-    @NotEmpty
-    @NotNull
-    @ElementCollection
-    // FIXME: @Koodi("oppiaineet")
-    private Set<String> oppiaineet = new HashSet<>();
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -78,17 +68,32 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
             inverseJoinColumns = @JoinColumn(name = "moduuli_id"))
     private Set<Lops2019OpintojaksonModuuli> moduulit = new HashSet<>();
 
+    @Getter
+    @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @NotEmpty
+    @JoinTable(name = "lops2019_opintojakso_oppiaine",
+            joinColumns = @JoinColumn(name = "opintojakso_id"),
+            inverseJoinColumns = @JoinColumn(name = "oj_oppiaine_id"))
+    private Set<Lops2019OpintojaksonOppiaine> oppiaineet = new HashSet<>();
+
     public void setModuulit(Set<Lops2019OpintojaksonModuuli> moduulit) {
         this.moduulit.clear();
         this.moduulit.addAll(moduulit);
     }
 
+    public void setOppiaineet(Set<Lops2019OpintojaksonOppiaine> oppiaineet) {
+        this.oppiaineet.clear();
+        this.oppiaineet.addAll(oppiaineet);
+    }
+
     public Long getLaajuus() {
-        if (this.getModuulit().size() > 0) {
-            return null;
+        if (!this.getOppiaineet().isEmpty()) {
+            return this.getOppiaineet().stream()
+                    .map(Lops2019OpintojaksonOppiaine::getLaajuus)
+                    .filter(Objects::nonNull)
+                    .mapToLong(Long::longValue)
+                    .sum();
         }
-        else {
-            return laajuus;
-        }
+        return null;
     }
 }
