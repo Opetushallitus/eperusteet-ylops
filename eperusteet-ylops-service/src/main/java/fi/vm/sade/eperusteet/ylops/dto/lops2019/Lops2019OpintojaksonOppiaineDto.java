@@ -6,6 +6,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @EqualsAndHashCode(of = { "koodi" })
 public class Lops2019OpintojaksonOppiaineDto {
     private String koodi;

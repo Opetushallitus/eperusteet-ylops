@@ -143,7 +143,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .nimi(LokalisoituTekstiDto.of("Geometriat"))
                 .kuvaus(LokalisoituTekstiDto.of("Geometriaan liittyvät moduulit toteutetaan yhtenä opintojaksona"))
                 .koodi("1234")
-                .oppiaineet(Collections.singleton("oppiaineet_maa"))
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_maa").build()))
                 .moduuli(Lops2019OpintojaksonModuuliDto.builder()
                         .koodiUri("moduuli_maa3")
                         .kuvaus(LokalisoituTekstiDto.of("X"))
