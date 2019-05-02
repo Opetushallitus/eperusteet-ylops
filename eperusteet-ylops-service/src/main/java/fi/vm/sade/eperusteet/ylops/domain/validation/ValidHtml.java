@@ -55,7 +55,8 @@ public @interface ValidHtml {
                 .addAttributes("td", "colspan", "rowspan", "style", "style")
                 .addAttributes("a", "href", "target")
                 .addAttributes("comment", "uid")
-                .addAttributes("img", "data-uid", "alt", "style")
+                .addAttributes("img", "data-uid", "alt", "style", "src")
+                .addAttributes("figure", "class")
                 .addAttributes("abbr", "data-viite"));
 
         private Whitelist whitelist;
