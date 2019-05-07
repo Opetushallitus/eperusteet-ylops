@@ -11,10 +11,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Lops2019OpintojaksoDto {
-    private Long id;
-    private String koodi;
-    private LokalisoituTekstiDto nimi;
+public class Lops2019OpintojaksoDto extends Lops2019OpintojaksoBaseDto {
     private LokalisoituTekstiDto kuvaus;
     private LokalisoituTekstiDto tavoitteet;
     private LokalisoituTekstiDto keskeisetSisallot;

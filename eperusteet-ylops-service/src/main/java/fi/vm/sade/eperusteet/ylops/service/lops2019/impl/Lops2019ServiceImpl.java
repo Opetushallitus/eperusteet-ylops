@@ -2,10 +2,9 @@ package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ModuuliDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019SisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ModuuliLiitosDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
@@ -14,6 +13,8 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -23,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,6 +39,12 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
+
+    @Autowired
+    private Lops2019OppiaineService oppiaineService;
+
+    @Autowired
+    private Lops2019OpintojaksoService opintojaksoService;
 
     @Autowired
     private DtoMapper mapper;
@@ -161,5 +166,40 @@ public class Lops2019ServiceImpl implements Lops2019Service {
                     .findFirst()
                     .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
     }
+
+    @Override
+    public Lops2019ValidointiDto getValidointi(Long opsId) {
+        Lops2019ValidointiDto validointi = new Lops2019ValidointiDto();
+        List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(opsId);
+
+        { // Liitetyt moduulit
+            Map<String, List<Lops2019OpintojaksoBaseDto>> liitokset = new HashMap<>();
+            for (Lops2019OpintojaksoDto oj : opintojaksot) {
+                for (Lops2019OpintojaksonModuuliDto moduuli : oj.getModuulit()) {
+                    if (!liitokset.containsKey(moduuli.getKoodiUri())) {
+                        liitokset.put(moduuli.getKoodiUri(), new ArrayList<>());
+                    }
+                    liitokset.get(moduuli.getKoodiUri()).add(oj);
+                }
+            }
+
+            validointi.setLiitetytModuulit(liitokset.entrySet().stream()
+                    .map(x -> new ModuuliLiitosDto(x.getKey(), mapper.mapAsList(x.getValue(), Lops2019OpintojaksoBaseDto.class)))
+                    .collect(Collectors.toSet()));
+
+        }
+
+
+        { // Kaikki moduulit
+            List<Lops2019OppiaineDto> oppiaineetAndOppimaarat = getOppiaineetAndOppimaarat(opsId);
+            validointi.setKaikkiModuulit(oppiaineetAndOppimaarat.stream()
+                    .map(x -> x.getModuulit().stream())
+                    .flatMap(x -> x)
+                    .map(Lops2019ModuuliDto::getKoodi)
+                    .collect(Collectors.toSet()));
+        }
+        return validointi;
+    }
+
 
 }
