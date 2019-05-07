@@ -134,9 +134,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
 
         Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
-                .nimi(LokalisoituTekstiDto.of("Geometriat"))
                 .kuvaus(LokalisoituTekstiDto.of("Geometriaan liittyvät moduulit toteutetaan yhtenä opintojaksona"))
-                .koodi("1234")
                 .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_maa").build()))
                 .moduuli(Lops2019OpintojaksonModuuliDto.builder()
                         .koodiUri("moduuli_maa3")
@@ -147,6 +145,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                         .kuvaus(LokalisoituTekstiDto.of("Y"))
                         .build())
                 .build();
+
+        opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+        opintojaksoDto.setKoodi("1234");
 
         opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
         List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(ops.getId());
