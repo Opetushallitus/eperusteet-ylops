@@ -170,34 +170,49 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     @Override
     public Lops2019ValidointiDto getValidointi(Long opsId) {
         Lops2019ValidointiDto validointi = new Lops2019ValidointiDto();
-        List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(opsId);
 
-        { // Liitetyt moduulit
-            Map<String, List<Lops2019OpintojaksoBaseDto>> liitokset = new HashMap<>();
-            for (Lops2019OpintojaksoDto oj : opintojaksot) {
-                for (Lops2019OpintojaksonModuuliDto moduuli : oj.getModuulit()) {
-                    if (!liitokset.containsKey(moduuli.getKoodiUri())) {
-                        liitokset.put(moduuli.getKoodiUri(), new ArrayList<>());
+        { // Validoi kiinnitetyt opintojaksot ja käytetyt moduulit
+            List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(opsId);
+
+            { // Liitetyt moduulit
+                Map<String, List<Lops2019OpintojaksoBaseDto>> liitokset = new HashMap<>();
+                for (Lops2019OpintojaksoDto oj : opintojaksot) {
+                    for (Lops2019OpintojaksonModuuliDto moduuli : oj.getModuulit()) {
+                        if (!liitokset.containsKey(moduuli.getKoodiUri())) {
+                            liitokset.put(moduuli.getKoodiUri(), new ArrayList<>());
+                        }
+                        liitokset.get(moduuli.getKoodiUri()).add(oj);
                     }
-                    liitokset.get(moduuli.getKoodiUri()).add(oj);
                 }
+
+                validointi.setLiitetytModuulit(liitokset.entrySet().stream()
+                        .map(x -> new ModuuliLiitosDto(x.getKey(), mapper.mapAsList(x.getValue(), Lops2019OpintojaksoBaseDto.class)))
+                        .collect(Collectors.toSet()));
+
             }
 
-            validointi.setLiitetytModuulit(liitokset.entrySet().stream()
-                    .map(x -> new ModuuliLiitosDto(x.getKey(), mapper.mapAsList(x.getValue(), Lops2019OpintojaksoBaseDto.class)))
-                    .collect(Collectors.toSet()));
+            { // Kaikki moduulit
+                List<Lops2019OppiaineDto> oppiaineetAndOppimaarat = getOppiaineetAndOppimaarat(opsId);
+                validointi.setKaikkiModuulit(oppiaineetAndOppimaarat.stream()
+                        .map(x -> x.getModuulit().stream())
+                        .flatMap(x -> x)
+                        .map(Lops2019ModuuliDto::getKoodi)
+                        .collect(Collectors.toSet()));
+            }
+        }
+
+        { // Validoi opetussuunnitelman / pohjan tiedot
 
         }
 
+        { // Validoi opetussuunnitelman / pohjan tekstikappaleet
 
-        { // Kaikki moduulit
-            List<Lops2019OppiaineDto> oppiaineetAndOppimaarat = getOppiaineetAndOppimaarat(opsId);
-            validointi.setKaikkiModuulit(oppiaineetAndOppimaarat.stream()
-                    .map(x -> x.getModuulit().stream())
-                    .flatMap(x -> x)
-                    .map(Lops2019ModuuliDto::getKoodi)
-                    .collect(Collectors.toSet()));
         }
+
+        { // Validoi opetussuunnitelman paikalliset oppiaineet
+
+        }
+
         return validointi;
     }
 

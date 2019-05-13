@@ -71,6 +71,8 @@ import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.math.BigDecimal;
 import java.util.*;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.nullToEmpty;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import java.util.function.Consumer;
@@ -485,6 +487,22 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
+    private void kopioiPohjanSisallotOpetussuunnitelmaan(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
+        if (pohja == null) {
+            throw new BusinessRuleViolationException("pohjaa-ei-loytynyt");
+        }
+
+        if (ops == null) {
+            throw new BusinessRuleViolationException("opetussuunnitelmaa-ei-loytynyt");
+        }
+
+        if (!KoulutustyyppiToteutus.LOPS2019.equals(pohja.getToteutus()) || !pohja.getToteutus().equals(ops.getToteutus())) {
+            throw new BusinessRuleViolationException("toteutustyyppi-ei-tuettu");
+        }
+
+        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), true);
+    }
+
     @Override
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
 
@@ -544,6 +562,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 sisalto.setOpetussuunnitelma(ops);
                 ops.setLops2019(sisalto);
                 ops = repository.save(ops);
+                kopioiPohjanSisallotOpetussuunnitelmaan(pohja, ops);
             }
             else {
                 luoOpsPohjasta(pohja, ops);
@@ -696,6 +715,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         tkv.setLapset(new ArrayList<>());
                         tkv.setVanhempi(parent);
                         tkv.setPakollinen(vanhaTkv.isPakollinen());
+                        tkv.setNaytaPerusteenTeksti(vanhaTkv.isNaytaPerusteenTeksti());
+                        tkv.setPerusteTekstikappaleId(vanhaTkv.getPerusteTekstikappaleId());
                         tkv.setTekstiKappale(teeKopio
                                 ? tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy())
                                 : vanhaTkv.getTekstiKappale());
