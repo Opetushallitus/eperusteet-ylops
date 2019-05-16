@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/lops2019")
-@Api("Lops2019Oppiaineet")
+@Api("Lops2019")
 public class Lops2019Controller {
     @Autowired
     private Lops2019Service lops2019Service;

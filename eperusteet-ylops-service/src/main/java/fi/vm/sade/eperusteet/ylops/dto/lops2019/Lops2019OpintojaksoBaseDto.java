@@ -9,5 +9,6 @@ import lombok.Setter;
 public class Lops2019OpintojaksoBaseDto {
     private Long id;
     private String koodi;
+    private Long laajuus;
     private LokalisoituTekstiDto nimi;
 }

@@ -2,9 +2,13 @@ package fi.vm.sade.eperusteet.ylops.domain.lops2019;
 
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.Validable;
+import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineenArviointi;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -16,7 +20,7 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Audited
 @Table(name = "lops2019_oppiaine")
-public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity {
+public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity implements Validable {
 
     @ManyToOne
     @Getter
@@ -85,5 +89,14 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity {
         if (this.sisalto == null) {
             this.sisalto = uusi;
         }
+    }
+
+    @Override
+    public void validate(ValidointiDto validointi, ValidointiContext ctx) {
+    }
+
+    @Override
+    public ValidationCategory category() {
+        return ValidationCategory.OPPIAINE;
     }
 }

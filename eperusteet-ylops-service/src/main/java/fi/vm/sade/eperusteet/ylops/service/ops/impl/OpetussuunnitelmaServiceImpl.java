@@ -1153,18 +1153,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private Validointi validoiOpetussuunnitelma(Opetussuunnitelma ops) {
-        Set<Kieli> julkaisukielet = ops.getJulkaisukielet();
         Validointi validointi = new Validointi();
 
-        if (ops.getPerusteenDiaarinumero().isEmpty()) {
-            validointi.virhe("opsilla-ei-perusteen-diaarinumeroa");
-        }
+        Set<Kieli> julkaisukielet = ops.getJulkaisukielet();
 
-        if (ops.getTekstit() != null && ops.getTekstit().getLapset() != null) {
-            for (TekstiKappaleViite teksti : ops.getTekstit().getLapset()) {
-                TekstiKappaleViite.validoi(validointi, teksti, julkaisukielet);
-            }
-        }
+        validateOpetussuunnitelmaTiedot(ops, validointi);
+        validateTextHierarchy(ops, julkaisukielet, validointi);
 
         ops.getVuosiluokkakokonaisuudet().stream()
                 .filter(OpsVuosiluokkakokonaisuus::isOma)
@@ -1196,6 +1190,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         return validointi;
+    }
+
+    private void validateOpetussuunnitelmaTiedot(Opetussuunnitelma ops, Validointi validointi) {
+        if (ops.getPerusteenDiaarinumero().isEmpty()) {
+            validointi.virhe("opsilla-ei-perusteen-diaarinumeroa");
+        }
+    }
+
+    private void validateTextHierarchy(Opetussuunnitelma ops, Set<Kieli> julkaisukielet, Validointi validointi) {
+        if (ops.getTekstit() != null && ops.getTekstit().getLapset() != null) {
+            for (TekstiKappaleViite teksti : ops.getTekstit().getLapset()) {
+                TekstiKappaleViite.validoi(validointi, teksti, julkaisukielet);
+            }
+        }
     }
 
     private void validoiOhjeistus(TekstiKappaleViite tkv, Set<Kieli> kielet) {

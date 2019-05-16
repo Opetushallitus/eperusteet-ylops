@@ -1,25 +1,27 @@
 package fi.vm.sade.eperusteet.ylops.domain.lops2019;
 
-import com.google.common.primitives.UnsignedLong;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.Validable;
+import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiDto;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Audited
 @Table(name = "lops2019_opintojakso")
-public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
+public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity implements Validable {
 
     @Getter
     @Setter
@@ -86,14 +88,32 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity {
         this.oppiaineet.addAll(oppiaineet);
     }
 
-    public Long getLaajuus() {
-        if (!this.getOppiaineet().isEmpty()) {
-            return this.getOppiaineet().stream()
-                    .map(Lops2019OpintojaksonOppiaine::getLaajuus)
-                    .filter(Objects::nonNull)
-                    .mapToLong(Long::longValue)
-                    .sum();
+
+    @Override
+    public void validate(ValidointiDto validointi, ValidointiContext ctx) {
+        validointi.virhe("koodi-puuttuu", this, StringUtils.isEmpty(getKoodi()));
+        validointi.virhe("nimi-oltava-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
+        validointi.varoitus("kuvausta-ei-ole-kirjoitettu-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
+
+        boolean isIntegraatioOpintojakso = getOppiaineet().size() > 1 || getModuulit().isEmpty();
+        if (isIntegraatioOpintojakso) {
+            boolean isValid = true;
+            Long yhteensa = 0L;
+            for (Lops2019OpintojaksonOppiaine oa : getOppiaineet()) {
+                Long laajuus = oa.getLaajuus();
+                if (laajuus == null || laajuus < 1 || laajuus > 4) {
+                    isValid = false;
+                }
+                else {
+                    yhteensa += laajuus;
+                }
+            }
+            validointi.virhe("opintojaksolla-virheellinen-laajuus", this, !isValid || yhteensa < 1 || yhteensa > 4);
         }
-        return null;
+    }
+
+    @Override
+    public ValidationCategory category() {
+        return ValidationCategory.OPINTOJAKSO;
     }
 }

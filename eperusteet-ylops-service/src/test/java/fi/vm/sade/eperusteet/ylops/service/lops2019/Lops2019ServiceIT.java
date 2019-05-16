@@ -18,6 +18,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
@@ -25,13 +26,16 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class Lops2019ServiceIT extends AbstractIntegrationTest {
@@ -137,11 +141,11 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .kuvaus(LokalisoituTekstiDto.of("Geometriaan liittyvät moduulit toteutetaan yhtenä opintojaksona"))
                 .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_maa").build()))
                 .moduuli(Lops2019OpintojaksonModuuliDto.builder()
-                        .koodiUri("moduuli_maa3")
+                        .koodiUri("moduulit_maa3")
                         .kuvaus(LokalisoituTekstiDto.of("X"))
                         .build())
                 .moduuli(Lops2019OpintojaksonModuuliDto.builder()
-                        .koodiUri("moduuli_maa4")
+                        .koodiUri("moduulit_maa4")
                         .kuvaus(LokalisoituTekstiDto.of("Y"))
                         .build())
                 .build();
@@ -153,6 +157,85 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(ops.getId());
         assertThat(opintojaksot.size()).isEqualTo(1);
         assertThat(opintojaksot.get(0).getId()).isEqualTo(opintojaksoDto.getId());
+    }
+
+    @Test
+    @Rollback
+    public void testVirheellisetKoodit() {
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+        Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                .build();
+        opintojaksoDto.setKoodi("1234");
+
+        assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("perusteen-oppiainetta-ei-olemassa");
+
+        opintojaksoDto.setOppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                .koodi("oppiaineet_ma")
+                .build()));
+
+        assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("opintojaksoon-ei-voi-liittaa-abstraktia-oppiainetta");
+
+        opintojaksoDto.setOppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                .koodi("xyz")
+                .build()));
+
+        assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("perusteen-oppiainetta-ei-olemassa");
+
+        opintojaksoDto.setOppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                .koodi("oppiaineet_bi")
+                .build()));
+
+        opintojaksoDto.setModuulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder()
+                .koodiUri("moduulit_xyz")
+                .build()));
+
+        opintojaksoDto.setOppiaineet(new HashSet<>());
+        assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("perusteen-moduulia-ei-olemassa");
+
+        opintojaksoDto.setOppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                .koodi("oppiaineet_bi")
+                .build()));
+
+        opintojaksoDto.setModuulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder()
+                .koodiUri("moduulit_maa2")
+                .build()));
+
+        assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("liitetyt-moduulit-tulee-loytya-opintojakson-oppiaineilta");
+    }
+
+    @Test
+    public void testOpintojaksojenLaajuus() {
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+
+        Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                        .koodi("oppiaineet_maa")
+                        .build()))
+                .moduuli(Lops2019OpintojaksonModuuliDto.builder()
+                        .koodiUri("moduulit_maa3")
+                        .kuvaus(LokalisoituTekstiDto.of("X"))
+                        .build())
+                .moduuli(Lops2019OpintojaksonModuuliDto.builder()
+                        .koodiUri("moduulit_maa4")
+                        .kuvaus(LokalisoituTekstiDto.of("Y"))
+                        .build())
+                .build();
+
+        opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+        opintojaksoDto.setKoodi("1234");
+
+        opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
+        assertThat(opintojaksoDto.getLaajuus()).isEqualTo(6L);
     }
 
     @Test

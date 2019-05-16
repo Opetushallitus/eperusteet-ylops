@@ -9,6 +9,7 @@ import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
+import java.util.Set;
 
 public interface Lops2019Service {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
@@ -46,5 +47,11 @@ public interface Lops2019Service {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Lops2019ValidointiDto getValidointi(Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    Set<Lops2019ModuuliDto> getPerusteModuulit(Long opsId, Set<String> koodiUrit);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    Set<Lops2019OppiaineDto> getPerusteenOppiaineet(Long opsId, Set<String> koodiUrit);
 
 }

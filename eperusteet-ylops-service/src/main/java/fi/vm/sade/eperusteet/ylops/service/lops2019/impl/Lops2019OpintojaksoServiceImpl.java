@@ -4,10 +4,10 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonModuuli;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -23,7 +23,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,6 +70,28 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         }
     }
 
+    @Override
+    public long getOpintojaksonLaajuus(Long opsId, Lops2019OpintojaksoDto opintojakso) {
+        if (opintojakso.getModuulit().isEmpty()) {
+            return opintojakso.getOppiaineet().stream()
+                .filter(Objects::nonNull)
+                .map(Lops2019OpintojaksonOppiaineDto::getLaajuus)
+                .filter(Objects::nonNull)
+                .mapToLong(Long::longValue)
+                .sum();
+        }
+        else {
+            Set<String> moduulikoodit = opintojakso.getModuulit().stream()
+                    .map(Lops2019OpintojaksonModuuliDto::getKoodiUri)
+                    .collect(Collectors.toSet());
+            Set<Lops2019ModuuliDto> perusteModuulit = lopsService.getPerusteModuulit(opsId, moduulikoodit);
+            return perusteModuulit.stream()
+                    .map(Lops2019ModuuliDto::getLaajuus)
+                    .mapToLong(Integer::longValue)
+                    .sum();
+        }
+    }
+
     private Lops2019Opintojakso getOpintojakso(Long opsId, Long opintojaksoId) {
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         Lops2019Opintojakso opintojakso = ops.getLops2019().getOpintojakso(opintojaksoId);
@@ -79,26 +104,74 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     @Override
     public List<Lops2019OpintojaksoDto> getAll(Long opsId) {
         Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
-        
-        return mapper.mapAsList(
-                opetussuunnitelma.getLops2019().getOpintojaksot(),
-                Lops2019OpintojaksoDto.class);
+        return opetussuunnitelma.getLops2019().getOpintojaksot().stream()
+                .map(oj -> mapper.map(oj, Lops2019OpintojaksoDto.class))
+                .map(oj -> {
+                    oj.setLaajuus(getOpintojaksonLaajuus(opsId, oj));
+                    return oj;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
     public Lops2019OpintojaksoDto getOne(Long opsId, Long opintojaksoId) {
         Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
-        return mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
+        Lops2019OpintojaksoDto result = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
+        result.setLaajuus(getOpintojaksonLaajuus(opsId, result));
+        return result;
     }
 
     @Override
     public Lops2019OpintojaksoDto addOpintojakso(Long opsId, Lops2019OpintojaksoDto opintojaksoDto) {
         opintojaksoDto.setId(null);
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        Set<Lops2019ModuuliDto> loydetytModuulit = lopsService.getPerusteModuulit(opsId, opintojaksoDto.getModuulit().stream()
+                .map(Lops2019OpintojaksonModuuliDto::getKoodiUri)
+                .collect(Collectors.toSet()));
+
+        if (opintojaksoDto.getModuulit() != null && opintojaksoDto.getModuulit().size() != loydetytModuulit.size()) {
+            throw new BusinessRuleViolationException("perusteen-moduulia-ei-olemassa");
+        }
+
+        if (opintojaksoDto.getOppiaineet() == null) {
+            throw new BusinessRuleViolationException("perusteen-oppiainetta-ei-olemassa");
+        }
+
+        Set<Lops2019OppiaineDto> perusteenOppiaineet = lopsService.getPerusteenOppiaineet(opsId, opintojaksoDto.getOppiaineet().stream()
+                .map(Lops2019OpintojaksonOppiaineDto::getKoodi)
+                .collect(Collectors.toSet()));
+
+        if (perusteenOppiaineet.size() != opintojaksoDto.getOppiaineet().size()) {
+            throw new BusinessRuleViolationException("perusteen-oppiainetta-ei-olemassa");
+        }
+
+        if (perusteenOppiaineet.stream().anyMatch(oa -> !oa.getOppimaarat().isEmpty())) {
+            throw new BusinessRuleViolationException("opintojaksoon-ei-voi-liittaa-abstraktia-oppiainetta");
+        }
+
+        { // Tarkistetaan että moduulit ovat oikeista oppiaineista
+            Set<String> moduulikoodit = loydetytModuulit.stream()
+                    .map(Lops2019ModuuliDto::getKoodi)
+                    .map(KoodiDto::getUri)
+                    .collect(Collectors.toSet());
+            perusteenOppiaineet.forEach(oa -> {
+                moduulikoodit.removeAll(oa.getModuulit().stream()
+                        .map(Lops2019ModuuliDto::getKoodi)
+                        .map(KoodiDto::getUri)
+                        .collect(Collectors.toSet()));
+            });
+
+            if (!moduulikoodit.isEmpty()) {
+                throw new BusinessRuleViolationException("liitetyt-moduulit-tulee-loytya-opintojakson-oppiaineilta");
+            }
+        }
+
         Lops2019Opintojakso opintojakso = mapper.map(opintojaksoDto, Lops2019Opintojakso.class);
         opintojakso = opintojaksoRepository.save(opintojakso);
         ops.getLops2019().addOpintojakso(opintojakso);
-        return mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
+        Lops2019OpintojaksoDto result = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
+        result.setLaajuus(getOpintojaksonLaajuus(opsId, result));
+        return result;
     }
 
     @Override
@@ -107,7 +180,9 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
         opintojakso = mapper.map(opintojaksoDto.getData(), opintojakso);
         opintojakso = opintojaksoRepository.save(opintojakso);
-        return mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
+        Lops2019OpintojaksoDto result = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
+        result.setLaajuus(getOpintojaksonLaajuus(opsId, result));
+        return result;
     }
 
     @Override

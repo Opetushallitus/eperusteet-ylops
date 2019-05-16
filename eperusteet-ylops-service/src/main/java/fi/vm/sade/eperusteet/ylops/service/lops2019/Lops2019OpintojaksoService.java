@@ -40,4 +40,7 @@ public interface Lops2019OpintojaksoService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Lops2019OpintojaksoPerusteDto getOpintojaksonPeruste(Long opsId, Long opintojaksoId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    long getOpintojaksonLaajuus(Long opsId, Lops2019OpintojaksoDto opintojakso);
 }

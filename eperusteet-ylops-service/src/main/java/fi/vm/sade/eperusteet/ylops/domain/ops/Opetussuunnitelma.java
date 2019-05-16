@@ -41,11 +41,14 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
-import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 
 /**
  * @author mikkom
@@ -54,7 +57,7 @@ import org.springframework.stereotype.Controller;
 @Audited
 @Table(name = "opetussuunnitelma")
 public class Opetussuunnitelma extends AbstractAuditedEntity
-        implements Serializable, ReferenceableEntity {
+        implements Serializable, ReferenceableEntity, Validable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Getter
@@ -63,6 +66,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     @Getter
     @Setter
+    @NotNull
     private String perusteenDiaarinumero;
 
     @Getter
@@ -357,4 +361,21 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
         }
     }
 
+    @Override
+    public void validate(ValidointiDto validointi, ValidointiContext ctx) {
+        validointi.virhe("vahintaan-yksi-julkaisukieli", this, getJulkaisukielet().isEmpty());
+        validointi.virhe("perusteen-diaarinumero-puuttuu", this, getPerusteenDiaarinumero().isEmpty());
+        validointi.virhe("nimi-oltava-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
+        validointi.varoitus("kuvausta-ei-ole-kirjoitettu-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
+
+        if (getTyyppi() == Tyyppi.OPS) {
+            validointi.virhe("hyvaksyjataho-puuttuu", this, StringUtils.isEmpty(getHyvaksyjataho()));
+            validointi.virhe("paatospaivamaaraa-ei-ole-asetettu", this, getPaatospaivamaara() == null);
+        }
+    }
+
+    @Override
+    public ValidationCategory category() {
+        return ValidationCategory.OPETUSSUUNNITELMA;
+    }
 }

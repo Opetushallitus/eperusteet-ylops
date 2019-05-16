@@ -1,14 +1,18 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ModuuliLiitosDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
@@ -44,7 +48,13 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     private Lops2019OppiaineService oppiaineService;
 
     @Autowired
+    private Lops2019OppiaineRepository oppiaineRepository;
+
+    @Autowired
     private Lops2019OpintojaksoService opintojaksoService;
+
+    @Autowired
+    private Lops2019OpintojaksoRepository opintojaksoRepository;
 
     @Autowired
     private DtoMapper mapper;
@@ -116,6 +126,13 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     }
 
     @Override
+    public Set<Lops2019OppiaineDto> getPerusteenOppiaineet(Long opsId, Set<String> koodiUrit) {
+        return getOppiaineetAndOppimaarat(opsId).stream()
+                .filter(oa -> koodiUrit.contains(oa.getKoodi().getUri()))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
     public Lops2019ModuuliDto getPerusteModuuli(Long opsId, Long oppiaineId, Long moduuliId) {
         List<Lops2019ModuuliDto> moduulit = getOppiaineetAndOppimaarat(opsId).stream()
                 .filter((oa) -> Objects.equals(oppiaineId, oa.getId()))
@@ -134,6 +151,13 @@ public class Lops2019ServiceImpl implements Lops2019Service {
                 .filter(moduuli -> koodiUri.equals(moduuli.getKoodi().getUri()))
                 .findFirst()
                 .orElseThrow(() -> new BusinessRuleViolationException("moduulia-ei-loytynyt"));
+    }
+
+    @Override
+    public Set<Lops2019ModuuliDto> getPerusteModuulit(Long opsId, Set<String> koodiUrit) {
+        return getModuulit(opsId).stream()
+                .filter(moduuli -> koodiUrit.contains(moduuli.getKoodi().getUri()))
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -169,51 +193,98 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Override
     public Lops2019ValidointiDto getValidointi(Long opsId) {
-        Lops2019ValidointiDto validointi = new Lops2019ValidointiDto();
-
-        { // Validoi kiinnitetyt opintojaksot ja käytetyt moduulit
-            List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(opsId);
-
-            { // Liitetyt moduulit
-                Map<String, List<Lops2019OpintojaksoBaseDto>> liitokset = new HashMap<>();
-                for (Lops2019OpintojaksoDto oj : opintojaksot) {
-                    for (Lops2019OpintojaksonModuuliDto moduuli : oj.getModuulit()) {
-                        if (!liitokset.containsKey(moduuli.getKoodiUri())) {
-                            liitokset.put(moduuli.getKoodiUri(), new ArrayList<>());
-                        }
-                        liitokset.get(moduuli.getKoodiUri()).add(oj);
-                    }
-                }
-
-                validointi.setLiitetytModuulit(liitokset.entrySet().stream()
-                        .map(x -> new ModuuliLiitosDto(x.getKey(), mapper.mapAsList(x.getValue(), Lops2019OpintojaksoBaseDto.class)))
-                        .collect(Collectors.toSet()));
-
-            }
-
-            { // Kaikki moduulit
-                List<Lops2019OppiaineDto> oppiaineetAndOppimaarat = getOppiaineetAndOppimaarat(opsId);
-                validointi.setKaikkiModuulit(oppiaineetAndOppimaarat.stream()
-                        .map(x -> x.getModuulit().stream())
-                        .flatMap(x -> x)
-                        .map(Lops2019ModuuliDto::getKoodi)
-                        .collect(Collectors.toSet()));
-            }
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        if (ops == null) {
+            throw new BusinessRuleViolationException("opetussuunnitelmaa-ei-ole");
         }
 
-        { // Validoi opetussuunnitelman / pohjan tiedot
+        Lops2019ValidointiDto validointi = new Lops2019ValidointiDto(mapper);
+        ValidointiContext ctx = new ValidointiContext();
+        ctx.setKielet(ops.getJulkaisukielet());
 
+        List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(opsId);
+        Map<String, Lops2019OpintojaksoDto> opintojaksotMap = opintojaksot.stream()
+                .collect(Collectors.toMap(
+                        Lops2019OpintojaksoBaseDto::getKoodi,
+                        Function.identity()));
+        List<Lops2019OppiaineDto> oppiaineetAndOppimaarat = getOppiaineetAndOppimaarat(opsId);
+        List<Lops2019ModuuliDto> moduulit = getModuulit(ops.getId());
+        Map<String, Lops2019ModuuliDto> moduulitMap = moduulit.stream().collect(Collectors.toMap(m -> m.getKoodi().getUri(), Function.identity()));
+        Map<String, List<Lops2019OpintojaksoDto>> liitokset = getModuuliToOpintojaksoMap(opintojaksot);
+
+//        { // Validoi kiinnitetyt opintojaksot ja käytetyt moduulit
+//            { // Liitetyt moduulit
+//                validointi.setLiitetytModuulit(liitokset.entrySet().stream()
+//                        .map(x -> new ModuuliLiitosDto(x.getKey(), mapper.mapAsList(x.getValue(), Lops2019OpintojaksoBaseDto.class)))
+//                        .collect(Collectors.toSet()));
+//            }
+//
+//            { // Kaikki moduulit
+//                validointi.setKaikkiModuulit(oppiaineetAndOppimaarat.stream()
+//                        .map(x -> x.getModuulit().stream())
+//                        .flatMap(x -> x)
+//                        .map(Lops2019ModuuliDto::getKoodi)
+//                        .collect(Collectors.toSet()));
+//            }
+//        }
+
+        ops.validate(validointi, ctx);
+
+        moduulit.forEach(moduuli -> {
+            List<Lops2019OpintojaksoDto> moduulinOpintojaksot = liitokset.getOrDefault(
+                    moduuli.getKoodi().getUri(),
+                    new ArrayList<>());
+
+            // - Moduuli vähintään yhdessä opintojaksossa
+            validointi.virhe(ValidationCategory.MODUULI, "moduuli-kuuluttava-vahintaan-yhteen-opintojaksoon", moduuli.getId(), moduuli.getNimi(),
+                    moduulinOpintojaksot.isEmpty());
+
+            // - Pakollinen moduuli vähintään yhdessä opintojaksossa missä on vain muita saman oppiaineen pakollisia
+            validointi.virhe(ValidationCategory.MODUULI, "pakollinen-moduuli-mahdollista-suorittaa-erillaan", moduuli.getId(), moduuli.getNimi(),
+                moduulinOpintojaksot.stream()
+                    .anyMatch(oj -> oj.getOppiaineet().size() == 1 && oj.getModuulit().stream()
+                            .allMatch(ojm -> moduulitMap.get(ojm.getKoodiUri()).isPakollinen())));
+
+            // - Valinnainen moduuli vähintään yhdessä opintojaksossa suoritettavissa kahden opintopisteen kokonaisuutena
+            validointi.virhe(ValidationCategory.MODUULI, "valinnainen-moduuli-suoritettavissa-kahden-opintopisteen-kokonaisuutena", moduuli.getId(), moduuli.getNimi(),
+                !moduuli.isPakollinen() && moduulinOpintojaksot.stream()
+                    .anyMatch(oj -> oj.getModuulit().stream().allMatch(ojm -> oj.getLaajuus() == 2L)));
+        });
+
+        { // Opintojaksot
+            ops.getLops2019().getOpintojaksot().forEach(oj -> oj.validate(validointi, ctx));
+
+            // Opintojaksojen laajuus
+            opintojaksot.forEach(oj -> {
+                validointi.virhe(ValidationCategory.OPINTOJAKSO, "opintojakson-laajuus-1-4", oj.getId(), oj.getNimi(),
+                        oj.getLaajuus() < 1L || oj.getLaajuus() > 4L);
+            });
         }
 
-        { // Validoi opetussuunnitelman / pohjan tekstikappaleet
-
-        }
-
-        { // Validoi opetussuunnitelman paikalliset oppiaineet
-
-        }
+        // Onko paikallinen oppiaine vähintään yhdessä opintojaksossa
+        oppiaineRepository.findAllBySisalto(ops.getLops2019()).forEach(oa -> {
+            oa.validate(validointi, ctx);
+            validointi.virhe("oppiaineesta-opintojakso", oa,
+                opintojaksot.stream().anyMatch(oj -> !oj.getOppiaineet().stream()
+                        .map(Lops2019OpintojaksonOppiaineDto::getKoodi)
+                        .collect(Collectors.toSet())
+                        .contains(oa.getKoodi())));
+        });
 
         return validointi;
+    }
+
+    private Map<String, List<Lops2019OpintojaksoDto>> getModuuliToOpintojaksoMap(List<Lops2019OpintojaksoDto> opintojaksot) {
+        Map<String, List<Lops2019OpintojaksoDto>> liitokset = new HashMap<>();
+        for (Lops2019OpintojaksoDto oj : opintojaksot) {
+            for (Lops2019OpintojaksonModuuliDto moduuli : oj.getModuulit()) {
+                if (!liitokset.containsKey(moduuli.getKoodiUri())) {
+                    liitokset.put(moduuli.getKoodiUri(), new ArrayList<>());
+                }
+                liitokset.get(moduuli.getKoodiUri()).add(oj);
+            }
+        }
+        return liitokset;
     }
 
 
