@@ -17,6 +17,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Audited
@@ -94,26 +95,31 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
         validointi.virhe("koodi-puuttuu", this, StringUtils.isEmpty(getKoodi()));
         validointi.virhe("nimi-oltava-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
         validointi.varoitus("kuvausta-ei-ole-kirjoitettu-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
-
-        boolean isIntegraatioOpintojakso = getOppiaineet().size() > 1 || getModuulit().isEmpty();
-        if (isIntegraatioOpintojakso) {
-            boolean isValid = true;
-            Long yhteensa = 0L;
-            for (Lops2019OpintojaksonOppiaine oa : getOppiaineet()) {
-                Long laajuus = oa.getLaajuus();
-                if (laajuus == null || laajuus < 1 || laajuus > 4) {
-                    isValid = false;
-                }
-                else {
-                    yhteensa += laajuus;
-                }
-            }
-            validointi.virhe("opintojaksolla-virheellinen-laajuus", this, !isValid || yhteensa < 1 || yhteensa > 4);
-        }
     }
 
     @Override
     public ValidationCategory category() {
         return ValidationCategory.OPINTOJAKSO;
+    }
+
+
+    static public Lops2019Opintojakso copy(Lops2019Opintojakso original) {
+        if (original != null) {
+            Lops2019Opintojakso result = new Lops2019Opintojakso();
+            result.setKeskeisetSisallot(original.getKeskeisetSisallot());
+            result.setKoodi(original.getKoodi());
+            result.setKuvaus(original.getKuvaus());
+            result.setLaajaAlainenOsaaminen(original.getLaajaAlainenOsaaminen());
+            result.setTavoitteet(original.getTavoitteet());
+            result.setNimi(original.getNimi());
+            result.setModuulit(original.getModuulit().stream()
+                    .map(Lops2019OpintojaksonModuuli::copy)
+                    .collect(Collectors.toSet()));
+            result.setOppiaineet(original.getOppiaineet().stream()
+                    .map(Lops2019OpintojaksonOppiaine::copy)
+                    .collect(Collectors.toSet()));
+            return result;
+        }
+        return null;
     }
 }

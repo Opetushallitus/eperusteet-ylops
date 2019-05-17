@@ -19,4 +19,15 @@ public class Lops2019OpintojaksonOppiaine extends AbstractAuditedReferenceableEn
     @Getter
     @Setter
     private Long laajuus;
+
+    static Lops2019OpintojaksonOppiaine copy(Lops2019OpintojaksonOppiaine original) {
+        if (original != null) {
+            Lops2019OpintojaksonOppiaine result = new Lops2019OpintojaksonOppiaine();
+            result.setKoodi(original.getKoodi());
+            result.setLaajuus(original.getLaajuus());
+            return result;
+        }
+        return null;
+    }
+
 }

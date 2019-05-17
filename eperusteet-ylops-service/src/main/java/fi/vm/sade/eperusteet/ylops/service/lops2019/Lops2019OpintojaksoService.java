@@ -30,6 +30,9 @@ public interface Lops2019OpintojaksoService {
     List<RevisionDto> getVersions(@P("opsId") Long opsId, Long opintojaksoId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    Lops2019OpintojaksoDto restore(@P("opsId") Long opsId, Long poistettu);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     List<PoistettuDto> getRemoved(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
@@ -39,8 +42,8 @@ public interface Lops2019OpintojaksoService {
     Lops2019OpintojaksoDto revertTo(@P("opsId") Long opsId, Long opintojaksoId, Integer versio);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    Lops2019OpintojaksoPerusteDto getOpintojaksonPeruste(Long opsId, Long opintojaksoId);
+    Lops2019OpintojaksoPerusteDto getOpintojaksonPeruste(@P("opsId") Long opsId, Long opintojaksoId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    long getOpintojaksonLaajuus(Long opsId, Lops2019OpintojaksoDto opintojakso);
+    long getOpintojaksonLaajuus(@P("opsId") Long opsId, Lops2019OpintojaksoDto opintojakso);
 }

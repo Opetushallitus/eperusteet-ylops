@@ -14,6 +14,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class ValidointiDto<T extends ValidointiDto> {
     private Map<String, List<ValidoinninKohdeDto>> validoinnit = new HashMap<>();
+    private boolean valid = true;
     private DtoMapper mapper;
 
     public ValidointiDto(DtoMapper mapper) {
@@ -21,6 +22,10 @@ public class ValidointiDto<T extends ValidointiDto> {
     }
 
     private T entry(boolean failed, Long id, ValidationCategory kategoria, LokalisoituTekstiDto nimi, String kuvaus, boolean isFatal) {
+        if (failed && isFatal) {
+            this.valid = false;
+        }
+
         String category = "validation-category-" + kategoria;
         if (!validoinnit.containsKey(category)) {
             validoinnit.put(category, new ArrayList<>());
@@ -37,6 +42,10 @@ public class ValidointiDto<T extends ValidointiDto> {
     }
 
     private T entry(boolean failed, Validable validable, String kuvaus, boolean isFatal) {
+        if (failed && isFatal) {
+            this.valid = false;
+        }
+
         String category = "validation-category-" + validable.category();
         if (!validoinnit.containsKey(category)) {
             validoinnit.put(category, new ArrayList<>());
@@ -74,5 +83,9 @@ public class ValidointiDto<T extends ValidointiDto> {
 
     public Map<String, List<ValidoinninKohdeDto>> getValidoinnit() {
         return validoinnit;
+    }
+
+    public boolean isValid() {
+        return this.valid;
     }
 }

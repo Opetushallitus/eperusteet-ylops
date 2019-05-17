@@ -2,12 +2,14 @@ package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksoPoistettu;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonModuuli;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoPoistettuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -23,15 +25,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoService {
+
+    @Autowired
+    private Lops2019OpintojaksoPoistettuRepository opintojaksoPoistettuRepository;
 
     @Autowired
     private Lops2019OpintojaksoRepository opintojaksoRepository;
@@ -189,6 +191,12 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     public void removeOne(Long opsId, Long opintojaksoId) {
         Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        Lops2019OpintojaksoPoistettu poistettu = new Lops2019OpintojaksoPoistettu();
+        poistettu.setNimi(opintojakso.getNimi());
+        poistettu.setOpetussuunnitelma(ops);
+        poistettu.setOpintojakso(opintojaksoId);
+        poistettu.setPalautettu(false);
+        opintojaksoPoistettuRepository.save(poistettu);
         ops.getLops2019().getOpintojaksot().remove(opintojakso);
     }
 
@@ -204,8 +212,24 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     }
 
     @Override
+    public Lops2019OpintojaksoDto restore(Long opsId, Long poistettuId) {
+        Lops2019OpintojaksoPoistettu poistettuInfo = opintojaksoPoistettuRepository.findOne(poistettuId);
+        Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
+        if (poistettuInfo.getOpetussuunnitelma() != opetussuunnitelma) {
+            throw new BusinessRuleViolationException("vain-oman-voi-palauttaa");
+        }
+
+        Lops2019Opintojakso opintojakso = Lops2019Opintojakso.copy(opintojaksoRepository.getLatestNotNull(poistettuInfo.getOpintojakso()));
+        Lops2019OpintojaksoDto result = addOpintojakso(opsId, mapper.map(opintojakso, Lops2019OpintojaksoDto.class));
+        opintojaksoPoistettuRepository.delete(poistettuInfo);
+        return result;
+    }
+
+    @Override
     public List<PoistettuDto> getRemoved(Long opsId) {
-        throw new UnsupportedOperationException("not implemented yet");
+        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        List<Lops2019OpintojaksoPoistettu> poistetut = opintojaksoPoistettuRepository.findAllByOpetussuunnitelma(ops);
+        return mapper.mapAsList(poistetut, PoistettuDto.class);
     }
 
     @Override

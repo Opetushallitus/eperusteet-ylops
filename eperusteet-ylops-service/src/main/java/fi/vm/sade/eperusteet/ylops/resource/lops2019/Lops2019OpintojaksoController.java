@@ -80,6 +80,14 @@ public class Lops2019OpintojaksoController {
         return opintojaksoService.getVersions(opsId, opintojaksoId);
     }
 
+    @RequestMapping(value = "/{poistettuId}/palauta", method = RequestMethod.POST)
+    @AuditLogged
+    public Lops2019OpintojaksoDto palauta(
+            @PathVariable final Long opsId,
+            @PathVariable final Long poistettuId) {
+        return opintojaksoService.restore(opsId, poistettuId);
+    }
+
     @RequestMapping(value = "/poistetut", method = RequestMethod.GET)
     @AuditLogged
     public List<PoistettuDto> getRemoved(

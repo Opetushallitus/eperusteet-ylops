@@ -23,17 +23,17 @@ import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
-import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.ops.*;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.*;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
+import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
@@ -43,6 +43,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
@@ -55,10 +56,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
-import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
-import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
-import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import fi.vm.sade.eperusteet.ylops.service.ops.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
@@ -115,6 +113,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private TekstiKappaleRepository tekstiKappaleRepository;
 
     @Autowired
+    private ValidointiService validointiService;
+
+    @Autowired
     private TekstiKappaleViiteService tekstiKappaleViiteService;
 
     @Autowired
@@ -125,6 +126,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private OrganisaatioService organisaatioService;
+
+    @Autowired
+    private JulkaisuRepository julkaisuRepository;
 
     @Autowired
     private KommenttiService kommenttiService;
@@ -361,6 +365,40 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = repository.findOne(id);
         PerusteDto perusteDto = eperusteetService.getPerusteById(ops.getCachedPeruste().getPerusteId());
         return mapper.map(perusteDto, PerusteInfoDto.class);
+    }
+
+    @Override
+    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(Long opsId) {
+        Opetussuunnitelma ops = repository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        List<OpetussuunnitelmanJulkaisu> julkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
+        return mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuDto.class);
+    }
+
+    @Override
+    public OpetussuunnitelmanJulkaisuDto addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
+        Opetussuunnitelma ops = repository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        if (!KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
+            throw new BusinessRuleViolationException("vain-lops2019-tuettu");
+        }
+
+        Lops2019ValidointiDto validointi = validointiService.getValidointi(opsId);
+        if (!validointi.isValid()) {
+            throw new BusinessRuleViolationException("julkaisu-ei-mahdollinen-keskeneraiselle");
+        }
+
+        Set<Long> dokumentit = ops.getJulkaisukielet().stream()
+                .map(kieli -> dokumenttiService.createDtoFor(opsId, kieli))
+                .map(DokumenttiDto::getId)
+                .collect(toSet());
+
+        OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
+        julkaisu.setOpetussuunnitelma(ops);
+        julkaisu.setTiedote(mapper.map(julkaisuDto.getJulkaisutiedote(), LokalisoituTeksti.class));
+        julkaisu = julkaisuRepository.save(julkaisu);
+        julkaisu.setDokumentit(dokumentit);
+        return mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class);
     }
 
     @Override

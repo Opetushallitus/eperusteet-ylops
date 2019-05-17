@@ -35,6 +35,8 @@ public interface JpaWithVersioningRepository<T, ID extends Serializable> extends
 
     Integer getLatestRevisionId(final ID id);
 
+    T getLatestNotNull(ID id);
+
     public class DomainClassNotAuditedException extends BeanCreationException {
 
         public DomainClassNotAuditedException(Class<?> clazz) {

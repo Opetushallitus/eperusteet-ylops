@@ -15,13 +15,16 @@
  */
 package fi.vm.sade.eperusteet.ylops.repository.version;
 
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo;
 import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo_;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 
@@ -94,6 +97,22 @@ class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends Simple
     public void setRevisioKommentti(String kommentti) {
         RevisionInfo currentRevision = AuditReaderFactory.get(entityManager).getCurrentRevision(RevisionInfo.class, false);
         currentRevision.addKommentti(kommentti);
+    }
+
+    @Override
+    public T getLatestNotNull(ID id) {
+        List<Revision> revisions = this.getRevisions(id);
+        revisions = revisions.stream()
+                .sorted(Comparator.comparing(Revision::getPvm))
+                .collect(Collectors.toList());
+
+        for (Revision revision : revisions) {
+            T last = this.findRevision(id, revision.getNumero());
+            if (last != null) {
+                return last;
+            }
+        }
+        return null;
     }
 
 }
