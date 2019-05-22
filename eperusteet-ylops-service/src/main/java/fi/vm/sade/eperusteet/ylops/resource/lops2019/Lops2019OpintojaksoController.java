@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/lops2019/opintojaksot")
@@ -24,7 +25,8 @@ public class Lops2019OpintojaksoController {
     @RequestMapping(method = RequestMethod.GET)
     @AuditLogged
     public List<Lops2019OpintojaksoDto> getAllOpintojaksot(
-            @PathVariable final Long opsId) {
+            @PathVariable final Long opsId,
+            @RequestParam(required = false) final String moduuliUri) {
         return opintojaksoService.getAll(opsId);
     }
 
@@ -76,6 +78,14 @@ public class Lops2019OpintojaksoController {
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
         return opintojaksoService.getVersions(opsId, opintojaksoId);
+    }
+
+    @RequestMapping(value = "/{poistettuId}/palauta", method = RequestMethod.POST)
+    @AuditLogged
+    public Lops2019OpintojaksoDto palauta(
+            @PathVariable final Long opsId,
+            @PathVariable final Long poistettuId) {
+        return opintojaksoService.restore(opsId, poistettuId);
     }
 
     @RequestMapping(value = "/poistetut", method = RequestMethod.GET)

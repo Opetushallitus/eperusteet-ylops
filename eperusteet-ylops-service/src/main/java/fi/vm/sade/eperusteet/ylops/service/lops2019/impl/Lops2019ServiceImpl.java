@@ -1,31 +1,35 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ModuuliDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019SisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -40,6 +44,18 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
+
+    @Autowired
+    private Lops2019OppiaineService oppiaineService;
+
+    @Autowired
+    private Lops2019OppiaineRepository oppiaineRepository;
+
+    @Autowired
+    private Lops2019OpintojaksoService opintojaksoService;
+
+    @Autowired
+    private Lops2019OpintojaksoRepository opintojaksoRepository;
 
     @Autowired
     private DtoMapper mapper;
@@ -71,26 +87,6 @@ public class Lops2019ServiceImpl implements Lops2019Service {
         return getPerusteImpl(opsId).getLops2019();
     }
 
-    private List<Lops2019OppiaineDto> getOppiaineetAndOppimaarat(Long opsId) {
-        PerusteDto peruste = getPerusteImpl(opsId);
-        return peruste.getLops2019().getOppiaineet().stream()
-                .map(oa -> Stream.concat(Stream.of(oa), oa.getOppimaarat().stream()))
-                .flatMap(Function.identity())
-                .collect(Collectors.toList());
-    }
-
-    private List<Lops2019ModuuliDto> getModuulit(Long opsId) {
-        PerusteDto peruste = getPerusteImpl(opsId);
-        return peruste.getLops2019().getOppiaineet().stream()
-                .map(oa -> Stream.concat(
-                        oa.getModuulit().stream(),
-                        oa.getOppimaarat().stream()
-                                .map(om -> om.getModuulit().stream())
-                                .flatMap(Function.identity())))
-                .flatMap(Function.identity())
-                .collect(Collectors.toList());
-    }
-
     @Override
     public List<Lops2019OpintojaksoDto> getOpintojaksot(Long opsId) {
         throw new UnsupportedOperationException();
@@ -104,10 +100,39 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     }
 
     @Override
+    public List<Lops2019OppiaineDto> getOppiaineetAndOppimaarat(Long opsId) {
+        PerusteDto peruste = getPerusteImpl(opsId);
+        return peruste.getLops2019().getOppiaineet().stream()
+                .map(oa -> Stream.concat(Stream.of(oa), oa.getOppimaarat().stream()))
+                .flatMap(Function.identity())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Lops2019ModuuliDto> getModuulit(Long opsId) {
+        PerusteDto peruste = getPerusteImpl(opsId);
+        return peruste.getLops2019().getOppiaineet().stream()
+                .map(oa -> Stream.concat(
+                        oa.getModuulit().stream(),
+                        oa.getOppimaarat().stream()
+                                .map(om -> om.getModuulit().stream())
+                                .flatMap(Function.identity())))
+                .flatMap(Function.identity())
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Lops2019OppiaineDto getPerusteOppiaine(Long opsId, Long oppiaineId) {
         return getOppiaineetAndOppimaarat(opsId).stream()
                 .filter(oa -> oppiaineId.equals(oa.getId()))
                 .findFirst().orElseThrow(() -> new BusinessRuleViolationException("oppiainetta-ei-loytynyt"));
+    }
+
+    @Override
+    public Set<Lops2019OppiaineDto> getPerusteenOppiaineet(Long opsId, Set<String> koodiUrit) {
+        return getOppiaineetAndOppimaarat(opsId).stream()
+                .filter(oa -> koodiUrit.contains(oa.getKoodi().getUri()))
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -129,6 +154,13 @@ public class Lops2019ServiceImpl implements Lops2019Service {
                 .filter(moduuli -> koodiUri.equals(moduuli.getKoodi().getUri()))
                 .findFirst()
                 .orElseThrow(() -> new BusinessRuleViolationException("moduulia-ei-loytynyt"));
+    }
+
+    @Override
+    public Set<Lops2019ModuuliDto> getPerusteModuulit(Long opsId, Set<String> koodiUrit) {
+        return getModuulit(opsId).stream()
+                .filter(moduuli -> koodiUrit.contains(moduuli.getKoodi().getUri()))
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -161,5 +193,20 @@ public class Lops2019ServiceImpl implements Lops2019Service {
                     .findFirst()
                     .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
     }
+
+    @Override
+    public Map<String, List<Lops2019OpintojaksoDto>> getModuuliToOpintojaksoMap(List<Lops2019OpintojaksoDto> opintojaksot) {
+        Map<String, List<Lops2019OpintojaksoDto>> liitokset = new HashMap<>();
+        for (Lops2019OpintojaksoDto oj : opintojaksot) {
+            for (Lops2019OpintojaksonModuuliDto moduuli : oj.getModuulit()) {
+                if (!liitokset.containsKey(moduuli.getKoodiUri())) {
+                    liitokset.put(moduuli.getKoodiUri(), new ArrayList<>());
+                }
+                liitokset.get(moduuli.getKoodiUri()).add(oj);
+            }
+        }
+        return liitokset;
+    }
+
 
 }

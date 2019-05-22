@@ -19,9 +19,11 @@ import com.codahale.metrics.annotation.Timed;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
+import fi.vm.sade.eperusteet.ylops.resource.util.AuditLogged;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -125,8 +127,23 @@ public class OpetussuunnitelmaController {
         });
     }
 
+    @RequestMapping(value = "/{opsId}/julkaise", method = RequestMethod.POST)
+    @AuditLogged
+    public OpetussuunnitelmanJulkaisuDto julkaise(
+            @PathVariable final Long opsId,
+            final UusiJulkaisuDto julkaisuDto) {
+        return opetussuunnitelmaService.addJulkaisu(opsId, julkaisuDto);
+    }
+
+    @RequestMapping(value = "/{opsId}/julkaisut", method = RequestMethod.GET)
+    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(
+            @PathVariable final Long opsId) {
+        return opetussuunnitelmaService.getJulkaisut(opsId);
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
+    @AuditLogged
     @Timed
     public ResponseEntity<OpetussuunnitelmaBaseDto> addOpetussuunnitelma(
             @RequestBody OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {

@@ -11,17 +11,13 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Lops2019OpintojaksoDto {
-    private Long id;
-    private String koodi;
-    private LokalisoituTekstiDto nimi;
+public class Lops2019OpintojaksoDto extends Lops2019OpintojaksoBaseDto {
     private LokalisoituTekstiDto kuvaus;
     private LokalisoituTekstiDto tavoitteet;
     private LokalisoituTekstiDto keskeisetSisallot;
     private LokalisoituTekstiDto laajaAlainenOsaaminen;
 
-    @Builder.Default
-    private Set<String> oppiaineet = new HashSet<>();
+    private Set<Lops2019OpintojaksonOppiaineDto> oppiaineet = new HashSet<>();
 
     @Singular("moduuli")
     private Set<Lops2019OpintojaksonModuuliDto> moduulit;

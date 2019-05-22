@@ -35,6 +35,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 
 /**
  * @author hyoty
@@ -62,6 +63,7 @@ public class VuosiluokkakokonaisuusServiceIT extends AbstractIntegrationTest {
         viite = new Vuosiluokkakokonaisuusviite(UUID.randomUUID(), EnumSet.of(Vuosiluokka.VUOSILUOKKA_3, Vuosiluokka.VUOSILUOKKA_4, Vuosiluokka.VUOSILUOKKA_5, Vuosiluokka.VUOSILUOKKA_6));
         this.viite2Ref = Reference.of(viitteet.save(viite));
         Opetussuunnitelma ops = new Opetussuunnitelma();
+        ops.setPerusteenDiaarinumero("xyz");
         ops.setOrganisaatiot(Collections.singleton(SecurityUtil.OPH_OID));
         ops = suunnitelmat.save(ops);
         opsId = ops.getId();

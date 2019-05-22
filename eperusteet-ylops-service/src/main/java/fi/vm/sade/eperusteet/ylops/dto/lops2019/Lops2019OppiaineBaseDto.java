@@ -12,8 +12,10 @@ public class Lops2019OppiaineBaseDto {
     private KoodiDto koodi;
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto kuvaus;
+    private LokalisoituTekstiDto pakollistenModuulienKuvaus;
+    private LokalisoituTekstiDto valinnaistenModuulienKuvaus;
     private Lops2019OppiaineenArviointi arviointi;
     private Lops2019OppiaineenTehtava tehtava;
     private Lops2019OppimaaranLaajaAlaisetOsaamisetDto laajaAlainenOsaaminen;
-//    private Lops2019OppiaineenTavoitteet tavoitteet;
+    private Lops2019OppiaineenTavoitteetDto tavoitteet;
 }

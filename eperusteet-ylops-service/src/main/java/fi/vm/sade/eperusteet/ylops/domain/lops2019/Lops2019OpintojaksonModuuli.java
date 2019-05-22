@@ -28,4 +28,14 @@ public class Lops2019OpintojaksonModuuli extends AbstractAuditedReferenceableEnt
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
+    static Lops2019OpintojaksonModuuli copy(Lops2019OpintojaksonModuuli original) {
+        if (original != null) {
+            Lops2019OpintojaksonModuuli result = new Lops2019OpintojaksonModuuli();
+            result.setKoodiUri(original.getKoodiUri());
+            result.setKuvaus(original.getKuvaus());
+            return result;
+        }
+        return null;
+    }
+
 }

@@ -412,14 +412,14 @@
           "fi": "Biologia on luonnontiede, joka tutkii elämään liittyviä ilmiöitä molekyyli- ja solutasolta biosfääriin. Biologian opetuksen tarkoituksena on herättää kiinnostusta bio- ja ympäristötieteisiin ja tukea opiskelijan luonnontieteellisen ajattelun kehittymistä. Opetus lisää ymmärrystä biologian merkityksestä osana luonnontieteellisen maailmankuvan rakentumista. Luonnontieteellinen maailmankuva perustuu tieteelliseen tutkimukseen ja auttaa siten opiskelijaa ymmärtämään maailmaa tietoperustaisesti. Biologian opetus ohjaa opiskelijaa ymmärtämään elollisen luonnon rakennetta, toimintaa ja vuorovaikutussuhteita sekä evoluution merkityksen eliökunnan kehittymisessä.  Biologian oppiaine antaa opiskelijalle valmiuksia arkielämään, työelämään ja jatko-opintoihin. Biologian opetuksessa opiskelijalle välittyy kuva siitä, että biotieteet ovat nopeasti kehittyviä tieteenaloja, joiden sovelluksia hyödynnetään monin tavoin esimerkiksi lääketieteissä, teollisuudessa sekä maa- ja metsätaloudessa. Biologian opetus auttaa opiskelijaa ymmärtämään biotieteiden tarjoamia mahdollisuuksia edistää ihmiskunnan, muun eliökunnan ja elinympäristöjen hyvinvointia.  Biologian opetukselle on ominaista havainnointiin ja kokeellisuuteen perustuva tiedonhankinta, tutkimuksellisuus sekä aktivoivat ja vuorovaikutteiset työ- ja toimintatavat. Biologian opetuksessa tehdään laborointeja ja työskennellään myös digitaalisissa ja koulun ulkopuolisissa opiskeluympäristöissä. Opiskelun edetessä kokeellisen työskentelyn taidot monipuolistuvat ja syventyvät. Opetuksessa tehdään monipuolisesti yhteistyötä muiden oppiaineiden kanssa. Biologian opetukseen sisältyviä ilmiöitä tarkastellaan erityisesti maantieteessä, kemiassa, fysiikassa, psykologiassa ja terveystiedossa kullekin oppiaineelle ominaisella tavalla."
         }
       },
-      "laajaAlainenOsaaminen": {
-        "laajaAlaisetOsaamiset": [{
-          "laajaAlainenId": 103
-        }],
+      "laajaAlaisetOsaamiset": [{
         "kuvaus": {
           "fi": "Biologian opetuksen perustana on luonnon monimuotoisuuden ja sen kehittymisen ymmärtäminen. Opetuksessa keskeinen teema on kestävän tulevaisuuden rakentaminen. Laaja-alaisen osaamisen tavoitteet toteutuvat yhdessä biologian tavoitteiden saavuttamisen kanssa.  Biologian opetus vahvistaa luontevasti opiskelijan hyvinvointiosaamista. Opetus lisää opiskelijan ymmärrystä monimuotoisen, puhtaan ja terveellisen ympäristön merkityksestä ihmisen kokonaisvaltaiselle hyvinvoinnille. Biologiassa korostuu yksilöiden erilaisuus ja monimuotoisuus sekä niiden biologinen tausta, mikä antaa opiskelijalle työkaluja erilaisuuden hyväksymiseen. Opiskelija saa ohjausta omien tavoitteiden asettamisessa sekä tukea ja kannustusta oppimisprosessin eri vaiheissa, mikä vahvistaa  vahvistaen opiskelijan itsetuntemusta ja pitkäjännitteisyyttäpitkäjänteisyyttä.  Vuorovaikutusosaamisen osalta opiskelija oppii biologian oppiaineessa argumentoimaan ja arvioimaan omia ja muiden näkökulmia biologisen tiedon avulla. Opetusta annetaan erilaisissa oppimisympäristöissä ja monipuolisilla työmenetelmillä, mikä kehittää opiskelijan sosiaalisia ja vuorovaikutuksellisia valmiuksia.  Biologian opetus ohjaa opiskelijaa luonnontieteelliseen ajatteluun, tiedonhankintaan ja tietojen kriittiseen analyysiin nopeasti kehittyvällä kansainvälisellä biotieteiden alalla tukien näin monitieteistä ja luovaa osaamista. Opetuksessa perehdytään biologian taustalla olevien tieteenalojen kieleen, käsitteistöön ja tapoihin rakentaa tietoa. Biologian opetus harjaannuttaa opiskelijaa tutkimuksellisuuteen sekä monitieteiseen ja luovaan työskentelyyn vaihtelevissa oppimisympäristöissä.  Yhteiskunnallisen osaamisen osalta biologian opetuksessa opiskelijalle annetaan opiskelijalle valmiuksia työskennellä yhteiskunnan kannalta tärkeillä aloilla kuten terveydenhuollossa, ympäristöalalla sekä maa- ja metsätaloudessa. Biotieteet ovat nopeasti kehittyvä kansainvälinen ala, jonka sovelluksia hyödynnetään yhteiskunnassa paikallisella, kansallisella ja kansainvälisellä tasolla. Biologian opetus antaa tietopohjan, jonka avulla opiskelija voi ottaa kantaa moniin ajankohtaisiin yhteiskunnallisiin kysymyksiin ja kykenee kriittisyyteen seuratessaan mediaa. Opetus ohjaa opiskelijaa kestävään elämäntapaan ja globaalin vastuun ottamiseen aktiivisina yhteiskunnan jäseninä vahvistaen näin opiskelijan globaali- ja kulttuuriosaamista.  Biologian opetus kehittää opiskelijoiden ympäristöosaamista ja halua vaalia luonnon monimuotoisuutta. Opetuksessa Siinä korostuu ymmärrys luonnon ainutlaatuisuudesta. Opetuksessa käsitellään biologisten sovellusten ja ekosysteemipalveluiden mahdollisuuksia kestävän tulevaisuuden kannalta. Opetus auttaa opiskelijaa tekemään kestäviä valintoja arkielämässä sekä soveltamaan biologista tietoa eettistä osaamista vaativissa pohdinnoissa."
-        }
-      },
+        },
+        "koodit": [{
+          "uri": "laajaalaisetosaamiset_1"
+        }]
+      }],
       "tavoitteet": {
         "kuvaus": {
           "fi": "Biologian opetuksessa edistetään opiskelijan kykyä tarkastella ilmiöitä biotieteiden näkökulmasta sekä vahvistetaan ja syvennetään biologian tietoja, taitoja ja osaamista monipuolisesti. Tavoitteet liittyvät biologiseen tarkastelutapaan, biologian ilmiöihin ja prosesseihin sekä biologisiin taitoihin ja niiden soveltamiseen. Tavoitealueittain opetuksen yleiset tavoitteet ovat seuraavat."
@@ -445,10 +445,10 @@
       "moduulit": [{
         "id": 100001,
         "nimi": {
-          "fi": "Elämä ja evoluutio" 
+          "fi": "Elämä ja evoluutio"
         },
         "kuvaus": {
-          "fi": "Moduulissa perehdytään elämän edellytyksiin ja kaikille eliöille tunnusomaisiin piirteisiin. Keskeinen näkökulma moduulissa on evoluutio ja sen merkityksen ymmärtäminen. Moduulissa tutustutaan biologiseen tapaan hankkia ja kuvata tietoa sekä biologiaan osana luonnontieteitä." 
+          "fi": "Moduulissa perehdytään elämän edellytyksiin ja kaikille eliöille tunnusomaisiin piirteisiin. Keskeinen näkökulma moduulissa on evoluutio ja sen merkityksen ymmärtäminen. Moduulissa tutustutaan biologiseen tapaan hankkia ja kuvata tietoa sekä biologiaan osana luonnontieteitä."
         },
         "pakollinen": true,
         "laajuus": 2,
@@ -498,10 +498,10 @@
       }, {
         "id": 100004,
         "nimi": {
-          "fi": "Ekologian perusteet" 
+          "fi": "Ekologian perusteet"
         },
         "kuvaus": {
-          "fi": "Moduulissa tarkastellaan ekologian perusteita ja elämän monimuotoisuutta." 
+          "fi": "Moduulissa tarkastellaan ekologian perusteita ja elämän monimuotoisuutta."
         },
         "pakollinen": true,
         "laajuus": 1,
@@ -551,10 +551,10 @@
       }, {
         "id": 100007,
         "nimi": {
-          "fi": "Ihmisen vaikutukset ekosysteemeihin" 
+          "fi": "Ihmisen vaikutukset ekosysteemeihin"
         },
         "kuvaus": {
-          "fi": "Moduulin keskeisinä teemoina ovat ekologiset ympäristöongelmat Suomessa ja muualla maailmassa sekä mahdollisuudet suojella ekosysteemejä ja monimuotoisuutta. Moduulissa tutustutaan ekologiseen tutkimukseen ja sen soveltamiseen ympäristön suojelussa." 
+          "fi": "Moduulin keskeisinä teemoina ovat ekologiset ympäristöongelmat Suomessa ja muualla maailmassa sekä mahdollisuudet suojella ekosysteemejä ja monimuotoisuutta. Moduulissa tutustutaan ekologiseen tutkimukseen ja sen soveltamiseen ympäristön suojelussa."
         },
         "pakollinen": true,
         "laajuus": 1,
@@ -604,10 +604,10 @@
       }, {
         "id": 100008,
         "nimi": {
-          "fi": "Solu ja perinnöllisyys" 
+          "fi": "Solu ja perinnöllisyys"
         },
         "kuvaus": {
-          "fi": "Moduulin keskeisinä teemoina ovat ekologiset ympäristöongelmat Suomessa ja muualla maailmassa sekä mahdollisuudet suojella ekosysteemejä ja monimuotoisuutta. Moduulissa tutustutaan ekologiseen tutkimukseen ja sen soveltamiseen ympäristön suojelussa." 
+          "fi": "Moduulin keskeisinä teemoina ovat ekologiset ympäristöongelmat Suomessa ja muualla maailmassa sekä mahdollisuudet suojella ekosysteemejä ja monimuotoisuutta. Moduulissa tutustutaan ekologiseen tutkimukseen ja sen soveltamiseen ympäristön suojelussa."
         },
         "pakollinen": false,
         "laajuus": 2,
@@ -657,10 +657,10 @@
       }, {
         "id": 100011,
         "nimi": {
-          "fi": "Ihmisen biologia" 
+          "fi": "Ihmisen biologia"
         },
         "kuvaus": {
-          "fi": "Moduulissa perehdytään ihmisen anatomiaan ja fysiologiaan. Keskeisiä tarkastelun kohteita ovat ihmisen elintoiminnot ja lisääntyminen. Moduulissa tarkastellaan ihmiselimistön kykyä sopeutua muutoksiin ja puolustautua ulkoisia uhkia vastaan.  " 
+          "fi": "Moduulissa perehdytään ihmisen anatomiaan ja fysiologiaan. Keskeisiä tarkastelun kohteita ovat ihmisen elintoiminnot ja lisääntyminen. Moduulissa tarkastellaan ihmiselimistön kykyä sopeutua muutoksiin ja puolustautua ulkoisia uhkia vastaan.  "
         },
         "pakollinen": false,
         "laajuus": 2,
@@ -710,10 +710,10 @@
       }, {
         "id": 100012,
         "nimi": {
-          "fi": "Biotekniikka ja sen sovellukset" 
+          "fi": "Biotekniikka ja sen sovellukset"
         },
         "kuvaus": {
-          "fi": "Moduulin tarkoituksena on, että opiskelija ymmärtää biologisen tutkimuksen merkityksen sovellusten kehittämisessä niin lääketieteessä, teollisuudessa, elintarviketuotannossa kuin luonnonvarojen kestävän kehityksen mukaisessa käytössä. Keskeisiä tarkastelun kohteita ovat geenitekniikan ja mikrobiologian erilaiset sovellukset. Moduulissa esitellään uusimpia biotekniikan sovelluksia nopeasti kehittyvällä alalla.  " 
+          "fi": "Moduulin tarkoituksena on, että opiskelija ymmärtää biologisen tutkimuksen merkityksen sovellusten kehittämisessä niin lääketieteessä, teollisuudessa, elintarviketuotannossa kuin luonnonvarojen kestävän kehityksen mukaisessa käytössä. Keskeisiä tarkastelun kohteita ovat geenitekniikan ja mikrobiologian erilaiset sovellukset. Moduulissa esitellään uusimpia biotekniikan sovelluksia nopeasti kehittyvällä alalla.  "
         },
         "pakollinen": false,
         "laajuus": 2,
@@ -783,14 +783,14 @@
           "fi": "Matematiikan opiskelu antaa opiskelijalle valmiudet ymmärtää, soveltaa ja tuottaa sekä arvioida matemaattisesti esitettyä tietoa. Opetus ohjaa opiskelijaa ymmärtämään matematiikan merkityksen aikamme kulttuurissa ja huomaamaan sen välttämättömyyden monilla aloilla kuten luonnontieteissä, tekniikassa, lääketieteessä, taloustieteessä ja yhteiskuntatieteissä sekä taiteessa. Matematiikan opetuksen tehtävänä on perehdyttää opiskelija matematiikan peruskäsitteisiin, matematiikan perusideoihin ja rakenteisiin sekä ohjata käyttämään puhuttua ja kirjoitettua matematiikan kieltä. Lisäksi opetus kehittää laskemisen, luovan ajattelun, ilmiöiden mallintamisen, ennustamisen ja ongelmien ratkaisemisen taitoja."
         }
       },
-      "laajaAlainenOsaaminen": {
-        "laajaAlaisetOsaamiset": [{
-          "laajaAlainenId": 103
-        }],
+      "laajaAlaisetOsaamiset": [{
         "kuvaus": {
-          "fi": "Opetuksessa tutkitaan arkielämän ja matematiikan välisiä yhteyksiä sekä hyödynnetään mahdollisuuksia opiskelijan kiinnostuksen ohjaamiseen, itsetunnon vahvistamiseen, kokeiluihin kannustamiseen ja tiedonhankintaprosessien kehittämiseen sekä sinnikkääseen työskentelyyn. Matematiikassa opittavia taitoja sovelletaan omien tavoitteiden asettamisessa ja päätöksenteossa sekä pohditaan, kuinka näitä taitoja voidaan hyödyntää kestävän kehitykseen ja ihmiskuntaan liittyvien ongelmien ratkaisussa."
-        }
-      },
+          "fi": "Biologian opetuksen perustana on luonnon monimuotoisuuden ja sen kehittymisen ymmärtäminen. Opetuksessa keskeinen teema on kestävän tulevaisuuden rakentaminen. Laaja-alaisen osaamisen tavoitteet toteutuvat yhdessä biologian tavoitteiden saavuttamisen kanssa.  Biologian opetus vahvistaa luontevasti opiskelijan hyvinvointiosaamista. Opetus lisää opiskelijan ymmärrystä monimuotoisen, puhtaan ja terveellisen ympäristön merkityksestä ihmisen kokonaisvaltaiselle hyvinvoinnille. Biologiassa korostuu yksilöiden erilaisuus ja monimuotoisuus sekä niiden biologinen tausta, mikä antaa opiskelijalle työkaluja erilaisuuden hyväksymiseen. Opiskelija saa ohjausta omien tavoitteiden asettamisessa sekä tukea ja kannustusta oppimisprosessin eri vaiheissa, mikä vahvistaa  vahvistaen opiskelijan itsetuntemusta ja pitkäjännitteisyyttäpitkäjänteisyyttä.  Vuorovaikutusosaamisen osalta opiskelija oppii biologian oppiaineessa argumentoimaan ja arvioimaan omia ja muiden näkökulmia biologisen tiedon avulla. Opetusta annetaan erilaisissa oppimisympäristöissä ja monipuolisilla työmenetelmillä, mikä kehittää opiskelijan sosiaalisia ja vuorovaikutuksellisia valmiuksia.  Biologian opetus ohjaa opiskelijaa luonnontieteelliseen ajatteluun, tiedonhankintaan ja tietojen kriittiseen analyysiin nopeasti kehittyvällä kansainvälisellä biotieteiden alalla tukien näin monitieteistä ja luovaa osaamista. Opetuksessa perehdytään biologian taustalla olevien tieteenalojen kieleen, käsitteistöön ja tapoihin rakentaa tietoa. Biologian opetus harjaannuttaa opiskelijaa tutkimuksellisuuteen sekä monitieteiseen ja luovaan työskentelyyn vaihtelevissa oppimisympäristöissä.  Yhteiskunnallisen osaamisen osalta biologian opetuksessa opiskelijalle annetaan opiskelijalle valmiuksia työskennellä yhteiskunnan kannalta tärkeillä aloilla kuten terveydenhuollossa, ympäristöalalla sekä maa- ja metsätaloudessa. Biotieteet ovat nopeasti kehittyvä kansainvälinen ala, jonka sovelluksia hyödynnetään yhteiskunnassa paikallisella, kansallisella ja kansainvälisellä tasolla. Biologian opetus antaa tietopohjan, jonka avulla opiskelija voi ottaa kantaa moniin ajankohtaisiin yhteiskunnallisiin kysymyksiin ja kykenee kriittisyyteen seuratessaan mediaa. Opetus ohjaa opiskelijaa kestävään elämäntapaan ja globaalin vastuun ottamiseen aktiivisina yhteiskunnan jäseninä vahvistaen näin opiskelijan globaali- ja kulttuuriosaamista.  Biologian opetus kehittää opiskelijoiden ympäristöosaamista ja halua vaalia luonnon monimuotoisuutta. Opetuksessa Siinä korostuu ymmärrys luonnon ainutlaatuisuudesta. Opetuksessa käsitellään biologisten sovellusten ja ekosysteemipalveluiden mahdollisuuksia kestävän tulevaisuuden kannalta. Opetus auttaa opiskelijaa tekemään kestäviä valintoja arkielämässä sekä soveltamaan biologista tietoa eettistä osaamista vaativissa pohdinnoissa."
+        },
+        "koodit": [{
+          "uri": "laajaalaisetosaamiset_1"
+        }]
+      }],
       "tavoitteet": {
         "kuvaus": {},
         "tavoitealueet": [{
@@ -818,7 +818,7 @@
         "moduulit": [{
           "id": 100016,
           "nimi": {
-            "fi": "Luvut ja yhtälöt" 
+            "fi": "Luvut ja yhtälöt"
           },
           "pakollinen": true,
           "laajuus": 2,
@@ -863,7 +863,7 @@
         "moduulit": [{
           "id": 100002,
           "nimi": {
-            "fi": "Lausekkeet ja yhtälöt" 
+            "fi": "Lausekkeet ja yhtälöt"
           },
           "pakollinen": true,
           "laajuus": 2,
@@ -914,7 +914,7 @@
         "moduulit": [{
           "id": 100002,
           "nimi": {
-            "fi": "Algebralliset funktiot ja yhtälöt" 
+            "fi": "Algebralliset funktiot ja yhtälöt"
           },
           "pakollinen": true,
           "laajuus": 3,
@@ -951,7 +951,7 @@
         }, {
           "id": 100019,
           "nimi": {
-            "fi": "Geometria" 
+            "fi": "Geometria"
           },
           "pakollinen": true,
           "laajuus": 3,
@@ -985,7 +985,7 @@
         }, {
           "id": 100020,
           "nimi": {
-            "fi": "Analyyttinen geometria ja vektorit" 
+            "fi": "Analyyttinen geometria ja vektorit"
           },
           "pakollinen": true,
           "laajuus": 3,
@@ -1019,7 +1019,7 @@
         }, {
           "id": 100021,
           "nimi": {
-            "fi": "Transkendenttiset funktiot ja yhtälöt" 
+            "fi": "Transkendenttiset funktiot ja yhtälöt"
           },
           "pakollinen": true,
           "laajuus": 2,
@@ -1053,7 +1053,7 @@
         }, {
           "id": 100022,
           "nimi": {
-            "fi": "Derivaatta" 
+            "fi": "Derivaatta"
           },
           "pakollinen": true,
           "laajuus": 2,
@@ -1087,7 +1087,7 @@
         }, {
           "id": 100023,
           "nimi": {
-            "fi": "Integraalilaskenta" 
+            "fi": "Integraalilaskenta"
           },
           "pakollinen": true,
           "laajuus": 2,
@@ -1121,7 +1121,7 @@
         }, {
           "id": 100024,
           "nimi": {
-            "fi": "Tilastot ja todennäköisyys" 
+            "fi": "Tilastot ja todennäköisyys"
           },
           "pakollinen": true,
           "laajuus": 2,
@@ -1155,7 +1155,7 @@
         }, {
           "id": 100025,
           "nimi": {
-            "fi": "Talousmatematiikka" 
+            "fi": "Talousmatematiikka"
           },
           "pakollinen": true,
           "laajuus": 1,
@@ -1189,7 +1189,7 @@
         }, {
           "id": 100003,
           "nimi": {
-            "fi": "3D-geometria" 
+            "fi": "3D-geometria"
           },
           "pakollinen": false,
           "laajuus": 2,
@@ -1232,7 +1232,7 @@
         }, {
           "id": 100030,
           "nimi": {
-            "fi": "Algoritmit" 
+            "fi": "Algoritmit"
           },
           "pakollinen": false,
           "laajuus": 2,
@@ -1275,7 +1275,7 @@
         }, {
           "id": 100031,
           "nimi": {
-            "fi": "Analyysi ja jatkuva jakauma" 
+            "fi": "Analyysi ja jatkuva jakauma"
           },
           "pakollinen": false,
           "laajuus": 2,
