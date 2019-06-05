@@ -16,6 +16,16 @@ public class Lops2019ValidointiDto extends ValidointiDto<Lops2019ValidointiDto> 
     private Set<KoodiDto> kaikkiModuulit = new HashSet<>();
     private Set<ModuuliLiitosDto> liitetytModuulit = new HashSet<>();
 
+    @Override
+    protected int kaikki() {
+        return kaikkiModuulit.size();
+    }
+
+    @Override
+    protected int onnistuneet() {
+        return liitetytModuulit.size();
+    }
+
     public Lops2019ValidointiDto(DtoMapper mapper) {
         super(mapper);
     }

@@ -19,7 +19,6 @@ import com.codahale.metrics.annotation.Timed;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
@@ -131,7 +130,7 @@ public class OpetussuunnitelmaController {
     @AuditLogged
     public OpetussuunnitelmanJulkaisuDto julkaise(
             @PathVariable final Long opsId,
-            final UusiJulkaisuDto julkaisuDto) {
+            @RequestBody final UusiJulkaisuDto julkaisuDto) {
         return opetussuunnitelmaService.addJulkaisu(opsId, julkaisuDto);
     }
 

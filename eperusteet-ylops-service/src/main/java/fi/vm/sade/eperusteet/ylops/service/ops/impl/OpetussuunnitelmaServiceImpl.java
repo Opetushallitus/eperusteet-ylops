@@ -27,7 +27,6 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.*;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.*;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
@@ -44,6 +43,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaDataRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
@@ -60,17 +60,15 @@ import fi.vm.sade.eperusteet.ylops.service.ops.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
-import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
-import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
+import fi.vm.sade.eperusteet.ylops.service.util.*;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
-import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.*;
 
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.nullToEmpty;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import java.util.function.Consumer;
@@ -131,6 +129,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private JulkaisuRepository julkaisuRepository;
 
     @Autowired
+    private JulkaistuOpetussuunnitelmaDataRepository julkaistuOpetussuunnitelmaDataRepository;
+
+    @Autowired
     private KommenttiService kommenttiService;
 
     @Autowired
@@ -153,6 +154,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private DokumenttiService dokumenttiService;
+
+    @Autowired
+    private JsonMapper jsonMapper;
 
     @PersistenceContext
     private EntityManager em;
@@ -361,13 +365,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public PerusteInfoDto getPerusteBase(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
-        PerusteDto perusteDto = eperusteetService.getPerusteById(ops.getCachedPeruste().getPerusteId());
-        return mapper.map(perusteDto, PerusteInfoDto.class);
-    }
-
-    @Override
     public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(Long opsId) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
@@ -376,17 +373,29 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    public PerusteInfoDto getPerusteBase(Long id) {
+        Opetussuunnitelma ops = repository.findOne(id);
+        PerusteDto perusteDto = eperusteetService.getPerusteById(ops.getCachedPeruste().getPerusteId());
+        return mapper.map(perusteDto, PerusteInfoDto.class);
+    }
+
+    @Override
     public OpetussuunnitelmanJulkaisuDto addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+
+        if (!Tyyppi.OPS.equals(ops.getTyyppi())) {
+            throw new BusinessRuleViolationException("pohjaa-ei-voi-julkaista");
+        }
+
         if (!KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
             throw new BusinessRuleViolationException("vain-lops2019-tuettu");
         }
 
         Lops2019ValidointiDto validointi = validointiService.getValidointi(opsId);
-        if (!validointi.isValid()) {
-            throw new BusinessRuleViolationException("julkaisu-ei-mahdollinen-keskeneraiselle");
-        }
+//        if (!validointi.isValid()) {
+//            throw new BusinessRuleViolationException("julkaisu-ei-mahdollinen-keskeneraiselle");
+//        }
 
         Set<Long> dokumentit = ops.getJulkaisukielet().stream()
                 .map(kieli -> dokumenttiService.createDtoFor(opsId, kieli))
@@ -396,9 +405,29 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
         julkaisu.setOpetussuunnitelma(ops);
         julkaisu.setTiedote(mapper.map(julkaisuDto.getJulkaisutiedote(), LokalisoituTeksti.class));
-        julkaisu = julkaisuRepository.save(julkaisu);
         julkaisu.setDokumentit(dokumentit);
-        return mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class);
+        OpetussuunnitelmaLaajaDto opsData = getOpetussuunnitelmaEnempi(opsId);
+
+        try {
+            String opsDataJson = jsonMapper.serialize(opsData);
+            List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
+            if (!vanhatJulkaisut.isEmpty()) {
+                int lastHash = vanhatJulkaisut.get(vanhatJulkaisut.size() - 1).getData().getHash();
+                if (lastHash == opsDataJson.hashCode()) {
+                    throw new BusinessRuleViolationException("opetussuunnitelma-ei-muuttunut-viime-julkaisun-jalkeen");
+                }
+            }
+
+            JulkaistuOpetussuunnitelmaData data = new JulkaistuOpetussuunnitelmaData(opsDataJson);
+            data = julkaistuOpetussuunnitelmaDataRepository.save(data);
+            julkaisu.setData(data);
+            julkaisu.setRevision(vanhatJulkaisut.size() + 1);
+            julkaisu = julkaisuRepository.save(julkaisu);
+            return mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BusinessRuleViolationException("julkaisun-tallennus-epaonnistui");
+        }
     }
 
     @Override

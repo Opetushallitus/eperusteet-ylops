@@ -1,21 +1,53 @@
 package fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.domain.Validable;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @NoArgsConstructor
 public class ValidointiDto<T extends ValidointiDto> {
-    private Map<String, List<ValidoinninKohdeDto>> validoinnit = new HashMap<>();
-    private boolean valid = true;
     private DtoMapper mapper;
+
+    @Getter
+    @Setter
+    private Map<String, List<ValidoinninKohdeDto>> validoinnit = new HashMap<>();
+
+    @Getter
+    @Setter
+    private boolean valid = true;
+
+    @JsonProperty("kaikkiValidoinnit")
+    long getKaikkiValidoinnit() {
+        return this.validoinnit.values().stream()
+                .mapToInt(List::size)
+                .sum() + kaikki();
+    }
+
+    @JsonProperty("onnistuneetValidoinnit")
+    long getOnnistuneetValidoinnit() {
+        return this.validoinnit.values().stream()
+                .flatMap(Collection::stream)
+                .filter(v -> v.isFailed() && v.isFatal())
+                .count() + onnistuneet();
+    }
+
+    @JsonIgnore
+    protected int kaikki() {
+        return 0;
+    }
+
+    @JsonIgnore
+    protected int onnistuneet() {
+        return 0;
+    }
 
     public ValidointiDto(DtoMapper mapper) {
         this.mapper = mapper;
