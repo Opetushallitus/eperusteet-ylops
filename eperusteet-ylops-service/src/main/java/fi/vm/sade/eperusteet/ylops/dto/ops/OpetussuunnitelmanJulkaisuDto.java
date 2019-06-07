@@ -5,6 +5,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,7 +13,10 @@ import java.util.Set;
 @Setter
 public class OpetussuunnitelmanJulkaisuDto {
     private Long id;
-    private OpetussuunnitelmaBaseDto opetussuunnitelma;
+    private OpetussuunnitelmaInfoDto opetussuunnitelma;
     private LokalisoituTekstiDto tiedote;
     private Set<Reference> dokumentit = new HashSet<>();
+    private int revision;
+    private Date luotu;
+    private String luoja;
 }

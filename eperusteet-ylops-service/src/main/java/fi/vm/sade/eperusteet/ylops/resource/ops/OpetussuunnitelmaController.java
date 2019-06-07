@@ -131,7 +131,7 @@ public class OpetussuunnitelmaController {
     @AuditLogged
     public OpetussuunnitelmanJulkaisuDto julkaise(
             @PathVariable final Long opsId,
-            final UusiJulkaisuDto julkaisuDto) {
+            @RequestBody final UusiJulkaisuDto julkaisuDto) {
         return opetussuunnitelmaService.addJulkaisu(opsId, julkaisuDto);
     }
 

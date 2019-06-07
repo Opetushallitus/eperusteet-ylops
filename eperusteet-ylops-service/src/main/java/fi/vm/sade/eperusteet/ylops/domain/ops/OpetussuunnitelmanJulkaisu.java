@@ -1,20 +1,19 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 
-import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
+import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.NotAudited;
-import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -26,30 +25,41 @@ import java.util.Set;
 @Getter
 @Setter
 @Table(name = "opetussuunnitelman_julkaisu")
-public class OpetussuunnitelmanJulkaisu {
+public class OpetussuunnitelmanJulkaisu extends AbstractReferenceableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    private Long id;
+    @NotNull
+    private int revision;
 
     @ManyToOne
     @JoinColumn(name = "ops_id")
     @NotNull
     private Opetussuunnitelma opetussuunnitelma;
 
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @NotNull
     private LokalisoituTeksti tiedote;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date luotu;
+
+    @Getter
+    @NotNull
+    private String luoja;
+
     @ElementCollection
     @NotNull
     @Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
-    @Immutable
     private Set<Long> dokumentit = new HashSet<>();
 
     @NotNull
-    @Column(name = "peruste_json", nullable = false, updatable = false, columnDefinition = "text")
-    private String opsData; // TODO: Käytä jsonb:tä
+    @OneToOne(fetch = FetchType.LAZY)
+    private JulkaistuOpetussuunnitelmaData data;
+
+    @PrePersist
+    private void prepersist() {
+        luotu = new Date();
+        luoja = SecurityUtil.getAuthenticatedPrincipal().getName();
+    }
 
 }
