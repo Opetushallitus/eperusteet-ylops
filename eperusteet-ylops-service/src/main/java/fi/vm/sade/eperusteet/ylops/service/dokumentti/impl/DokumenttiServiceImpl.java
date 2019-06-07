@@ -163,10 +163,10 @@ public class DokumenttiServiceImpl implements DokumenttiService {
             Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
             mapper.map(dto, dokumentti);
             Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
+            dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
             dokumentti.setTila(DokumenttiTila.VALMIS);
             dokumentti.setValmistumisaika(new Date());
             dokumentti.setVirhekoodi(null);
-            dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
 
             dokumenttiRepository.save(dokumentti);
         } catch (Exception ex) {

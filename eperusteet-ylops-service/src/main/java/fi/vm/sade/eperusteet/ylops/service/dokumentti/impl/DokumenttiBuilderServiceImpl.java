@@ -19,6 +19,7 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.utils.dto.dokumentti.DokumenttiMetaDto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -105,6 +106,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private LukioService lukioService;
 
     @Autowired
+    private Lops2019DokumenttiService lops2019DokumenttiService;
+
+    @Autowired
     private PdfService pdfService;
 
     @Autowired
@@ -167,13 +171,17 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             docBase.setPerusteDto(perusteDto);
 
             // Perusopetus
-            if (ops.getKoulutustyyppi() == KoulutusTyyppi.PERUSOPETUS) {
+            if (KoulutusTyyppi.PERUSOPETUS.equals(ops.getKoulutustyyppi())) {
                 perusopetusService.addVuosiluokkakokonaisuudet(docBase);
             }
 
             // Lukio
-            if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
-                lukioService.addOppimistavoitteetJaOpetuksenKeskeisetSisallot(docBase);
+            if (KoulutusTyyppi.LUKIOKOULUTUS.equals(ops.getKoulutustyyppi())) {
+                if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
+                    lops2019DokumenttiService.addLops2019Sisalto(docBase);
+                } else {
+                    lukioService.addOppimistavoitteetJaOpetuksenKeskeisetSisallot(docBase);
+                }
             }
         }
 
