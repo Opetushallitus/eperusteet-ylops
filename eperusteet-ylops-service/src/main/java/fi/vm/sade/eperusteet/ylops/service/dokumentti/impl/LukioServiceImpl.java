@@ -60,6 +60,7 @@ public class LukioServiceImpl implements LukioService {
     @Autowired
     private LukioOppiaineJarjestysRepository jarjestysRepository;
 
+    @Override
     public void addOppimistavoitteetJaOpetuksenKeskeisetSisallot(DokumenttiBase docBase) throws ParserConfigurationException, SAXException, IOException {
         addHeader(docBase, messages.translate("oppimistavoitteet-ja-opetuksen-keskeiset-sisallot", docBase.getKieli()));
         docBase.getGenerator().increaseDepth();

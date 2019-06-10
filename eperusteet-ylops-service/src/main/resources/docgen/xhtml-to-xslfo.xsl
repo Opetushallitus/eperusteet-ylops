@@ -571,7 +571,7 @@
                 </fo:block>
             </fo:list-item-label>
             <fo:list-item-body start-indent="body-start()"> 
-                <fo:block>
+                <fo:block font-size="10pt">
                     <xsl:apply-templates select="*|text()"/>
                 </fo:block>
             </fo:list-item-body>
@@ -579,7 +579,8 @@
     </xsl:template>
 
     <xsl:template match="p">
-        <fo:block space-after="0.75em">
+        <fo:block font-size="10pt" line-height="1.25em"
+                  space-after="0.75em" text-align="justify">
             <xsl:apply-templates select="*|text()"/>
         </fo:block>
     </xsl:template>
@@ -827,7 +828,7 @@
                             <xsl:text>0pt</xsl:text>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:text>12pt</xsl:text>
+                            <xsl:text>10pt</xsl:text>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:attribute>
@@ -858,7 +859,7 @@
                 <fo:block>&#x2022;</fo:block>
             </fo:list-item-label>
             <fo:list-item-body start-indent="body-start()">
-                <fo:block>
+                <fo:block font-size="10pt">
                     <xsl:apply-templates select="*|text()"/>
                 </fo:block>
             </fo:list-item-body>

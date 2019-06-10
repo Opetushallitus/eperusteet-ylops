@@ -46,7 +46,7 @@ public interface DokumenttiService {
     @PreAuthorize("isAuthenticated()")
     void generateWithDto(DokumenttiDto dto) throws DokumenttiException;
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     DokumenttiDto getDto(Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
