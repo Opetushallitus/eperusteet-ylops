@@ -30,9 +30,14 @@ ylopsApp.controller("PohjaTiedotController", function(
     Varmistusdialogi,
     EperusteetPerusopetus,
     EperusteetLukiokoulutus,
+    EperusteetValmiitPerusteet,
     perusteet
 ) {
     $scope.luonnissa = $stateParams.pohjaId === "uusi";
+    $scope.yksinkertainen = _.any(
+        ["koulutustyyppi_6", "koulutustyyppi_15", "koulutustyyppi_20", "koulutustyyppi_22"],
+        i => i === $scope.model.koulutustyyppi
+    );
     $scope.kieliOrderFn = Kieli.orderFn;
 
     if ($scope.luonnissa) {
@@ -151,11 +156,29 @@ ylopsApp.controller("PohjaTiedotController", function(
             ["koulutustyyppi_2", "koulutustyyppi_23", "koulutustyyppi_14"],
             i => i === $scope.model.koulutustyyppi
         );
-        const perusteet = isLukio ? EperusteetLukiokoulutus : EperusteetPerusopetus;
+        const isPerusopetus = "koulutustyyppi_16" === $scope.model.koulutustyyppi;
+
+        let perusteet;
+        let yksinkertainen = false;
+        if (isLukio) {
+            perusteet = EperusteetLukiokoulutus;
+        } else if (isPerusopetus) {
+            perusteet = EperusteetPerusopetus;
+        } else {
+            perusteet = EperusteetValmiitPerusteet;
+            yksinkertainen = true;
+        }
+
         perusteet.query(
             {},
             perusteet => {
-                $scope.perustelista = perusteet;
+                if (yksinkertainen) {
+                    $scope.perustelista = _(perusteet)
+                        .filter(p => p.koulutustyyppi === $scope.model.koulutustyyppi)
+                        .value();
+                } else {
+                    $scope.perustelista = perusteet;
+                }
             },
             Notifikaatiot.serverCb
         );

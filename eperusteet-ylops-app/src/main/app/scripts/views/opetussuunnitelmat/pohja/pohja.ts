@@ -139,7 +139,7 @@ ylopsApp
 
         $scope.sync = function() {
             OpetussuunnitelmaCRUD.syncPeruste(
-                { id: $scope.model.id },
+                { opsId: $scope.model.id },
                 _.bind(Notifikaatiot.onnistui, {}, "paivitys-onnistui"),
                 Notifikaatiot.serverCb
             );

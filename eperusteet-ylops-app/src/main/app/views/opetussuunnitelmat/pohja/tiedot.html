@@ -30,7 +30,7 @@
       <div class="col-sm-6 formfield-data" ng-class="{viewmode: !(editMode || luonnissa)}">
         <div ng-if="!(editMode || luonnissa)" ng-bind="model.perusteenDiaarinumero"></div>
 
-        <ui-select ng-if="(editMode || luonnissa)" ng-disabled="editMode" class="ui-select" ng-model="model.perusteenDiaarinumero" on-select="$select.search = ''">
+        <ui-select ng-if="(editMode || luonnissa)" ng-disabled="editMode && !yksinkertainen" class="ui-select" ng-model="model.perusteenDiaarinumero" on-select="$select.search = ''">
           <ui-select-choices repeat="peruste.diaarinumero as peruste in perustelista | filter: $select.search">
             <div ng-bind-html="peruste.nimi | kaanna | highlight: $select.search"></div>
             <div class="detail-info">

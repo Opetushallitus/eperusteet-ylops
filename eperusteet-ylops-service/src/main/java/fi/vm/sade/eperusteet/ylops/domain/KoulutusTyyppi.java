@@ -66,11 +66,21 @@ public enum KoulutusTyyppi {
     }
 
     public boolean isAmmatillinen() {
-        return tyyppi != null && tyyppi.equals(AMMATTITUTKINTO.toString()) || tyyppi.equals(ERIKOISAMMATTITUTKINTO.toString()) || tyyppi.equals(PERUSTUTKINTO.toString());
+        return tyyppi != null && (tyyppi.equals(AMMATTITUTKINTO.toString())
+                || tyyppi.equals(ERIKOISAMMATTITUTKINTO.toString())
+                || tyyppi.equals(PERUSTUTKINTO.toString()));
     }
 
     public boolean isLukio() {
-        return tyyppi != null && (tyyppi.equals(LUKIOKOULUTUS.toString()) ||
-                tyyppi.equals(LUKIOVALMISTAVAKOULUTUS.toString()) || tyyppi.equals(AIKUISLUKIOKOULUTUS.toString()));
+        return tyyppi != null && (tyyppi.equals(LUKIOKOULUTUS.toString())
+                || tyyppi.equals(LUKIOVALMISTAVAKOULUTUS.toString())
+                || tyyppi.equals(AIKUISLUKIOKOULUTUS.toString()));
+    }
+
+    public boolean isYksinkertainen() {
+        return tyyppi != null && (tyyppi.equals(LISAOPETUS.toString())
+                || tyyppi.equals(ESIOPETUS.toString())
+                || tyyppi.equals(VARHAISKASVATUS.toString())
+                || tyyppi.equals(PERUSOPETUSVALMISTAVA.toString()));
     }
 }

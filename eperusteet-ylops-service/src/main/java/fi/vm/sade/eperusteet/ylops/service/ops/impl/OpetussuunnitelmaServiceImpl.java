@@ -993,15 +993,47 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         // Ei sallita pohjan muuttamista
         opetussuunnitelmaDto.setPohja(mapper.map(ops.getPohja(), OpetussuunnitelmaNimiDto.class));
 
-        // Ei sallita perusteen diaarinumeron muuttamista
-        opetussuunnitelmaDto.setPerusteenDiaarinumero(ops.getPerusteenDiaarinumero());
+        // EP-1611
+        if (ops.getKoulutustyyppi().isYksinkertainen() && ops.getTyyppi().equals(Tyyppi.POHJA)) {
 
-        // Ei sallita peruste cachen muuttamista
-        PerusteCache cachedPeruste = ops.getCachedPeruste();
-        if (cachedPeruste.getPerusteId() != null) {
-            opetussuunnitelmaDto.setPerusteenId(cachedPeruste.getPerusteId());
+            // Tarkistetaan perusteen perusteen olemassaolo
+            final String diaarinumero = opetussuunnitelmaDto.getPerusteenDiaarinumero();
+            if (StringUtils.isBlank(diaarinumero)) {
+                throw new BusinessRuleViolationException("Uuden perusteen diaarinumeroa ei ole määritelty");
+            } else if (eperusteetService.findPerusteet().stream()
+                    .noneMatch(p -> diaarinumero.equals(p.getDiaarinumero()))) {
+                throw new BusinessRuleViolationException("Diaarinumerolla " + diaarinumero +
+                        " ei löydy voimassaolevaa perustetta");
+            }
+
+            // Haetaan uusi peruste
+            PerusteDto peruste = eperusteetService.getPeruste(diaarinumero);
+
+            // Tarkistetaan perusteen koulutustyyppi
+            if (!ops.getKoulutustyyppi().equals(peruste.getKoulutustyyppi())) {
+                throw new BusinessRuleViolationException("Uuden perusteen koulutustyyppi ei saa muuttua");
+            }
+
+            // Asetetaan uusi diaarinumero ja cached peruste
+            ops.setPerusteenDiaarinumero(opetussuunnitelmaDto.getPerusteenDiaarinumero());
+
+            PerusteCache cachedPeruste = perusteCacheRepository.findNewestEntryForPeruste(peruste.getId());
+            if (cachedPeruste != null && cachedPeruste.getId() != null) {
+                opetussuunnitelmaDto.setPerusteenId(peruste.getId());
+                ops.setCachedPeruste(cachedPeruste);
+            }
+
         } else {
-            opetussuunnitelmaDto.setPerusteenId(null);
+            // Ei sallita perusteen diaarinumeron muuttamista
+            opetussuunnitelmaDto.setPerusteenDiaarinumero(ops.getPerusteenDiaarinumero());
+
+            // Ei sallita peruste cachen muuttamista
+            PerusteCache cachedPeruste = ops.getCachedPeruste();
+            if (cachedPeruste.getPerusteId() != null) {
+                opetussuunnitelmaDto.setPerusteenId(cachedPeruste.getPerusteId());
+            } else {
+                opetussuunnitelmaDto.setPerusteenId(null);
+            }
         }
 
         // Tilan muuttamiseen on oma erillinen endpointtinsa
