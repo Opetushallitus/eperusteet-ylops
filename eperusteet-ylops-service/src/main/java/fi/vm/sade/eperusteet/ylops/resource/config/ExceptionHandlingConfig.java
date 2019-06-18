@@ -20,6 +20,8 @@ import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ServiceException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import org.apache.catalina.connector.ClientAbortException;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.ConversionNotSupportedException;
@@ -89,8 +91,9 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
     public void clientAbortExceptionHandler(HttpServletRequest request, ClientAbortException ex) {
         Principal principal = request.getUserPrincipal();
         String username = principal != null ? principal.getName() : "<NONE>";
-        LOG.warn("ClientAbortException: username={}, remoteAddr={}, userAgent={}, requestedURL={}", username,
-                request.getRemoteAddr(), request.getHeader("User-Agent"), request.getRequestURL());
+        LOG.warn("ClientAbortException: message={} username={}, remoteAddr={}, userAgent={}, requestedURL={}",
+                ex.getLocalizedMessage(), username, request.getRemoteAddr(), request.getHeader("User-Agent"),
+                request.getRequestURL());
     }
 
     @ExceptionHandler(value = {
@@ -168,8 +171,7 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
         } else if (ex instanceof ServiceException) {
             map.put("syy", ex.getLocalizedMessage());
         } else if (ex instanceof IOException) {
-            String simpleName = ex.getCause().getClass().getSimpleName();
-            if (simpleName.equals("ClientAbortException")) {
+            if (StringUtils.containsIgnoreCase(ExceptionUtils.getRootCauseMessage(ex), "Broken pipe")) {
                 suppresstrace = true;
                 map.put("syy", ex.getLocalizedMessage());
                 map.put("avain", "client-abort-virhe");
