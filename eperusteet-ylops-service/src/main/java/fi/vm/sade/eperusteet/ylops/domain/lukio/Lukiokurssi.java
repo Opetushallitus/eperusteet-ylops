@@ -19,6 +19,7 @@ package fi.vm.sade.eperusteet.ylops.domain.lukio;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
+import fi.vm.sade.eperusteet.ylops.domain.utils.KoodistoUtils;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml.WhitelistType;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioKurssiParentDto;
@@ -26,9 +27,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -84,7 +83,6 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
             precision = 4, scale = 2, columnDefinition = "DECIMAL(4,2)")
     private BigDecimal laajuus = BigDecimal.ONE;
 
-    @Getter
     @Setter
     @ValidHtml(whitelist = WhitelistType.MINIMAL)
     @JoinColumn(name = "lokalisoitava_koodi_id", nullable = true)
@@ -117,6 +115,22 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
     @Audited
     @OneToMany(mappedBy = "kurssi", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<OppiaineLukiokurssi> oppiaineet = new HashSet<>(0);
+
+    public LokalisoituTeksti getLokalisoituKoodi() {
+        if (this.oppiaineet.size() > 0) {
+            OppiaineLukiokurssi oa = this.oppiaineet.iterator().next();
+            String kieliKoodiUri = oa.getOppiaine().getKieliKoodiUri();
+            if (kieliKoodiUri != null && this.koodiArvo != null && kieliKoodiUri.startsWith("lukiokielitarjonta")) {
+                String kurssiosa = this.koodiArvo.substring(2);
+                Map<Kieli, String> kielet = new HashMap<>();
+                kielet.put(Kieli.FI, KoodistoUtils.getVieraskielikoodi(kieliKoodiUri, Kieli.FI) + kurssiosa);
+                kielet.put(Kieli.SV, KoodistoUtils.getVieraskielikoodi(kieliKoodiUri, Kieli.SV) + kurssiosa);
+                LokalisoituTeksti teksti = LokalisoituTeksti.of(kielet);
+                return teksti;
+            }
+        }
+        return lokalisoituKoodi;
+    }
 
     public Lukiokurssi() {
         super(UUID.randomUUID());

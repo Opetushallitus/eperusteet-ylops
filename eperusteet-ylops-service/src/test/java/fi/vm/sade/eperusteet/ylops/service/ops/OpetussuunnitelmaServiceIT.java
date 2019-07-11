@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.utils.KoodistoUtils;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
@@ -311,5 +312,13 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertEquals(
                 otsikot.getLapset().get(lastenMaara).getLapset().size(),
                 tekstit.getLapset().get(lastenMaara).getLapset().size());
+    }
+
+    @Test
+    public void testKielitarjontakoodit() {
+        assertEquals(KoodistoUtils.getVieraskielikoodi("lukiokielitarjonta_ea", Kieli.FI), "EA");
+        assertEquals(KoodistoUtils.getVieraskielikoodi("lukiokielitarjonta_ea", Kieli.SV), "SP");
+        assertEquals(KoodistoUtils.getVieraskielikoodi("lukiokielitarjonta_ve", Kieli.FI), "VE");
+        assertEquals(KoodistoUtils.getVieraskielikoodi("abc", Kieli.FI), "KX");
     }
 }
