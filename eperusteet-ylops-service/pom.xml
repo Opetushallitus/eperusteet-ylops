@@ -32,6 +32,7 @@
         <hibernate.export.type>CREATE</hibernate.export.type>
         <eperusteet.resources>fi.vm.sade.eperusteet.ylops.resource</eperusteet.resources>
         <swagger-maven-plugin-version>3.1.7</swagger-maven-plugin-version>
+        <flyway.version>5.2.4</flyway.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -54,7 +55,7 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>4.0.3</version>
+            <version>${flyway.version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -514,11 +515,12 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>5.2.4</version>
+                <version>${flyway.version}</version>
                 <configuration>
                     <url>${eperusteet-ylops.devdb.jdbcurl}</url>
                     <user>${eperusteet-ylops.devdb.user}</user>
                     <password>${eperusteet-ylops.devdb.password}</password>
+                    <outOfOrder>true</outOfOrder>
                 </configuration>
                 <dependencies>
                     <dependency>
