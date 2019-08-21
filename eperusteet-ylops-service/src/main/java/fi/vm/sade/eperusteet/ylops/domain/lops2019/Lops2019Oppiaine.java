@@ -71,8 +71,9 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
 
     @Getter
     @Setter
+    @JoinColumn(name="laajaAlainenOsaaminen_id")
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private Lops2019LaajaAlainenOsaaminen laajaAlainenOsaaminen;
+    private Lops2019LaajaAlainenOsaaminen laajaAlaisetOsaamiset;
 
     @Getter
     @Setter
