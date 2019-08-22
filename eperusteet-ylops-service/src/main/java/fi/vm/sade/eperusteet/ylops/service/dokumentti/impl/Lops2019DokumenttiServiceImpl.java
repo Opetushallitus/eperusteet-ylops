@@ -126,7 +126,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         }
 
         // Laaja-alainen osaaminen
-        Lops2019OppimaaranLaajaAlaisetOsaamisetDto laoKokonaisuus = oa.getLaajaAlainenOsaaminen();
+        Lops2019OppimaaranLaajaAlaisetOsaamisetDto laoKokonaisuus = oa.getLaajaAlaisetOsaamiset();
         if (laoKokonaisuus != null) {
             addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
             addLokalisoituteksti(docBase, laoKokonaisuus.getKuvaus(), "div");
