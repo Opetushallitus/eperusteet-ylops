@@ -75,9 +75,8 @@ public class EperusteetLocalService implements EperusteetService {
             }
             return result;
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new BusinessRuleViolationException("datan-hakeminen-epaonnistui", e);
         }
-        return null;
     }
 
     // FIXME pilko service kahteen osaan

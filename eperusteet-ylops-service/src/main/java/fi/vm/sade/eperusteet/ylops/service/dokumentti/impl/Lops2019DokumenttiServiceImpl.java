@@ -135,7 +135,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             if (!ObjectUtils.isEmpty(oaLaajaAlaisetOsaamiset)) {
                 oaLaajaAlaisetOsaamiset.forEach(osaamiset -> {
                     addLokalisoituteksti(docBase, osaamiset.getKuvaus(), "div");
-                    Reference laoRef = osaamiset.getLaajaAlainenOsaaminen();
+                    Reference laoRef = osaamiset.getLaajaAlaisetOsaamiset();
                     if (laoRef != null && laajaAlaisetOsaamisetMap.containsKey(laoRef.getId())) {
                         Lops2019LaajaAlainenDto lao = laajaAlaisetOsaamisetMap.get(laoRef.getId());
                         addLokalisoituteksti(docBase, lao.getNimi(), "h6");
