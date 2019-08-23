@@ -126,7 +126,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         }
 
         // Laaja-alainen osaaminen
-        Lops2019OppimaaranLaajaAlaisetOsaamisetDto laoKokonaisuus = oa.getLaajaAlainenOsaaminen();
+        Lops2019OppimaaranLaajaAlaisetOsaamisetDto laoKokonaisuus = oa.getLaajaAlaisetOsaamiset();
         if (laoKokonaisuus != null) {
             addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
             addLokalisoituteksti(docBase, laoKokonaisuus.getKuvaus(), "div");
@@ -135,7 +135,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             if (!ObjectUtils.isEmpty(oaLaajaAlaisetOsaamiset)) {
                 oaLaajaAlaisetOsaamiset.forEach(osaamiset -> {
                     addLokalisoituteksti(docBase, osaamiset.getKuvaus(), "div");
-                    Reference laoRef = osaamiset.getLaajaAlainenOsaaminen();
+                    Reference laoRef = osaamiset.getLaajaAlaisetOsaamiset();
                     if (laoRef != null && laajaAlaisetOsaamisetMap.containsKey(laoRef.getId())) {
                         Lops2019LaajaAlainenDto lao = laajaAlaisetOsaamisetMap.get(laoRef.getId());
                         addLokalisoituteksti(docBase, lao.getNimi(), "h6");

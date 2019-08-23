@@ -8,6 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Lops2019OppimaaranLaajaAlainenOsaaminenDto {
-    private Reference laajaAlainenOsaaminen;
+    private Reference laajaAlaisetOsaamiset;
     private LokalisoituTekstiDto kuvaus;
 }
