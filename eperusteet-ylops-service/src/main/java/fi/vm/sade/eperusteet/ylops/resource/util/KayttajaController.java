@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.resource.util;
 
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import io.swagger.annotations.Api;
@@ -46,5 +47,10 @@ public class KayttajaController {
     @RequestMapping(value = "/organisaatiot", method = RequestMethod.GET)
     public Set<String> getOrganisaatioOikeudet() {
         return kayttajat.haeOrganisaatioOikeudet();
+    }
+
+    @RequestMapping(value = "/etusivu", method = RequestMethod.GET)
+    public EtusivuDto getKayttajanEtusivu() {
+        return kayttajat.haeKayttajanEtusivu();
     }
 }

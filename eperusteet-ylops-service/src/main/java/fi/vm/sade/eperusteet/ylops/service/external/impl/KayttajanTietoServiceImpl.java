@@ -17,9 +17,15 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.javautils.http.OphHttpClient;
@@ -50,6 +56,9 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
  */
 @Service
 public class KayttajanTietoServiceImpl implements KayttajanTietoService {
+
+    @Autowired
+    private OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Autowired
     private KayttajaClient client;
@@ -96,6 +105,16 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     public KayttajanProjektitiedotDto haeOpetussuunnitelma(String oid, Long opsId) {
         // TODO
         throw new NotImplementedException();
+    }
+
+    @Override
+    public EtusivuDto haeKayttajanEtusivu() {
+        EtusivuDto result = new EtusivuDto();
+        result.setOpetussuunnitelmatKeskeneraiset(opetussuunnitelmaService.getAmount(Tyyppi.OPS, Tila.julkaisemattomat()));
+        result.setOpetussuunnitelmatJulkaistut(opetussuunnitelmaService.getAmount(Tyyppi.OPS, Tila.julkiset()));
+        result.setPohjatKeskeneraiset(opetussuunnitelmaService.getAmount(Tyyppi.POHJA, Sets.newHashSet(Tila.LUONNOS)));
+        result.setPohjatJulkaistut(opetussuunnitelmaService.getAmount(Tyyppi.POHJA, Sets.newHashSet(Tila.VALMIS)));
+        return result;
     }
 
     @Component

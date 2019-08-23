@@ -15,7 +15,9 @@ import org.hibernate.envers.RelationTargetAuditMode;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -42,19 +44,21 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @Getter
     @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
-    private LokalisoituTeksti tavoitteet;
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @ElementCollection
+    @OrderColumn
+    private List<LokalisoituTeksti> tavoitteet = new ArrayList<>();
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @Getter
     @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
-    private LokalisoituTeksti keskeisetSisallot;
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @ElementCollection
+    @OrderColumn
+    private List<LokalisoituTeksti> keskeisetSisallot = new ArrayList<>();
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)

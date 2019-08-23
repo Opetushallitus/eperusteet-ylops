@@ -344,18 +344,18 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
 
         // Tavoitteet
-        LokalisoituTekstiDto tavoitteet = oj.getTavoitteet();
-        if (tavoitteet != null) {
-            addTeksti(docBase, messages.translate("tavoitteet", docBase.getKieli()), "h6");
-            addLokalisoituteksti(docBase, oj.getTavoitteet(), "div");
-        }
-
-        // Keskeiset sisällöt
-        LokalisoituTekstiDto keskeisetSisallot = oj.getKeskeisetSisallot();
-        if (keskeisetSisallot != null) {
-            addTeksti(docBase, messages.translate("keskeiset-sisallot", docBase.getKieli()), "h6");
-            addLokalisoituteksti(docBase, keskeisetSisallot, "div");
-        }
+//        List<LokalisoituTekstiDto> tavoitteet = oj.getTavoitteet();
+//        if (tavoitteet != null) {
+//            addTeksti(docBase, messages.translate("tavoitteet", docBase.getKieli()), "h6");
+//            addLokalisoituteksti(docBase, oj.getTavoitteet(), "div");
+//        }
+//
+//        // Keskeiset sisällöt
+//        List<LokalisoituTekstiDto> keskeisetSisallot = oj.getKeskeisetSisallot();
+//        if (keskeisetSisallot != null) {
+//            addTeksti(docBase, messages.translate("keskeiset-sisallot", docBase.getKieli()), "h6");
+//            addLokalisoituteksti(docBase, keskeisetSisallot, "div");
+//        }
 
         // Laaja-alainen osaaminen
         LokalisoituTekstiDto laajaAlainenOsaaminen = oj.getLaajaAlainenOsaaminen();

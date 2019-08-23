@@ -299,6 +299,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
+    public Long getAmount(Tyyppi tyyppi, Set<Tila> tilat) {
+        Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
+        if (tyyppi == Tyyppi.POHJA) {
+            return repository.countByTyyppi(tyyppi, tilat, organisaatiot);
+        } else {
+            return repository.countByTyyppi(tyyppi, tilat, organisaatiot);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi) {
         return getAll(tyyppi, null);
     }

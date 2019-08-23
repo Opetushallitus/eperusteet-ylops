@@ -66,6 +66,12 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     List<Opetussuunnitelma> findAllByTyyppi(@Param("tyyppi") Tyyppi tyyppi,
                                             @Param("organisaatiot") Collection<String> organisaatiot);
 
+    @Query(value = "SELECT COUNT(DISTINCT o) FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
+            "WHERE org IN (:organisaatiot) AND o.tyyppi = :tyyppi AND o.tila IN (:tilat)")
+    Long countByTyyppi(@Param("tyyppi") Tyyppi tyyppi,
+                       @Param("tilat") Collection<Tila> tilat,
+                       @Param("organisaatiot") Collection<String> organisaatiot);
+
     @Query(value = "SELECT DISTINCT o FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
             "WHERE o.tyyppi = fi.vm.sade.eperusteet.ylops.domain.Tyyppi.POHJA AND (o.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.VALMIS OR org IN (:organisaatiot))")
     List<Opetussuunnitelma> findPohja(@Param("organisaatiot") Collection<String> organisaatiot);

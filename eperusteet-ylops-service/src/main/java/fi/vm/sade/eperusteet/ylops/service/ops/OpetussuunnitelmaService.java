@@ -27,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -44,13 +45,17 @@ public interface OpetussuunnitelmaService {
             "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi, Tila tila);
 
-    List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
+    @PreAuthorize("isAuthenticated()")
+    Long getAmount(Tyyppi tyyppi, Set<Tila> tila);
 
     @PreAuthorize("permitAll()")
     List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query);
 
     @PreAuthorize("permitAll()")
     OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(@P("opsId") Long id);
+
+    @PreAuthorize("isAuthenticated()")
+    List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     OpetussuunnitelmaStatistiikkaDto getStatistiikka();
