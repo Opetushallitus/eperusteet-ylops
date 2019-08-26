@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.mocks;
 
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
@@ -64,6 +65,11 @@ public class KayttajanTietoServiceMock implements KayttajanTietoService {
 
     @Override
     public Set<String> haeOrganisaatioOikeudet() {
+        return null;
+    }
+
+    @Override
+    public EtusivuDto haeKayttajanEtusivu() {
         return null;
     }
 }

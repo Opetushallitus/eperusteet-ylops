@@ -15,12 +15,13 @@ import java.util.Set;
 @Builder
 public class Lops2019OpintojaksoDto extends Lops2019OpintojaksoBaseDto {
     private LokalisoituTekstiDto kuvaus;
+    private LokalisoituTekstiDto arviointi;
     private LokalisoituTekstiDto laajaAlainenOsaaminen;
 
     private Set<Lops2019OpintojaksonOppiaineDto> oppiaineet = new HashSet<>();
 
-    private List<LokalisoituTekstiDto> tavoitteet = new ArrayList<>();
-    private List<LokalisoituTekstiDto> keskeisetSisallot = new ArrayList<>();
+    private List<Lops2019OpintojaksonTavoiteDto> tavoitteet = new ArrayList<>();
+    private List<Lops2019OpintojaksonKeskeinenSisaltoDto> keskeisetSisallot = new ArrayList<>();
 
     @Singular("moduuli")
     private Set<Lops2019OpintojaksonModuuliDto> moduulit = new HashSet<>();

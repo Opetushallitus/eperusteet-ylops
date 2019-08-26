@@ -283,7 +283,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
                     addLokalisoituteksti(docBase, lao.getKuvaus(), "div");
 
-                    addLokalisoituteksti(docBase, lao.getOpinnot(), "div");
+//                    addLokalisoituteksti(docBase, lao.getOpinnot(), "div");
 
                     // Painopisteet?
 

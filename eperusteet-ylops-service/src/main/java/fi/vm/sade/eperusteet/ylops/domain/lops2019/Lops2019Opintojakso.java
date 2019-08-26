@@ -44,21 +44,38 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @Getter
     @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @ElementCollection
-    @OrderColumn
-    private List<LokalisoituTeksti> tavoitteet = new ArrayList<>();
+    private LokalisoituTeksti arviointi;
+
+    public void setTavoitteet(List<Lops2019OpintojaksonTavoite> tavoitteet) {
+        this.tavoitteet.clear();
+        this.tavoitteet.addAll(tavoitteet);
+    }
+
+    public void setKeskeisetSisallot(List<Lops2019OpintojaksonKeskeinenSisalto> keskeisetSisallot) {
+        this.keskeisetSisallot.clear();
+        this.keskeisetSisallot.addAll(keskeisetSisallot);
+    }
 
     @Getter
-    @Setter
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @ElementCollection
     @OrderColumn
-    private List<LokalisoituTeksti> keskeisetSisallot = new ArrayList<>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinTable(name = "lops2019_opintojakso_tavoite",
+            joinColumns = @JoinColumn(name = "opintojakso_id"),
+            inverseJoinColumns = @JoinColumn(name = "tavoite_id"))
+    private List<Lops2019OpintojaksonTavoite> tavoitteet = new ArrayList<>();
+
+    @Getter
+    @OrderColumn
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinTable(name = "lops2019_opintojakso_sisalto",
+            joinColumns = @JoinColumn(name = "opintojakso_id"),
+            inverseJoinColumns = @JoinColumn(name = "keskeinen_sisalto_id"))
+    private List<Lops2019OpintojaksonKeskeinenSisalto> keskeisetSisallot = new ArrayList<>();
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
