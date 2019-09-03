@@ -14,13 +14,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
 @Audited
-@Table(name = "lops2019_oppiaine")
+@Table(name = "lops2019_oppiaine",
+       uniqueConstraints = @UniqueConstraint(columnNames = { "koodi", "sisalto_id" }))
 public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity implements Validable {
 
     @ManyToOne
@@ -35,6 +37,7 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
 
     @Getter
     @Setter
+    @NotEmpty
     private String koodi;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})

@@ -6,6 +6,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
@@ -13,6 +14,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -24,10 +26,14 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
 public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoService {
+
+    @Autowired
+    private Lops2019OppiaineRepository oppiaineRepository;
 
     @Autowired
     private Lops2019PoistetutRepository poistetutRepository;
@@ -140,8 +146,18 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                 .map(Lops2019OpintojaksonOppiaineDto::getKoodi)
                 .collect(Collectors.toSet()));
 
-        if (perusteenOppiaineet.size() != opintojaksoDto.getOppiaineet().size()) {
-            throw new BusinessRuleViolationException("perusteen-oppiainetta-ei-olemassa");
+        Set<String> oppiaineKoodit = Stream.concat(
+                oppiaineRepository.findAllBySisalto(ops.getLops2019()).stream()
+                    .map(Lops2019Oppiaine::getKoodi),
+                perusteenOppiaineet.stream()
+                        .flatMap(x -> Stream.concat(Stream.of(x), x.getOppimaarat().stream()))
+                        .map(oa -> oa.getKoodi().getUri()))
+                .collect(Collectors.toSet());
+
+        if (!oppiaineKoodit.containsAll(opintojaksoDto.getOppiaineet().stream()
+                .map(Lops2019OpintojaksonOppiaineDto::getKoodi)
+                .collect(Collectors.toSet()))) {
+            throw new BusinessRuleViolationException("oppiainetta-ei-ole");
         }
 
         if (perusteenOppiaineet.stream().anyMatch(oa -> !oa.getOppimaarat().isEmpty())) {
