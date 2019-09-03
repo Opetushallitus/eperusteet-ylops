@@ -24,8 +24,8 @@ public class Lops2019Poistettu extends AbstractAuditedEntity implements Serializ
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @NotNull
     private Opetussuunnitelma opetussuunnitelma;
 
     @Column(name = "poistettu_id")
@@ -41,6 +41,13 @@ public class Lops2019Poistettu extends AbstractAuditedEntity implements Serializ
     @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
     private LokalisoituTeksti nimi;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @Getter
+    @Setter
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
+    private LokalisoituTeksti parent;
 
     private Boolean palautettu = false;
 }

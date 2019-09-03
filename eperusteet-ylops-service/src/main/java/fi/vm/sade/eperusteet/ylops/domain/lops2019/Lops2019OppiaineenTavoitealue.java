@@ -13,6 +13,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Audited
@@ -44,4 +45,16 @@ public class Lops2019OppiaineenTavoitealue extends AbstractAuditedReferenceableE
         this.tavoitteet.addAll(tavoitteet);
     }
 
+    public static Lops2019OppiaineenTavoitealue copy(Lops2019OppiaineenTavoitealue original) {
+        if (original == null) {
+            return null;
+        }
+        Lops2019OppiaineenTavoitealue result = new Lops2019OppiaineenTavoitealue();
+        result.setKohde(original.getKohde());
+        result.setNimi(original.getNimi());
+        result.setTavoitteet(original.getTavoitteet().stream()
+            .map(Lops2019Tavoite::copy)
+            .collect(Collectors.toSet()));
+        return result;
+    }
 }

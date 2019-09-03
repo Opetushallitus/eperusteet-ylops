@@ -343,7 +343,22 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     private TekstiKappaleViite updateTraverse(Long opsId, TekstiKappaleViite parent, TekstiKappaleViiteDto.Puu uusi,
                                               Set<TekstiKappaleViite> refs) {
-        TekstiKappaleViite viite = repository.findOne(uusi.getId());
+        TekstiKappaleViite viite;
+        if (uusi.getId() != null) {
+            viite = repository.findOne(uusi.getId());
+        }
+        else {
+            uusi.setNaytaPerusteenTeksti(false);
+            uusi.setOmistussuhde(Omistussuhde.OMA);
+            uusi.setPerusteTekstikappaleId(null);
+            TekstiKappaleViite uusiViite = mapper.map(uusi, TekstiKappaleViite.class);
+            uusiViite.getTekstiKappale().setValmis(false);
+            uusiViite.getTekstiKappale().setTila(Tila.LUONNOS);
+            uusiViite.setTekstiKappale(tekstiKappaleRepository.save(uusiViite.getTekstiKappale()));
+            viite = repository.save(uusiViite);
+            refs.add(viite);
+        }
+
         if (viite == null || !refs.remove(viite)) {
             throw new BusinessRuleViolationException("Viitepuun päivitysvirhe, annettua alipuun juuren viitettä ei löydy");
         }

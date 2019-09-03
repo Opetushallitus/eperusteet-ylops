@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.domain.lops2019;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum PoistetunTyyppi {
+    LOPS2019OPPIAINE("lops2019oppiaine"),
     OPINTOJAKSO("opintojakso");
 
     private final String tyyppi;

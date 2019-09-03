@@ -11,6 +11,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Audited
@@ -28,6 +29,18 @@ public class Lops2019Tavoitteet extends AbstractAuditedReferenceableEntity {
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
     @JoinTable(name = "lops2019_tavoitteiden_tavoitealueet")
     private Set<Lops2019OppiaineenTavoitealue> tavoitealueet = new HashSet<>();
+
+    public static Lops2019Tavoitteet copy(Lops2019Tavoitteet original) {
+        if (original == null) {
+            return null;
+        }
+        Lops2019Tavoitteet result = new Lops2019Tavoitteet();
+        result.setKuvaus(original.getKuvaus());
+        result.setTavoitealueet(original.getTavoitealueet().stream()
+            .map(Lops2019OppiaineenTavoitealue::copy)
+            .collect(Collectors.toSet()));
+        return result;
+    }
 
     public void setTavoitealueet(Set<Lops2019OppiaineenTavoitealue> tavoitealueet) {
         this.tavoitealueet.clear();

@@ -1,18 +1,19 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
-import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Poistettu;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
@@ -22,7 +23,6 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
-import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +38,9 @@ import java.util.stream.Stream;
 @Transactional
 @Slf4j
 public class Lops2019ServiceImpl implements Lops2019Service {
+
+    @Autowired
+    private Lops2019PoistetutRepository poistetutRepository;
 
     @Autowired
     private EperusteetService eperusteetService;
@@ -76,6 +79,48 @@ public class Lops2019ServiceImpl implements Lops2019Service {
         PerusteCache perusteCached = ops.getCachedPeruste();
         PerusteDto perusteDto = eperusteetService.getPerusteById(perusteCached.getPerusteId());
         return perusteDto;
+    }
+
+    @Override
+    public void restore(Long opsId, Long poistettuId) {
+        Lops2019Poistettu poistettuInfo = poistetutRepository.getOne(poistettuId);
+        Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
+        if (poistettuInfo.getOpetussuunnitelma() != opetussuunnitelma) {
+            throw new BusinessRuleViolationException("vain-oman-voi-palauttaa");
+        }
+
+        switch (poistettuInfo.getTyyppi()) {
+            case LOPS2019OPPIAINE:
+                palautaOppiaine(opsId, poistettuInfo);
+                return;
+            case OPINTOJAKSO:
+                palautaOpintojakso(opsId, poistettuInfo);
+                return;
+        }
+        throw new BusinessRuleViolationException("tunnistamaton-poistotyyppi");
+    }
+
+    private void palautaOppiaine(Long opsId, Lops2019Poistettu poistettuInfo) {
+        Lops2019Oppiaine latest = oppiaineRepository.getLatestNotNull(poistettuInfo.getPoistettu_id());
+        Lops2019Oppiaine oppiaine = Lops2019Oppiaine.copy(latest);
+        Lops2019PaikallinenOppiaineDto uusi = mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
+        oppiaineService.addOppiaine(opsId, uusi);
+        poistetutRepository.delete(poistettuInfo);
+    }
+
+    private void palautaOpintojakso(Long opsId, Lops2019Poistettu poistettuInfo) {
+        Lops2019Opintojakso latest = opintojaksoRepository.getLatestNotNull(poistettuInfo.getPoistettu_id());
+        Lops2019Opintojakso opintojakso = Lops2019Opintojakso.copy(latest);
+        Lops2019OpintojaksoDto opintojaksoDto = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
+        opintojaksoService.addOpintojakso(opsId, opintojaksoDto);
+        poistetutRepository.delete(poistettuInfo);
+    }
+
+    @Override
+    public List<Lops2019PoistettuDto> getRemoved(Long opsId) {
+        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        List<Lops2019Poistettu> poistetut = poistetutRepository.findAllByOpetussuunnitelma(ops);
+        return mapper.mapAsList(poistetut, Lops2019PoistettuDto.class);
     }
 
     @Override

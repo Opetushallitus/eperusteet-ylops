@@ -25,4 +25,12 @@ public class Lops2019Tehtava extends AbstractAuditedReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
+    public static Lops2019Tehtava copy(Lops2019Tehtava original) {
+        if (original == null) {
+            return null;
+        }
+        Lops2019Tehtava result = new Lops2019Tehtava();
+        result.setKuvaus(original.getKuvaus());
+        return result;
+    }
 }

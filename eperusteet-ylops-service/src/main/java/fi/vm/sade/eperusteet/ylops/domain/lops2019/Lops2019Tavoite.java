@@ -22,4 +22,13 @@ public class Lops2019Tavoite extends AbstractAuditedReferenceableEntity {
     @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
     private LokalisoituTeksti tavoite;
+
+    public static Lops2019Tavoite copy(Lops2019Tavoite original) {
+        if (original == null) {
+            return null;
+        }
+        Lops2019Tavoite result = new Lops2019Tavoite();
+        result.setTavoite(original.getTavoite());
+        return result;
+    }
 }

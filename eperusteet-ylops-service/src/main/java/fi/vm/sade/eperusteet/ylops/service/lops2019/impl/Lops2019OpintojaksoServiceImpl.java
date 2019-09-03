@@ -1,16 +1,12 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Poistettu;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonModuuli;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
-import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
-import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoPoistettuRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -34,7 +30,7 @@ import java.util.stream.Collectors;
 public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoService {
 
     @Autowired
-    private Lops2019OpintojaksoPoistettuRepository opintojaksoPoistettuRepository;
+    private Lops2019PoistetutRepository poistetutRepository;
 
     @Autowired
     private Lops2019OpintojaksoRepository opintojaksoRepository;
@@ -197,7 +193,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         poistettu.setOpetussuunnitelma(ops);
         poistettu.setPoistettu_id(opintojaksoId);
         poistettu.setPalautettu(false);
-        opintojaksoPoistettuRepository.save(poistettu);
+        poistettu.setTyyppi(PoistetunTyyppi.OPINTOJAKSO);
+        poistetutRepository.save(poistettu);
         ops.getLops2019().getOpintojaksot().remove(opintojakso);
     }
 
@@ -210,31 +207,6 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                     rev.setNimi(nimi);
                 })
                 .collect(Collectors.toList());
-    }
-
-    @Override
-    public Lops2019OpintojaksoDto restore(Long opsId, Long poistettuId) {
-        Lops2019Poistettu poistettuInfo = opintojaksoPoistettuRepository.findOne(poistettuId);
-        Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
-        if (poistettuInfo.getOpetussuunnitelma() != opetussuunnitelma) {
-            throw new BusinessRuleViolationException("vain-oman-voi-palauttaa");
-        }
-
-        if (!Objects.equals(poistettuInfo.getTyyppi(), PoistetunTyyppi.OPINTOJAKSO)) {
-            throw new BusinessRuleViolationException("voi-palauttaa-vain-opintojaksoja");
-        }
-
-        Lops2019Opintojakso opintojakso = Lops2019Opintojakso.copy(opintojaksoRepository.getLatestNotNull(poistettuInfo.getPoistettu_id()));
-        Lops2019OpintojaksoDto result = addOpintojakso(opsId, mapper.map(opintojakso, Lops2019OpintojaksoDto.class));
-        opintojaksoPoistettuRepository.delete(poistettuInfo);
-        return result;
-    }
-
-    @Override
-    public List<PoistettuDto> getRemoved(Long opsId) {
-        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
-        List<Lops2019Poistettu> poistetut = opintojaksoPoistettuRepository.findAllByOpetussuunnitelma(ops);
-        return mapper.mapAsList(poistetut, PoistettuDto.class);
     }
 
     @Override

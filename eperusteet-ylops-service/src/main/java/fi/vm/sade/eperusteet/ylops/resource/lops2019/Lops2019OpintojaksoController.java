@@ -1,9 +1,9 @@
 package fi.vm.sade.eperusteet.ylops.resource.lops2019;
 
-import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.AuditLogged;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
@@ -62,7 +62,6 @@ public class Lops2019OpintojaksoController {
         return opintojaksoService.updateOpintojakso(opsId, opintojaksoId, opintojaksoDto);
     }
 
-
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.DELETE)
     @AuditLogged
     public void removeOpintojakso(
@@ -77,21 +76,6 @@ public class Lops2019OpintojaksoController {
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
         return opintojaksoService.getVersions(opsId, opintojaksoId);
-    }
-
-    @RequestMapping(value = "/{poistettuId}/palauta", method = RequestMethod.POST)
-    @AuditLogged
-    public Lops2019OpintojaksoDto palauta(
-            @PathVariable final Long opsId,
-            @PathVariable final Long poistettuId) {
-        return opintojaksoService.restore(opsId, poistettuId);
-    }
-
-    @RequestMapping(value = "/poistetut", method = RequestMethod.GET)
-    @AuditLogged
-    public List<PoistettuDto> getRemoved(
-            @PathVariable final Long opsId) {
-        return opintojaksoService.getRemoved(opsId);
     }
 
     @RequestMapping(value = "/{opintojaksoId}/versiot/{versio}", method = RequestMethod.GET)

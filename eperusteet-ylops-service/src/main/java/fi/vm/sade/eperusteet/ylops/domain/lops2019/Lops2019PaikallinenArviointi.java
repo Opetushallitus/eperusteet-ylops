@@ -26,4 +26,12 @@ public class Lops2019PaikallinenArviointi extends AbstractAuditedReferenceableEn
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
+    public static Lops2019PaikallinenArviointi copy(Lops2019PaikallinenArviointi original) {
+        if (original == null) {
+            return null;
+        }
+        Lops2019PaikallinenArviointi result = new Lops2019PaikallinenArviointi();
+        result.setKuvaus(original.getKuvaus());
+        return result;
+    }
 }

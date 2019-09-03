@@ -9,6 +9,7 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineenArviointi;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiDto;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -29,7 +30,7 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
 
     @Getter
     @Setter
-    @Column(name = "perusteen_oppiaine_uri", updatable = false)
+    @Column(name = "perusteen_oppiaine_uri")
     private String perusteenOppiaineUri;
 
     @Getter
@@ -100,4 +101,23 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
     public ValidationCategory category() {
         return ValidationCategory.OPPIAINE;
     }
+
+    static public Lops2019Oppiaine copy(Lops2019Oppiaine original) {
+        if (original != null) {
+            Lops2019Oppiaine result = new Lops2019Oppiaine();
+            result.setPerusteenOppiaineUri(original.getPerusteenOppiaineUri());
+            result.setKoodi(original.getKoodi());
+            result.setNimi(original.getNimi());
+            result.setKuvaus(original.getKuvaus());
+            result.setPakollistenModuulienKuvaus(original.getPakollistenModuulienKuvaus());
+            result.setValinnaistenModuulienKuvaus(original.getPakollistenModuulienKuvaus());
+            result.setLaajaAlaisetOsaamiset(Lops2019LaajaAlainenOsaaminen.copy(original.getLaajaAlaisetOsaamiset()));
+            result.setArviointi(Lops2019PaikallinenArviointi.copy(original.getArviointi()));
+            result.setTehtava(Lops2019Tehtava.copy(original.getTehtava()));
+            result.setTavoitteet(Lops2019Tavoitteet.copy(original.getTavoitteet()));
+            return result;
+        }
+        return null;
+    }
+
 }

@@ -25,4 +25,12 @@ public class Lops2019LaajaAlainenOsaaminen extends AbstractAuditedReferenceableE
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
+    public static Lops2019LaajaAlainenOsaaminen copy(Lops2019LaajaAlainenOsaaminen original) {
+        if (original == null) {
+            return null;
+        }
+        Lops2019LaajaAlainenOsaaminen result = new Lops2019LaajaAlainenOsaaminen();
+        result.setKuvaus(original.getKuvaus());
+        return result;
+    }
 }

@@ -2,12 +2,15 @@ package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Poistettu;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -30,6 +33,9 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
+
+    @Autowired
+    private Lops2019PoistetutRepository poistetutRepository;
 
     @Autowired
     private Lops2019OpintojaksoRepository opintojaksoRepository;
@@ -108,6 +114,14 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     @Override
     public void removeOne(Long opsId, Long oppiaineId) {
         Lops2019Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
+        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        Lops2019Poistettu poistettu = new Lops2019Poistettu();
+        poistettu.setNimi(oppiaine.getNimi());
+        poistettu.setOpetussuunnitelma(ops);
+        poistettu.setPoistettu_id(oppiaineId);
+        poistettu.setPalautettu(false);
+        poistettu.setTyyppi(PoistetunTyyppi.LOPS2019OPPIAINE);
+        poistetutRepository.save(poistettu);
         oppiaineRepository.delete(oppiaine);
     }
 

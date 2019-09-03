@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface Lops2019OpintojaksoPoistettuRepository extends JpaWithVersioningRepository<Lops2019Poistettu, Long> {
+public interface Lops2019PoistetutRepository extends JpaWithVersioningRepository<Lops2019Poistettu, Long> {
     List<Lops2019Poistettu> findAllByOpetussuunnitelma(Opetussuunnitelma ops);
 }
