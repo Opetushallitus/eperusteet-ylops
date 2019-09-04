@@ -172,20 +172,8 @@ public class EperusteetServiceImpl implements EperusteetService {
                     .filter(peruste -> peruste.getVoimassaoloLoppuu() == null || peruste.getVoimassaoloLoppuu().after(now))
                     .collect(Collectors.toList()));
         }
-        // Lisätään mukaan sellaiset perusteet, jotka löytyvät vain cachestä
-        // (jos esim. on syötetty cacheen käsin että voidaan testata eri ympäristöjen välillä tai
-        // jos jostain syystä peruste ei olisi enää saatavilla / poistettu näkyvistä eperusteiden puolella -> fallback)
-        addCacheOnlyPerusteet(tyypit, infot);
-        return infot;
-    }
 
-    private void addCacheOnlyPerusteet(Set<KoulutusTyyppi> tyypit, List<PerusteInfoDto> infot) {
-        Set<String> foundDiaaris = infot.stream().map(PerusteInfoDto::getDiaarinumero).collect(toSet());
-        if (foundDiaaris.isEmpty()) {
-            infot.addAll(cacheToInfo(perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit)));
-        } else {
-            infot.addAll(cacheToInfo(perusteCacheRepository.findNewestEntrieByKoulutustyyppisExceptDiaarit(tyypit, foundDiaaris)));
-        }
+        return infot;
     }
 
     private List<PerusteInfoDto> cacheToInfo(List<PerusteCache> caches) {

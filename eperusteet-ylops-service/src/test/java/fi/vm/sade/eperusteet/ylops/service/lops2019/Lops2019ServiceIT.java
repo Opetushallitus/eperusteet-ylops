@@ -13,6 +13,8 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019OppiaineKaikkiDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
@@ -129,7 +131,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .containsExactly(KoulutustyyppiToteutus.LOPS2019, KoulutusTyyppi.LUKIOKOULUTUS, "1/2/3", Tyyppi.OPS);
         assertThat(opsDto.getPohja()).isNotNull();
 
-        List<Lops2019OppiaineDto> oppiaineet = lopsService.getPerusteOppiaineet(opsDto.getId());
+        List<Lops2019OppiaineKaikkiDto> oppiaineet = lopsService.getPerusteOppiaineet(opsDto.getId());
         assertThat(oppiaineet).isNotNull();
         assertThat(oppiaineet.size()).isNotEqualTo(0);
 

@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.lops2019;
 
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
 import lombok.*;
 
 import java.util.ArrayList;

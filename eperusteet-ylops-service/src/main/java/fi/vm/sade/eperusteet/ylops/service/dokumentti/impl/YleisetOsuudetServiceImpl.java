@@ -17,9 +17,14 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.YleisetOsuudetService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
@@ -32,11 +37,15 @@ import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.Dokumentt
 /**
  * @author isaul
  */
+@Slf4j
 @Service
 public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
     @Autowired
     private LocalizedMessagesService messages;
+
+    @Autowired
+    private Lops2019Service lopsService;
 
     public void addYleisetOsuudet(DokumenttiBase docBase)
             throws IOException, SAXException, ParserConfigurationException {
@@ -74,6 +83,24 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
                     if (lapsi.getTekstiKappale().getNimi() != null) {
                         addHeader(docBase, getTextString(docBase, lapsi.getTekstiKappale().getNimi()));
+                    }
+
+                    // Perusteen teksti luvulle jos valittu esittäminen
+                    Long pTekstikappaleId = lapsi.getPerusteTekstikappaleId();
+                    if (lapsi.isNaytaPerusteenTeksti() && pTekstikappaleId != null) {
+                        try {
+                            PerusteTekstiKappaleViiteMatalaDto perusteTekstikappale = lopsService
+                                    .getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
+
+                            if (perusteTekstikappale != null && perusteTekstikappale.getPerusteenOsa() != null) {
+                                addLokalisoituteksti(docBase,
+                                        perusteTekstikappale.getPerusteenOsa().getTeksti(),
+                                        "cite");
+                            }
+
+                        } catch (BusinessRuleViolationException | NotExistsException e) {
+                            // Ohitetaan. Voi olla toisen tyyppinen ops.
+                        }
                     }
 
                     // Opsin teksti luvulle

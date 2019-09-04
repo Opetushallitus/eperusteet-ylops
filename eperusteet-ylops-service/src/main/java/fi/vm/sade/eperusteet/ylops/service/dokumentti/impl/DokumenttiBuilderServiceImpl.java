@@ -34,6 +34,7 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.CharapterNumberG
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
@@ -376,9 +377,18 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
                 UUID uuid = UUID.fromString(id);
 
-                // Ladataan kuvan data muistiin
+                // Ladataan kuvat data muistiin
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                liiteService.export(docBase.getOps().getId(), uuid, byteArrayOutputStream);
+                try {
+                    liiteService.export(docBase.getOps().getId(), uuid, byteArrayOutputStream);
+                } catch (NotExistsException e) {
+                    // Todo: koitetaan hakea perusteesta
+                }
+
+                // Ohitetaan jos kuva ei löytynyt
+                if (byteArrayOutputStream.size() == 0) {
+                    continue;
+                }
 
                 // Tehdään muistissa olevasta datasta kuva
                 InputStream in = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
