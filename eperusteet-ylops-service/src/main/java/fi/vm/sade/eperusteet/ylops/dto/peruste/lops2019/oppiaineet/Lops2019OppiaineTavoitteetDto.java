@@ -4,11 +4,12 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 public class Lops2019OppiaineTavoitteetDto {
     private LokalisoituTekstiDto kuvaus;
-    private List<Lops2019OppiaineTavoitealueDto> tavoitealueet;
+    private List<Lops2019OppiaineTavoitealueDto> tavoitealueet = new ArrayList<>();
 }
