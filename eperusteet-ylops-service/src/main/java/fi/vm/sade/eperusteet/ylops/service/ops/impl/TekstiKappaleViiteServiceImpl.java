@@ -56,7 +56,7 @@ import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService {
 
     @Autowired
-    private OpsFeaturesFactory opsFeaturesFactory;
+    private OpsFeaturesFactory<OpsStrategy> opsFeaturesFactory;
 
     @Autowired
     private DtoMapper mapper;

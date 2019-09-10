@@ -5,25 +5,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class OpsFeaturesFactory {
+public class OpsFeaturesFactory<T> {
 
     @Autowired
     @OpsStrategyQualifier({})
-    private OpsStrategy opsStrategyDefault;
+    private T opsStrategyDefault;
 
     @Autowired(required = false)
     @OpsStrategyQualifier(KoulutustyyppiToteutus.LOPS2019)
-    private OpsStrategy opsStrategyLops2019;
+    private T opsStrategyLops2019;
 
     @Autowired(required = false)
     @OpsStrategyQualifier(KoulutustyyppiToteutus.PERUSOPETUS)
-    private OpsStrategy opsStrategyPerusopetus;
+    private T opsStrategyPerusopetus;
 
     @Autowired(required = false)
     @OpsStrategyQualifier(KoulutustyyppiToteutus.YKSINKERTAINEN)
-    private OpsStrategy opsStrategyYksinkertainen;
+    private T opsStrategyYksinkertainen;
 
-    private OpsStrategy tryToGetStrategy(KoulutustyyppiToteutus toteutus) {
+    private T tryToGetStrategy(KoulutustyyppiToteutus toteutus) {
         switch (toteutus) {
             case LOPS2019: return opsStrategyLops2019;
             case PERUSOPETUS: return opsStrategyPerusopetus;
@@ -32,12 +32,12 @@ public class OpsFeaturesFactory {
         }
     }
 
-    public OpsStrategy getStrategy(KoulutustyyppiToteutus toteutus) {
+    public T getStrategy(KoulutustyyppiToteutus toteutus) {
         if (toteutus == null) {
             return opsStrategyDefault;
         }
 
-        OpsStrategy concrete = tryToGetStrategy(toteutus);
+        T concrete = tryToGetStrategy(toteutus);
         if (concrete == null) {
             return opsStrategyDefault;
         }
