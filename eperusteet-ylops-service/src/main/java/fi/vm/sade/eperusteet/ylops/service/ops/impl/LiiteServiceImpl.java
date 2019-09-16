@@ -22,9 +22,11 @@ import fi.vm.sade.eperusteet.ylops.repository.liite.LiiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ServiceException;
+import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,19 +52,61 @@ public class LiiteServiceImpl implements LiiteService {
     private OpetussuunnitelmaRepository opetussuunnitelmat;
 
     @Autowired
+    private EperusteetService eperusteetService;
+
+    @Autowired
     DtoMapper mapper;
 
     @Override
     @Transactional(readOnly = true)
     public void export(Long opsId, UUID id, OutputStream os) {
+        InputStream is;
+
+        // Opsin kuva
         Liite liite = liitteet.findOne(id);
+
         if (liite == null) {
-            throw new NotExistsException("ei ole");
+            throw new NotExistsException("liite-ei-ole");
         }
-        try (InputStream is = liite.getData().getBinaryStream()) {
+
+        try {
+            is = liite.getData().getBinaryStream();
+        } catch (SQLException e) {
+            throw new ServiceException("liite-blob-hakeminen-epaonnistui", e);
+        }
+
+        // Kopioidaan kuva bufferiin
+        try {
             IOUtils.copy(is, os);
-        } catch (SQLException | IOException ex) {
-            throw new ServiceException("Liiteen lataaminen ei onnistu", ex);
+        } catch (IOException | NullPointerException e) {
+            throw new ServiceException("liite-kopiointi-epaonnistui", e);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public InputStream export(Long opsId, UUID id, Long perusteId) {
+        if (perusteId != null) {
+            // Perusteen kuva
+            byte[] liite = eperusteetService.getLiite(perusteId, id);
+            if (liite.length > 0) {
+                return new ByteArrayInputStream(liite);
+            } else {
+                throw new NotExistsException("liite-ei-ole");
+            }
+        } else {
+            // Opsin kuva
+            Liite liite = liitteet.findOne(id);
+
+            if (liite == null) {
+                throw new NotExistsException("liite-ei-ole");
+            }
+
+            try {
+                return liite.getData().getBinaryStream();
+            } catch (SQLException e) {
+                throw new ServiceException("liite-blob-hakeminen-epaonnistui", e);
+            }
         }
     }
 

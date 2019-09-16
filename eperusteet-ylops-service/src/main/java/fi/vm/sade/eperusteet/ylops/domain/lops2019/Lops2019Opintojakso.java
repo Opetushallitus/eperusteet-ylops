@@ -15,10 +15,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -85,12 +82,12 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     private LokalisoituTeksti laajaAlainenOsaaminen;
 
     @Getter
-    @OrderColumn
+    @OrderBy("koodiuri")
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinTable(name = "lops2019_opintojakso_moduuli",
             joinColumns = @JoinColumn(name = "opintojakso_id"),
             inverseJoinColumns = @JoinColumn(name = "moduuli_id"))
-    private Set<Lops2019OpintojaksonModuuli> moduulit = new HashSet<>();
+    private List<Lops2019OpintojaksonModuuli> moduulit = new ArrayList<>();
 
     @Getter
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
@@ -100,7 +97,7 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
             inverseJoinColumns = @JoinColumn(name = "oj_oppiaine_id"))
     private Set<Lops2019OpintojaksonOppiaine> oppiaineet = new HashSet<>();
 
-    public void setModuulit(Set<Lops2019OpintojaksonModuuli> moduulit) {
+    public void setModuulit(Collection<Lops2019OpintojaksonModuuli> moduulit) {
         this.moduulit.clear();
         this.moduulit.addAll(moduulit);
     }

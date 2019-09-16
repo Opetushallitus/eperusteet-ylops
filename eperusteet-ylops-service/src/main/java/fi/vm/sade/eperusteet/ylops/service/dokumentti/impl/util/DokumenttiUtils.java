@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util;
 
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -113,6 +114,10 @@ public class DokumenttiUtils {
         }
 
         return out.toString();
+    }
+
+    public static boolean isTimePass(Dokumentti dokumentti) {
+        return isTimePass(dokumentti.getAloitusaika());
     }
 
     public static boolean isTimePass(Date date) {

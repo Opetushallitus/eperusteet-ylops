@@ -27,10 +27,9 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.*;
 
@@ -47,21 +46,18 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
     @Autowired
     private Lops2019Service lopsService;
 
-    public void addYleisetOsuudet(DokumenttiBase docBase)
-            throws IOException, SAXException, ParserConfigurationException {
-
-        if (docBase.getOps().getTekstit() != null) {
-            if (KoulutusTyyppi.LUKIOKOULUTUS.equals(docBase.getOps().getKoulutustyyppi())) {
-                addTekstiKappale(docBase, docBase.getOps().getTekstit(), false);
-            } else {
-                addTekstiKappale(docBase, docBase.getOps().getTekstit(), true);
-            }
-        }
+    public void addYleisetOsuudet(DokumenttiBase docBase) {
+        Optional.ofNullable(docBase.getOps().getTekstit())
+                .ifPresent(tekstit -> {
+                    if (Objects.equals(docBase.getOps().getKoulutustyyppi(), KoulutusTyyppi.LUKIOKOULUTUS)) {
+                        addTekstiKappale(docBase, tekstit, false);
+                    } else {
+                        addTekstiKappale(docBase, tekstit, true);
+                    }
+                });
     }
 
-    private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite, boolean paataso)
-            throws ParserConfigurationException, IOException, SAXException {
-
+    private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite, boolean paataso) {
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
             if (lapsi != null && lapsi.getTekstiKappale() != null) {
 
@@ -124,7 +120,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
         }
     }
 
-    public void addLiitteet(DokumenttiBase docBase) throws IOException, SAXException, ParserConfigurationException {
+    public void addLiitteet(DokumenttiBase docBase) {
         if (docBase.getOps().getTekstit() != null) {
             for (TekstiKappaleViite liiteViite : docBase.getOps().getTekstit().getLapset()) {
                 if (liiteViite != null

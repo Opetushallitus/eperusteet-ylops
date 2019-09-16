@@ -20,17 +20,19 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author nkala
  */
 public interface EperusteetService {
-    PerusteDto getPeruste(String diaariNumero);
+    PerusteDto getPeruste(String diaariNumero) throws NotExistsException;
 
-    PerusteDto getPerusteUpdateCache(String diaarinumero);
+    PerusteDto getPerusteUpdateCache(String diaarinumero) throws NotExistsException;
 
     List<PerusteInfoDto> findPerusteet();
 
@@ -45,4 +47,6 @@ public interface EperusteetService {
     JsonNode getTiedotteet(Long jalkeen);
 
     JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto);
+
+    byte[] getLiite(final Long perusteId, final UUID id);
 }

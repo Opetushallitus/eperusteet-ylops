@@ -33,6 +33,7 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.*;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.CharapterNumberGenerator;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -41,6 +42,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
+import org.apache.pdfbox.preflight.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -207,7 +209,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         byte[] pdf = pdfService.xhtml2pdf(doc, meta);
 
         // Validointi
-        /*ValidationResult result = DokumenttiUtils.validatePdf(pdf);
+        ValidationResult result = DokumenttiUtils.validatePdf(pdf);
         if (result.isValid()) {
             LOG.info("PDF (ops " + ops.getId() + ") is a valid PDF/A-1b file");
         }
@@ -216,7 +218,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             for (ValidationResult.ValidationError error : result.getErrorsList()) {
                 LOG.warn(error.getErrorCode() + " : " + error.getDetails());
             }
-        }*/
+        }
 
         return pdf;
     }
@@ -374,24 +376,40 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             for (int i = 0; i < list.getLength(); i++) {
                 Element element = (Element) list.item(i);
                 String id = element.getAttribute("data-uid");
+                String src = element.getAttribute("src");
 
-                UUID uuid = UUID.fromString(id);
+                // Todo: Jokin parempi tapa tunnistaa peruste olisi hyvä olla
+                boolean isPerusteesta = false;
+                PerusteDto perusteDto = docBase.getPerusteDto();
+                if (src.contains("eperusteet-service") && perusteDto != null) {
+                    isPerusteesta = true;
+                }
+
+                UUID uuid = null;
+                try {
+                    uuid = UUID.fromString(id);
+                } catch (IllegalArgumentException e) {
+                    // Jos data-uuid puuttuu, koitetaan hakea src:n avulla
+                    if (src.contains("eperusteet-ylops-service")) {
+                        String[] parts = src.split("/");
+                        if (parts.length > 1 && Objects.equals(parts[parts.length - 2], "kuvat")) {
+                            uuid = UUID.fromString(parts[parts.length - 1]);
+                        }
+                    }
+                }
+
+                if (uuid == null) {
+                    throw new BusinessRuleViolationException("kuva-uuid-ei-loytynyt");
+                }
 
                 // Ladataan kuvat data muistiin
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                try {
-                    liiteService.export(docBase.getOps().getId(), uuid, byteArrayOutputStream);
-                } catch (NotExistsException e) {
-                    // Todo: koitetaan hakea perusteesta
-                }
-
-                // Ohitetaan jos kuva ei löytynyt
-                if (byteArrayOutputStream.size() == 0) {
-                    continue;
-                }
+                InputStream in = liiteService.export(
+                        docBase.getOps().getId(),
+                        uuid,
+                        isPerusteesta ? perusteDto.getId() : null
+                );
 
                 // Tehdään muistissa olevasta datasta kuva
-                InputStream in = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 BufferedImage bufferedImage = ImageIO.read(in);
 
                 int width = bufferedImage.getWidth();

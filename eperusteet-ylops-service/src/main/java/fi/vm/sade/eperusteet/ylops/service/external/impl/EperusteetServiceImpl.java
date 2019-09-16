@@ -24,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -35,8 +36,8 @@ import static java.util.Collections.singletonList;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static java.util.stream.Collectors.toSet;
 import javax.annotation.PostConstruct;
+
 import lombok.Getter;
 import lombok.Setter;
 import org.slf4j.Logger;
@@ -46,6 +47,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.ByteArrayHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -85,6 +88,9 @@ public class EperusteetServiceImpl implements EperusteetService {
     @PostConstruct
     protected void init() {
         client = new RestTemplate(singletonList(jsonMapper.messageConverter().orElseThrow(IllegalStateException::new)));
+        ByteArrayHttpMessageConverter converter = new ByteArrayHttpMessageConverter();
+        converter.setSupportedMediaTypes(Arrays.asList(MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG));
+        client.getMessageConverters().add(converter);
     }
 
     private Set<KoulutusTyyppi> getKoulutuskoodit() {
@@ -129,7 +135,7 @@ public class EperusteetServiceImpl implements EperusteetService {
             return perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit).stream()
                     .map(wrapRuntime(
                             c -> c.getPerusteJson(jsonMapper),
-                            e1 -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e1.getMessage(), e)))
+                            (IOException e1) -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e1.getMessage(), e)))
                     .map(f -> mapper.map(f, PerusteInfoDto.class))
                     .collect(toList());
         }
@@ -178,7 +184,7 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     private List<PerusteInfoDto> cacheToInfo(List<PerusteCache> caches) {
         return caches.stream().map(wrapRuntime(c -> c.getPerusteJson(jsonMapper),
-                e1 -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e1.getMessage(), e1)))
+                (IOException e1) -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e1.getMessage(), e1)))
                 .map(f -> mapper.map(f, PerusteInfoDto.class))
                 .collect(toList());
     }
@@ -263,22 +269,22 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     @Cacheable("perusteet")
     @Transactional
-    public PerusteDto getPeruste(String diaarinumero) {
+    public PerusteDto getPeruste(String diaarinumero) throws NotExistsException {
         return getPerusteByDiaari(diaarinumero, false);
     }
 
     @Override
     @CachePut("perusteet")
     @Transactional
-    public PerusteDto getPerusteUpdateCache(String diaarinumero) {
+    public PerusteDto getPerusteUpdateCache(String diaarinumero) throws NotExistsException {
         return getPerusteByDiaari(diaarinumero, true);
     }
 
-    private PerusteDto getPerusteByDiaari(String diaarinumero, boolean forceRefresh) {
+    private PerusteDto getPerusteByDiaari(String diaarinumero, boolean forceRefresh) throws NotExistsException {
         PerusteInfoDto perusteInfoDto = findPerusteet(forceRefresh).stream()
                 .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
                 .findAny()
-                .orElseThrow(() -> new BusinessRuleViolationException("Perustetta ei löytynyt"));
+                .orElseThrow(() -> new NotExistsException("Perustetta ei löytynyt"));
 
         return getEperusteetPeruste(perusteInfoDto.getId(), forceRefresh);
     }
@@ -296,6 +302,12 @@ public class EperusteetServiceImpl implements EperusteetService {
     public JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto) {
         String uri = eperusteetServiceUrl.concat("/api/tiedotteet/haku").concat(queryDto.toRequestParams());
         return client.getForObject(uri, JsonNode.class);
+    }
+
+    @Override
+    public byte[] getLiite(Long perusteId, UUID id) {
+        return client.getForObject(eperusteetServiceUrl
+                + "/api/perusteet/{perusteId}/kuvat/{id}", byte[].class, perusteId, id);
     }
 
     @Getter

@@ -230,7 +230,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .koodi("oppiaineet_bi")
                 .build()));
 
-        opintojaksoDto.setModuulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder()
+        opintojaksoDto.setModuulit(Collections.singletonList(Lops2019OpintojaksonModuuliDto.builder()
                 .koodiUri("moduulit_xyz")
                 .build()));
 
@@ -243,7 +243,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .koodi("oppiaineet_bi")
                 .build()));
 
-        opintojaksoDto.setModuulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder()
+        opintojaksoDto.setModuulit(Collections.singletonList(Lops2019OpintojaksonModuuliDto.builder()
                 .koodiUri("moduulit_maa2")
                 .build()));
 
