@@ -358,11 +358,11 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 //        }
 
         // Laaja-alainen osaaminen
-        LokalisoituTekstiDto laajaAlainenOsaaminen = oj.getLaajaAlainenOsaaminen();
-        if (laajaAlainenOsaaminen != null) {
-            addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
-            addLokalisoituteksti(docBase, laajaAlainenOsaaminen, "div");
-        }
+//        LokalisoituTekstiDto laajaAlainenOsaaminen = oj.getLaajaAlainenOsaaminen();
+//        if (laajaAlainenOsaaminen != null) {
+//            addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
+//            addLokalisoituteksti(docBase, laajaAlainenOsaaminen, "div");
+//        }
     }
 
     private void addModuuli(

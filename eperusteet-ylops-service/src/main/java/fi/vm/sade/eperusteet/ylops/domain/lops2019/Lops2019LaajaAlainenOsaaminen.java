@@ -12,11 +12,17 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Audited
 @Table(name = "lops2019_oppiaine_laajaalainenosaaminen")
 public class Lops2019LaajaAlainenOsaaminen extends AbstractAuditedReferenceableEntity {
+
+    @Getter
+    @Setter
+    @NotNull
+    private String koodi;
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -31,6 +37,7 @@ public class Lops2019LaajaAlainenOsaaminen extends AbstractAuditedReferenceableE
         }
         Lops2019LaajaAlainenOsaaminen result = new Lops2019LaajaAlainenOsaaminen();
         result.setKuvaus(original.getKuvaus());
+        result.setKoodi(original.getKoodi());
         return result;
     }
 }
