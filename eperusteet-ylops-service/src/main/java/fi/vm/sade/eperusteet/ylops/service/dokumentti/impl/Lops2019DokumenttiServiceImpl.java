@@ -345,6 +345,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             docBase.getBodyElement().appendChild(ul);
         }
 
+
         // Tavoitteet
         {
             if (!ObjectUtils.isEmpty(moduulitSorted)) {
@@ -376,6 +377,23 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
                             }
                         });
+
+                // Paikallinen lisäys
+                List<Lops2019OpintojaksonTavoiteDto> tavoitteet = oj.getTavoitteet();
+                if (!ObjectUtils.isEmpty(tavoitteet)) {
+                    addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                    Element ul = docBase.getDocument().createElement("ul");
+                    tavoitteet.stream()
+                            .filter(Objects::nonNull)
+                            .map(Lops2019OpintojaksonTavoiteDto::getKuvaus)
+                            .filter(Objects::nonNull)
+                            .forEach(kuvaus -> {
+                                Element li = docBase.getDocument().createElement("li");
+                                li.setTextContent(getTextString(docBase, kuvaus));
+                                ul.appendChild(li);
+                            });
+                    docBase.getBodyElement().appendChild(ul);
+                }
             }
         }
 
@@ -413,15 +431,35 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                                         });
                             }
                         });
+
+                // Paikallinen lisäys
+                List<Lops2019OpintojaksonKeskeinenSisaltoDto> sisallot = oj.getKeskeisetSisallot();
+                if (!ObjectUtils.isEmpty(sisallot)) {
+                    addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                    Element ul = docBase.getDocument().createElement("ul");
+                    sisallot.stream()
+                            .filter(Objects::nonNull)
+                            .map(Lops2019OpintojaksonKeskeinenSisaltoDto::getKuvaus)
+                            .filter(Objects::nonNull)
+                            .forEach(kuvaus -> {
+                                Element li = docBase.getDocument().createElement("li");
+                                li.setTextContent(getTextString(docBase, kuvaus));
+                                ul.appendChild(li);
+                            });
+                    docBase.getBodyElement().appendChild(ul);
+                }
             }
         }
 
         // Laaja-alainen osaaminen
         {
-            LokalisoituTekstiDto laajaAlainenOsaaminen = oj.getLaajaAlainenOsaaminen();
-            if (laajaAlainenOsaaminen != null) {
+            List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = oj.getLaajaAlainenOsaaminen();
+            if (!ObjectUtils.isEmpty(laajaAlainenOsaaminen)) {
                 addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
-                addLokalisoituteksti(docBase, laajaAlainenOsaaminen, "div");
+                laajaAlainenOsaaminen.forEach(lao -> {
+                    // Todo: lao.getKoodi()
+                    addLokalisoituteksti(docBase, lao.getKuvaus(), "div");
+                });
             }
         }
 

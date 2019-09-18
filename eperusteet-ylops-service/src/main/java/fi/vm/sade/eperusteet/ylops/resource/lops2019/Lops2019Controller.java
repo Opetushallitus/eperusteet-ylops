@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.resource.lops2019;
 
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
