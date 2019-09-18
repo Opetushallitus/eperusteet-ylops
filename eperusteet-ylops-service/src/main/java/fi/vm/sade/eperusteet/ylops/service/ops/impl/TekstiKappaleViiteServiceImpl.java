@@ -34,6 +34,8 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockManager;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsFeaturesFactory;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategy;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,9 @@ import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 @Service
 @Transactional(readOnly = true)
 public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService {
+
+    @Autowired
+    private OpsFeaturesFactory<OpsStrategy> opsFeaturesFactory;
 
     @Autowired
     private DtoMapper mapper;
@@ -165,19 +170,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             throw new BusinessRuleViolationException("Opetussuunnitelmaa ei olemassa.");
         }
 
-        Opetussuunnitelma pohja = ops.getPohja();
-        if (pohja != null) {
-            Set<UUID> pohjaTekstit = pohja.getTekstit().getLapset().stream()
-                    .map(x -> x.getTekstiKappale().getTunniste())
-                    .collect(Collectors.toSet());
-
-            // Pois päätason tekstit joita ei pohjassa ole määritelty
-            uusi.setLapset(uusi.getLapset().stream()
-                    .filter(x -> {
-                        return pohjaTekstit.contains(x.getTekstiKappale().getTunniste());
-                    })
-                    .collect(Collectors.toList()));
-        }
+        OpsStrategy strategy = opsFeaturesFactory.getStrategy(ops.getToteutus());
+        strategy.reorder(uusi, ops);
 
         tekstikappaleviiteRepository.lock(viite.getRoot());
         Set<TekstiKappaleViite> refs = Collections.newSetFromMap(new IdentityHashMap<>());
@@ -186,6 +180,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         clearChildren(viite, refs);
         updateTraverse(opsId, parent, uusi, refs);
     }
+
 
     @Override
     @Transactional(readOnly = false)
