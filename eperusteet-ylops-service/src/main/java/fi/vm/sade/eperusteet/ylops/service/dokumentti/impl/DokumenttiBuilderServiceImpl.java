@@ -288,15 +288,13 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Päätöspäivämäärä
         Date paatospaivamaara = docBase.getOps().getPaatospaivamaara();
-        Element dateEl = docBase.getDocument().createElement("meta");
-        dateEl.setAttribute("name", "date");
         if (paatospaivamaara != null) {
+            Element dateEl = docBase.getDocument().createElement("meta");
+            dateEl.setAttribute("name", "date");
             String paatospaivamaaraText = new SimpleDateFormat("d.M.yyyy").format(paatospaivamaara);
             dateEl.setAttribute("content", paatospaivamaaraText);
-        } else {
-            dateEl.setAttribute("content", "");
+            docBase.getHeadElement().appendChild(dateEl);
         }
-        docBase.getHeadElement().appendChild(dateEl);
 
 
         // Koulun nimi

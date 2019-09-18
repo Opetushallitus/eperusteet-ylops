@@ -184,7 +184,9 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         if (!ObjectUtils.isEmpty(opintojaksot)) {
             addTeksti(docBase, messages.translate("opintojaksot", docBase.getKieli()), "h6");
             docBase.getGenerator().increaseDepth();
-            opintojaksot.forEach(oj -> addOpintojakso(docBase, oj, oa));
+            opintojaksot.stream()
+                    .sorted(Comparator.comparing(Lops2019OpintojaksoDto::getKoodi))
+                    .forEach(oj -> addOpintojakso(docBase, oj, oa));
             docBase.getGenerator().decreaseDepth();
         }
 
@@ -314,31 +316,132 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         }
 
         addHeader(docBase, nimiBuilder.toString());
-        //addTeksti(docBase, nimiBuilder.toString(), "h5");
 
-        // Kuvaus
-        LokalisoituTekstiDto kuvaus = oj.getKuvaus();
-        addLokalisoituteksti(docBase, kuvaus, "div");
+        // Haetaan tavoitteet ja keskeiset sisällöt moduuleista
+        List<Lops2019ModuuliTavoiteDto> moduulienTavoitteet = new ArrayList<>();
+        List<Lops2019ModuuliSisaltoDto> moduulienKeskeisetSisallot = new ArrayList<>();
+
+        List<Lops2019ModuuliDto> moduulitSorted = new ArrayList<>();
+
 
         // Opintojakson moduulit
-        addTeksti(docBase, messages.translate("opintojakson-moduulit", docBase.getKieli()), "h6");
-        oj.getModuulit().stream()
-                .sorted(Comparator.comparing(Lops2019OpintojaksonModuuliDto::getKoodiUri))
-                .forEach(ojm -> {
-                    String koodiUri = ojm.getKoodiUri();
-                    if (koodiUri != null) {
-                        oa.getModuulit().stream()
-                                .filter(m -> koodiUri.equals(m.getKoodi() != null ? m.getKoodi().getUri() : null))
-                                .findAny()
-                                .ifPresent(m -> addModuuli(docBase, m));
-                    }
-                });
+        {
+            Element ul = docBase.getDocument().createElement("ul");
+            addTeksti(docBase, messages.translate("opintojakson-moduulit", docBase.getKieli()), "h6");
+            oj.getModuulit().stream()
+                    .sorted(Comparator.comparing(Lops2019OpintojaksonModuuliDto::getKoodiUri))
+                    .forEach(ojm -> {
+                        String koodiUri = ojm.getKoodiUri();
+                        if (koodiUri != null) {
+                            oa.getModuulit().stream()
+                                    .filter(m -> koodiUri.equals(m.getKoodi() != null ? m.getKoodi().getUri() : null))
+                                    .findAny()
+                                    .ifPresent(m -> {
+                                        moduulitSorted.add(m);
+                                        addModuuli(docBase, m, ul);
+                                    });
+                        }
+                    });
+            docBase.getBodyElement().appendChild(ul);
+        }
+
+        // Tavoitteet
+        {
+            if (!ObjectUtils.isEmpty(moduulitSorted)) {
+                addTeksti(docBase, messages.translate("tavoitteet", docBase.getKieli()), "h6");
+                moduulitSorted.stream()
+                        .filter(Objects::nonNull)
+                        .forEach(m -> {
+                            Lops2019ModuuliTavoiteDto tavoitteet = m.getTavoitteet();
+                            if (!ObjectUtils.isEmpty(tavoitteet)) {
+                                // Moduulin nimi
+                                addLokalisoituteksti(docBase, m.getNimi(), "p");
+
+                                // Moduulit tavoitteet
+                                LokalisoituTekstiDto kohde = tavoitteet.getKohde();
+                                if (kohde != null && !ObjectUtils.isEmpty(tavoitteet.getTavoitteet())) {
+
+                                    // Kohde
+                                    addLokalisoituteksti(docBase, kohde, "p");
+
+                                    // Tavoitteet
+                                    Element ul = docBase.getDocument().createElement("ul");
+                                    tavoitteet.getTavoitteet().forEach(t -> {
+                                        Element li = docBase.getDocument().createElement("li");
+                                        li.setTextContent(getTextString(docBase, t));
+                                        ul.appendChild(li);
+                                    });
+                                    docBase.getBodyElement().appendChild(ul);
+                                }
+
+                            }
+                        });
+            }
+        }
+
+        // Keskeiset sisällöt
+        {
+            if (!ObjectUtils.isEmpty(moduulitSorted)) {
+                addTeksti(docBase, messages.translate("keskeiset-sisallot", docBase.getKieli()), "h6");
+
+                moduulitSorted.stream()
+                        .filter(Objects::nonNull)
+                        .forEach(m -> {
+                            List<Lops2019ModuuliSisaltoDto> sisallot = m.getSisallot();
+                            if (!ObjectUtils.isEmpty(sisallot)) {
+                                // Moduulin nimi
+                                addLokalisoituteksti(docBase, m.getNimi(), "p");
+
+                                // Moduulin keskeiset sisällöt
+                                sisallot.stream()
+                                        .filter(Objects::nonNull)
+                                        .forEach(sisalto -> {
+                                            LokalisoituTekstiDto kohde = sisalto.getKohde();
+                                            if (kohde != null && !ObjectUtils.isEmpty(sisalto.getSisallot())) {
+                                                // Kohde
+                                                addLokalisoituteksti(docBase, kohde, "p");
+
+                                                // Sisallöt
+                                                Element ul = docBase.getDocument().createElement("ul");
+                                                sisalto.getSisallot().forEach(s -> {
+                                                    Element li = docBase.getDocument().createElement("li");
+                                                    li.setTextContent(getTextString(docBase, s));
+                                                    ul.appendChild(li);
+                                                });
+                                                docBase.getBodyElement().appendChild(ul);
+                                            }
+                                        });
+                            }
+                        });
+            }
+        }
 
         // Laaja-alainen osaaminen
-        LokalisoituTekstiDto laajaAlainenOsaaminen = oj.getLaajaAlainenOsaaminen();
-        if (laajaAlainenOsaaminen != null) {
-            addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
-            addLokalisoituteksti(docBase, laajaAlainenOsaaminen, "div");
+        {
+            LokalisoituTekstiDto laajaAlainenOsaaminen = oj.getLaajaAlainenOsaaminen();
+            if (laajaAlainenOsaaminen != null) {
+                addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
+                addLokalisoituteksti(docBase, laajaAlainenOsaaminen, "div");
+            }
+        }
+
+        // Arviointi
+        {
+            LokalisoituTekstiDto arviointi = oj.getArviointi();
+            if (arviointi != null) {
+                addTeksti(docBase, messages.translate("opintojakson-arviointi", docBase.getKieli()), "h6");
+                addLokalisoituteksti(docBase, arviointi, "div");
+            }
+        }
+
+        // Vapaa kuvaus
+        {
+            LokalisoituTekstiDto kuvaus = oj.getKuvaus();
+            if (kuvaus != null) {
+                addTeksti(docBase, messages.translate("opintojakson-vapaa-kuvaus", docBase.getKieli()), "h6");
+                addLokalisoituteksti(docBase, kuvaus, "div");
+            }
+
         }
 
         docBase.getGenerator().increaseNumber();
@@ -346,77 +449,43 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
     private void addModuuli(
             DokumenttiBase docBase,
-            Lops2019ModuuliDto m
+            Lops2019ModuuliDto m,
+            Element ul
     ) {
+        StringBuilder stringBuilder = new StringBuilder();
+
         // Nimi
-        StringBuilder nimiBuilder = new StringBuilder();
-        nimiBuilder.append(getTextString(docBase, m.getNimi()));
+        stringBuilder.append(getTextString(docBase, m.getNimi()));
 
         // Opintopisteet
         BigDecimal laajuus = m.getLaajuus();
         if (laajuus != null) {
-            nimiBuilder.append(", ");
-            nimiBuilder.append(laajuus.stripTrailingZeros().toPlainString());
-            nimiBuilder.append(" ");
-            nimiBuilder.append(messages.translate("op", docBase.getKieli()));
+            stringBuilder.append(", ");
+            stringBuilder.append(laajuus.stripTrailingZeros().toPlainString());
+            stringBuilder.append(" ");
+            stringBuilder.append(messages.translate("op", docBase.getKieli()));
         }
 
+        // Koodi
         if (m.getKoodi() != null && m.getKoodi().getArvo() != null) {
-            nimiBuilder.append(" (");
-            nimiBuilder.append(m.getKoodi().getArvo());
-            nimiBuilder.append(")");
+            stringBuilder.append(" (");
+            stringBuilder.append(m.getKoodi().getArvo());
+            stringBuilder.append(")");
         }
-        addTeksti(docBase, nimiBuilder.toString(), "h5");
-
-        // Kuvaus
-        addLokalisoituteksti(docBase, m.getKuvaus(), "div");
 
         // Pakollisuus
-        addTeksti(docBase, messages.translate(m.isPakollinen() ? "pakollinen-moduuli" : "valinnainen-moduuli",
-                docBase.getKieli()), "h6");
-
-        // Yleiset tavoitteet
-        Lops2019ModuuliTavoiteDto tavoitteet = m.getTavoitteet();
-        if (tavoitteet != null) {
-            LokalisoituTekstiDto kohde = tavoitteet.getKohde();
-            if (kohde != null && !ObjectUtils.isEmpty(tavoitteet.getTavoitteet())) {
-                addTeksti(docBase, messages.translate("yleiset-tavoitteet", docBase.getKieli()), "h6");
-
-                // Kohde
-                addLokalisoituteksti(docBase, kohde, "p");
-
-                // Tavoitteet
-                Element ul = docBase.getDocument().createElement("ul");
-                tavoitteet.getTavoitteet().forEach(t -> {
-                    Element li = docBase.getDocument().createElement("li");
-                    li.setTextContent(getTextString(docBase, t));
-                    ul.appendChild(li);
-                });
-                docBase.getBodyElement().appendChild(ul);
-            }
+        if (m.isPakollinen()) {
+            stringBuilder.append(", ");
+            stringBuilder.append(messages.translate("pakollinen", docBase.getKieli()));
+        } else {
+            stringBuilder.append(", ");
+            stringBuilder.append(messages.translate("valinnainen", docBase.getKieli()));
         }
 
-        // Keskeiset sisällöt
-        List<Lops2019ModuuliSisaltoDto> sisallot = m.getSisallot();
-        if (!ObjectUtils.isEmpty(sisallot)) {
-            addTeksti(docBase, messages.translate("keskeiset-sisallot", docBase.getKieli()), "h6");
 
-            sisallot.forEach(s -> {
-                LokalisoituTekstiDto kohde = s.getKohde();
-                if (kohde != null && !ObjectUtils.isEmpty(s.getSisallot())) {
-                    // Kohde
-                    addLokalisoituteksti(docBase, kohde, "p");
+        Element li = docBase.getDocument().createElement("li");
+        li.setTextContent(stringBuilder.toString());
 
-                    // Sisallöt
-                    Element ul = docBase.getDocument().createElement("ul");
-                    s.getSisallot().forEach(s2 -> {
-                        Element li = docBase.getDocument().createElement("li");
-                        li.setTextContent(getTextString(docBase, s2));
-                        ul.appendChild(li);
-                    });
-                    docBase.getBodyElement().appendChild(ul);
-                }
-            });
-        }
+        ul.appendChild(li);
     }
 }
