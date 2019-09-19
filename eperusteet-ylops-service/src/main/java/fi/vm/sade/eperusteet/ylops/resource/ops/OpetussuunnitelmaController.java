@@ -19,13 +19,9 @@ import com.codahale.metrics.annotation.Timed;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
-import fi.vm.sade.eperusteet.ylops.resource.util.AuditLogged;
-import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
-import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
@@ -39,9 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPETUSSUUNNITELMA;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.RAKENNE;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.*;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
@@ -51,8 +44,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RequestMapping("/opetussuunnitelmat")
 @Api(value = "Opetussuunnitelmat")
 public class OpetussuunnitelmaController {
-    @Autowired
-    private EperusteetYlopsAudit audit;
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
@@ -121,14 +112,11 @@ public class OpetussuunnitelmaController {
     @RequestMapping(value = "/{id}/sync", method = RequestMethod.POST)
     @Timed
     public ResponseEntity sync(@PathVariable("id") final Long id) {
-        return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, SYNKRONOINTI), (Void) -> {
-            opetussuunnitelmaService.syncPohja(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        });
+        opetussuunnitelmaService.syncPohja(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{opsId}/julkaise", method = RequestMethod.POST)
-    @AuditLogged
     public OpetussuunnitelmanJulkaisuDto julkaise(
             @PathVariable final Long opsId,
             @RequestBody final UusiJulkaisuDto julkaisuDto) {
@@ -143,23 +131,20 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    @AuditLogged
     @Timed
     public ResponseEntity<OpetussuunnitelmaBaseDto> addOpetussuunnitelma(
             @RequestBody OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
-        return audit.withAudit(LogMessage.builder(null, OPETUSSUUNNITELMA, LUONTI), (Void) -> {
-            if (opetussuunnitelmaDto.getTyyppi() == null) {
-                opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
-            }
+        if (opetussuunnitelmaDto.getTyyppi() == null) {
+            opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
+        }
 
-            if (opetussuunnitelmaDto.getTyyppi().equals(Tyyppi.POHJA)) {
-                return new ResponseEntity<>(opetussuunnitelmaService.addPohja(opetussuunnitelmaDto),
-                        HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(opetussuunnitelmaService.addOpetussuunnitelma(opetussuunnitelmaDto),
-                        HttpStatus.OK);
-            }
-        });
+        if (opetussuunnitelmaDto.getTyyppi().equals(Tyyppi.POHJA)) {
+            return new ResponseEntity<>(opetussuunnitelmaService.addPohja(opetussuunnitelmaDto),
+                    HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(opetussuunnitelmaService.addOpetussuunnitelma(opetussuunnitelmaDto),
+                    HttpStatus.OK);
+        }
     }
 
     @RequestMapping(value = "/{id}/oppiainejarjestys", method = RequestMethod.POST)
@@ -168,10 +153,8 @@ public class OpetussuunnitelmaController {
     public ResponseEntity updateOppiainejarjestys(
             @PathVariable("id") final Long id,
             @RequestBody List<JarjestysDto> oppiainejarjestys) {
-        return audit.withAudit(LogMessage.builder(id, RAKENNE, MUOKKAUS), (Void) -> {
-            opetussuunnitelmaService.updateOppiainejarjestys(id, oppiainejarjestys);
-            return new ResponseEntity<>(HttpStatus.OK);
-        });
+        opetussuunnitelmaService.updateOppiainejarjestys(id, oppiainejarjestys);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
@@ -180,21 +163,17 @@ public class OpetussuunnitelmaController {
     public ResponseEntity<OpetussuunnitelmaDto> updateOpetussuunnitelma(
             @PathVariable("id") final Long id,
             @RequestBody OpetussuunnitelmaDto opetussuunnitelmaDto) {
-        return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, MUOKKAUS), (Void) -> {
-            opetussuunnitelmaDto.setId(id);
-            return new ResponseEntity<>(opetussuunnitelmaService.updateOpetussuunnitelma(opetussuunnitelmaDto),
-                    HttpStatus.OK);
-        });
+        opetussuunnitelmaDto.setId(id);
+        return new ResponseEntity<>(opetussuunnitelmaService.updateOpetussuunnitelma(opetussuunnitelmaDto),
+                HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/opetussuunnitelmat", method = RequestMethod.POST)
     @Timed
     public ResponseEntity updateLapsiOpetussuunnitelmat(
             @PathVariable("id") final Long id) {
-        return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, REKURSIIVINENMUOKKAUS), (Void) -> {
-            opetussuunnitelmaService.updateLapsiOpetussuunnitelmat(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        });
+        opetussuunnitelmaService.updateLapsiOpetussuunnitelmat(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/tila/{tila}", method = RequestMethod.POST)
@@ -203,8 +182,7 @@ public class OpetussuunnitelmaController {
     public ResponseEntity<OpetussuunnitelmaDto> updateTila(
             @PathVariable final Long id,
             @PathVariable Tila tila) {
-        return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, TILAMUUTOS),
-                (Void) -> new ResponseEntity<>(opetussuunnitelmaService.updateTila(id, tila), HttpStatus.OK));
+        return new ResponseEntity<>(opetussuunnitelmaService.updateTila(id, tila), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/validoi", method = RequestMethod.GET)
@@ -220,8 +198,7 @@ public class OpetussuunnitelmaController {
     @Timed
     public ResponseEntity<OpetussuunnitelmaDto> restoreOpetussuunnitelma(
             @PathVariable("id") final Long id) {
-        return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, PALAUTUS),
-                (Void) -> new ResponseEntity<>(opetussuunnitelmaService.restore(id), HttpStatus.OK));
+        return new ResponseEntity<>(opetussuunnitelmaService.restore(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/oikeudet", method = RequestMethod.GET)

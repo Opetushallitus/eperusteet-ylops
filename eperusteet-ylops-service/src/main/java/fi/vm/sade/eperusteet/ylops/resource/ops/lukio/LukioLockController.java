@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioLockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
@@ -30,7 +31,7 @@ import springfox.documentation.annotations.ApiIgnore;
  * Date: 16.12.2015
  * Time: 14.19
  */
-@Controller
+@RestController
 @RequestMapping(value = "/opetussuunnitelmat/lukio/{opsId}/lukko")
 @ApiIgnore
 public class LukioLockController extends AbstractLockController<LukioLockCtx> {

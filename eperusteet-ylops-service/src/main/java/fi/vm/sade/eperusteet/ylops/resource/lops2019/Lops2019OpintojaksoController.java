@@ -3,14 +3,17 @@ package fi.vm.sade.eperusteet.ylops.resource.lops2019;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
-import fi.vm.sade.eperusteet.ylops.resource.util.AuditLogged;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/lops2019/opintojaksot")
@@ -21,7 +24,6 @@ public class Lops2019OpintojaksoController {
     private Lops2019OpintojaksoService opintojaksoService;
 
     @RequestMapping(method = RequestMethod.GET)
-    @AuditLogged
     public List<Lops2019OpintojaksoDto> getAllOpintojaksot(
             @PathVariable final Long opsId,
             @RequestParam(required = false) final String moduuliUri) {
@@ -29,7 +31,6 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.GET)
-    @AuditLogged
     public Lops2019OpintojaksoDto getOpintojakso(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
@@ -37,7 +38,6 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}/peruste", method = RequestMethod.GET)
-    @AuditLogged
     public Lops2019OpintojaksoPerusteDto getOpintojaksonPeruste(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
@@ -45,7 +45,6 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    @AuditLogged
     public Lops2019OpintojaksoDto addOpintojakso(
             @PathVariable final Long opsId,
             @RequestBody final Lops2019OpintojaksoDto opintojaksoDto) {
@@ -53,7 +52,6 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.POST)
-    @AuditLogged
     public Lops2019OpintojaksoDto updateOpintojakso(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId,
@@ -62,7 +60,6 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.DELETE)
-    @AuditLogged
     public void removeOpintojakso(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
@@ -70,7 +67,6 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}/versiot", method = RequestMethod.GET)
-    @AuditLogged
     public List<RevisionDto> getVersionHistory(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
@@ -78,7 +74,6 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}/versiot/{versio}", method = RequestMethod.GET)
-    @AuditLogged
     public Lops2019OpintojaksoDto getVersion(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId,
@@ -87,7 +82,6 @@ public class Lops2019OpintojaksoController {
     }
 
     @RequestMapping(value = "/{opintojaksoId}/versiot/{versio}", method = RequestMethod.POST)
-    @AuditLogged
     public Lops2019OpintojaksoDto revertToVersion(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId,
