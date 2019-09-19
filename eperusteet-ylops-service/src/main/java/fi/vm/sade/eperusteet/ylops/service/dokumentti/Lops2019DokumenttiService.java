@@ -7,5 +7,5 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 public interface Lops2019DokumenttiService {
-    void addLops2019Sisalto(DokumenttiBase docBase) throws ParserConfigurationException, SAXException, IOException;
+    void addLops2019Sisalto(DokumenttiBase docBase);
 }

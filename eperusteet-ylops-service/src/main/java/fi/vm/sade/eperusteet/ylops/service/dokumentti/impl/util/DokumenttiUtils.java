@@ -71,10 +71,17 @@ public class DokumenttiUtils {
     }
 
     public static void addHeader(DokumenttiBase docBase, String text) {
+        addHeader(docBase, text, null);
+    }
+
+    public static void addHeader(DokumenttiBase docBase, String text, String id) {
         if (text != null) {
             Element header = docBase.getDocument().createElement("h" + docBase.getGenerator().getDepth());
             header.setAttribute("number", docBase.getGenerator().generateNumber());
             header.appendChild(docBase.getDocument().createTextNode(unescapeHtml5(text)));
+            if (id != null) {
+                header.setAttribute("id", id);
+            }
             docBase.getBodyElement().appendChild(header);
         }
     }

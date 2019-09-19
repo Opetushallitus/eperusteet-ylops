@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019LaajaAlainenOsaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -29,7 +30,7 @@ public interface Lops2019Service {
     Lops2019SisaltoDto getPerusteSisalto(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<Lops2019OppiaineKaikkiDto> getOppiaineetAndOppimaarat(@P("opsId") Long opsId);
+    List<Lops2019OppiaineKaikkiDto> getPerusteOppiaineetAndOppimaarat(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<Lops2019ModuuliDto> getPerusteModuulit(@P("opsId") Long opsId);
@@ -68,4 +69,6 @@ public interface Lops2019Service {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     List<Lops2019PoistettuDto> getRemoved(@P("opsId") Long opsId);
+
+    Lops2019LaajaAlainenOsaaminenDto getLaajaAlaisetOsaamiset();
 }

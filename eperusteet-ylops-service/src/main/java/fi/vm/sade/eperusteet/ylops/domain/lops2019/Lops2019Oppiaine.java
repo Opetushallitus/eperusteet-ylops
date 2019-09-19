@@ -73,9 +73,10 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
 
     @Getter
     @Setter
-    @JoinColumn(name="laajaAlainenOsaaminen_id")
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private Lops2019LaajaAlainenOsaaminen laajaAlaisetOsaamiset;
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private LokalisoituTeksti laajaAlainenOsaaminen;
 
     @Getter
     @Setter
@@ -112,7 +113,7 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
             result.setKuvaus(original.getKuvaus());
             result.setPakollistenModuulienKuvaus(original.getPakollistenModuulienKuvaus());
             result.setValinnaistenModuulienKuvaus(original.getPakollistenModuulienKuvaus());
-            result.setLaajaAlaisetOsaamiset(Lops2019LaajaAlainenOsaaminen.copy(original.getLaajaAlaisetOsaamiset()));
+            result.setLaajaAlainenOsaaminen(original.getLaajaAlainenOsaaminen());
             result.setArviointi(Lops2019PaikallinenArviointi.copy(original.getArviointi()));
             result.setTehtava(Lops2019Tehtava.copy(original.getTehtava()));
             result.setTavoitteet(Lops2019Tavoitteet.copy(original.getTavoitteet()));

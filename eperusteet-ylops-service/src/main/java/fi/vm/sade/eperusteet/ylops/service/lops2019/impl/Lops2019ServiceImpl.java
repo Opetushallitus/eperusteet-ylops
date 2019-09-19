@@ -5,10 +5,8 @@ import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Poistettu;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
+import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
@@ -16,6 +14,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDt
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
@@ -154,7 +153,7 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     }
 
     @Override
-    public List<Lops2019OppiaineKaikkiDto> getOppiaineetAndOppimaarat(Long opsId) {
+    public List<Lops2019OppiaineKaikkiDto> getPerusteOppiaineetAndOppimaarat(Long opsId) {
         PerusteDto peruste = getPerusteImpl(opsId);
         return peruste.getLops2019().getOppiaineet().stream()
                 .map(oa -> Stream.concat(Stream.of(oa), oa.getOppimaarat().stream()))
@@ -177,21 +176,21 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Override
     public Lops2019OppiaineKaikkiDto getPerusteOppiaine(Long opsId, Long oppiaineId) {
-        return getOppiaineetAndOppimaarat(opsId).stream()
+        return getPerusteOppiaineetAndOppimaarat(opsId).stream()
                 .filter(oa -> oppiaineId.equals(oa.getId()))
                 .findFirst().orElseThrow(() -> new BusinessRuleViolationException("oppiainetta-ei-loytynyt"));
     }
 
     @Override
     public Set<Lops2019OppiaineKaikkiDto> getPerusteenOppiaineet(Long opsId, Set<String> koodiUrit) {
-        return getOppiaineetAndOppimaarat(opsId).stream()
+        return getPerusteOppiaineetAndOppimaarat(opsId).stream()
                 .filter(oa -> koodiUrit.contains(oa.getKoodi().getUri()))
                 .collect(Collectors.toSet());
     }
 
     @Override
     public Lops2019ModuuliDto getPerusteModuuli(Long opsId, Long oppiaineId, Long moduuliId) {
-        List<Lops2019ModuuliDto> moduulit = getOppiaineetAndOppimaarat(opsId).stream()
+        List<Lops2019ModuuliDto> moduulit = getPerusteOppiaineetAndOppimaarat(opsId).stream()
                 .filter((oa) -> Objects.equals(oppiaineId, oa.getId()))
                 .findFirst()
                 .map(Lops2019OppiaineKaikkiDto::getModuulit)
@@ -225,7 +224,7 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Override
     public Lops2019OppiaineKaikkiDto getPerusteOppiaine(Long opsId, String koodiUri) {
-        return getOppiaineetAndOppimaarat(opsId).stream()
+        return getPerusteOppiaineetAndOppimaarat(opsId).stream()
                 .filter(oa -> koodiUri.equals(oa.getKoodi().getUri()))
                 .findFirst()
                 .orElseThrow(() -> new BusinessRuleViolationException("oppiainetta-ei-ole"));
@@ -262,5 +261,37 @@ public class Lops2019ServiceImpl implements Lops2019Service {
         return liitokset;
     }
 
+    @Override
+    public Lops2019LaajaAlainenOsaaminenDto getLaajaAlaisetOsaamiset() {
+        Lops2019LaajaAlainenOsaaminenDto laajaAlaisetOsaamiset = new Lops2019LaajaAlainenOsaaminenDto();
+
+        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
+                createLao("lops2019laajaalainenosaaminen", "1", "Globaali- ja kulttuuriosaaminen"));
+
+        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
+                createLao("lops2019laajaalainenosaaminen", "2", "Hyvinvointiosaaminen"));
+
+        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
+                createLao("lops2019laajaalainenosaaminen", "3", "Vuorovaikutusosaaminen"));
+
+        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
+                createLao("lops2019laajaalainenosaaminen", "4", "Eettisyys ja ympäristöosaaminen"));
+
+        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
+                createLao("lops2019laajaalainenosaaminen", "5", "Yhteiskunnallinen osaaminen"));
+
+        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
+                createLao("lops2019laajaalainenosaaminen", "6", "Monitieteinen ja luova osaaminen"));
+
+        return laajaAlaisetOsaamiset;
+    }
+
+    private Lops2019LaajaAlainenDto createLao(String koodisto, String koodiArvo, String nimi) {
+        Lops2019LaajaAlainenDto lao = new Lops2019LaajaAlainenDto();
+        lao.setKoodi(KoodiDto.of(koodisto, koodiArvo));
+        lao.setNimi(LokalisoituTekstiDto.of(nimi));
+
+        return lao;
+    }
 
 }

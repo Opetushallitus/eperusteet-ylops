@@ -91,7 +91,7 @@ public class ValidointiServiceImpl implements ValidointiService {
 //                .collect(Collectors.toMap(
 //                        Lops2019OpintojaksoBaseDto::getKoodi,
 //                        Function.identity()));
-//        List<Lops2019OppiaineDto> oppiaineetAndOppimaarat = lops2019Service.getOppiaineetAndOppimaarat(opsId);
+//        List<Lops2019OppiaineDto> oppiaineetAndOppimaarat = lops2019Service.getPerusteOppiaineetAndOppimaarat(opsId);
         List<Lops2019ModuuliDto> moduulit = lops2019Service.getPerusteModuulit(ops.getId());
         Map<String, Lops2019ModuuliDto> moduulitMap = moduulit.stream().collect(Collectors.toMap(m -> m.getKoodi().getUri(), Function.identity()));
         Map<String, List<Lops2019OpintojaksoDto>> liitokset = lops2019Service.getModuuliToOpintojaksoMap(opintojaksot);
