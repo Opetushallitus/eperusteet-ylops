@@ -15,10 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-
-import java.util.stream.Stream;
-
 /**
  * @author mikkom
  */

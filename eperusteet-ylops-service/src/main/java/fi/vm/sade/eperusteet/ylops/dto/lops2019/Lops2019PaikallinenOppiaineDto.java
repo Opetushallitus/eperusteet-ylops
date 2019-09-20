@@ -14,7 +14,7 @@ public class Lops2019PaikallinenOppiaineDto {
     private String koodi;
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto kuvaus;
-    private Lops2019LaajaAlainenOsaaminenDto laajaAlainenOsaaminen;
+    private LokalisoituTekstiDto laajaAlainenOsaaminen;
     private Lops2019TehtavaDto tehtava;
     private Lops2019ArviointiDto arviointi;
     private Lops2019OppiaineenTavoitteetDto tavoitteet;

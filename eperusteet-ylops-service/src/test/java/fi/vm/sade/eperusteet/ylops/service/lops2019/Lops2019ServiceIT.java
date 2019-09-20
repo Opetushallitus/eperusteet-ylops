@@ -13,6 +13,8 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
@@ -23,7 +25,6 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-import org.hibernate.envers.Audited;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -129,7 +130,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .containsExactly(KoulutustyyppiToteutus.LOPS2019, KoulutusTyyppi.LUKIOKOULUTUS, "1/2/3", Tyyppi.OPS);
         assertThat(opsDto.getPohja()).isNotNull();
 
-        List<Lops2019OppiaineDto> oppiaineet = lopsService.getPerusteOppiaineet(opsDto.getId());
+        List<Lops2019OppiaineKaikkiDto> oppiaineet = lopsService.getPerusteOppiaineet(opsDto.getId());
         assertThat(oppiaineet).isNotNull();
         assertThat(oppiaineet.size()).isNotEqualTo(0);
 
@@ -229,7 +230,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .koodi("oppiaineet_bi")
                 .build()));
 
-        opintojaksoDto.setModuulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder()
+        opintojaksoDto.setModuulit(Collections.singletonList(Lops2019OpintojaksonModuuliDto.builder()
                 .koodiUri("moduulit_xyz")
                 .build()));
 
@@ -242,7 +243,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .koodi("oppiaineet_bi")
                 .build()));
 
-        opintojaksoDto.setModuulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder()
+        opintojaksoDto.setModuulit(Collections.singletonList(Lops2019OpintojaksonModuuliDto.builder()
                 .koodiUri("moduulit_maa2")
                 .build()));
 

@@ -6,6 +6,8 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliBaseDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
@@ -14,7 +16,6 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
-import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -89,10 +91,11 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
             Set<String> moduulikoodit = opintojakso.getModuulit().stream()
                     .map(Lops2019OpintojaksonModuuliDto::getKoodiUri)
                     .collect(Collectors.toSet());
-            Set<Lops2019ModuuliDto> perusteModuulit = lopsService.getPerusteModuulit(opsId, moduulikoodit);
+            Set<fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto> perusteModuulit
+                    = lopsService.getPerusteModuulit(opsId, moduulikoodit);
             return perusteModuulit.stream()
-                    .map(Lops2019ModuuliDto::getLaajuus)
-                    .mapToLong(Integer::longValue)
+                    .map(fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto::getLaajuus)
+                    .mapToLong(BigDecimal::longValue)
                     .sum();
         }
     }
@@ -130,7 +133,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     public Lops2019OpintojaksoDto addOpintojakso(Long opsId, Lops2019OpintojaksoDto opintojaksoDto) {
         opintojaksoDto.setId(null);
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
-        Set<Lops2019ModuuliDto> loydetytModuulit = lopsService.getPerusteModuulit(opsId, opintojaksoDto.getModuulit().stream()
+        Set<fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto> loydetytModuulit
+                = lopsService.getPerusteModuulit(opsId, opintojaksoDto.getModuulit().stream()
                 .map(Lops2019OpintojaksonModuuliDto::getKoodiUri)
                 .collect(Collectors.toSet()));
 
@@ -142,7 +146,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
             throw new BusinessRuleViolationException("perusteen-oppiainetta-ei-olemassa");
         }
 
-        Set<Lops2019OppiaineDto> perusteenOppiaineet = lopsService.getPerusteenOppiaineet(opsId, opintojaksoDto.getOppiaineet().stream()
+        Set<Lops2019OppiaineKaikkiDto> perusteenOppiaineet
+                = lopsService.getPerusteenOppiaineet(opsId, opintojaksoDto.getOppiaineet().stream()
                 .map(Lops2019OpintojaksonOppiaineDto::getKoodi)
                 .collect(Collectors.toSet()));
 
@@ -166,12 +171,12 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
         { // Tarkistetaan että moduulit ovat oikeista oppiaineista
             Set<String> moduulikoodit = loydetytModuulit.stream()
-                    .map(Lops2019ModuuliDto::getKoodi)
+                    .map(Lops2019ModuuliBaseDto::getKoodi)
                     .map(KoodiDto::getUri)
                     .collect(Collectors.toSet());
             perusteenOppiaineet.forEach(oa -> {
                 moduulikoodit.removeAll(oa.getModuulit().stream()
-                        .map(Lops2019ModuuliDto::getKoodi)
+                        .map(Lops2019ModuuliBaseDto::getKoodi)
                         .map(KoodiDto::getUri)
                         .collect(Collectors.toSet()));
             });

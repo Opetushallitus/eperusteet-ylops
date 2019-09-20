@@ -6,10 +6,8 @@ import fi.vm.sade.eperusteet.ylops.domain.Validable;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineenArviointi;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiDto;
-import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -75,9 +73,10 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
 
     @Getter
     @Setter
-    @JoinColumn(name="laajaAlainenOsaaminen_id")
-    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-    private Lops2019LaajaAlainenOsaaminen laajaAlaisetOsaamiset;
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    private LokalisoituTeksti laajaAlainenOsaaminen;
 
     @Getter
     @Setter
@@ -114,7 +113,7 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
             result.setKuvaus(original.getKuvaus());
             result.setPakollistenModuulienKuvaus(original.getPakollistenModuulienKuvaus());
             result.setValinnaistenModuulienKuvaus(original.getPakollistenModuulienKuvaus());
-            result.setLaajaAlaisetOsaamiset(Lops2019LaajaAlainenOsaaminen.copy(original.getLaajaAlaisetOsaamiset()));
+            result.setLaajaAlainenOsaaminen(original.getLaajaAlainenOsaaminen());
             result.setArviointi(Lops2019PaikallinenArviointi.copy(original.getArviointi()));
             result.setTehtava(Lops2019Tehtava.copy(original.getTehtava()));
             result.setTavoitteet(Lops2019Tavoitteet.copy(original.getTavoitteet()));

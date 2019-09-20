@@ -174,12 +174,16 @@ public class EperusteetLocalService implements EperusteetService {
 
     @Override
     public JsonNode getTiedotteet(Long jalkeen) {
-        JsonNodeFactory foo = new JsonNodeFactory(false);
         return tiedotteet;
     }
 
     @Override
     public JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto) {
         return tiedotteet;
+    }
+
+    @Override
+    public byte[] getLiite(Long perusteId, UUID id) {
+        return new byte[0];
     }
 }

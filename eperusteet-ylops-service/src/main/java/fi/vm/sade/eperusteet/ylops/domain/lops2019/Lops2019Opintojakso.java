@@ -76,12 +76,12 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     private List<Lops2019LaajaAlainenOsaaminen> laajaAlainenOsaaminen = new ArrayList<>();
 
     @Getter
-    @OrderColumn
+    @OrderBy("koodiuri")
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinTable(name = "lops2019_opintojakso_moduuli",
             joinColumns = @JoinColumn(name = "opintojakso_id"),
             inverseJoinColumns = @JoinColumn(name = "moduuli_id"))
-    private Set<Lops2019OpintojaksonModuuli> moduulit = new HashSet<>();
+    private List<Lops2019OpintojaksonModuuli> moduulit = new ArrayList<>();
 
     @Getter
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
