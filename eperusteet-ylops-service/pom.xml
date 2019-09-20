@@ -305,7 +305,7 @@
         <dependency>
             <groupId>fi.vm.sade.eperusteet</groupId>
             <artifactId>eperusteet-backend-utils</artifactId>
-            <version>1.7-SNAPSHOT</version>
+            <version>1.8-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>fi.vm.sade.java-utils</groupId>
