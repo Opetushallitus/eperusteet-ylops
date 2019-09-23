@@ -29,6 +29,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
@@ -76,15 +77,15 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
     private DtoMapper mapper;
 
     @Autowired
-    private EperusteetServiceMock mock;
+    private EperusteetService eperusteetService;
 
     private static Long opsId = null;
 
     @Before
     public void setUp() throws IOException {
-        try (InputStream json = getClass().getResourceAsStream("/data/peruste.json")) {
-            mock.setPeruste(json);
-        }
+//        try (InputStream json = getClass().getResourceAsStream()) {
+//            eperusteetService.setPeruste(json);
+//        }
 
         OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
         ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);

@@ -1,0 +1,2 @@
+ALTER TABLE dokumentti ALTER COLUMN luoja DROP NOT NULL;
+ALTER TABLE dokumentti ALTER COLUMN aloitusaika DROP NOT NULL;

@@ -64,7 +64,7 @@ public class OppiaineController {
     private OpetussuunnitelmaService ops;
 
     @RequestMapping(method = RequestMethod.POST)
-    public OppiaineDto add(@PathVariable final Long opsId, @RequestBody OppiaineDto dto) {
+    public OppiaineDto addOppiaine(@PathVariable final Long opsId, @RequestBody OppiaineDto dto) {
         return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, LISAYS), (Void) -> {
             return oppiaineService.add(opsId, dto);
         });
@@ -92,7 +92,7 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<UnwrappedOpsOppiaineDto> get(
+    public ResponseEntity<UnwrappedOpsOppiaineDto> getOppiaine(
             @PathVariable final Long opsId,
             @PathVariable final Long id
     ) {
@@ -174,7 +174,7 @@ public class OppiaineController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<OppiaineDto> getAll(@PathVariable final Long opsId,
+    public List<OppiaineDto> getAllOppiaineet(@PathVariable final Long opsId,
                                     @RequestParam(value = "tyyppi", required = false) OppiaineTyyppi tyyppi) {
         if (tyyppi == null) {
             return oppiaineService.getAll(opsId, OppiaineTyyppi.YHTEINEN);
@@ -194,7 +194,7 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public UnwrappedOpsOppiaineDto update(@PathVariable final Long opsId, @PathVariable final Long id,
+    public UnwrappedOpsOppiaineDto updateOppiaine(@PathVariable final Long opsId, @PathVariable final Long id,
                                           @RequestBody OppiaineDto dto) {
         return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, MUOKKAUS), (Void) -> {
             dto.setId(id);
@@ -220,7 +220,7 @@ public class OppiaineController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable final Long opsId, @PathVariable final Long id) {
+    public void deleteOppiaine(@PathVariable final Long opsId, @PathVariable final Long id) {
         audit.withAudit(LogMessage.builder(opsId, OPPIAINE, POISTO), (Void) -> {
             oppiaineService.delete(opsId, id);
             return null;

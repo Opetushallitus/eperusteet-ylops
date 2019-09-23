@@ -15,12 +15,14 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.mocks;
 
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -58,6 +60,16 @@ public class KayttajanTietoServiceMock implements KayttajanTietoService {
 
     @Override
     public KayttajanProjektitiedotDto haeOpetussuunnitelma(String oid, Long opsId) {
+        return null;
+    }
+
+    @Override
+    public Set<String> haeOrganisaatioOikeudet() {
+        return null;
+    }
+
+    @Override
+    public EtusivuDto haeKayttajanEtusivu() {
         return null;
     }
 }

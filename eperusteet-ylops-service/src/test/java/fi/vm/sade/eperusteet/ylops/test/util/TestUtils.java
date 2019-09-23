@@ -114,4 +114,5 @@ public abstract class TestUtils {
         ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
         return ops;
     }
+
 }

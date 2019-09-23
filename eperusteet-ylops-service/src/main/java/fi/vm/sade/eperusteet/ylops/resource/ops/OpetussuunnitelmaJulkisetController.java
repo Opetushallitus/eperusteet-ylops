@@ -32,14 +32,14 @@ public class OpetussuunnitelmaJulkisetController {
             @ApiImplicitParam(name = "perusteenId", dataType = "string", paramType = "query", allowMultiple = false, value = "perusterajaus"),
             @ApiImplicitParam(name = "perusteenDiaarinumero", dataType = "string", paramType = "query", allowMultiple = false, value = "perusterajaus")
     })
-    public List<OpetussuunnitelmaJulkinenDto> getAll(OpetussuunnitelmaQuery query) {
+    public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query) {
         return opetussuunnitelmaService.getAllJulkiset(query);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaJulkinenDto> get(@PathVariable("id") final Long id) {
+    public ResponseEntity<OpetussuunnitelmaJulkinenDto> getOpetussuunnitelmanJulkisetTiedot(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkinen(id), HttpStatus.OK);
     }
 

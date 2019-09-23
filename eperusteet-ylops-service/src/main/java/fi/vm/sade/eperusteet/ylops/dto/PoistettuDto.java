@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.dto;
 
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;

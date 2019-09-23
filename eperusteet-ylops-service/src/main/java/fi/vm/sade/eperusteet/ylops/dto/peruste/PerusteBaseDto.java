@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 
@@ -45,5 +46,6 @@ public abstract class PerusteBaseDto implements Serializable {
     private Date muokattu;
     private String tila;
     private String tyyppi;
+    private KoulutustyyppiToteutus toteutus;
     private Set<String> korvattavatDiaarinumerot;
 }

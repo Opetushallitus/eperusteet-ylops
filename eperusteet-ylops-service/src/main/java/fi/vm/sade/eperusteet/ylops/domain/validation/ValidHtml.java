@@ -46,16 +46,18 @@ public @interface ValidHtml {
 
     enum WhitelistType {
         MINIMAL(Whitelist.none()),
-        SIMPLIFIED(Whitelist.none().addTags("p", "strong", "em", "s", "ol", "li", "ul")),
+        SIMPLIFIED(Whitelist.none().addTags("p", "strong", "em", "i", "s", "ol", "li", "ul")),
         NORMAL(Whitelist.none()
-                .addTags("p", "strong", "em", "s", "ol", "li", "ul", "blockquote", "table", "caption",
-                        "tbody", "tr", "td", "hr", "pre", "th", "thead", "a", "abbr")
+                .addTags("p", "strong", "em", "i", "s", "ol", "li", "ul", "blockquote", "table", "caption",
+                        "tbody", "tr", "td", "hr", "pre", "th", "thead", "a", "abbr", "comment", "figcaption")
                 .addAttributes("table", "align", "border", "cellpadding", "cellspacing", "style", "summary")
                 .addAttributes("th", "scope", "colspan", "rowspan", "style")
                 .addAttributes("td", "colspan", "rowspan", "style", "style")
                 .addAttributes("a", "href", "target")
-                .addAttributes("img", "data-uid", "alt", "style")
-                .addAttributes("abbr", "data-viite"));
+                .addAttributes("img", "data-uid", "alt", "style", "src")
+                .addAttributes("figure", "class")
+                .addAttributes("abbr", "data-viite")
+                .addAttributes("comment", "uid"));
 
         private Whitelist whitelist;
 

@@ -24,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import io.swagger.annotations.Api;
@@ -67,39 +68,23 @@ public class DokumenttiController {
             @RequestParam final long opsId,
             @RequestParam(defaultValue = "fi") final String kieli
     ) throws DokumenttiException {
-        HttpStatus status;
-
-        DokumenttiDto dtoForDokumentti = service.getDto(opsId, Kieli.of(kieli));
-
-        // Jos dokumentti ei löydy valmiiksi niin koitetaan tehdä uusi
-        if (dtoForDokumentti == null) {
-            dtoForDokumentti = service.createDtoFor(opsId, Kieli.of(kieli));
-        }
-
-        // Jos tila epäonnistunut, opsia ei löytynyt
-        if (dtoForDokumentti == null) {
+        DokumenttiDto dto = service.getDto(opsId, Kieli.of(kieli));
+        if (dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         // Aloitetaan luonti jos luonti ei ole jo päällä tai maksimi luontiaika ylitetty
-        if (isTimePass(dtoForDokumentti) || dtoForDokumentti.getTila() != DokumenttiTila.LUODAAN) {
+        if (isTimePass(dto) || dto.getTila() != DokumenttiTila.LUODAAN) {
             // Vaihdetaan dokumentin tila luonniksi
-            service.setStarted(dtoForDokumentti);
+            service.setStarted(dto);
 
-            // Generoidaan dokumentin data sisältö
-            // Asynkroninen metodi
-            service.generateWithDto(dtoForDokumentti);
+            // Luodaan dokumentin sisältö
+            service.generateWithDto(dto);
 
-            status = HttpStatus.ACCEPTED;
+            return new ResponseEntity<>(service.getDto(dto.getId()), HttpStatus.CREATED);
         } else {
-            status = HttpStatus.FORBIDDEN;
+            throw new BusinessRuleViolationException("Luonti on jo käynissä");
         }
-
-        // Uusi objekti dokumentissa, jossa päivitetyt tiedot
-        final DokumenttiDto dtoDokumentti = service.getDto(dtoForDokumentti.getId());
-        LogMessage.builder(opsId, OPETUSSUUNNITELMA, GENEROI).log();
-
-        return new ResponseEntity<>(dtoDokumentti, status);
     }
 
     private boolean isTimePass(DokumenttiDto dokumenttiDto) {
@@ -158,10 +143,12 @@ public class DokumenttiController {
     ) {
         Kieli k = Kieli.of(kieli);
         DokumenttiDto dto = service.getDto(opsId, k);
+
+        // Jos dokumentti ei löydy valmiiksi niin koitetaan tehdä uusi
         if (dto == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.ok(service.createDtoFor(opsId, Kieli.of(kieli)));
         } else {
-            return new ResponseEntity<>(dto, HttpStatus.OK);
+            return ResponseEntity.ok(dto);
         }
     }
 

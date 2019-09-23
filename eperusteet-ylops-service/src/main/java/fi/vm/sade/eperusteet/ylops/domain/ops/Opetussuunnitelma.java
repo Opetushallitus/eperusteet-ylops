@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.*;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuudet;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.OpetuksenYleisetTavoitteet;
@@ -40,10 +41,14 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.groupingBy;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiDto;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
+import org.springframework.util.StringUtils;
 
 /**
  * @author mikkom
@@ -52,7 +57,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
 @Audited
 @Table(name = "opetussuunnitelma")
 public class Opetussuunnitelma extends AbstractAuditedEntity
-        implements Serializable, ReferenceableEntity {
+        implements Serializable, ReferenceableEntity, Validable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Getter
@@ -61,6 +66,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
     @Getter
     @Setter
+    @NotNull
     private String perusteenDiaarinumero;
 
     @Getter
@@ -115,6 +121,9 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     private KoulutusTyyppi koulutustyyppi;
 
+    @Enumerated(value = EnumType.STRING)
+    private KoulutustyyppiToteutus toteutus;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Getter
     @Setter
@@ -132,16 +141,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<KoodistoKoodi> kunnat = new HashSet<>();
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(joinColumns = {
-            @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_oppiaine")
-    private Set<OpsOppiaine> oppiaineet = new HashSet<>();
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(joinColumns = {
-            @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_vuosiluokkakokonaisuus")
-    private Set<OpsVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet = new HashSet<>();
-
     @ElementCollection
     @Getter
     @Setter
@@ -158,6 +157,20 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @JoinTable(name = "opetussuunnitelma_liite", inverseJoinColumns = {@JoinColumn(name = "liite_id")}, joinColumns = {@JoinColumn(name = "opetussuunnitelma_id")})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<Liite> liitteet = new HashSet<>();
+
+
+    // FIXME: vanhat toteutuskohtaiset sisällöt mitkä eivät kuuluisi tähän entiteettiin
+    // --------------------------------------------------
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(joinColumns = {
+            @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_oppiaine")
+    private Set<OpsOppiaine> oppiaineet = new HashSet<>();
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(joinColumns = {
+            @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_vuosiluokkakokonaisuus")
+    private Set<OpsVuosiluokkakokonaisuus> vuosiluokkakokonaisuudet = new HashSet<>();
 
     @Getter
     @Audited
@@ -182,6 +195,13 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
             cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private OpetuksenYleisetTavoitteet opetuksenYleisetTavoitteet;
+
+    // --------------------------------------------------
+
+    @Getter
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
+            cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private Lops2019Sisalto lops2019;
 
     @Getter
     @Audited
@@ -315,5 +335,47 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     public Optional<Oppiaine> findYlatasonOppiaine(Predicate<Oppiaine> predicate, Predicate<OpsOppiaine> filter) {
         return oppiaineet.stream().filter(filter).map(OpsOppiaine::getOppiaine)
                 .filter(predicate).findFirst();
+    }
+
+    public KoulutustyyppiToteutus getToteutus() {
+        if (koulutustyyppi == null || koulutustyyppi.isYksinkertainen()) {
+            return KoulutustyyppiToteutus.YKSINKERTAINEN;
+        }
+        else if (KoulutusTyyppi.PERUSOPETUS.equals(koulutustyyppi)) {
+            return KoulutustyyppiToteutus.PERUSOPETUS;
+        }
+        else {
+            return toteutus;
+        }
+    }
+
+    public void setLops2019(Lops2019Sisalto lops2019) {
+        if (this.lops2019 == null) {
+            this.lops2019 = lops2019;
+        }
+    }
+
+    public void setToteutus(KoulutustyyppiToteutus toteutus) {
+        if (this.toteutus == null) {
+            this.toteutus = toteutus;
+        }
+    }
+
+    @Override
+    public void validate(ValidointiDto validointi, ValidointiContext ctx) {
+        validointi.virhe("vahintaan-yksi-julkaisukieli", this, getJulkaisukielet().isEmpty());
+        validointi.virhe("perusteen-diaarinumero-puuttuu", this, getPerusteenDiaarinumero().isEmpty());
+        validointi.virhe("nimi-oltava-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
+        validointi.varoitus("kuvausta-ei-ole-kirjoitettu-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
+
+        if (getTyyppi() == Tyyppi.OPS) {
+            validointi.virhe("hyvaksyjataho-puuttuu", this, StringUtils.isEmpty(getHyvaksyjataho()));
+            validointi.virhe("paatospaivamaaraa-ei-ole-asetettu", this, getPaatospaivamaara() == null);
+        }
+    }
+
+    @Override
+    public ValidationCategory category() {
+        return ValidationCategory.OPETUSSUUNNITELMA;
     }
 }

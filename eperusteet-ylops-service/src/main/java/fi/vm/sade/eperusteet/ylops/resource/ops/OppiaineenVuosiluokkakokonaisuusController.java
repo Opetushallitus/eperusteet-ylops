@@ -122,7 +122,7 @@ public class OppiaineenVuosiluokkakokonaisuusController {
     public Set<OppiaineenVuosiluokkakokonaisuusDto> getAll(
         @PathVariable("opsId") final Long opsId,
         @PathVariable("oppiaineId") final Long oppiaineId) {
-        return oppiaineService.get(opsId, oppiaineId).getVuosiluokkakokonaisuudet();
+        return oppiaineService.getLiitetiedosto(opsId, oppiaineId).getVuosiluokkakokonaisuudet();
     }
 
     @RequestMapping(value = "/valinnaiset",method = RequestMethod.GET)

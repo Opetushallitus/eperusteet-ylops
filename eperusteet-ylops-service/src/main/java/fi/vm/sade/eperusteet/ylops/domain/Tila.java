@@ -15,6 +15,8 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain;
 
+import com.google.common.collect.Sets;
+
 import java.util.EnumSet;
 import java.util.Set;
 
@@ -49,8 +51,20 @@ public enum Tila {
 
     private final String tila;
 
-    private Tila(String tila) {
+    Tila(String tila) {
         this.tila = tila;
+    }
+
+    static public Set<Tila> poistetut() {
+        return Sets.newHashSet(POISTETTU);
+    }
+
+    static public Set<Tila> julkaisemattomat() {
+        return Sets.newHashSet(LUONNOS, VALMIS);
+    }
+
+    static public Set<Tila> julkiset() {
+        return Sets.newHashSet(JULKAISTU);
     }
 
     @Override

@@ -38,14 +38,12 @@ public class TekstiKappaleViiteDto {
 
     @JsonProperty("_tekstiKappale")
     private Reference tekstiKappaleRef;
-
     private TekstiKappaleDto tekstiKappale;
-
     private Omistussuhde omistussuhde;
-
     private boolean pakollinen;
-
     private boolean valmis;
+    private Long perusteTekstikappaleId;
+    private boolean naytaPerusteenTeksti = true;
 
     public TekstiKappaleViiteDto() {
     }

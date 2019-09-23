@@ -16,5 +16,6 @@ public class RevisionDto {
     private Integer numero;
     private Date pvm;
     private String muokkaajaOid;
-    private String kommentti;
+    private String kommentti = "";
+    private String nimi = "";
 }

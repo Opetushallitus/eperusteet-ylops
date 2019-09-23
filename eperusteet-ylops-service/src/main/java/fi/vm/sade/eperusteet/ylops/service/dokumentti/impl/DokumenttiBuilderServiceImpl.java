@@ -19,6 +19,7 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.utils.dto.dokumentti.DokumenttiMetaDto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -32,13 +33,16 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.*;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.CharapterNumberGenerator;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
+import org.apache.pdfbox.preflight.ValidationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,6 +109,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private LukioService lukioService;
 
     @Autowired
+    private Lops2019DokumenttiService lops2019DokumenttiService;
+
+    @Autowired
     private PdfService pdfService;
 
     @Autowired
@@ -167,13 +174,17 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             docBase.setPerusteDto(perusteDto);
 
             // Perusopetus
-            if (ops.getKoulutustyyppi() == KoulutusTyyppi.PERUSOPETUS) {
+            if (KoulutusTyyppi.PERUSOPETUS.equals(ops.getKoulutustyyppi())) {
                 perusopetusService.addVuosiluokkakokonaisuudet(docBase);
             }
 
             // Lukio
-            if (ops.getKoulutustyyppi() == KoulutusTyyppi.LUKIOKOULUTUS) {
-                lukioService.addOppimistavoitteetJaOpetuksenKeskeisetSisallot(docBase);
+            if (KoulutusTyyppi.LUKIOKOULUTUS.equals(ops.getKoulutustyyppi())) {
+                if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
+                    lops2019DokumenttiService.addLops2019Sisalto(docBase);
+                } else {
+                    lukioService.addOppimistavoitteetJaOpetuksenKeskeisetSisallot(docBase);
+                }
             }
         }
 
@@ -198,7 +209,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         byte[] pdf = pdfService.xhtml2pdf(doc, meta);
 
         // Validointi
-        /*ValidationResult result = DokumenttiUtils.validatePdf(pdf);
+        ValidationResult result = DokumenttiUtils.validatePdf(pdf);
         if (result.isValid()) {
             LOG.info("PDF (ops " + ops.getId() + ") is a valid PDF/A-1b file");
         }
@@ -207,7 +218,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             for (ValidationResult.ValidationError error : result.getErrorsList()) {
                 LOG.warn(error.getErrorCode() + " : " + error.getDetails());
             }
-        }*/
+        }
 
         return pdf;
     }
@@ -277,15 +288,13 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Päätöspäivämäärä
         Date paatospaivamaara = docBase.getOps().getPaatospaivamaara();
-        Element dateEl = docBase.getDocument().createElement("meta");
-        dateEl.setAttribute("name", "date");
         if (paatospaivamaara != null) {
+            Element dateEl = docBase.getDocument().createElement("meta");
+            dateEl.setAttribute("name", "date");
             String paatospaivamaaraText = new SimpleDateFormat("d.M.yyyy").format(paatospaivamaara);
             dateEl.setAttribute("content", paatospaivamaaraText);
-        } else {
-            dateEl.setAttribute("content", "");
+            docBase.getHeadElement().appendChild(dateEl);
         }
-        docBase.getHeadElement().appendChild(dateEl);
 
 
         // Koulun nimi
@@ -365,15 +374,40 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             for (int i = 0; i < list.getLength(); i++) {
                 Element element = (Element) list.item(i);
                 String id = element.getAttribute("data-uid");
+                String src = element.getAttribute("src");
 
-                UUID uuid = UUID.fromString(id);
+                // Todo: Jokin parempi tapa tunnistaa peruste olisi hyvä olla
+                boolean isPerusteesta = false;
+                PerusteDto perusteDto = docBase.getPerusteDto();
+                if (src.contains("eperusteet-service") && perusteDto != null) {
+                    isPerusteesta = true;
+                }
 
-                // Ladataan kuvan data muistiin
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                liiteService.export(docBase.getOps().getId(), uuid, byteArrayOutputStream);
+                UUID uuid = null;
+                try {
+                    uuid = UUID.fromString(id);
+                } catch (IllegalArgumentException e) {
+                    // Jos data-uuid puuttuu, koitetaan hakea src:n avulla
+                    if (src.contains("eperusteet-ylops-service")) {
+                        String[] parts = src.split("/");
+                        if (parts.length > 1 && Objects.equals(parts[parts.length - 2], "kuvat")) {
+                            uuid = UUID.fromString(parts[parts.length - 1]);
+                        }
+                    }
+                }
+
+                if (uuid == null) {
+                    throw new BusinessRuleViolationException("kuva-uuid-ei-loytynyt");
+                }
+
+                // Ladataan kuvat data muistiin
+                InputStream in = liiteService.export(
+                        docBase.getOps().getId(),
+                        uuid,
+                        isPerusteesta ? perusteDto.getId() : null
+                );
 
                 // Tehdään muistissa olevasta datasta kuva
-                InputStream in = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
                 BufferedImage bufferedImage = ImageIO.read(in);
 
                 int width = bufferedImage.getWidth();

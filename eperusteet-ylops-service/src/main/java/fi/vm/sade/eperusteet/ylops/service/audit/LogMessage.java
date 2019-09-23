@@ -46,6 +46,18 @@ public class LogMessage extends AbstractLogMessage {
         return result;
     }
 
+    public static LogMessageBuilder builder(Map<String, Object> params, String target, String op) {
+        LogMessageBuilder result = new LogMessageBuilder()
+                .add("target", target)
+                .setOperation(op)
+                .id(EperusteetYlopsAudit.username());
+
+        for (Map.Entry<String, Object> entry : params.entrySet()) {
+            result.add(entry.getKey(), entry.getValue());
+        }
+        return result;
+    }
+
     public static <T extends AuditLoggableDto> LogMessageBuilder builder(Long perusteId, EperusteetYlopsMessageFields target, EperusteetYlopsOperation op, T dto) {
         return builder(perusteId, target, op)
                 .addDto(dto);
@@ -74,6 +86,10 @@ public class LogMessage extends AbstractLogMessage {
 
         public LogMessageBuilder setOperation(EperusteetYlopsOperation op) {
             return safePut("operation", op.toString());
+        }
+
+        public LogMessageBuilder setOperation(String op) {
+            return safePut("operation", op);
         }
 
         public LogMessageBuilder beforeRevision(Number rev) {

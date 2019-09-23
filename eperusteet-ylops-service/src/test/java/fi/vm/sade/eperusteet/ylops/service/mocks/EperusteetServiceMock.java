@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.mocks;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +30,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
-import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.EperusteetLocalService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteVersionDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -42,17 +41,21 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
 
 /**
  * @author nkala
  */
 @Service
 @SuppressWarnings("TransactionalAnnotations")
-public class EperusteetServiceMock implements EperusteetService {
+public class EperusteetServiceMock extends EperusteetLocalService {
 
     public static final String DIAARINUMERO = "mock-diaarinumero";
     private EperusteetPerusteDto perusteDto = null;
@@ -63,16 +66,9 @@ public class EperusteetServiceMock implements EperusteetService {
     @Autowired
     private PerusteCacheRepository perusteCacheRepository;
 
-    @Override
-    public List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit) {
-        PerusteInfoDto perusteInfo = new PerusteInfoDto();
-        perusteInfo.setDiaarinumero(DIAARINUMERO);
-        return Collections.singletonList(perusteInfo);
-    }
-
-    @Override
-    public List<PerusteInfoDto> findPerusteet() {
-        return findPerusteet(null);
+    @PostConstruct
+    public void init() {
+        super.init();
     }
 
     @Override
@@ -90,22 +86,46 @@ public class EperusteetServiceMock implements EperusteetService {
     }
 
     @Override
-    public PerusteDto getEperusteetPeruste(Long id) {
-        PerusteDto peruste = new PerusteDto();
-        peruste.setId(id);
-        peruste.setNimi(mapper.map(LokalisoituTeksti.of(Kieli.FI, "mock-peruste"), LokalisoituTekstiDto.class));
-        peruste.setDiaarinumero(DIAARINUMERO);
-        peruste.setGlobalVersion(new PerusteVersionDto(new Date()));
-        peruste.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
-        PerusopetuksenPerusteenSisaltoDto sisalto = new PerusopetuksenPerusteenSisaltoDto();
-        sisalto.setOppiaineet(Collections.emptySet());
-        peruste.setPerusopetus(sisalto);
-        return peruste;
+    public PerusteDto getPerusteById(Long id) {
+        PerusteDto peruste = super.getPerusteById(id);
+        if (peruste != null) {
+            return peruste;
+        }
+        else {
+            peruste = new PerusteDto();
+            peruste.setId(id);
+            peruste.setNimi(mapper.map(LokalisoituTeksti.of(Kieli.FI, "mock-peruste"), LokalisoituTekstiDto.class));
+            peruste.setDiaarinumero(DIAARINUMERO);
+            peruste.setGlobalVersion(new PerusteVersionDto(new Date()));
+            peruste.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+            PerusopetuksenPerusteenSisaltoDto sisalto = new PerusopetuksenPerusteenSisaltoDto();
+            sisalto.setOppiaineet(Collections.emptySet());
+            peruste.setPerusopetus(sisalto);
+            return peruste;
+        }
+    }
+
+    @Override
+    public List<PerusteInfoDto> findPerusteet() {
+        return Stream.concat(findPerusteet(null).stream(), super.findPerusteet().stream())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit) {
+        PerusteInfoDto perusteInfo = new PerusteInfoDto();
+        perusteInfo.setDiaarinumero(DIAARINUMERO);
+        return Collections.singletonList(perusteInfo);
     }
 
     @Override
     public PerusteDto getPeruste(String diaariNumero) {
-        return getPerusteByDiaari(diaariNumero);
+        if (DIAARINUMERO.equals(diaariNumero)) {
+            return getPerusteByDiaari(diaariNumero);
+        }
+        else {
+            return super.getPeruste(diaariNumero);
+        }
     }
 
     @Override
@@ -118,7 +138,7 @@ public class EperusteetServiceMock implements EperusteetService {
             savePerusteCahceEntry(perusteDto);
             return mapper.map(perusteDto, PerusteDto.class);
         }
-        PerusteDto peruste = getEperusteetPeruste(0L);
+        PerusteDto peruste = getPerusteById(0L);
 
         savePerusteCahceEntry(mapper.map(peruste, EperusteetPerusteDto.class));
         return peruste;

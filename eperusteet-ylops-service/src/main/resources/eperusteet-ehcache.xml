@@ -197,7 +197,7 @@
     diskSpoolBufferSizeMB:
     This is the size to allocate the DiskStore for a spool buffer. Writes are made
     to this area and then asynchronously written to disk. The default size is 30MB.
-    Each spool buffer is used only by its cache. If you get OutOfMemory errors consider
+    Each spool buffer is used only by its cache. If you getLiitetiedosto OutOfMemory errors consider
     lowering this value. To improve DiskStore performance consider increasing it. Trace level
     logging in the DiskStore will show if put back ups are occurring.
 
@@ -271,7 +271,7 @@
 
     <!--
     Mandatory Default Cache configuration. These settings will be applied to caches
-    created programmtically using CacheManager.add(String cacheName)
+    created programmtically using CacheManager.addOppiaine(String cacheName)
     -->
     <defaultCache
         maxElementsInMemory="10000"

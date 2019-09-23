@@ -16,7 +16,7 @@
   <logger name="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" level="error"/>
   <logger name="fi.vm.sade" level="warn"/>
   <logger name="fi.vm.sade.eperusteet.ylops" level="info"/>
-  <!--<logger name="fi.vm.sade.eperusteet.ylops.PROFILING" level="trace"/>-->
+  <logger name="fi.vm.sade.eperusteet.ylops.PROFILING" level="trace"/>
   <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiServiceImpl" level="info"/>
   <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiEventListener" level="warn"/>
   <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiBuilderServiceImpl" level="info"/>

@@ -17,42 +17,47 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.YleisetOsuudetService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
+import java.util.Objects;
+import java.util.Optional;
 
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.*;
 
 /**
  * @author isaul
  */
+@Slf4j
 @Service
 public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
     @Autowired
     private LocalizedMessagesService messages;
 
-    public void addYleisetOsuudet(DokumenttiBase docBase)
-            throws IOException, SAXException, ParserConfigurationException {
+    @Autowired
+    private Lops2019Service lopsService;
 
-        if (docBase.getOps().getTekstit() != null) {
-            if (docBase.getOps().getKoulutustyyppi().equals(KoulutusTyyppi.LUKIOKOULUTUS)) {
-                addTekstiKappale(docBase, docBase.getOps().getTekstit(), false);
-            } else {
-                addTekstiKappale(docBase, docBase.getOps().getTekstit(), true);
-            }
-        }
+    public void addYleisetOsuudet(DokumenttiBase docBase) {
+        Optional.ofNullable(docBase.getOps().getTekstit())
+                .ifPresent(tekstit -> {
+                    if (Objects.equals(docBase.getOps().getKoulutustyyppi(), KoulutusTyyppi.LUKIOKOULUTUS)) {
+                        addTekstiKappale(docBase, tekstit, false);
+                    } else {
+                        addTekstiKappale(docBase, tekstit, true);
+                    }
+                });
     }
 
-    private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite, boolean paataso)
-            throws ParserConfigurationException, IOException, SAXException {
-
+    private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite, boolean paataso) {
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
             if (lapsi != null && lapsi.getTekstiKappale() != null) {
 
@@ -76,6 +81,24 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                         addHeader(docBase, getTextString(docBase, lapsi.getTekstiKappale().getNimi()));
                     }
 
+                    // Perusteen teksti luvulle jos valittu esittäminen
+                    Long pTekstikappaleId = lapsi.getPerusteTekstikappaleId();
+                    if (lapsi.isNaytaPerusteenTeksti() && pTekstikappaleId != null) {
+                        try {
+                            PerusteTekstiKappaleViiteMatalaDto perusteTekstikappale = lopsService
+                                    .getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
+
+                            if (perusteTekstikappale != null && perusteTekstikappale.getPerusteenOsa() != null) {
+                                addLokalisoituteksti(docBase,
+                                        perusteTekstikappale.getPerusteenOsa().getTeksti(),
+                                        "cite");
+                            }
+
+                        } catch (BusinessRuleViolationException | NotExistsException e) {
+                            // Ohitetaan. Voi olla toisen tyyppinen ops.
+                        }
+                    }
+
                     // Opsin teksti luvulle
                     if (lapsi.getTekstiKappale().getTeksti() != null) {
                         addLokalisoituteksti(docBase, lapsi.getTekstiKappale().getTeksti(), "div");
@@ -97,7 +120,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
         }
     }
 
-    public void addLiitteet(DokumenttiBase docBase) throws IOException, SAXException, ParserConfigurationException {
+    public void addLiitteet(DokumenttiBase docBase) {
         if (docBase.getOps().getTekstit() != null) {
             for (TekstiKappaleViite liiteViite : docBase.getOps().getTekstit().getLapset()) {
                 if (liiteViite != null

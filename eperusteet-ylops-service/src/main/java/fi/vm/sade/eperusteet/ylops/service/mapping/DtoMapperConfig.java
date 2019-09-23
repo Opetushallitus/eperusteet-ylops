@@ -15,12 +15,15 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.mapping;
 
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti_;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine_;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
@@ -28,6 +31,8 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import ma.glasnost.orika.CustomMapper;
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
 import org.springframework.context.annotation.Bean;
@@ -60,12 +65,10 @@ public class DtoMapperConfig {
         OptionalSupport.register(factory);
         factory.registerMapper(new ReferenceableCollectionMergeMapper());
 
-        //yksisuuntainen mappaus
+        // Yksisuuntainen mappaus
         factory.classMap(OpetussuunnitelmaDto.class, Opetussuunnitelma.class)
                 .fieldBToA(Opetussuunnitelma_.tekstit.getName(), Opetussuunnitelma_.tekstit.getName())
                 .fieldBToA(Opetussuunnitelma_.oppiaineet.getName(), Opetussuunnitelma_.oppiaineet.getName())
-                //.fieldBToA(Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName(), Opetussuunnitelma_.vuosiluokkakokonaisuudet.getName())
-                //.fieldAToB("vuosiluokkakokonaisuudet", "vuosiluokkakokonaisuudet")
                 .byDefault()
                 .register();
 
@@ -90,6 +93,7 @@ public class DtoMapperConfig {
                 .exclude(Oppiaine_.oppimaarat.getName())
                 .byDefault()
                 .register();
+
         factory.classMap(Oppiaine.class, LukioOppiaineTiedotDto.class)
                 .exclude(Oppiaine_.oppimaarat.getName())
                 .exclude("kurssiTyyppiKuvaukset") // does not handle Optional correctly
@@ -110,9 +114,27 @@ public class DtoMapperConfig {
                 .exclude("tyyppi")
                 .byDefault()
                 .register();
+
         factory.classMap(LukiokurssiUpdateDto.class, Lukiokurssi.class)
                 .exclude("tyyppi")
                 .byDefault()
+                .register();
+
+        factory.classMap(Dokumentti.class, DokumenttiDto.class)
+                .exclude(Dokumentti_.kansikuva.getName())
+                .exclude(Dokumentti_.ylatunniste.getName())
+                .exclude(Dokumentti_.alatunniste.getName())
+                .byDefault()
+                .favorExtension(true)
+                .customize(new CustomMapper<Dokumentti, DokumenttiDto>() {
+                    @Override
+                    public void mapAtoB(Dokumentti dokumentti, DokumenttiDto dokumenttiDto, MappingContext context) {
+                        super.mapAtoB(dokumentti, dokumenttiDto, context);
+                        dokumenttiDto.setKansikuva(dokumentti.getKansikuva() != null);
+                        dokumenttiDto.setYlatunniste(dokumentti.getYlatunniste() != null);
+                        dokumenttiDto.setAlatunniste(dokumentti.getAlatunniste() != null);
+                    }
+                })
                 .register();
 
         return new DtoMapperImpl(factory.getMapperFacade());

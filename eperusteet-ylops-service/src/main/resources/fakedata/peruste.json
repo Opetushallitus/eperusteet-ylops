@@ -1,5 +1,8 @@
 {
   "id" : 4550,
+  "globalVersion": {
+    "aikaleima": 1234
+  },
   "nimi" : {
     "fi" : "TESTIDATA",
     "_id" : "5265"

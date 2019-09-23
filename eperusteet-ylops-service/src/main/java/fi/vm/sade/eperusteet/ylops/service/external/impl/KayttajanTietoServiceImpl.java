@@ -17,9 +17,15 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.javautils.http.OphHttpClient;
@@ -35,11 +41,12 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.Future;
 
 import static fi.vm.sade.eperusteet.ylops.service.external.impl.KayttajanTietoParser.parsiKayttaja;
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.ADMIN;
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.CRUD;
 import static javax.servlet.http.HttpServletResponse.SC_FORBIDDEN;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
@@ -49,6 +56,9 @@ import static javax.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
  */
 @Service
 public class KayttajanTietoServiceImpl implements KayttajanTietoService {
+
+    @Autowired
+    private OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Autowired
     private KayttajaClient client;
@@ -62,13 +72,11 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     public String haeKayttajanimi(String oid) {
         if (oid != null) {
             KayttajanTietoDto tiedot = client.hae(oid);
-            if (tiedot != null) {
-                String nimi = (tiedot.getEtunimet() != null) ? tiedot.getEtunimet() : "";
-                nimi += " " + ((tiedot.getSukunimi() != null) ? tiedot.getSukunimi() : "");
-                return nimi;
+            if (tiedot != null && tiedot.getKutsumanimi() != null && tiedot.getSukunimi() != null) {
+                return tiedot.getKutsumanimi() + " " + tiedot.getSukunimi();
             }
         }
-        return null;
+        return oid;
     }
 
     @Override
@@ -99,6 +107,16 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
         throw new NotImplementedException();
     }
 
+    @Override
+    public EtusivuDto haeKayttajanEtusivu() {
+        EtusivuDto result = new EtusivuDto();
+        result.setOpetussuunnitelmatKeskeneraiset(opetussuunnitelmaService.getAmount(Tyyppi.OPS, Tila.julkaisemattomat()));
+        result.setOpetussuunnitelmatJulkaistut(opetussuunnitelmaService.getAmount(Tyyppi.OPS, Tila.julkiset()));
+        result.setPohjatKeskeneraiset(opetussuunnitelmaService.getAmount(Tyyppi.POHJA, Sets.newHashSet(Tila.LUONNOS)));
+        result.setPohjatJulkaistut(opetussuunnitelmaService.getAmount(Tyyppi.POHJA, Sets.newHashSet(Tila.VALMIS)));
+        return result;
+    }
+
     @Component
     public static class KayttajaClient {
 
@@ -120,19 +138,30 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
                     .get(url)
                     .build();
 
-            return client.<KayttajanTietoDto>execute(request)
-                    .handleErrorStatus(SC_UNAUTHORIZED, SC_FORBIDDEN)
-                    .with((res) -> Optional.of(new KayttajanTietoDto(oid)))
-                    .expectedStatus(SC_OK)
-                    .mapWith(text -> {
-                        try {
-                            JsonNode json = mapper.readTree(text);
-                            return parsiKayttaja(json);
-                        } catch (IOException e) {
-                            return new KayttajanTietoDto(oid);
-                        }
-                    })
-                    .orElse(new KayttajanTietoDto(oid));
+            try {
+                return client.<KayttajanTietoDto>execute(request)
+                        .handleErrorStatus(SC_UNAUTHORIZED, SC_FORBIDDEN)
+                        .with((res) -> Optional.of(new KayttajanTietoDto(oid)))
+                        .expectedStatus(SC_OK)
+                        .mapWith(text -> {
+                            try {
+                                JsonNode json = mapper.readTree(text);
+                                return parsiKayttaja(json);
+                            } catch (IOException e) {
+                                return new KayttajanTietoDto(oid);
+                            }
+                        })
+                        .orElse(new KayttajanTietoDto(oid));
+            }
+            catch (RuntimeException ex) {
+                return new KayttajanTietoDto(oid);
+            }
         }
     }
+
+    @Override
+    public Set<String> haeOrganisaatioOikeudet() {
+        return SecurityUtil.getOrganizations(new HashSet<>(Arrays.asList(ADMIN, CRUD)));
+    }
+
 }

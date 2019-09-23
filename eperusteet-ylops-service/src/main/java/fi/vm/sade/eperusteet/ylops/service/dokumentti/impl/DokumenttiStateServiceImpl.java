@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class DokumenttiStateServiceImpl implements DokumenttiStateService {
+
     @Autowired
     private DokumenttiRepository dokumenttiRepository;
 
@@ -41,8 +42,9 @@ public class DokumenttiStateServiceImpl implements DokumenttiStateService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public Dokumentti save(DokumenttiDto dto) {
-        Dokumentti dokumentti = mapper.map(dto, Dokumentti.class);
-        dokumentti = dokumenttiRepository.save(dokumentti);
-        return dokumentti;
+        Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
+        mapper.map(dto, dokumentti);
+        return dokumenttiRepository.save(dokumentti);
     }
+
 }

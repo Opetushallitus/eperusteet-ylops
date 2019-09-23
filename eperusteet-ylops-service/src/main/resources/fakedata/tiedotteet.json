@@ -1,0 +1,45 @@
+{
+  "data" : [{
+    "id" : 6388184,
+    "_perusteprojekti" : null,
+    "peruste" : null,
+    "julkinen" : true,
+    "yleinen" : true,
+    "otsikko" : {
+      "_tunniste" : "7c42b37b-5f82-4e79-802a-5265270774d5",
+      "fi" : "Englanninkielinen ePerusteet, eRequirements on julkaistu",
+      "en" : "An English language version of ePerusteet has been published",
+      "_id" : "6398811"
+    },
+    "sisalto" : {
+      "_tunniste" : "a4086a8c-eb40-47f9-b37f-b92eed5083f0",
+      "fi" : "<p>Opetushallituksen ylläpitämään ePerusteet -palveluun on lisätty englanninkielinen osuus eRequirements, jossa julkaistaan niiden ammatillisten tutkintojen perusteet, joihin on myönnetty englanninkielinen järjestämislupa. Tällä hetkellä palvelusta löytyvät seuraavat ammatillisten tutkintojen perusteet:-</p>\n\n<ul>\n\t<li>Liiketoiminnan perustutkinto</li>\n\t<li>Liikunnanohjauksen perustutkinto</li>\n\t<li>Matkailualan perustutkinto</li>\n\t<li>Ravintola- ja cateringalan perustutkinto.</li>\n</ul>\n\n<p>Sivuja päivitetään aina uusien käännösten valmistuttua. https://eperusteet.opintopolku.fi/#/en</p>",
+      "en" : "<p>eRequirements, a section in English, has been added to the ePerusteet service maintained by the Finnish National Agency for Education. In this section, qualification requirements are published for the vocational qualifications for which an authorisation to provide education in English has been granted. Currently, qualification requirements for the following vocational qualifications can be found in the service:</p>\n\n<ul>\n\t<li>Vocational Qualification in Business</li>\n\t<li>Vocational Qualification in Sports Instruction</li>\n\t<li>Vocational Qualification in the Tourism Industry</li>\n\t<li>Vocational Qualification in Hotel and Catering Services</li>\n</ul>\n\n<p>The pages are updated when new translations become available.</p>",
+      "_id" : "6406227"
+    },
+    "luotu" : 1553153502691,
+    "muokattu" : 1553257010573
+  }, {
+    "id" : 6312480,
+    "_perusteprojekti" : null,
+    "peruste" : null,
+    "julkinen" : true,
+    "yleinen" : true,
+    "otsikko" : {
+      "_tunniste" : "2d367c57-d77e-4341-834e-9f1f5f0af1a5",
+      "fi" : "ePerusteet käyttöoikeuksien haku, Ops/Vasu -työkalu ja verkkokoulutus",
+      "_id" : "6312411"
+    },
+    "sisalto" : {
+      "_tunniste" : "1fecbf9c-b568-4a5d-895f-acc31d3da455",
+      "fi" : "<p><strong>Opetushallituksen tuottama työkalu paikallisen varhaiskasvatussuunnitelman laadintaa varten on päivitetty tammikuussa 2019. Käyttöönoton tueksi järjestetään verkkokoulutus. </strong></p>\n\n<p>Ops/Vasu-työkalun avulla varhaiskasvatuksen järjestäjä voi laatia, julkaista ja päivittää varhaiskasvatussuunnitelman sähköisesti. Työkalu on osa ePerusteet-palvelua. Se mahdollistaa paikallisen varhaiskasvatussuunnitelman laatimisen seutukunnallisena, kuntakohtaisena tai yksikkökohtaisena.</p>\n\n<p>Ops/Vasu-työkalu tarjoaa selkeän rakenteen paikalliselle varhaiskasvatussuunnitelmalle 19.12.2018 annettujen varhaiskasvatussuunnitelman perusteiden pohjalta. Työkalu on kiinteässä yhteydessä muuhun ePerusteet -palveluun ja jatkossa myös varhaiskasvatussuunnitelman perusteiden kehittämiseen.</p>\n\n<p>ePerusteet-palvelu toimii yhtenä varhaiskasvatussuunnitelmia koskevan ajankohtaisen tiedottamisen ja yhteydenpidon väylänä. Opetushallitus toivoo varhaiskasvatuksen järjestäjien ottavan ePerusteet -palvelun käyttöön mahdollisimman kattavasti. Ops/Vasu-työkalu on varhaiskasvatuksen järjestäjille maksuton ja sen käyttöönotto on vapaaehtoista. Opetushallitus antaa palvelun käyttöönoton tueksi koulutusta ja ohjausta sekä tuottaa verkkoon tukimateriaalia.</p>\n\n<p>Opetushallitus järjestää <strong>yhden verkkokoulutuksen maanantaina 21</strong><strong>.2. klo 12-13.30</strong> paikallisen varhaiskasvatussuunnitelman laadinnan työkalun käytön ohjeistamiseen. Koulutus on suunnattu paikallisen varhaiskasvatussuunnitelman toimijoille. Verkkokoulutukseen osallistuminen tapahtuu seuraavassa osoitteessa <a href=\"https://connect.funet.fi/eperusteet/\" target=\"_blank\">https://connect.funet.fi/eperusteet/</a></p>\n\n<p>Koulutuksesta taltioidaan tallenne käyttäjien myöhempää käyttöä varten ja se viedään ePerusteet käyttöönoton wiki-ympäristöön <a href=\"https://confluence.csc.fi/pages/viewpage.action?pageId=50876169\">https://confluence.csc.fi/pages/viewpage.action?pageId=50876169</a></p>\n\n<p>Ops/Vasu-työkalun käyttöönotto vaatii käyttöoikeuksia virkailija.opintopolku.fi palveluun. Opetushallitus myöntää organisaatiolle eperusteet_ylops_pääkäyttäjän oikeuden, tähän käyttöoikeuteen sisältyy muiden työkalun käyttöoikeuksien myöntäminen. Pääkäyttäjän käyttöoikeuden voi pyytää ePerusteet palvelun asiakaspalvelusta <a href=\"mailto:eperusteet@opintopolku.fi\">eperusteet@opintopolku.fi</a></p>\n\n<p> </p>\n\n<p><strong>Ops/Vasu-työkalun käyttöoikeuksien anominen</strong></p>\n\n<p>Ops/Vasu-työkalun käyttöönotossa tarvittavien käyttäjätunnusten luomisesta ja käyttövaltuuksien antamisesta huolehtii ePerusteet_YLOPS_pääkäyttäjä. Pääkäyttäjä saa käyttöoikeudet myös organisaation koulutustoimijan vastuukäyttäjältä.</p>\n\n<p> </p>\n\n<p><strong>Käyttöoikeuksien myöntämisen vaiheet:</strong></p>\n\n<p>1. Jos henkilöllä ei ole ennestään Opintopolun virkailijapalveluun käyttäjätunnusta, hänen henkilötietonsa tulee ensin rekisteröidä.</p>\n\n<p>2. Rekisteröintiä varten tallennetaan seuraavat tiedot: nimi, sähköpostiosoite ja kieli. Rekisteröinti kutsuun voi halutessaan laittaa myös saatteen esim. Vasu-työkalun käyttöoikeus, varhaiskasvatussuunnitelman laadintaa varten.</p>\n\n<p>3. Organisaatiotietona anna koulutustoimijataso.</p>\n\n<p>4. Kiinnitä henkilön tietoihin valmiiksi oikea käyttöoikeus.</p>\n\n<p>5. Lähetä henkilölle itserekisteröintikutsu. Tämän jälkeen henkilö itse täydentää rekisteröitävät tietonsa linkin kautta (jonka saa sähköpostiinsa), ensimmäinen kirjautuminen tapahtuu Suomi.fi tunnistautumista käyttäen, jonka jälkeen hän luo itselleen käyttäjätunnuksen ja salasanan.</p>\n\n<p> </p>\n\n<p><strong>Ops/Vasu-työkalun käyttöoikeudet ja roolit:</strong></p>\n\n<p>ePerusteet_ YLOPS_ pääkäyttäjä</p>\n\n<p>• Hallinnoi oman organisaationsa suunnitelmia</p>\n\n<p>• Suunnitelmien luku-, muokkaus- ja poisto-oikeus</p>\n\n<p>• Myöntää muut työkalun käyttöön liittyvät oikeudet</p>\n\n<p> </p>\n\n<p>ePerusteet_YLOPS_laadinta</p>\n\n<p>• Suunnitelman luku-, muokkaus- ja poisto-oikeus</p>\n\n<p>• Suunnitelma pohjien luonti</p>\n\n<p> </p>\n\n<p>ePerusteet_YLOPS_muokkaus</p>\n\n<p>• Suunnitelman luku- ja muokkausoikeus</p>\n\n<p> </p>\n\n<p>ePerusteet_YLOPS_luku</p>\n\n<p>• Suunnitelman lukuoikeus</p>\n\n<p>• Suunnitelman sisältöjen kommentointi mahdollista kaikilla käyttöoikeuksilla</p>\n\n<p> </p>\n\n<p><strong>Lisätietoja:</strong></p>\n\n<ul>\n\t<li>ePerusteet-asiakaspalvelu <a href=\"mailto:eperusteet@opintopolku.fi\">eperusteet@opintopolku.fi</a></li>\n\t<li>Kati Costiander, erityisasiantuntija (varhaiskasvatuksen suomenkielinen puoli)</li>\n\t<li>Charlotta Rehn, erityisasiantuntija (varhaiskasvatuksen ruotsinkielinen puoli)</li>\n</ul>\n\n<p> </p>",
+      "_id" : "6313628"
+    },
+    "luotu" : 1549536300510,
+    "muokattu" : 1549632408503
+  }],
+  "kokonaismäärä" : 2,
+  "sivuja" : 1,
+  "sivukoko" : 8,
+  "sivu" : 0
+}

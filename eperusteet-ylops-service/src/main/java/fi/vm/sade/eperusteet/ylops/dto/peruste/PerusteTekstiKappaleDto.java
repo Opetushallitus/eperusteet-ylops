@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 
 import java.util.Date;
@@ -31,11 +32,9 @@ public class PerusteTekstiKappaleDto {
     private Long id;
     private Date luotu;
     private Date muokattu;
-    private String muokkaaja;
-    private String muokkaajanNimi;
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto teksti;
-    private String tila;
+    private Tila tila;
     private String tunniste;
     private String osanTyyppi;
 }

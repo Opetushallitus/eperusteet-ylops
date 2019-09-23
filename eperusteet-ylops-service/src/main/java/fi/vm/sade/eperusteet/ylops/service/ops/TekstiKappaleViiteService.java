@@ -54,14 +54,15 @@ public interface TekstiKappaleViiteService {
     List<RevisionDto> getVersions(long viiteId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    TekstiKappaleDto findTekstikappaleVersion(long opsId, long viiteId, long versio);
+    TekstiKappaleDto findTekstikappaleVersion(@P("opsId") long opsId, long viiteId, long versio);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void revertToVersion(Long opsId, Long viiteId, Integer versio);
+    void revertToVersion(@P("opsId") Long opsId, Long viiteId, Integer versio);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<PoistettuTekstiKappaleDto> getRemovedTekstikappaleetForOps(Long opsId);
+    List<PoistettuTekstiKappaleDto> getRemovedTekstikappaleetForOps(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    TekstiKappaleDto returnRemovedTekstikappale(Long opsId, Long id);
+    TekstiKappaleDto returnRemovedTekstikappale(@P("opsId") Long opsId, Long id);
+
 }

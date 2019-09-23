@@ -19,8 +19,11 @@ import com.codahale.metrics.annotation.Timed;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
+import fi.vm.sade.eperusteet.ylops.resource.util.AuditLogged;
 import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
 import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -39,6 +42,7 @@ import java.util.Set;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPETUSSUUNNITELMA;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.RAKENNE;
 import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.*;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * @author mikkom
@@ -65,6 +69,13 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi, tila);
     }
 
+
+    @RequestMapping(value = "/peruste", method = GET)
+    @ResponseBody
+    public PerusteInfoDto getOpetussuunnitelmanPeruste(@PathVariable(value = "id") final Long id) {
+        return opetussuunnitelmaService.getPerusteBase(id);
+    }
+
     @RequestMapping(value = "/tilastot", method = RequestMethod.GET)
     @ResponseBody
     @Timed
@@ -82,7 +93,7 @@ public class OpetussuunnitelmaController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaKevytDto> get(@PathVariable("id") final Long id) {
+    public ResponseEntity<OpetussuunnitelmaKevytDto> getOpetussuunnitelma(@PathVariable("id") final Long id) {
         return ResponseEntity.ok(opetussuunnitelmaService.getOpetussuunnitelma(id));
     }
 
@@ -116,10 +127,25 @@ public class OpetussuunnitelmaController {
         });
     }
 
+    @RequestMapping(value = "/{opsId}/julkaise", method = RequestMethod.POST)
+    @AuditLogged
+    public OpetussuunnitelmanJulkaisuDto julkaise(
+            @PathVariable final Long opsId,
+            @RequestBody final UusiJulkaisuDto julkaisuDto) {
+        return opetussuunnitelmaService.addJulkaisu(opsId, julkaisuDto);
+    }
+
+    @RequestMapping(value = "/{opsId}/julkaisut", method = RequestMethod.GET)
+    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(
+            @PathVariable final Long opsId) {
+        return opetussuunnitelmaService.getJulkaisut(opsId);
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
+    @AuditLogged
     @Timed
-    public ResponseEntity<OpetussuunnitelmaDto> addOpetussuunnitelma(
+    public ResponseEntity<OpetussuunnitelmaBaseDto> addOpetussuunnitelma(
             @RequestBody OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
         return audit.withAudit(LogMessage.builder(null, OPETUSSUUNNITELMA, LUONTI), (Void) -> {
             if (opetussuunnitelmaDto.getTyyppi() == null) {
@@ -192,7 +218,7 @@ public class OpetussuunnitelmaController {
     @RequestMapping(value = "/{id}/palauta", method = RequestMethod.POST)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaDto> restore(
+    public ResponseEntity<OpetussuunnitelmaDto> restoreOpetussuunnitelma(
             @PathVariable("id") final Long id) {
         return audit.withAudit(LogMessage.builder(id, OPETUSSUUNNITELMA, PALAUTUS),
                 (Void) -> new ResponseEntity<>(opetussuunnitelmaService.restore(id), HttpStatus.OK));

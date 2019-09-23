@@ -19,6 +19,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
@@ -28,6 +30,9 @@ public interface OrganisaatioService {
 
     @PreAuthorize("permitAll()")
     JsonNode getOrganisaatio(String organisaatioOid);
+
+    @PreAuthorize("isAuthenticated()")
+    JsonNode getOrganisaatioVirkailijat(Set<String> organisaatioOids);
 
     @PreAuthorize("isAuthenticated()")
     JsonNode getPeruskoulutByKuntaId(String kuntaId);

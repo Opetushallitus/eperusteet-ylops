@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -53,7 +54,7 @@ import org.hibernate.envers.Audited;
 @Audited
 @Table(name = "oppiaineenvuosiluokka", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"kokonaisuus_id", "vuosiluokka"})})
-public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity {
+public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity implements Serializable {
 
     @Getter
     @Setter(AccessLevel.PACKAGE)

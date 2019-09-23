@@ -18,7 +18,11 @@ package fi.vm.sade.eperusteet.ylops.service.security;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ukk.Kysymys;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.ukk.KysymysDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ukk.KysymysRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.Organization;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
@@ -53,6 +57,7 @@ public class PermissionManager {
 
         POHJA("pohja"),
         TARKASTELU("tarkastelu"),
+        KYSYMYS("kysymys"),
         OPETUSSUUNNITELMA("opetussuunnitelma");
 
         private final String target;
@@ -94,6 +99,9 @@ public class PermissionManager {
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
+    @Autowired
+    private KysymysRepository kysymysRepository;
+
     @Transactional(readOnly = true)
     public boolean hasPermission(Authentication authentication, Serializable targetId, TargetType target,
                                  Permission perm) {
@@ -103,8 +111,9 @@ public class PermissionManager {
             return true;
         }
 
-        Pair<Tyyppi, Tila> tyyppiJaTila =
-                targetId != null ? opetussuunnitelmaRepository.findTyyppiAndTila((long) targetId) : null;
+        Pair<Tyyppi, Tila> tyyppiJaTila = targetId instanceof Long
+                ? opetussuunnitelmaRepository.findTyyppiAndTila((long) targetId)
+                : null;
 
         if (perm == Permission.LUKU && tyyppiJaTila != null) {
             if (tyyppiJaTila.getSecond() == Tila.JULKAISTU) {
@@ -162,6 +171,30 @@ public class PermissionManager {
                     return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS,
                             permissions, Organization.ANY);
                 }
+            case KYSYMYS:
+                Set<String> kayttajaOrganisaatiot = SecurityUtil.getOrganizations(authentication, permissions);
+                // Uuden kysymyksen luominen
+                if (targetId instanceof KysymysDto) {
+                    KysymysDto dto = (KysymysDto) targetId;
+                    Set<String> oids = dto.getOrganisaatiot().stream()
+                            .map(OrganisaatioDto::getOid)
+                            .collect(Collectors.toSet());
+                    // Jos käyttäjällä on oikeus kaikkiin liitettyihin organisaatioihin, sallitaan operaatio
+                    return CollectionUtil.intersect(oids, kayttajaOrganisaatiot).size() == oids.size();
+                }
+
+                // Olemassa olevan kysymyksen päivittäminen ja poistaminen
+                if (targetId instanceof Long) {
+                    long kysymysId = (long) targetId;
+                    Kysymys kysymys = kysymysRepository.findOne(kysymysId);
+                    if (kysymys != null) {
+                        Set<String> oids = kysymys.getOrganisaatiot();
+                        // Jos käyttäjällä on oikeus kaikkiin liitettyihin organisaatioihin, sallitaan operaatio
+                        return CollectionUtil.intersect(oids, kayttajaOrganisaatiot).size() == oids.size();
+                    }
+                }
+
+                return false;
             default:
                 return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS,
                         permissions, Organization.ANY);

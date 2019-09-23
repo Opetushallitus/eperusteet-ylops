@@ -21,6 +21,8 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 
 /**
@@ -30,6 +32,11 @@ import org.springframework.stereotype.Service;
 public class OrganisaatioServiceMock implements OrganisaatioService {
     @Override
     public JsonNode getOrganisaatio(String organisaatioOid) {
+        return null;
+    }
+
+    @Override
+    public JsonNode getOrganisaatioVirkailijat(Set<String> organisaatioOids) {
         return null;
     }
 

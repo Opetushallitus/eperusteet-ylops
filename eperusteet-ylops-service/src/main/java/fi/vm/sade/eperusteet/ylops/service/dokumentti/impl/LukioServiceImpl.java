@@ -60,6 +60,7 @@ public class LukioServiceImpl implements LukioService {
     @Autowired
     private LukioOppiaineJarjestysRepository jarjestysRepository;
 
+    @Override
     public void addOppimistavoitteetJaOpetuksenKeskeisetSisallot(DokumenttiBase docBase) throws ParserConfigurationException, SAXException, IOException {
         addHeader(docBase, messages.translate("oppimistavoitteet-ja-opetuksen-keskeiset-sisallot", docBase.getKieli()));
         docBase.getGenerator().increaseDepth();
@@ -73,7 +74,12 @@ public class LukioServiceImpl implements LukioService {
 
     private void addOpetuksenYleisetTavoitteet(DokumenttiBase docBase) {
         OpetuksenYleisetTavoitteet yleisetTavoitteet = docBase.getOps().getOpetuksenYleisetTavoitteet();
-        OpetuksenYleisetTavoitteetDto perusteYleisetTavoitteet = docBase.getPerusteDto().getLukiokoulutus().getOpetuksenYleisetTavoitteet();
+        LukiokoulutuksenPerusteenSisaltoDto lukiokoulutus = docBase.getPerusteDto().getLukiokoulutus();
+        if (lukiokoulutus == null) {
+            return;
+        }
+
+        OpetuksenYleisetTavoitteetDto perusteYleisetTavoitteet = lukiokoulutus.getOpetuksenYleisetTavoitteet();
 
         if (perusteYleisetTavoitteet == null) {
             return;
@@ -90,7 +96,12 @@ public class LukioServiceImpl implements LukioService {
 
     private void addAihekokonaisuudet(DokumenttiBase docBase) {
         Aihekokonaisuudet aihekokonaisuudet = docBase.getOps().getAihekokonaisuudet();
-        AihekokonaisuudetDto perusteAihekokonaisuudet = docBase.getPerusteDto().getLukiokoulutus().getAihekokonaisuudet();
+        LukiokoulutuksenPerusteenSisaltoDto lukiokoulutus = docBase.getPerusteDto().getLukiokoulutus();
+        if (lukiokoulutus == null) {
+            return;
+        }
+
+        AihekokonaisuudetDto perusteAihekokonaisuudet = lukiokoulutus.getAihekokonaisuudet();
         if (aihekokonaisuudet == null || perusteAihekokonaisuudet == null) {
             return;
         }
@@ -144,8 +155,13 @@ public class LukioServiceImpl implements LukioService {
 
     private void addOppiaineet(DokumenttiBase docBase) {
         LukioOpetussuunnitelmaRakenneOpsDto lukioRakenne = lukioOpetussuunnitelmaService.getRakenne(docBase.getOps().getId());
-        LukioOpetussuunnitelmaRakenneDto perusteRakenne = docBase.getPerusteDto().getLukiokoulutus().getRakenne();
 
+        LukiokoulutuksenPerusteenSisaltoDto lukiokoulutus = docBase.getPerusteDto().getLukiokoulutus();
+        if (lukiokoulutus == null) {
+            return;
+        }
+
+        LukioOpetussuunnitelmaRakenneDto perusteRakenne = lukiokoulutus.getRakenne();
         if (perusteRakenne == null || lukioRakenne == null) {
             return;
         }

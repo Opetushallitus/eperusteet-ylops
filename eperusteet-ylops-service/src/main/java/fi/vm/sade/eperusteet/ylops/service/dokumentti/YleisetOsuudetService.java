@@ -10,7 +10,7 @@ import java.io.IOException;
  * @author isaul
  */
 public interface YleisetOsuudetService {
-    void addYleisetOsuudet(DokumenttiBase docBase) throws IOException, SAXException, ParserConfigurationException;
+    void addYleisetOsuudet(DokumenttiBase docBase);
 
-    void addLiitteet(DokumenttiBase docBase) throws IOException, SAXException, ParserConfigurationException;
+    void addLiitteet(DokumenttiBase docBase);
 }

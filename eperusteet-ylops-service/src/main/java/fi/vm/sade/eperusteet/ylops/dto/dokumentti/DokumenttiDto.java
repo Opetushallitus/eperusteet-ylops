@@ -38,8 +38,8 @@ public class DokumenttiDto {
     private Date aloitusaika;
     private Date valmistumisaika;
     private DokumenttiTila tila = DokumenttiTila.EI_OLE;
-    private byte[] kansikuva;
-    private byte[] ylatunniste;
-    private byte[] alatunniste;
+    private boolean kansikuva = false;
+    private boolean ylatunniste = false;
+    private boolean alatunniste = false;
     private String virhekoodi = "";
 }

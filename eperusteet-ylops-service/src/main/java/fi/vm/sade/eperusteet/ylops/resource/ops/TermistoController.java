@@ -59,13 +59,13 @@ public class TermistoController {
     private TermistoService termistoService;
 
     @RequestMapping(value = "/termisto", method = GET)
-    public List<TermiDto> getAll(
+    public List<TermiDto> getAllTermit(
             @PathVariable("opsId") final Long opsId) {
         return termistoService.getTermit(opsId);
     }
 
     @RequestMapping(value = "/termi/{avain}", method = GET)
-    public TermiDto get(
+    public TermiDto getTermi(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("avain") final String avain) {
         return termistoService.getTermi(opsId, avain);

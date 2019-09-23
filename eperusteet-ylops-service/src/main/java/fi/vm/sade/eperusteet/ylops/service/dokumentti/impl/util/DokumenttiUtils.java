@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util;
 
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -70,10 +71,17 @@ public class DokumenttiUtils {
     }
 
     public static void addHeader(DokumenttiBase docBase, String text) {
+        addHeader(docBase, text, null);
+    }
+
+    public static void addHeader(DokumenttiBase docBase, String text, String id) {
         if (text != null) {
             Element header = docBase.getDocument().createElement("h" + docBase.getGenerator().getDepth());
             header.setAttribute("number", docBase.getGenerator().generateNumber());
             header.appendChild(docBase.getDocument().createTextNode(unescapeHtml5(text)));
+            if (id != null) {
+                header.setAttribute("id", id);
+            }
             docBase.getBodyElement().appendChild(header);
         }
     }
@@ -113,6 +121,10 @@ public class DokumenttiUtils {
         }
 
         return out.toString();
+    }
+
+    public static boolean isTimePass(Dokumentti dokumentti) {
+        return isTimePass(dokumentti.getAloitusaika());
     }
 
     public static boolean isTimePass(Date date) {

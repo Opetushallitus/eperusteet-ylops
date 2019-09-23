@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.OhjeTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
 
@@ -62,9 +63,12 @@ public class OhjeServiceImpl implements OhjeService {
 
     @Override
     public OhjeDto addOhje(OhjeDto ohjeDto) {
-        // NOTE: Poista jossain vaiheessa kun frontti tukee tyyppejä
         if (ohjeDto.getTyyppi() == null) {
             ohjeDto.setTyyppi(OhjeTyyppi.PERUSTETEKSTI);
+        }
+
+        if (ohjeDto.getKohde() == null) {
+            throw new BusinessRuleViolationException("kohdetta-ei-asetettu");
         }
         Ohje ohje = mapper.map(ohjeDto, Ohje.class);
         ohje = repository.save(ohje);

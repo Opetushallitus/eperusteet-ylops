@@ -43,6 +43,12 @@ public class LokalisoituTekstiDto {
     @Getter
     private final Map<Kieli, String> tekstit;
 
+    public static LokalisoituTekstiDto of(String value) {
+        HashMap<Kieli, String> map = new HashMap<>();
+        map.put(Kieli.FI, value);
+        return new LokalisoituTekstiDto(null, null, map);
+    }
+
     public LokalisoituTekstiDto(Long id, Map<Kieli, String> values) {
         this(id, null, values);
     }

@@ -19,12 +19,15 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Set;
@@ -42,13 +45,17 @@ public interface OpetussuunnitelmaService {
             "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi, Tila tila);
 
-    List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
+    @PreAuthorize("isAuthenticated()")
+    Long getAmount(Tyyppi tyyppi, Set<Tila> tila);
 
     @PreAuthorize("permitAll()")
     List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query);
 
     @PreAuthorize("permitAll()")
     OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(@P("opsId") Long id);
+
+    @PreAuthorize("isAuthenticated()")
+    List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     OpetussuunnitelmaStatistiikkaDto getStatistiikka();
@@ -113,4 +120,13 @@ public interface OpetussuunnitelmaService {
      */
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     PerusteDto getPeruste(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    PerusteInfoDto getPerusteBase(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'TILANVAIHTO')")
+    OpetussuunnitelmanJulkaisuDto addJulkaisu(@P("opsId") Long opsId, UusiJulkaisuDto julkaisuDto);
 }

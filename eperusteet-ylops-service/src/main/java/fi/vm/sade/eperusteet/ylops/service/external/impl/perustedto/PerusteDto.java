@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
@@ -43,5 +44,6 @@ public class PerusteDto {
     private Date muokattu;
     private String tila;
     private String tyyppi;
+    private KoulutustyyppiToteutus toteutus;
     private Set<String> korvattavatDiaarinumerot;
 }

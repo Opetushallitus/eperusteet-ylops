@@ -4,11 +4,13 @@
         <param-name>contextConfigLocation</param-name>
         <param-value>classpath:spring/application-context.xml</param-value>
     </context-param>
+
     <filter>
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
         <async-supported>true</async-supported>
     </filter>
+
     <filter>
         <filter-name>encodingFilter</filter-name>
         <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>

@@ -127,8 +127,7 @@
         <security:authentication-manager alias="authenticationManager">
             <security:authentication-provider>
                 <security:user-service>
-                    <security:user name="test" password="test" authorities="ROLE_USER, ROLE_APP_EPERUSTEET_YLOPS, ROLE_APP_EPERUSTEET_YLOPS_CRUD, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.00000000001"/>
-                    <security:user name="test1" password="test" authorities="ROLE_USER"/>
+                    <security:user name="test" password="test" authorities="ROLE_USER, ROLE_APP_EPERUSTEET_YLOPS, ROLE_APP_EPERUSTEET_YLOPS_CRUD, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.00000000001, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.83037752777"/>
                     <security:user name="test2" password="test" authorities="ROLE_USER"/>
                     <security:user name="test3" password="test" authorities="ROLE_USER"/>
                     <security:user name="test4" password="test" authorities="ROLE_USER"/>

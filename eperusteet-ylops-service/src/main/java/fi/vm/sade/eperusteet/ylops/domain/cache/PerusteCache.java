@@ -80,7 +80,7 @@ public class PerusteCache {
     @JoinColumn(name = "nimi_id", nullable = false, updatable = false)
     private LokalisoituTeksti nimi;
 
-    @Column(name = "peruste_json", nullable = false, updatable = false)
+    @Column(name = "peruste_json", nullable = false, updatable = false, columnDefinition = "text")
     private String perusteJson;
 
     public EperusteetPerusteDto getPerusteJson(JsonMapper mapper) throws IOException {

@@ -32,9 +32,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public class PerusopetuksenPerusteenSisaltoDto implements Serializable {
+public class PerusopetuksenPerusteenSisaltoDto {
 
-    private PerusteTekstiKappaleViiteDto sisalto;
     private Set<PerusteLaajaalainenosaaminenDto> laajaalaisetosaamiset;
     private Set<PerusteVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<PerusteOppiaineDto> oppiaineet;

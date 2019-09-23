@@ -43,6 +43,7 @@ public class Tavoitteenarviointi extends AbstractReferenceableEntity {
     @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
     private LokalisoituTeksti arvioinninKohde;
+
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @Getter

@@ -37,6 +37,7 @@ import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 /**
  * @author isaul
@@ -142,5 +143,10 @@ public class PdfServiceImpl implements PdfService {
         } finally {
             pdf.close();
         }
+    }
+
+    private static void printStream(ByteArrayOutputStream stream) {
+        String s = new String(stream.toByteArray(), StandardCharsets.UTF_8);
+        LOG.info(s);
     }
 }

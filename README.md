@@ -1,6 +1,7 @@
 ePerusteet-ylops
 ================
 
+
 Yleissivistävän koulutuksen paikallisten opetussuunnitelmien laadintatyökalu.
 
 Kehitysympäristön vaatimukset
@@ -62,3 +63,20 @@ Konfiguraatioon tarvitaan seuraavat muutokset:
 
 Web-sovelluksen (app) osalta maven käyttää yeoman-maven-plugin:ia joka tarvitsee nodejs:n ja yo:n toimiakseen.
 
+
+# Lukio
+
+```sh
+
+# Lataa perusteita testikäyttöön
+$ mkdir -p eperusteet-ylops-service/src/main/resources/fakedata/
+$ http "https://eperusteet.opintopolku.fi/eperusteet-service/api/perusteet/1266381/kaikki" > eperusteet-ylops-service/src/main/resources/fakedata/varhaiskasvatus.json
+
+# Käynnistä palvelu e2e-profiililla
+$ mvn  tomcat7:run -Dspring.profiles.active=e2e
+
+```
+
+# Uusi käyttöliittymä
+
+Uusi käyttöliittymä rakennetaan kansioon /uusi.

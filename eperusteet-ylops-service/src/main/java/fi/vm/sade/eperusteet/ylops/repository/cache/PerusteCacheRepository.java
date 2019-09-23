@@ -52,7 +52,7 @@ public interface PerusteCacheRepository extends JpaRepository<PerusteCache, Long
                                                                       Set<String> diaariNotIn);
 
     @Query("select c from PerusteCache c where c.diaarinumero = ?1 and " + NEWEST_BY_AIKALEIMA)
-    PerusteCache findNewestEntryForPerusteByDiaarninumero(String diaarinumero);
+    PerusteCache findNewestEntryForPerusteByDiaarinumero(String diaarinumero);
 
     @Query("select c from PerusteCache c where c.perusteId = ?1 and " + NEWEST_BY_AIKALEIMA)
     PerusteCache findNewestEntryForPeruste(long eperusteetPerusteId);

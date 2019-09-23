@@ -40,15 +40,15 @@
                             <arguments>install --no-color</arguments>
                         </configuration>
                     </execution>
-                  <execution>
-                    <id>bower install</id>
-                    <goals>
-                      <goal>bower</goal>
-                    </goals>
-                    <configuration>
-                      <arguments>install --no-color</arguments>
-                    </configuration>
-                  </execution>
+                    <execution>
+                        <id>bower install</id>
+                        <goals>
+                            <goal>bower</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>install --no-color</arguments>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>grunt build</id>
                         <goals>
@@ -56,6 +56,15 @@
                         </goals>
                         <configuration>
                             <arguments>build --no-color</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm copy</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>run copy</arguments>
                         </configuration>
                     </execution>
                 </executions>

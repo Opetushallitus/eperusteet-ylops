@@ -94,14 +94,14 @@ module.exports = grunt => {
       proxies: [{
         context: '/eperusteet-ylops-service',
         host: 'localhost',
-        port: 8080,
+        port: 8081,
         https: false,
         changeOrigin: true,
         xforward: false
       },{
         context: '/virkailija-raamit',
         host: 'localhost',
-        port: 8080,
+        port: 8081,
         https: false,
         changeOrigin: true,
         xforward: false

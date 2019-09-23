@@ -9,7 +9,8 @@
     "dev": "grunt dev",
     "build": "grunt build",
     "test": "grunt test",
-    "prettier": "./node_modules/prettier/bin/prettier.js --config .prettierrc --write \"../src/main/app/{localisation,scripts,styles}/**/*.{ts,json,scss}\""
+    "prettier": "./node_modules/prettier/bin/prettier.js --config .prettierrc --write \"../src/main/app/{localisation,scripts,styles}/**/*.{ts,json,scss}\"",
+    "copy": "cp -R ../../eperusteet-ylops-lukio/dist/ ../target/yo/dist/uusi/"
   },
   "devDependencies": {
     "@types/angular": "1.6.53",
@@ -48,7 +49,7 @@
     "karma-ng-scenario": "1.0.0",
     "karma-phantomjs-launcher": "1.0.2",
     "load-grunt-tasks": "3.5.2",
-    "node-sass": "4.1.1",
+    "node-sass": "4.11.0",
     "prettier": "1.6.1",
     "serve-static": "1.11.1",
     "time-grunt": "1.4.0",

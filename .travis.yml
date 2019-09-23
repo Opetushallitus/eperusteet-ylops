@@ -9,6 +9,7 @@ services:
   - docker
 
 cache:
+  yarn: true
   directories:
     - $HOME/.m2
     - $HOME/.npm
@@ -17,6 +18,7 @@ cache:
 
 env:
   global:
+    - NODE_VERSION="10.16.0"
     # AWS_ACCESS_KEY_ID
     - secure: "yR3V8fQou+INYtMFIaYIq9FXpp+B0jBYdBufarX2X+P6cKtXufsLyrsS3JX2+G7FJSFQlFOFhEJMfHSso5N5p9hALAT4RMxpnOFb6X1bauPsQISjRXItodlj9Akoz81C83UQV9+SL9o/6XHnHcu2SKcZZETYjZgL7Ui0tlQV+5g="
     # AWS_SECRET_ACCESS_KEY
@@ -24,12 +26,26 @@ env:
     # TSD_GITHUB_TOKEN
     - secure: "KqrSR15Pz3UN51NYl70J6og0A0tgwufnR96S6cVXWBu8lt8Ez5JOR8Sn0F850wrVX2ioQsPHxqrU8Plpp0Cn5KGR7QB/6iu9dcIuoaS18J1V0VWhc85mRrkLAjhZSvCkWxfAKk/FAsdYIspTf63iOKvxQYkdMHJa+nOgHWdKxzM="
 
+before_install:
+  - nvm install $NODE_VERSION
+
 install:
-  - git clone https://github.com/Opetushallitus/ci-tools.git
+  - git clone --depth 1 https://github.com/Opetushallitus/eperusteet-ylops-lukio.git
+  - git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
   - source ci-tools/common/setup-tools.sh
   - export ARTIFACT_NAME="eperusteet-ylops"
 
 script:
+  # Rakennetaan uuden lukion front end
+  - export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
+  - cd eperusteet-ylops-lukio
+  - yarn install
+  - yarn run gen:api
+  - yarn run build
+  - cd ..
+
+
+  # Rakennetaan palvelu
   - mvn clean install -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER}
 
   - mv ${ARTIFACT_NAME}-service/target/${ARTIFACT_NAME}-service.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-service.war
