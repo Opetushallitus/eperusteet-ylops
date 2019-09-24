@@ -20,6 +20,8 @@
     <!-- Enables the caching through annotations -->
     <cache:annotation-driven />
 
+    <bean id="auditConfiguration" class="fi.vm.sade.eperusteet.ylops.service.audit.AuditConfiguration" />
+
     <context:property-placeholder
         location="classpath:eperusteet-ylops-service.properties, file:///${user.home:''}/oph-configuration/common.properties, file:///${user.home:''}/oph-configuration/eperusteet-service.properties, file:///${user.home:''}/oph-configuration/override.properties"
         ignore-resource-not-found="true"
@@ -147,5 +149,6 @@
                 </list>
             </constructor-arg>
         </bean>
+
     </beans>
 </beans>

@@ -21,8 +21,6 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
-import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
@@ -30,20 +28,22 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
+import java.io.IOException;
+import java.util.Date;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.Date;
-
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPETUSSUUNNITELMA;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.*;
 
 /**
  * @author iSaul
@@ -53,9 +53,6 @@ import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation
 @RequestMapping("/dokumentit")
 public class DokumenttiController {
     private static final int MAX_TIME_IN_MINUTES = 2;
-
-    @Autowired
-    private EperusteetYlopsAudit audit;
 
     @Autowired
     DokumenttiService service;
@@ -85,6 +82,7 @@ public class DokumenttiController {
         } else {
             throw new BusinessRuleViolationException("Luonti on jo käynissä");
         }
+
     }
 
     private boolean isTimePass(DokumenttiDto dokumenttiDto) {
@@ -189,7 +187,6 @@ public class DokumenttiController {
             @RequestParam(defaultValue = "fi") String kieli,
             @RequestPart MultipartFile file
     ) throws IOException {
-        LogMessage.builder(opsId, OPETUSSUUNNITELMA, DOKUMENTTI_KUVAN_LISAYS).log();
 
         Kieli k = Kieli.of(kieli);
 
@@ -240,7 +237,6 @@ public class DokumenttiController {
             @RequestParam String tyyppi,
             @RequestParam(defaultValue = "fi") String kieli
     ) {
-        LogMessage.builder(opsId, OPETUSSUUNNITELMA, DOKUMENTTI_KUVAN_POISTO).log();
         Kieli k = Kieli.of(kieli);
         service.deleteImage(opsId, tyyppi, k);
 

@@ -17,31 +17,20 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
-import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
-
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.TERMI;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
-
-import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
-
-import java.util.List;
-
 import io.swagger.annotations.Api;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
-
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author apvilkko
@@ -51,9 +40,6 @@ import org.springframework.web.bind.annotation.RestController;
 @InternalApi
 @Api(value = "Termisto")
 public class TermistoController {
-    @Autowired
-    private EperusteetYlopsAudit audit;
-
 
     @Autowired
     private TermistoService termistoService;
@@ -76,10 +62,8 @@ public class TermistoController {
     public TermiDto addTermi(
             @PathVariable("opsId") final Long opsId,
             @RequestBody TermiDto dto) {
-        return audit.withAudit(LogMessage.builder(opsId, TERMI, LISAYS), (Void) -> {
-            dto.setId(null);
-            return termistoService.addTermi(opsId, dto);
-        });
+        dto.setId(null);
+        return termistoService.addTermi(opsId, dto);
     }
 
     @RequestMapping(value = "/termisto/{id}", method = POST)
@@ -87,10 +71,8 @@ public class TermistoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("id") final Long id,
             @RequestBody TermiDto dto) {
-        return audit.withAudit(LogMessage.builder(opsId, TERMI, MUOKKAUS), (Void) -> {
-            dto.setId(id);
-            return termistoService.updateTermi(opsId, dto);
-        });
+        dto.setId(id);
+        return termistoService.updateTermi(opsId, dto);
     }
 
     @RequestMapping(value = "/termisto/{id}", method = DELETE)
@@ -98,9 +80,6 @@ public class TermistoController {
     public void deleteTermi(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("id") final Long id) {
-        audit.withAudit(LogMessage.builder(opsId, TERMI, POISTO), (Void) -> {
-            termistoService.deleteTermi(opsId, id);
-            return null;
-        });
+        termistoService.deleteTermi(opsId, id);
     }
 }

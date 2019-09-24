@@ -17,25 +17,24 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
-import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
-
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.KUVA;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.LIITE;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
-
-import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import io.swagger.annotations.Api;
-
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.*;
-import java.util.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PushbackInputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
-
 import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +46,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 /**
@@ -57,8 +62,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping("/opetussuunnitelmat/{opsId}/kuvat")
 @Api("Liitetiedostot")
 public class LiitetiedostoController {
-    @Autowired
-    private EperusteetYlopsAudit audit;
 
     private static final Logger LOG = LoggerFactory.getLogger(LiitetiedostoController.class);
 
@@ -83,7 +86,7 @@ public class LiitetiedostoController {
                            @RequestParam Integer height,
                            @RequestParam Part file) {
         //TODO implement image rescaling
-//        return audit.withAudit(LogMessage.builder(opsId, LIITETIEDOSTO, MUOKKAUSKO));
+
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -119,7 +122,6 @@ public class LiitetiedostoController {
 
             HttpHeaders h = new HttpHeaders();
             h.setLocation(ucb.path("/opetussuunnitelmat/{opsId}/kuvat/{id}").buildAndExpand(opsId, id.toString()).toUri());
-            audit.withAudit(LogMessage.builder(opsId, KUVA, LISAYS));
             return new ResponseEntity<>(id.toString(), h, HttpStatus.CREATED);
         }
     }
@@ -174,10 +176,7 @@ public class LiitetiedostoController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteLiitetiedosto(@PathVariable Long opsId, @PathVariable UUID id) {
-        audit.withAudit(LogMessage.builder(opsId, LIITE, POISTO), (Void) -> {
-            liitteet.delete(opsId, id);
-            return null;
-        });
+        liitteet.delete(opsId, id);
     }
 
     @RequestMapping(method = RequestMethod.GET)

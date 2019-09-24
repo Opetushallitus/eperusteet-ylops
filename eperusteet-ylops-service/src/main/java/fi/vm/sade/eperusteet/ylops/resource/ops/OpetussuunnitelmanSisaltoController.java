@@ -21,16 +21,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
-import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
 
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.TEKSTIKAPPALE;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.KLOONAUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.PALAUTUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
-
-import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 
@@ -55,8 +46,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @Api(value = "OpetussuunnitelmanSisalto")
 @ApiIgnore
 public class OpetussuunnitelmanSisaltoController {
-    @Autowired
-    private EperusteetYlopsAudit audit;
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
@@ -70,10 +59,8 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             // TODO: Lisätäänkö myös addTekstiKappaleViite PUT-metodi jossa viiteDto on pakollinen kenttä?
             @RequestBody(required = false) TekstiKappaleViiteDto.Matala tekstiKappaleViiteDto) {
-        return audit.withAudit(LogMessage.builder(opsId, TEKSTIKAPPALE, LISAYS), (Void) -> {
-            return new ResponseEntity<>(
-                    opetussuunnitelmaService.addTekstiKappale(opsId, tekstiKappaleViiteDto), HttpStatus.OK);
-        });
+        return new ResponseEntity<>(
+                opetussuunnitelmaService.addTekstiKappale(opsId, tekstiKappaleViiteDto), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/tekstit/{viiteId}/versiot", method = GET)
@@ -97,11 +84,7 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId,
             @PathVariable("versio") final Integer versio) {
-        audit.withAudit(LogMessage.builder(opsId, TEKSTIKAPPALE, PALAUTUS)
-                .palautus(viiteId, versio.longValue()), (Void) -> {
-            tekstiKappaleViiteService.revertToVersion(opsId, viiteId, versio);
-            return null;
-        });
+        tekstiKappaleViiteService.revertToVersion(opsId, viiteId, versio);
     }
 
     @RequestMapping(value = "/tekstit/removed", method = GET)
@@ -113,13 +96,8 @@ public class OpetussuunnitelmanSisaltoController {
     public void returnRemoved(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("id") final Long id) {
-        audit.withAudit(LogMessage.builder(opsId, TEKSTIKAPPALE, PALAUTUS), (Void) -> {
-            tekstiKappaleViiteService.returnRemovedTekstikappale(opsId, id);
-            return null;
-        });
+        tekstiKappaleViiteService.returnRemovedTekstikappale(opsId, id);
     }
-
-
 
     @RequestMapping(value = "/tekstit/{viiteId}/lapsi", method = RequestMethod.POST)
     @ResponseBody
@@ -127,10 +105,8 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId,
             @RequestBody(required = false) TekstiKappaleViiteDto.Matala tekstiKappaleViiteDto) {
-        return audit.withAudit(LogMessage.builder(opsId, TEKSTIKAPPALE, LISAYS), (Void) -> {
-            return new ResponseEntity<>(
-                    opetussuunnitelmaService.addTekstiKappaleLapsi(opsId, viiteId, tekstiKappaleViiteDto), HttpStatus.CREATED);
-        });
+        return new ResponseEntity<>(
+                opetussuunnitelmaService.addTekstiKappaleLapsi(opsId, viiteId, tekstiKappaleViiteDto), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/tekstit/{parentId}/lapsi/{childId}", method = RequestMethod.POST)
@@ -139,12 +115,10 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("parentId") final Long parentId,
             @PathVariable("childId") final Long childId) {
-        return audit.withAudit(LogMessage.builder(opsId, TEKSTIKAPPALE, LISAYS), (Void) -> {
-            TekstiKappaleViiteDto.Matala viite = new TekstiKappaleViiteDto.Matala();
-            viite.setTekstiKappaleRef(Reference.of(childId));
-            return new ResponseEntity<>(
-                    opetussuunnitelmaService.addTekstiKappaleLapsi(opsId, parentId, viite), HttpStatus.CREATED);
-        });
+        TekstiKappaleViiteDto.Matala viite = new TekstiKappaleViiteDto.Matala();
+        viite.setTekstiKappaleRef(Reference.of(childId));
+        return new ResponseEntity<>(
+                opetussuunnitelmaService.addTekstiKappaleLapsi(opsId, parentId, viite), HttpStatus.CREATED);
     }
 
     @RequestMapping(value = "/tekstit", method = RequestMethod.GET)
@@ -193,10 +167,7 @@ public class OpetussuunnitelmanSisaltoController {
     public void removeTekstiKappaleViite(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId) {
-        audit.withAudit(LogMessage.builder(opsId, TEKSTIKAPPALE, POISTO), (Void) -> {
-            tekstiKappaleViiteService.removeTekstiKappaleViite(opsId, viiteId);
-            return null;
-        });
+        tekstiKappaleViiteService.removeTekstiKappaleViite(opsId, viiteId);
     }
 
     @RequestMapping(value = "/tekstit/{viiteId}", method = RequestMethod.POST)
@@ -205,25 +176,19 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId,
             @RequestBody final TekstiKappaleViiteDto.Puu tekstiKappaleViiteDto) {
-        audit.withAudit(LogMessage.builder(opsId, TEKSTIKAPPALE, MUOKKAUS), (Void) -> {
-            if (tekstiKappaleViiteDto.getLapset() != null) {
-                tekstiKappaleViiteService.reorderSubTree(opsId, viiteId, tekstiKappaleViiteDto);
-            } else {
-                // Päivitä vain tekstikappale
-                tekstiKappaleViiteService.updateTekstiKappaleViite(opsId, viiteId, tekstiKappaleViiteDto);
-            }
-            return null;
-        });
+        if (tekstiKappaleViiteDto.getLapset() != null) {
+            tekstiKappaleViiteService.reorderSubTree(opsId, viiteId, tekstiKappaleViiteDto);
+        } else {
+            // Päivitä vain tekstikappale
+            tekstiKappaleViiteService.updateTekstiKappaleViite(opsId, viiteId, tekstiKappaleViiteDto);
+        }
     }
 
     @RequestMapping(value = "/tekstit/{viiteId}/muokattavakopio", method = RequestMethod.POST)
     public TekstiKappaleViiteDto.Puu kloonaaTekstiKappale(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId) {
-        return audit.withAudit(LogMessage.builder(opsId, TEKSTIKAPPALE, KLOONAUS), (Void) -> {
             return tekstiKappaleViiteService.kloonaaTekstiKappale(opsId, viiteId);
-        });
     }
-
 
 }

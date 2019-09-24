@@ -16,24 +16,19 @@
 package fi.vm.sade.eperusteet.ylops.resource.ohje;
 
 import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
-import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
-
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OHJE;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
-
-import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ohje.OhjeService;
-
+import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.UUID;
-
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
@@ -44,8 +39,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @Api("Ohjeet")
 public class OhjeController {
-    @Autowired
-    private EperusteetYlopsAudit audit;
 
     @Autowired
     private OhjeService service;
@@ -53,9 +46,7 @@ public class OhjeController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<OhjeDto> addOhje(@RequestBody OhjeDto ohjeDto) {
-        return audit.withAudit(LogMessage.builder(null, OHJE, LISAYS), (Void) -> {
-            return new ResponseEntity<>(service.addOhje(ohjeDto), HttpStatus.OK);
-        });
+        return new ResponseEntity<>(service.addOhje(ohjeDto), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/tekstikappale/{uuid}", method = RequestMethod.GET)
@@ -79,17 +70,12 @@ public class OhjeController {
     public ResponseEntity<OhjeDto> updateOhje(
             @PathVariable("id") final Long id,
             @RequestBody OhjeDto ohjeDto) {
-        return audit.withAudit(LogMessage.builder(null, OHJE, MUOKKAUS), (Void) -> {
-            ohjeDto.setId(id);
-            return new ResponseEntity<>(service.updateOhje(ohjeDto), HttpStatus.OK);
-        });
+        ohjeDto.setId(id);
+        return new ResponseEntity<>(service.updateOhje(ohjeDto), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public void deleteOhje(@PathVariable("id") final Long id) {
-        audit.withAudit(LogMessage.builder(null, OHJE, POISTO), (Void) -> {
-            service.removeOhje(id);
-            return null;
-        });
+        service.removeOhje(id);
     }
 }

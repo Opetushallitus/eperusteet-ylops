@@ -24,27 +24,23 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
-import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
-
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPPIAINEENVUOSILUOKKAKOKONAISUUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.TAVOITE;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
-
-import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
-
+import io.swagger.annotations.Api;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 /**
@@ -55,9 +51,6 @@ import springfox.documentation.annotations.ApiIgnore;
 @ApiIgnore
 @Api(value = "OppiaineenVuosiluokkakokonaisuudet")
 public class OppiaineenVuosiluokkakokonaisuusController {
-    @Autowired
-    private EperusteetYlopsAudit audit;
-
 
     @Autowired
     private OppiaineService oppiaineService;
@@ -99,10 +92,7 @@ public class OppiaineenVuosiluokkakokonaisuusController {
             @PathVariable("oppiaineId") final Long oppiaineId,
             @PathVariable("id") final Long id,
             @RequestBody Map<Vuosiluokka, Set<UUID>> tavoitteet) {
-        audit.withAudit(LogMessage.builder(opsId, TAVOITE, MUOKKAUS), (Void) -> {
-            oppiaineService.updateVuosiluokkienTavoitteet(opsId, oppiaineId, id, tavoitteet);
-            return null;
-        });
+        oppiaineService.updateVuosiluokkienTavoitteet(opsId, oppiaineId, id, tavoitteet);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
@@ -111,10 +101,8 @@ public class OppiaineenVuosiluokkakokonaisuusController {
             @PathVariable("oppiaineId") final Long oppiaineId,
             @PathVariable("id") final Long id,
             @RequestBody OppiaineenVuosiluokkakokonaisuusDto dto) {
-        return audit.withAudit(LogMessage.builder(opsId, OPPIAINEENVUOSILUOKKAKOKONAISUUS, MUOKKAUS), (Void) -> {
-            dto.setId(id);
-            return oppiaineService.updateVuosiluokkakokonaisuudenSisalto(opsId, oppiaineId, dto);
-        });
+        dto.setId(id);
+        return oppiaineService.updateVuosiluokkakokonaisuudenSisalto(opsId, oppiaineId, dto);
     }
 
     /*

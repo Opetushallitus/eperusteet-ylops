@@ -17,34 +17,30 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiainePalautettuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenTallennusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.UnwrappedOpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
-import fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsAudit;
-
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.KIELITARJONTA;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.OPPIAINE;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsMessageFields.VALINNAINEN;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.KLOONAUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.LISAYS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.MUOKKAUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.PALAUTUS;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.PALAUTUSALKUPERAISEEN;
-import static fi.vm.sade.eperusteet.ylops.service.audit.EperusteetYlopsOperation.POISTO;
-
-import fi.vm.sade.eperusteet.ylops.service.audit.LogMessage;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import io.swagger.annotations.Api;
-
 import java.util.List;
 import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author mikkom
@@ -53,9 +49,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet")
 @Api(value = "Oppiaineet")
 public class OppiaineController {
-    @Autowired
-    private EperusteetYlopsAudit audit;
-
 
     @Autowired
     private OppiaineService oppiaineService;
@@ -65,20 +58,16 @@ public class OppiaineController {
 
     @RequestMapping(method = RequestMethod.POST)
     public OppiaineDto addOppiaine(@PathVariable final Long opsId, @RequestBody OppiaineDto dto) {
-        return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, LISAYS), (Void) -> {
-            return oppiaineService.add(opsId, dto);
-        });
+        return oppiaineService.add(opsId, dto);
     }
 
     @RequestMapping(value = "/valinnainen", method = RequestMethod.POST)
     public OppiaineDto addValinnainen(@PathVariable final Long opsId, @RequestBody OppiaineenTallennusDto dto) {
-        return audit.withAudit(LogMessage.builder(opsId, VALINNAINEN, LISAYS), (Void) -> {
-            return oppiaineService.addValinnainen(
-                    opsId, dto.getOppiaine(),
-                    dto.getVuosiluokkakokonaisuusId(),
-                    dto.getVuosiluokat(),
-                    dto.getTavoitteet(), null, null, false);
-        });
+        return oppiaineService.addValinnainen(
+                opsId, dto.getOppiaine(),
+                dto.getVuosiluokkakokonaisuusId(),
+                dto.getVuosiluokat(),
+                dto.getTavoitteet(), null, null, false);
     }
 
     @RequestMapping(value = "/{id}/kielitarjonta", method = RequestMethod.POST)
@@ -86,9 +75,7 @@ public class OppiaineController {
             @PathVariable final Long opsId,
             @PathVariable final Long id,
             @RequestBody KopioOppimaaraDto kt) {
-        return audit.withAudit(LogMessage.builder(opsId, KIELITARJONTA, LISAYS), (Void) -> {
-            return oppiaineService.addCopyOppimaara(opsId, id, kt);
-        });
+        return oppiaineService.addCopyOppimaara(opsId, id, kt);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -120,19 +107,14 @@ public class OppiaineController {
             @PathVariable final Long opsId,
             @PathVariable final Long id,
             @PathVariable final Integer versio) {
-        return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, PALAUTUS)
-                .palautus(id, versio.longValue()), (Void) -> {
-            return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.revertTo(opsId, id, versio)));
-        });
+        return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.revertTo(opsId, id, versio)));
     }
 
     @RequestMapping(value = "/{id}/palauta", method = RequestMethod.POST)
     public OppiainePalautettuDto restoreOppiaine(
             @PathVariable final Long opsId,
             @PathVariable final Long id) {
-        return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, PALAUTUS), (Void) -> {
-            return oppiaineService.restore(opsId, id, null);
-        });
+        return oppiaineService.restore(opsId, id, null);
     }
 
     @RequestMapping(value = "/{id}/palauta/{oppimaaraId}", method = RequestMethod.POST)
@@ -140,9 +122,7 @@ public class OppiaineController {
             @PathVariable final Long opsId,
             @PathVariable final Long id,
             @PathVariable final Long oppimaaraId) {
-        return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, PALAUTUS), (Void) -> {
-            return oppiaineService.restore(opsId, id, oppimaaraId);
-        });
+        return oppiaineService.restore(opsId, id, oppimaaraId);
     }
 
     @RequestMapping(value = "/{id}/palauta/{oppimaaraId}/{versio}", method = RequestMethod.POST)
@@ -151,11 +131,7 @@ public class OppiaineController {
             @PathVariable final Long id,
             @PathVariable final Long oppimaaraId,
             @PathVariable final Integer versio) {
-        return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, PALAUTUS)
-                .add("oppiaineId", id)
-                .palautus(oppimaaraId, versio.longValue()), (Void) -> {
-            return oppiaineService.restore(opsId, id, oppimaaraId, versio);
-        });
+        return oppiaineService.restore(opsId, id, oppimaaraId, versio);
     }
 
     @RequestMapping(value = "/{id}/versiot", method = RequestMethod.GET)
@@ -196,10 +172,8 @@ public class OppiaineController {
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public UnwrappedOpsOppiaineDto updateOppiaine(@PathVariable final Long opsId, @PathVariable final Long id,
                                           @RequestBody OppiaineDto dto) {
-        return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, MUOKKAUS), (Void) -> {
-            dto.setId(id);
-            return new UnwrappedOpsOppiaineDto(oppiaineService.update(opsId, dto));
-        });
+        dto.setId(id);
+        return new UnwrappedOpsOppiaineDto(oppiaineService.update(opsId, dto));
     }
 
     @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)
@@ -208,23 +182,18 @@ public class OppiaineController {
             @PathVariable final Long id,
             @RequestBody OppiaineenTallennusDto dto
     ) {
-        return audit.withAudit(LogMessage.builder(opsId, VALINNAINEN, MUOKKAUS), (Void) -> {
-            dto.getOppiaine().setId(id);
-            return oppiaineService.updateValinnainen(
-                    opsId, dto.getOppiaine(),
-                    dto.getVuosiluokkakokonaisuusId(),
-                    dto.getVuosiluokat(),
-                    dto.getTavoitteet());
-        });
+        dto.getOppiaine().setId(id);
+        return oppiaineService.updateValinnainen(
+                opsId, dto.getOppiaine(),
+                dto.getVuosiluokkakokonaisuusId(),
+                dto.getVuosiluokat(),
+                dto.getTavoitteet());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteOppiaine(@PathVariable final Long opsId, @PathVariable final Long id) {
-        audit.withAudit(LogMessage.builder(opsId, OPPIAINE, POISTO), (Void) -> {
-            oppiaineService.delete(opsId, id);
-            return null;
-        });
+        oppiaineService.delete(opsId, id);
     }
 
 //    @RequestMapping(value = "/{id}/versions", method = RequestMethod.GET)
@@ -239,9 +208,6 @@ public class OppiaineController {
 //    @ResponseBody
 //    public OppiaineLaajaDto restore(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
 //        return oppiaineService.restore(opsId, id);
-//        return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, MUOKKAUSKO), (Void) -> {
-//            return null;
-//        });
 //    }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
@@ -258,18 +224,14 @@ public class OppiaineController {
     public UnwrappedOpsOppiaineDto kopioiMuokattavaksi(
             @PathVariable final Long opsId,
             @PathVariable final Long id) {
-        return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, KLOONAUS), (Void) -> {
-            return new UnwrappedOpsOppiaineDto(oppiaineService.kopioiMuokattavaksi(opsId, id));
-        });
+        return new UnwrappedOpsOppiaineDto(oppiaineService.kopioiMuokattavaksi(opsId, id));
     }
 
     @RequestMapping(value = "/{id}/palautaYlempi", method = RequestMethod.POST)
     public UnwrappedOpsOppiaineDto palautaYlempi(
             @PathVariable final Long opsId,
             @PathVariable final Long id) {
-        return audit.withAudit(LogMessage.builder(opsId, OPPIAINE, PALAUTUSALKUPERAISEEN), (Void) -> {
-            return new UnwrappedOpsOppiaineDto(oppiaineService.palautaYlempi(opsId, id));
-        });
+        return new UnwrappedOpsOppiaineDto(oppiaineService.palautaYlempi(opsId, id));
     }
 
 }
