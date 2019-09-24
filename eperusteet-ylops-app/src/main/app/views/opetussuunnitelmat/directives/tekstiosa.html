@@ -20,8 +20,7 @@
   <h4>
     <div class="action-buttons-inline" ng-if="config.isEditable ? config.isEditable() : true">
       <button ng-hide="editMode || config.editing" class="btn btn-default" kaanna="'muokkaa'" icon-role="edit"
-              ng-click="startEditing()" ng-disabled="shouldDisable"
-              oikeustarkastelu="{ target: 'opetussuunnitelma', permission: 'muokkaus' }"></button>
+              ng-click="startEditing()" ng-disabled="shouldDisable"></button>
     </div>
     <span kaanna="'opsin-teksti'"></span>
     <span ng-if="muokattava.teksti.$$validointi">
