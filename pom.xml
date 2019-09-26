@@ -25,7 +25,7 @@
   <url>http://www.oph.fi/oppijanpalvelut</url>
   <modules>
     <module>eperusteet-ylops-service</module>
-    <module>eperusteet-ylops-app</module>
+    <!-- <module>eperusteet-ylops-app</module> -->
   </modules>
   <properties>
     <tomcat.version>7.0.70</tomcat.version>
