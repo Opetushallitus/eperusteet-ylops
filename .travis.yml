@@ -41,7 +41,7 @@ script:
   - cd eperusteet-ylops-lukio
   - yarn install
   - yarn run gen:api
-#  - yarn run build
+  - yarn run build
   - cd ..
 
 
