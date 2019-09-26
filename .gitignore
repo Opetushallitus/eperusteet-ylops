@@ -16,3 +16,5 @@ npm-debug.log
 auditlog.log
 tscommand-*
 yarn-error.log
+
+*/logs/
