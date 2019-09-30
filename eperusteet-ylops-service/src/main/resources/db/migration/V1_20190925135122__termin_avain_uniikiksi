@@ -1,0 +1,1 @@
+alter table termi add constraint kasite_avain_uniikki unique (avain);
