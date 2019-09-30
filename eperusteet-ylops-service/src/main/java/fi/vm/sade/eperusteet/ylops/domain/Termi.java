@@ -21,46 +21,48 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 
 import java.io.Serializable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.util.UUID;
+import javax.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
+import org.hibernate.validator.constraints.NotEmpty;
 
 /**
  * @author apvilkko
  */
 @Entity
 @Table(name = "termi")
-@Getter
-@Setter
 public class Termi implements Serializable {
 
     @Id
+    @Getter
+    @Setter
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
+    @Getter
+    @Setter
     @ManyToOne
     @JoinColumn(name = "ops_id")
     private Opetussuunnitelma ops;
 
+    @Getter
     @Column(name = "avain")
     private String avain;
 
+    @Getter
+    @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private LokalisoituTeksti termi;
 
+    @Getter
+    @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
@@ -69,4 +71,17 @@ public class Termi implements Serializable {
     @Getter
     @Setter
     private boolean alaviite;
+
+    public void setAvain(String uusi) {
+        if (StringUtils.isEmpty(getAvain())) {
+            this.avain = uusi;
+        }
+    }
+
+    @PrePersist
+    void onPersist() {
+        if (this.id == null || StringUtils.isEmpty(getAvain())) {
+            setAvain(UUID.randomUUID().toString());
+        }
+    }
 }

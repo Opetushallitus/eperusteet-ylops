@@ -46,7 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class LiiteServiceImpl implements LiiteService {
 
     @Autowired
-    private LiiteRepository liitteet;
+    private LiiteRepository liiteRepository;
 
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmat;
@@ -63,7 +63,7 @@ public class LiiteServiceImpl implements LiiteService {
         InputStream is;
 
         // Opsin kuva
-        Liite liite = liitteet.findOne(id);
+        Liite liite = liiteRepository.findOne(id);
 
         if (liite == null) {
             throw new NotExistsException("liite-ei-ole");
@@ -96,7 +96,7 @@ public class LiiteServiceImpl implements LiiteService {
             }
         } else {
             // Opsin kuva
-            Liite liite = liitteet.findOne(id);
+            Liite liite = liiteRepository.findOne(id);
 
             if (liite == null) {
                 throw new NotExistsException("liite-ei-ole");
@@ -113,7 +113,7 @@ public class LiiteServiceImpl implements LiiteService {
     @Override
     @Transactional(readOnly = true)
     public LiiteDto get(Long opsId, UUID id) {
-        Liite liite = liitteet.findOne(id);
+        Liite liite = liiteRepository.findOne(id);
         //TODO. tarkasta että liite liittyy pyydettyyn suunnitelmaan tai johonkin sen esivanhempaan
         return mapper.map(liite, LiiteDto.class);
     }
@@ -121,7 +121,7 @@ public class LiiteServiceImpl implements LiiteService {
     @Override
     @Transactional
     public UUID add(Long opsId, String tyyppi, String nimi, long length, InputStream is) {
-        Liite liite = liitteet.add(tyyppi, nimi, length, is);
+        Liite liite = liiteRepository.add(tyyppi, nimi, length, is);
         Opetussuunnitelma ops = opetussuunnitelmat.findOne(opsId);
         ops.attachLiite(liite);
         return liite.getId();
@@ -130,13 +130,14 @@ public class LiiteServiceImpl implements LiiteService {
     @Override
     @Transactional(readOnly = true)
     public List<LiiteDto> getAll(Long opsId) {
-        return mapper.mapAsList(liitteet.findByOpsId(opsId), LiiteDto.class);
+        List<Liite> liitteet = this.liiteRepository.findByOpsId(opsId);
+        return mapper.mapAsList(liitteet, LiiteDto.class);
     }
 
     @Override
     @Transactional
     public void delete(Long opsId, UUID id) {
-        Liite liite = liitteet.findOne(opsId, id);
+        Liite liite = liiteRepository.findOne(opsId, id);
         if (liite == null) {
             throw new NotExistsException("Liitettä ei ole");
         }
