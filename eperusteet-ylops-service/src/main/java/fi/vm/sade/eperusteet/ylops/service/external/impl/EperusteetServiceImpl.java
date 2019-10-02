@@ -40,8 +40,7 @@ import javax.annotation.PostConstruct;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
@@ -56,11 +55,11 @@ import org.springframework.web.client.RestTemplate;
 /**
  * @author nkala
  */
+@Slf4j
 @Service
 @Profile("!test")
 @SuppressWarnings("TransactionalAnnotations")
 public class EperusteetServiceImpl implements EperusteetService {
-    private static final Logger logger = LoggerFactory.getLogger(EperusteetServiceImpl.class);
 
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
     private String eperusteetServiceUrl;
@@ -130,7 +129,7 @@ public class EperusteetServiceImpl implements EperusteetService {
             if (forceRefresh) {
                 throw e;
             }
-            logger.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
+            log.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
                     + " Trying from DB-cache.", e);
             return perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit).stream()
                     .map(wrapRuntime(
@@ -166,7 +165,7 @@ public class EperusteetServiceImpl implements EperusteetService {
 
             for (PerusteInfoDto peruste : wrapperDto.getData()) {
                 try {
-                    logger.debug("Perustepohja:", peruste.getId(), peruste.getDiaarinumero(), peruste.getVoimassaoloAlkaa());
+                    log.debug("Perustepohja:", peruste.getId(), peruste.getDiaarinumero(), peruste.getVoimassaoloAlkaa());
                 } catch (Exception e) {
                     // Just in case...
                 }
@@ -231,17 +230,17 @@ public class EperusteetServiceImpl implements EperusteetService {
             if (forceRefresh) {
                 throw e;
             }
-            logger.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
+            log.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
                     + " Trying from DB-cache.");
             PerusteCache found = perusteCacheRepository.findNewestEntryForPeruste(id);
             if (found == null) {
-                logger.warn("No cache entry for Peruste id=" + id);
+                log.warn("No cache entry for Peruste id=" + id);
                 throw e;
             }
             try {
                 return found.getPerusteJson(jsonMapper);
             } catch (IOException e1) {
-                logger.error("Failed to fallback-unserialize PerusteCache entry: " + found.getId()
+                log.error("Failed to fallback-unserialize PerusteCache entry: " + found.getId()
                         + " for peruste id=" + id, e1);
                 throw e;
             }
