@@ -16,3 +16,5 @@ npm-debug.log
 auditlog.log
 tscommand-*
 yarn-error.log
+
+eperusteet-ylops-service/logs
