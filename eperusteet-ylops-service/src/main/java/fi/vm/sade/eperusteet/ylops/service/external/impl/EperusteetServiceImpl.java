@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.dto.dokumentti.LokalisointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
@@ -45,6 +46,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -77,6 +80,9 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Autowired
     private DtoMapper mapper;
     private RestTemplate client;
+
+    @Autowired
+    private HttpEntity httpEntity;
 
     @PostConstruct
     protected void init() {
@@ -151,8 +157,8 @@ public class EperusteetServiceImpl implements EperusteetService {
         List<PerusteInfoDto> infot = new ArrayList<>();
         for (KoulutusTyyppi tyyppi : tyypit) {
             PerusteInfoWrapperDto wrapperDto
-                    = client.getForObject(eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
-                    PerusteInfoWrapperDto.class, tyyppi.toString(), 100);
+                    = client.exchange(eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
+                    HttpMethod.GET, httpEntity, PerusteInfoWrapperDto.class, tyyppi.toString(), 100).getBody();
 
             for (PerusteInfoDto peruste : wrapperDto.getData()) {
                 try {
@@ -219,8 +225,9 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     private EperusteetPerusteDto getNewestPeruste(final long id, boolean forceRefresh) {
         try {
-            EperusteetPerusteDto peruste = client.getForObject(eperusteetServiceUrl
-                    + "/api/perusteet/{id}/kaikki", EperusteetPerusteDto.class, id);
+            EperusteetPerusteDto peruste = client.exchange(eperusteetServiceUrl
+                    + "/api/perusteet/{id}/kaikki", HttpMethod.GET, httpEntity, EperusteetPerusteDto.class, id).getBody();
+
             Date newest = perusteCacheRepository.findNewestEntryAikaleimaForPeruste(id);
             if (peruste.getGlobalVersion() != null // not all backend environments may return this info yet
                     && (newest == null || newest.compareTo(peruste.getGlobalVersion().getAikaleima()) < 0)) {

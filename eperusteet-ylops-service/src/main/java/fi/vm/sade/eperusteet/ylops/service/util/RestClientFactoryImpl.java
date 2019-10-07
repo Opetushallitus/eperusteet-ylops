@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.util;
 
+import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component;
  * @author mikkom
  */
 @Component
-public class RestClientFactory {
+public class RestClientFactoryImpl implements RestClientFactory {
 
     private static final String CALLER_ID = "1.2.246.562.10.00000000001.eperusteet-ylops";
 
@@ -79,5 +80,10 @@ public class RestClientFactory {
             cache.putIfAbsent(service, client);
             return cache.get(service);
         }
+    }
+
+    @Override
+    public String getCallerId() {
+        return CALLER_ID;
     }
 }
