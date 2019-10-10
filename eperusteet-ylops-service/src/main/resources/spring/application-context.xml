@@ -63,6 +63,7 @@
 
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.service"/>
     <context:component-scan base-package="fi.vm.sade.eperusteet.utils.client"/>
+    <context:component-scan base-package="fi.vm.sade.eperusteet.utils"/>
     <tx:annotation-driven/>
     <cache:annotation-driven/>
     <aop:aspectj-autoproxy/>
@@ -121,5 +122,4 @@
         <constructor-arg ref="defaultThreadPool"/>
     </bean>
 
-    <bean id="auditConfiguration" class="fi.vm.sade.eperusteet.ylops.service.audit.AuditConfiguration" />
 </beans>
