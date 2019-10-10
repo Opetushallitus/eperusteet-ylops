@@ -17,8 +17,6 @@ auditlog.log
 tscommand-*
 yarn-error.log
 
-<<<<<<< HEAD
 */logs/
-=======
 eperusteet-ylops-service/logs
->>>>>>> master
+
