@@ -28,8 +28,8 @@
     maxActive="{{ host_postgresql_eperusteet_ylops_maxActive | default(50) }}"
     maxIdle="{{ host_postgresql_eperusteet_ylops_maxIdle | default(30) }}"
     maxWait="{{ host_postgresql_eperusteet_ylops_maxWait | default(10000) }}"
-    username="{{ host_postgresql_eperusteet_ylops_user }}"
-    password="{{ host_postgresql_eperusteet_ylops_password }}"
+    username="{{ postgres_app_user }}"
+    password="{{ host_postgresql_eperusteet_ylops_app_password }}"
     driverClassName="org.postgresql.Driver"
     validationQuery="select 1"
     url="jdbc:postgresql://{{host_postgresql_eperusteet_ylops}}:{{port_postgresql}}/{{host_postgresql_eperusteet_ylops_database | default('eperusteet-ylops') }}" />

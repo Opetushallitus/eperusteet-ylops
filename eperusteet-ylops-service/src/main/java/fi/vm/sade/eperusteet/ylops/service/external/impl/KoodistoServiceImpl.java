@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpServerErrorException;
@@ -56,10 +58,13 @@ public class KoodistoServiceImpl implements KoodistoService {
         private static final Logger LOG = LoggerFactory.getLogger(Client.class);
         private final RestTemplate restTemplate = new RestTemplate();
 
+        @Autowired
+        private HttpEntity httpEntity;
+
         @Cacheable(value = "koodistot", unless = "#result == null")
         public <T> T getForObject(String url, Class<T> responseType) {
             try {
-                return restTemplate.getForObject(url, responseType);
+                return restTemplate.exchange(url, HttpMethod.GET, httpEntity, responseType).getBody();
             } catch (HttpServerErrorException e) {
                 LOG.warn(e.getMessage());
                 return null;

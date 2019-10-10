@@ -22,8 +22,12 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.LokalisointiService;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -47,6 +51,8 @@ public class LokalisointiServiceImpl implements LokalisointiService {
     @Value("${lokalisointi.service.category:eperusteet}")
     private String category;
 
+    @Autowired
+    private HttpEntity httpEntity;
 
     @Override
     @Cacheable("lokalisoinnit")
@@ -55,7 +61,7 @@ public class LokalisointiServiceImpl implements LokalisointiService {
         String url = lokalisointiServiceUrl + "category=" + category + "&locale=" + locale + "&key=" + key;
         LokalisointiDto[] re;
         try {
-            re = restTemplate.getForObject(url, LokalisointiDto[].class);
+            re = restTemplate.exchange(url, HttpMethod.GET, httpEntity, LokalisointiDto[].class).getBody();
         } catch (RestClientException ex) {
             LOG.error("Rest client error: {}", ex.getLocalizedMessage());
             re = new LokalisointiDto[]{};
@@ -97,7 +103,7 @@ public class LokalisointiServiceImpl implements LokalisointiService {
         }
 
         try {
-            LokalisointiDto[] result = restTemplate.getForObject(url, LokalisointiDto[].class);
+            LokalisointiDto[] result = restTemplate.exchange(url, HttpMethod.GET, httpEntity, LokalisointiDto[].class).getBody();
             return Arrays.asList(result);
         } catch (RestClientException e) {
             log.error(e.getLocalizedMessage());
