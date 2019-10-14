@@ -165,7 +165,6 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
             throw new BusinessRuleViolationException("oppiainetta-ei-ole");
         }
 
-        // Fixme: Tarkista myös updatessa
         if (perusteenOppiaineet.stream().anyMatch(oa -> !oa.getOppimaarat().isEmpty())) {
             throw new BusinessRuleViolationException("opintojaksoon-ei-voi-liittaa-abstraktia-oppiainetta");
         }

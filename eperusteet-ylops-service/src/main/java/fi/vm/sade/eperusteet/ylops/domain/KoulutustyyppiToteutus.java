@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.AllArgsConstructor;
 
 /**
  * @author nkala
@@ -23,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  * Koulutustyyppi ei enää yksilöi toteutusta ja toteutus voi olla jaettu eri koulutustyyppien välillä.
  *
  */
+@AllArgsConstructor
 public enum KoulutustyyppiToteutus {
     YKSINKERTAINEN("yksinkertainen"), // Sisältää ainoastaan tekstikappaleita
     PERUSOPETUS("perusopetus"),
@@ -30,10 +32,6 @@ public enum KoulutustyyppiToteutus {
     LOPS2019("lops2019");
 
     private final String tyyppi;
-
-    KoulutustyyppiToteutus(String tyyppi) {
-        this.tyyppi = tyyppi;
-    }
 
     @JsonCreator
     public static KoulutustyyppiToteutus of(String tila) {

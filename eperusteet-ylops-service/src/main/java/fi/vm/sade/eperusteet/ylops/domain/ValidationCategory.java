@@ -1,7 +1,9 @@
 package fi.vm.sade.eperusteet.ylops.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 public enum ValidationCategory {
     OPINTOJAKSO("opintojakso"),
     OPPIAINE("oppiaine"),
@@ -9,10 +11,6 @@ public enum ValidationCategory {
     OPETUSSUUNNITELMA("opetussuunnitelma");
 
     private final String tyyppi;
-
-    private ValidationCategory(String tyyppi) {
-        this.tyyppi = tyyppi;
-    }
 
     @Override
     public String toString() {

@@ -404,9 +404,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         Lops2019ValidointiDto validointi = validointiService.getValidointi(opsId);
-//        if (!validointi.isValid()) {
-//            throw new BusinessRuleViolationException("julkaisu-ei-mahdollinen-keskeneraiselle");
-//        }
+        if (!validointi.isValid()) {
+            throw new BusinessRuleViolationException("julkaisu-ei-mahdollinen-keskeneraiselle");
+        }
 
         Set<Long> dokumentit = ops.getJulkaisukielet().stream()
                 .map(kieli -> dokumenttiService.createDtoFor(opsId, kieli))

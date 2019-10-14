@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.LaajaalainenOsaaminenDto;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
@@ -266,32 +267,24 @@ public class Lops2019ServiceImpl implements Lops2019Service {
         Lops2019LaajaAlainenOsaaminenDto laajaAlaisetOsaamiset = new Lops2019LaajaAlainenOsaaminenDto();
 
         laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                createLao("lops2019laajaalainenosaaminen", "1", "Globaali- ja kulttuuriosaaminen"));
+                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "1", "Globaali- ja kulttuuriosaaminen"));
 
         laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                createLao("lops2019laajaalainenosaaminen", "2", "Hyvinvointiosaaminen"));
+                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "2", "Hyvinvointiosaaminen"));
 
         laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                createLao("lops2019laajaalainenosaaminen", "3", "Vuorovaikutusosaaminen"));
+                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "3", "Vuorovaikutusosaaminen"));
 
         laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                createLao("lops2019laajaalainenosaaminen", "4", "Eettisyys ja ympäristöosaaminen"));
+                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "4", "Eettisyys ja ympäristöosaaminen"));
 
         laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                createLao("lops2019laajaalainenosaaminen", "5", "Yhteiskunnallinen osaaminen"));
+                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "5", "Yhteiskunnallinen osaaminen"));
 
         laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                createLao("lops2019laajaalainenosaaminen", "6", "Monitieteinen ja luova osaaminen"));
+                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "6", "Monitieteinen ja luova osaaminen"));
 
         return laajaAlaisetOsaamiset;
-    }
-
-    private Lops2019LaajaAlainenDto createLao(String koodisto, String koodiArvo, String nimi) {
-        Lops2019LaajaAlainenDto lao = new Lops2019LaajaAlainenDto();
-        lao.setKoodi(KoodiDto.of(koodisto, koodiArvo));
-        lao.setNimi(LokalisoituTekstiDto.of(nimi));
-
-        return lao;
     }
 
 }
