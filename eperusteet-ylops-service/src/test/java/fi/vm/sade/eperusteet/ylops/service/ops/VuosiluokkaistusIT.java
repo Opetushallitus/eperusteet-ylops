@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
@@ -28,6 +29,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTavoitteenArviointiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -40,12 +42,14 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,6 +58,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author mikkom
@@ -88,7 +93,7 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
 //        }
 
         OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
-        ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
+        ops.setPerusteenDiaarinumero("104/011/2014");
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTyyppi(Tyyppi.POHJA);
@@ -147,15 +152,55 @@ public class VuosiluokkaistusIT extends AbstractIntegrationTest {
                             pvk.getVuosiluokkaKokonaisuus().getVuosiluokat().forEach(
                                     l -> tavoitteet.put(l, pvk.getTavoitteet().stream()
                                             .map(PerusteOpetuksentavoiteDto::getTunniste).collect(Collectors.toSet())));
-                            Assert.assertEquals(tavoitteet.values().stream().filter(s -> !s.isEmpty()).count(), vk.getVuosiluokat().size());
+                            assertEquals(tavoitteet.values().stream().filter(s -> !s.isEmpty()).count(), vk.getVuosiluokat().size());
                             vk.getVuosiluokat().forEach(l -> {
-                                Assert.assertEquals(pvk.getTavoitteet().size(), l.getTavoitteet().size());
-                                Assert.assertEquals(pvk.getSisaltoalueet().size(), l.getSisaltoalueet().size());
+                                assertEquals(pvk.getTavoitteet().size(), l.getTavoitteet().size());
+                                assertEquals(pvk.getSisaltoalueet().size(), l.getSisaltoalueet().size());
                             });
                         });
                     });
         }
 
+    }
+
+    @Test
+    public void testArvioinninKohteet() {
+
+        PerusteDto peruste = opetussuunnitelmaService.getPeruste(opsId);
+
+        Assertions.assertThat(peruste.getPerusopetus()).isNotNull();
+        Assertions.assertThat(peruste.getPerusopetus().getOppiaineet()).hasSize(1);
+        Assertions.assertThat(peruste.getPerusopetus().getOppiaineet().iterator().next().getVuosiluokkakokonaisuudet()).hasSize(1);
+        Assertions.assertThat(peruste.getPerusopetus().getOppiaineet().iterator().next().getVuosiluokkakokonaisuudet().get(0).getTavoitteet()).hasSize(3);
+
+        List<PerusteOpetuksentavoiteDto> tavoitteet = peruste.getPerusopetus().getOppiaineet().iterator().next().getVuosiluokkakokonaisuudet().get(0).getTavoitteet();
+
+        Assertions.assertThat(tavoitteet.stream().map(tavoite -> tavoite.getVapaaTeksti().get(Kieli.FI)))
+                .hasSize(3)
+                .containsExactlyInAnyOrder("<p>vapaata tekstikenttää</p>", "<p>teksti</p>", "<p>teksti</p>");
+
+        Assertions.assertThat(tavoitteet.stream().map(PerusteOpetuksentavoiteDto::getArvioinninKuvaus))
+                .hasSize(3)
+                .doesNotContainNull();
+
+        Assertions.assertThat(tavoitteet.get(0).getVapaaTeksti().get(Kieli.FI)).isEqualTo("<p>vapaata tekstikenttää</p>");
+        Assertions.assertThat(tavoitteet.get(0).getArvioinninKuvaus().get(Kieli.FI)).isEqualTo("arvioinnin kohde (vanha taulunn otsikko)");
+
+        Assertions.assertThat(tavoitteet.get(0).getArvioinninkohteet()).hasSize(3);
+        
+        Assertions.assertThat(tavoitteet.get(0).getArvioinninkohteet().stream().map(PerusteTavoitteenArviointiDto::getArvosana))
+                .hasSize(3)
+                .containsExactlyInAnyOrder(5,6,8);
+
+        Assertions.assertThat(tavoitteet.get(0).getArvioinninkohteet().stream().map(PerusteTavoitteenArviointiDto::getOsaamisenKuvaus))
+                .hasSize(3)
+                .doesNotContainNull();
+
+        Assertions.assertThat(tavoitteet.get(0).getArvioinninkohteet()
+                .stream()
+                .filter(kohde -> kohde.getHyvanOsaamisenKuvaus() != null)
+                .map(kohde -> kohde.getHyvanOsaamisenKuvaus().get(Kieli.FI)))
+                .hasSize(1);
     }
 
 }

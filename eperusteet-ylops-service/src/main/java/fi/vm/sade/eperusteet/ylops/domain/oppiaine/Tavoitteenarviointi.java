@@ -49,12 +49,18 @@ public class Tavoitteenarviointi extends AbstractReferenceableEntity {
     @Getter
     @Setter
     @ValidHtml(whitelist = ValidHtml.WhitelistType.MINIMAL)
-    private LokalisoituTeksti hyvanOsaamisenKuvaus;
+    private LokalisoituTeksti osaamisenKuvaus;
+
+    @Getter
+    @Setter
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private Integer arvosana;
 
     static Tavoitteenarviointi copyOf(Tavoitteenarviointi other) {
         Tavoitteenarviointi ta = new Tavoitteenarviointi();
         ta.setArvioinninKohde(other.getArvioinninKohde());
-        ta.setHyvanOsaamisenKuvaus(other.getHyvanOsaamisenKuvaus());
+        ta.setOsaamisenKuvaus(other.getOsaamisenKuvaus());
+        ta.setArvosana(other.getArvosana());
         return ta;
     }
 
@@ -63,9 +69,10 @@ public class Tavoitteenarviointi extends AbstractReferenceableEntity {
     }
 
 
-    public Tavoitteenarviointi(LokalisoituTeksti arvioinninKohde, LokalisoituTeksti hyvanOsaamisenKuvaus) {
+    public Tavoitteenarviointi(LokalisoituTeksti arvioinninKohde, LokalisoituTeksti osaamisenKuvaus, Integer arvosana) {
         this.arvioinninKohde = arvioinninKohde;
-        this.hyvanOsaamisenKuvaus = hyvanOsaamisenKuvaus;
+        this.osaamisenKuvaus = osaamisenKuvaus;
+        this.arvosana = arvosana;
     }
 
 }

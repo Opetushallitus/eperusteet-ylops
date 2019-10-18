@@ -1,0 +1,506 @@
+{
+  "id": 600,
+  "globalVersion": {
+    "aikaleima": 1571406232829
+  },
+  "nimi": {
+    "_tunniste": "c21029a6-d550-4a6e-aa4b-da041e96fd32",
+    "fi": "perustei1",
+    "sv": "peruste1",
+    "_id": "900"
+  },
+  "koulutustyyppi": "koulutustyyppi_16",
+  "toteutus": null,
+  "koulutukset": [],
+  "kielet": [
+    "sv",
+    "fi"
+  ],
+  "kuvaus": null,
+  "maarayskirje": {
+    "id": 890,
+    "url": {},
+    "liitteet": {}
+  },
+  "muutosmaaraykset": [],
+  "diaarinumero": "104/011/2014",
+  "voimassaoloAlkaa": 1571173200000,
+  "siirtymaPaattyy": null,
+  "voimassaoloLoppuu": null,
+  "paatospvm": null,
+  "luotu": 1571317714933,
+  "muokattu": 1571406232830,
+  "tila": "valmis",
+  "tyyppi": "normaali",
+  "koulutusvienti": false,
+  "korvattavatDiaarinumerot": [],
+  "osaamisalat": [],
+  "tyotehtavatJoissaVoiToimia": null,
+  "suorittaneenOsaaminen": null,
+  "perusopetus": {
+    "sisalto": {
+      "id": 620,
+      "lapset": [
+        {
+          "id": 1120,
+          "perusteenOsa": {
+            "id": 1130,
+            "luotu": 1571382292697,
+            "muokattu": 1571382498149,
+            "muokkaaja": "test",
+            "nimi": {
+              "_tunniste": "8f0400a0-7c7c-4cb7-9938-3d797670cb0c",
+              "fi": "teksti",
+              "sv": "teksti",
+              "_id": "1150"
+            },
+            "tila": "valmis",
+            "teksti": {
+              "_tunniste": "56b5ff96-5b6a-452f-a95a-b588163a1601",
+              "fi": "<p>teksti</p>",
+              "sv": "<p>teksti</p>",
+              "_id": "1151"
+            },
+            "osanTyyppi": "tekstikappale"
+          },
+          "lapset": [
+            {
+              "id": 621,
+              "perusteenOsa": {
+                "id": 640,
+                "luotu": 1571317715227,
+                "muokattu": 1571382498152,
+                "muokkaaja": "test",
+                "nimi": {
+                  "_tunniste": "8f4c1d52-4a48-47fd-9fc5-aab353d0d141",
+                  "fi": "Laaja-alaiset osaamiset",
+                  "_id": "630"
+                },
+                "tila": "valmis",
+                "tunniste": "laajaalainenosaaminen",
+                "teksti": null,
+                "osanTyyppi": "tekstikappale"
+              },
+              "lapset": [],
+              "_perusteenOsa": "640"
+            }
+          ],
+          "_perusteenOsa": "1130"
+        }
+      ]
+    },
+    "laajaalaisetosaamiset": [
+      {
+        "id": 1170,
+        "tunniste": "3703d13a-dfba-4606-bc28-96a19ce78b81",
+        "nimi": {
+          "_tunniste": "4dfe66e2-da39-4b2e-8dba-16704420aaa3",
+          "fi": "teksti",
+          "sv": "teksti",
+          "_id": "1153"
+        },
+        "kuvaus": {
+          "_tunniste": "c77ec524-5ac1-4de3-b9ce-b8cc504a3f9d",
+          "fi": "<p>teksti</p>",
+          "sv": "<p>teksti</p>",
+          "_id": "1152"
+        }
+      }
+    ],
+    "oppiaineet": [
+      {
+        "id": 690,
+        "tunniste": "fd33256d-15b6-4108-a3ce-78292695d6ee",
+        "koosteinen": false,
+        "abstrakti": null,
+        "nimi": {
+          "_tunniste": "013da496-ef82-45a7-bc31-f716b867fd5a",
+          "fi": "oppiaine1",
+          "sv": "teksti ruotsiksi",
+          "_id": "901"
+        },
+        "jnro": null,
+        "muokattu": 1571406232519,
+        "tehtava": {
+          "id": 700,
+          "otsikko": {
+            "_tunniste": "9cfc2d73-1db8-435b-9deb-21f1a31f5b79",
+            "fi": "Oppiaineen tehtävä",
+            "sv": "teksti ruotsiksi",
+            "_id": "908"
+          },
+          "teksti": {
+            "_tunniste": "597101ad-4c7d-4c5b-9ae3-0884b8f11a2b",
+            "fi": "<p>teksti</p>",
+            "sv": "<p>teksti ruotsiksi</p>",
+            "_id": "1154"
+          }
+        },
+        "kohdealueet": [],
+        "vuosiluokkakokonaisuudet": [
+          {
+            "id": 710,
+            "_vuosiluokkaKokonaisuus": "670",
+            "tehtava": {
+              "id": 703,
+              "otsikko": {
+                "_tunniste": "f0ce8ac6-dd54-4ad8-ba91-54a18bf75c17",
+                "fi": "Oppiaineen tehtävä",
+                "sv": "Oppiaineen tehtävä",
+                "en": "Oppiaineen tehtävä",
+                "_id": "636"
+              },
+              "teksti": {
+                "_tunniste": "36d9ac13-83e1-4fa2-829f-3da338fbf51d",
+                "fi": "<p>teksti</p>",
+                "sv": "<p>teksti ruotsiksi</p>",
+                "_id": "1155"
+              }
+            },
+            "tyotavat": {
+              "id": 704,
+              "otsikko": {
+                "_tunniste": "808d4808-6469-4b97-979d-90912e4939cf",
+                "fi": "Oppimisympäristöt ja työtavat",
+                "sv": "Oppimisympäristöt ja työtavat",
+                "en": "Oppimisympäristöt ja työtavat",
+                "_id": "637"
+              },
+              "teksti": null
+            },
+            "ohjaus": {
+              "id": 702,
+              "otsikko": {
+                "_tunniste": "032882c2-327f-4f4b-8503-7beca3a64ae6",
+                "fi": "Ohjaus ja tuki",
+                "sv": "Ohjaus ja tuki",
+                "en": "Ohjaus ja tuki",
+                "_id": "635"
+              },
+              "teksti": null
+            },
+            "arviointi": {
+              "id": 701,
+              "otsikko": {
+                "_tunniste": "deace43d-8dd5-4317-b9dc-8bff8e9649cd",
+                "fi": "Oppilaan oppimisen arviointi",
+                "sv": "Oppilaan oppimisen arviointi",
+                "en": "Oppilaan oppimisen arviointi",
+                "_id": "634"
+              },
+              "teksti": null
+            },
+            "sisaltoalueinfo": null,
+            "tavoitteet": [
+              {
+                "id": 740,
+                "tunniste": "d41ffb56-bedc-49a3-8123-871ed4a787a1",
+                "tavoite": {
+                  "_tunniste": "f071b9cf-40f5-4058-967e-8fa976d4a783",
+                  "fi": "<p>tavoitteen nimi</p>",
+                  "sv": "<p>teksti ruotsiksi</p>",
+                  "_id": "906"
+                },
+                "sisaltoalueet": [],
+                "laajattavoitteet": [],
+                "kohdealueet": [],
+                "arvioinninkohteet": [
+                  {
+                    "id": 781,
+                    "arvioinninKohde": {
+                      "_tunniste": "20137b4e-530f-478b-ac8a-8e05964a641c",
+                      "fi": "arvioinnin kohde teksti",
+                      "_id": "733"
+                    },
+                    "hyvanOsaamisenKuvaus": {
+                      "_tunniste": "b3be7970-7bc4-40ff-9a16-a5c38b41e218",
+                      "fi": "super",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "905"
+                    },
+                    "osaamisenKuvaus": {
+                      "_tunniste": "b3be7970-7bc4-40ff-9a16-a5c38b41e218",
+                      "fi": "super",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "905"
+                    },
+                    "arvosana": 8
+                  },
+                  {
+                    "id": 750,
+                    "arvioinninKohde": {
+                      "_tunniste": "20137b4e-530f-478b-ac8a-8e05964a641c",
+                      "fi": "arvioinnin kohde teksti",
+                      "_id": "733"
+                    },
+                    "hyvanOsaamisenKuvaus": null,
+                    "osaamisenKuvaus": {
+                      "_tunniste": "b483db32-6bf1-476f-a585-bb2f54735080",
+                      "fi": "osaa tehdä joo juttuja",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "903"
+                    },
+                    "arvosana": 5
+                  },
+                  {
+                    "id": 780,
+                    "arvioinninKohde": {
+                      "_tunniste": "20137b4e-530f-478b-ac8a-8e05964a641c",
+                      "fi": "arvioinnin kohde teksti",
+                      "_id": "733"
+                    },
+                    "hyvanOsaamisenKuvaus": null,
+                    "osaamisenKuvaus": {
+                      "_tunniste": "e721192a-8faa-4430-959c-bf75fb6f851d",
+                      "fi": "viitonen, ihampaska",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "904"
+                    },
+                    "arvosana": 6
+                  }
+                ],
+                "arvioinninOtsikko": {
+                  "_tunniste": "bd4bf7c6-de9c-415d-9ffa-8bdb0285144f",
+                  "fi": "tässä on arvioinnin otsikko",
+                  "sv": "teksti ruotsiksi",
+                  "_id": "1011"
+                },
+                "arvioinninKuvaus": {
+                  "_tunniste": "fc06a247-5752-4ad4-8b05-999278b769f5",
+                  "fi": "arvioinnin kohde (vanha taulunn otsikko)",
+                  "sv": "teksti ruotsiksi",
+                  "_id": "1010"
+                },
+                "arvioinninOsaamisenKuvaus": {
+                  "_tunniste": "decd7a7e-018d-470e-9968-7b7d080e4740",
+                  "fi": "arvosanan kahdeksan osaaminen",
+                  "_id": "639"
+                },
+                "tavoitteistaJohdetutOppimisenTavoitteet": {
+                  "_tunniste": "ec274e7f-5390-4348-afc9-ecc4fc37e290",
+                  "fi": "<p>tavoitteen kuvaus</p>",
+                  "sv": "<p>teksti ruotsiksi</p>",
+                  "_id": "1012"
+                },
+                "vapaaTeksti": {
+                  "_tunniste": "c42df2fd-2c5f-4a78-9697-869d21d8b002",
+                  "fi": "<p>vapaata tekstikenttää</p>",
+                  "sv": "<p>teksti ruotsiksi</p>",
+                  "_id": "907"
+                }
+              },
+              {
+                "id": 810,
+                "tunniste": "fe4e7999-7f2d-4ab2-8014-9936d4d39dc1",
+                "tavoite": {
+                  "_tunniste": "bf1637d5-e6ce-48c3-87a8-43d79dbfecbf",
+                  "fi": "<p>teksti</p>",
+                  "sv": "<p>teksti ruotsiksi</p>",
+                  "_id": "1158"
+                },
+                "sisaltoalueet": [],
+                "laajattavoitteet": [],
+                "kohdealueet": [],
+                "arvioinninkohteet": [
+                  {
+                    "id": 831,
+                    "arvioinninKohde": {
+                      "_tunniste": "20137b4e-530f-478b-ac8a-8e05964a641c",
+                      "fi": "arvioinnin kohde teksti",
+                      "_id": "733"
+                    },
+                    "hyvanOsaamisenKuvaus": {
+                      "_tunniste": "8a4e4eff-6b3f-492b-ae38-c4ae0cfcca80",
+                      "fi": "8",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "1015"
+                    },
+                    "osaamisenKuvaus": {
+                      "_tunniste": "8a4e4eff-6b3f-492b-ae38-c4ae0cfcca80",
+                      "fi": "8",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "1015"
+                    },
+                    "arvosana": 8
+                  },
+                  {
+                    "id": 832,
+                    "arvioinninKohde": {
+                      "_tunniste": "20137b4e-530f-478b-ac8a-8e05964a641c",
+                      "fi": "arvioinnin kohde teksti",
+                      "_id": "733"
+                    },
+                    "hyvanOsaamisenKuvaus": null,
+                    "osaamisenKuvaus": {
+                      "_tunniste": "5a78af71-26bd-4515-aeea-ce5787a0c31b",
+                      "fi": "5",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "1016"
+                    },
+                    "arvosana": 5
+                  },
+                  {
+                    "id": 830,
+                    "arvioinninKohde": {
+                      "_tunniste": "20137b4e-530f-478b-ac8a-8e05964a641c",
+                      "fi": "arvioinnin kohde teksti",
+                      "_id": "733"
+                    },
+                    "hyvanOsaamisenKuvaus": null,
+                    "osaamisenKuvaus": {
+                      "_tunniste": "1f68d540-5edf-4d78-b5b0-d8d52a3012b5",
+                      "fi": "10",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "1014"
+                    },
+                    "arvosana": 10
+                  }
+                ],
+                "arvioinninOtsikko": {
+                  "_tunniste": "836f7001-eb6b-40c8-a8c0-e017b109a012",
+                  "fi": "teksti",
+                  "sv": "teksti ruotsiksi",
+                  "_id": "1157"
+                },
+                "arvioinninKuvaus": {
+                  "_tunniste": "716df3b1-0543-4cc2-9dec-4c961b3c8993",
+                  "fi": "teksti",
+                  "sv": "teksti ruotsiksi",
+                  "_id": "1156"
+                },
+                "arvioinninOsaamisenKuvaus": null,
+                "tavoitteistaJohdetutOppimisenTavoitteet": {
+                  "_tunniste": "95fd177c-71c5-401e-bc56-e01b9708ac9f",
+                  "fi": "<p>teksti</p>",
+                  "sv": "<p>teksti ruotsiksi</p>",
+                  "_id": "1159"
+                },
+                "vapaaTeksti": {
+                  "_tunniste": "82809d08-c3e1-49c5-bf4f-1a66d864666d",
+                  "fi": "<p>teksti</p>",
+                  "sv": "<p>teksti ruotsiksi</p>",
+                  "_id": "1220"
+                }
+              },
+              {
+                "id": 811,
+                "tunniste": "85a8a219-ecc8-419a-8b0d-268e590a90e3",
+                "tavoite": {
+                  "_tunniste": "3357eb71-24c5-40b7-b88d-8c0aa081576d",
+                  "fi": "<p>teksti</p>",
+                  "sv": "<p>teksti ruotsiksi</p>",
+                  "_id": "1223"
+                },
+                "sisaltoalueet": [],
+                "laajattavoitteet": [],
+                "kohdealueet": [],
+                "arvioinninkohteet": [
+                  {
+                    "id": 833,
+                    "arvioinninKohde": {
+                      "_tunniste": "20137b4e-530f-478b-ac8a-8e05964a641c",
+                      "fi": "arvioinnin kohde teksti",
+                      "_id": "733"
+                    },
+                    "hyvanOsaamisenKuvaus": null,
+                    "osaamisenKuvaus": {
+                      "_tunniste": "52ef37c7-edc1-40bc-afba-e69beca92f4e",
+                      "fi": "5",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "1072"
+                    },
+                    "arvosana": 5
+                  },
+                  {
+                    "id": 835,
+                    "arvioinninKohde": {
+                      "_tunniste": "20137b4e-530f-478b-ac8a-8e05964a641c",
+                      "fi": "arvioinnin kohde teksti",
+                      "_id": "733"
+                    },
+                    "hyvanOsaamisenKuvaus": null,
+                    "osaamisenKuvaus": {
+                      "_tunniste": "f16b8124-786b-4af1-99ad-166d5cc99e91",
+                      "fi": "9",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "1071"
+                    },
+                    "arvosana": 9
+                  },
+                  {
+                    "id": 834,
+                    "arvioinninKohde": {
+                      "_tunniste": "20137b4e-530f-478b-ac8a-8e05964a641c",
+                      "fi": "arvioinnin kohde teksti",
+                      "_id": "733"
+                    },
+                    "hyvanOsaamisenKuvaus": null,
+                    "osaamisenKuvaus": {
+                      "_tunniste": "f2a4caf3-6486-4efe-bb08-aa9a43d19aac",
+                      "fi": "7",
+                      "sv": "teksti ruotsiksi",
+                      "_id": "1070"
+                    },
+                    "arvosana": 7
+                  }
+                ],
+                "arvioinninOtsikko": {
+                  "_tunniste": "545c8d7b-6bcc-4b3e-80e5-c238aeb6f6b4",
+                  "fi": "teksti",
+                  "sv": "teksti ruotsiksi",
+                  "_id": "1222"
+                },
+                "arvioinninKuvaus": {
+                  "_tunniste": "7da1f88d-a37c-4008-b568-9726c47e40a2",
+                  "fi": "teksti",
+                  "sv": "teksti ruotsiksi",
+                  "_id": "1221"
+                },
+                "arvioinninOsaamisenKuvaus": null,
+                "tavoitteistaJohdetutOppimisenTavoitteet": {
+                  "_tunniste": "e107074b-7170-4793-a61c-207935df3916",
+                  "fi": "<p>teksti</p>",
+                  "sv": "<p>teksti ruotsiksi</p>",
+                  "_id": "1224"
+                },
+                "vapaaTeksti": {
+                  "_tunniste": "f9989177-21a9-484b-93f4-64c2c783ecf0",
+                  "fi": "<p>teksti</p>",
+                  "sv": "<p>teksti ruotsiksi</p>",
+                  "_id": "1225"
+                }
+              }
+            ],
+            "sisaltoalueet": []
+          }
+        ],
+        "koodiUri": "oppiaineetyleissivistava2_ma",
+        "koodiArvo": "MA"
+      }
+    ],
+    "vuosiluokkakokonaisuudet": [
+      {
+        "id": 670,
+        "tunniste": "51c594dc-57c5-4cb8-aecd-598e6573c778",
+        "vuosiluokat": [
+          "vuosiluokka_4",
+          "vuosiluokka_6",
+          "vuosiluokka_5",
+          "vuosiluokka_3"
+        ],
+        "nimi": {
+          "_tunniste": "5228459a-4032-40ee-8f01-2abaa6d7e634",
+          "fi": "3-6",
+          "sv": "teksti ruotsiksi",
+          "_id": "902"
+        },
+        "siirtymaEdellisesta": null,
+        "tehtava": null,
+        "siirtymaSeuraavaan": null,
+        "laajaalainenOsaaminen": null,
+        "laajaalaisetOsaamiset": [],
+        "paikallisestiPaatettavatAsiat": null
+      }
+    ]
+  }
+}

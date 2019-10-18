@@ -1000,7 +1000,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                             .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(fromDto(k.getNimi()))))
                             .collect(Collectors.toSet()));
                     opst.setArvioinninkohteet(t.getArvioinninkohteet().stream()
-                            .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getHyvanOsaamisenKuvaus())))
+                            .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getOsaamisenKuvaus()), new Integer(a.getArvosana())))
                             .collect(Collectors.toSet()));
                     return opst;
                 })

@@ -81,6 +81,20 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
     @BatchSize(size = 25)
     private Set<Opetuksenkohdealue> kohdealueet = new HashSet<>();
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Getter
+    @Setter
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
+    private LokalisoituTeksti arvioinninKuvaus;
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Getter
+    @Setter
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
+    private LokalisoituTeksti vapaaTeksti;
+
     public Set<Tavoitteenarviointi> getArvioinninkohteet() {
         return new HashSet<>(arvioinninkohteet);
     }
@@ -118,6 +132,8 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
                         .map(a -> Tavoitteenarviointi.copyOf(a))
                         .collect(Collectors.toSet())
         );
+        ot.setVapaaTeksti(other.getVapaaTeksti());
+        ot.setArvioinninKuvaus(other.getArvioinninKuvaus());
         return ot;
     }
 

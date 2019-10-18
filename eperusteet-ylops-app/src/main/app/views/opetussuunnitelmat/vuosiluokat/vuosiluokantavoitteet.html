@@ -74,23 +74,33 @@
       </div>
 
       <div class="arviointi" ng-if="tavoiteMap[tunniste].tavoitteistaJohdetutOppimisenTavoitteet">
-        <h4 kaanna="'arviointi-vuosiluokan-paatteeksi'"></h4>
-        <p ng-bind="tavoiteMap[tunniste].tavoitteistaJohdetutOppimisenTavoitteet | kaanna"></p>
+          <h4 kaanna="'arviointi-vuosiluokan-paatteeksi'"></h4>
+          <p ng-bind="tavoiteMap[tunniste].tavoitteistaJohdetutOppimisenTavoitteet | kaanna"></p>
+        </div>
+
+      <div class="arviointi">
+        <h4 kaanna="'arvioinnin-kohde'"></h4>
+        <p ng-bind="getArvioinninKohteenTeksti(tavoiteMap[tunniste]) | kaanna"></p>
       </div>
 
       <div class="arviointi" ng-if="tavoiteMap[tunniste].$arvioinninkohteet.length > 0">
         <h4 kaanna="'arviointi-vuosiluokan-paatteeksi'"></h4>
         <table class="table table-bordered kriteerit">
           <tr>
-            <th width="30%" kaanna="'arvioinnin-kohde'"></th>
-            <th kaanna="'arvion-hyva-osaaminen'"></th>
+            <th width="30%" kaanna="'osaamisen-kuvaus'"></th>
+            <th kaanna="'arvion-kuvaus'"></th>
           </tr>
-          <tr ng-repeat="kohde in tavoiteMap[tunniste].$arvioinninkohteet">
-            <td ng-bind="kohde.arvioinninKohde | kaanna"></td>
-            <td ng-bind="kohde.hyvanOsaamisenKuvaus | kaanna"></td>
+          <tr ng-repeat="kohde in tavoiteMap[tunniste].$arvioinninkohteet | orderBy:'-arvosana'">
+            <td>{{'osaamisen-kuvaus-arvosanalle_' + kohde.arvosana | kaanna}}</td>
+            <td ng-bind="kohde.osaamisenKuvaus | kaanna"></td>
           </tr>
         </table>
       </div>
+
+      <div class="arviointi" ng-if="tavoiteMap[tunniste].$vapaaTeksti">
+        <p ng-bind-html="tavoiteMap[tunniste].$vapaaTeksti | kaanna"></p>
+      </div>
+
     </div>
     <div class="ops-body">
       <div ops-teksti="muokattavat[tunniste]" callbacks="callbacks" config="options"></div>

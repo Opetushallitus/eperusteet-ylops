@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
@@ -16,6 +17,7 @@ import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -42,6 +44,9 @@ public class EperusteetLocalService implements EperusteetService {
     @Autowired
     private JsonMapper jsonMapper;
 
+    @Autowired
+    private DtoMapper mapper;
+
     private ObjectMapper objectMapper = new ObjectMapper();
 
     private List<JsonNode> perusteet = new ArrayList<>();
@@ -62,6 +67,7 @@ public class EperusteetLocalService implements EperusteetService {
         perusteet.add(openFakeData("/fakedata/varhaiskasvatus.json"));
         perusteet.add(openFakeData("/fakedata/peruste.json"));
         perusteet.add(openFakeData("/fakedata/lops.json"));
+        perusteet.add(openFakeData("/fakedata/peruste-arvioinninkohteet.json"));
         tiedotteet = readJson("/fakedata/tiedotteet.json")
             .orElse((new JsonNodeFactory(false)).objectNode());
     }
@@ -102,10 +108,12 @@ public class EperusteetLocalService implements EperusteetService {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(JsonGenerator.Feature.IGNORE_UNKNOWN, true);
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         try {
-            return objectMapper.treeToValue(perusteJson, PerusteDto.class);
+            EperusteetPerusteDto eperusteetPerusteDto = objectMapper.treeToValue(perusteJson, EperusteetPerusteDto.class);
+            return mapper.map(eperusteetPerusteDto, PerusteDto.class);
         } catch (JsonProcessingException e) {
-            throw new BusinessRuleViolationException("perusteen-parsinta-epaonnistui");
+            throw new BusinessRuleViolationException("perusteen-parsinta-epaonnistui", e);
         }
     }
 
