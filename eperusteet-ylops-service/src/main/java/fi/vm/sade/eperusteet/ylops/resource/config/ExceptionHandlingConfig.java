@@ -151,10 +151,16 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
         } else if (ex instanceof ConstraintViolationException) {
             suppresstrace = true;
             List<String> reasons = new ArrayList<>();
+            List<String> lisatiedot = new ArrayList<>();
             for (ConstraintViolation<?> constraintViolation : ((ConstraintViolationException) ex).getConstraintViolations()) {
                 reasons.add(constraintViolation.getPropertyPath().toString() + ": " + constraintViolation.getMessage());
+                lisatiedot.add(constraintViolation.getRootBeanClass().toString() + ":" +
+                        constraintViolation.getInvalidValue().toString() + ":" +
+                        constraintViolation.getPropertyPath().toString() + ":" + 
+                        constraintViolation.getMessage());
             }
             map.put("syy", reasons);
+            map.put("lisatiedot", lisatiedot);
         } else if (ex instanceof UnsatisfiedServletRequestParameterException) {
             StringBuilder builder = new StringBuilder().append("Pyynnöstä puuttui parametrit \"");
             for (String violation : ((UnsatisfiedServletRequestParameterException) ex).getParamConditions()) {
