@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 import java.util.Set;
@@ -30,23 +31,33 @@ import java.util.UUID;
  * @author nkala
  */
 public interface EperusteetService {
+    @PreAuthorize("permitAll()")
     PerusteDto getPeruste(String diaariNumero) throws NotExistsException;
 
+    @PreAuthorize("permitAll()")
     PerusteDto getPerusteUpdateCache(String diaarinumero) throws NotExistsException;
 
+    @PreAuthorize("permitAll()")
     List<PerusteInfoDto> findPerusteet();
 
+    @PreAuthorize("permitAll()")
     List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit);
 
+    @PreAuthorize("permitAll()")
     List<PerusteInfoDto> findPerusopetuksenPerusteet();
 
+    @PreAuthorize("permitAll()")
     List<PerusteInfoDto> findLukiokoulutusPerusteet();
 
+    @PreAuthorize("permitAll()")
     PerusteDto getPerusteById(final Long id);
 
+    @PreAuthorize("permitAll()")
     JsonNode getTiedotteet(Long jalkeen);
 
+    @PreAuthorize("permitAll()")
     JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto);
 
+    @PreAuthorize("permitAll()")
     byte[] getLiite(final Long perusteId, final UUID id);
 }

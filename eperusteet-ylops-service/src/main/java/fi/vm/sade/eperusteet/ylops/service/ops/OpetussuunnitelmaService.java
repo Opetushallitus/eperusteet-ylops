@@ -45,7 +45,7 @@ public interface OpetussuunnitelmaService {
             "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi, Tila tila);
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     Long getAmount(Tyyppi tyyppi, Set<Tila> tila);
 
     @PreAuthorize("permitAll()")
