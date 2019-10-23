@@ -33,8 +33,8 @@ public class TekstiKappaleDto {
     private Date muokattu;
     private String muokkaaja;
     private String muokkaajanNimi;
-    private LokalisoituTekstiDto nimi;
-    private LokalisoituTekstiDto teksti;
+    private PerusteenLokalisoituTekstiDto nimi;
+    private PerusteenLokalisoituTekstiDto teksti;
     private String tila;
     private String tunniste;
     private String osanTyyppi;

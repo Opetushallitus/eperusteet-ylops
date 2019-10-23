@@ -32,5 +32,5 @@ public class VuosiluokkakokonaisuudenLaajaalainenOsaaminenDto implements Referen
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty("_laajaalainenOsaaminen")
     private LaajaalainenOsaaminenDto laajaalainenOsaaminen;
-    private LokalisoituTekstiDto kuvaus;
+    private PerusteenLokalisoituTekstiDto kuvaus;
 }

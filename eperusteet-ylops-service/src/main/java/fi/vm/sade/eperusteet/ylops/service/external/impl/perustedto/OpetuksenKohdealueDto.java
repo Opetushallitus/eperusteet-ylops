@@ -30,6 +30,6 @@ import lombok.Setter;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class OpetuksenKohdealueDto implements ReferenceableDto {
     public Long id;
-    public LokalisoituTekstiDto nimi;
-    public LokalisoituTekstiDto kuvaus;
+    public PerusteenLokalisoituTekstiDto nimi;
+    public PerusteenLokalisoituTekstiDto kuvaus;
 }

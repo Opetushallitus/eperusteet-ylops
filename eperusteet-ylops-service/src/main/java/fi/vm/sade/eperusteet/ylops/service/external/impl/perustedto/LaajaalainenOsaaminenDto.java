@@ -34,6 +34,6 @@ import lombok.Setter;
 public class LaajaalainenOsaaminenDto implements ReferenceableDto {
     private Long id;
     private UUID tunniste;
-    private LokalisoituTekstiDto nimi;
-    private LokalisoituTekstiDto kuvaus;
+    private PerusteenLokalisoituTekstiDto nimi;
+    private PerusteenLokalisoituTekstiDto kuvaus;
 }

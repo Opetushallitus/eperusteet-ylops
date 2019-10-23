@@ -37,7 +37,7 @@ public class VuosiluokkakokonaisuusDto implements ReferenceableDto {
     private Long id;
     private UUID tunniste;
     private Set<Vuosiluokka> vuosiluokat;
-    private LokalisoituTekstiDto nimi;
+    private PerusteenLokalisoituTekstiDto nimi;
     private TekstiOsaDto siirtymaEdellisesta;
     private TekstiOsaDto tehtava;
     private TekstiOsaDto siirtymaSeuraavaan;

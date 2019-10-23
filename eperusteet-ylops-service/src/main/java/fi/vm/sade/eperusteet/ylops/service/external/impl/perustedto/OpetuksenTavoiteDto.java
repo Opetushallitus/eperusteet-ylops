@@ -33,7 +33,7 @@ import lombok.Setter;
 public class OpetuksenTavoiteDto implements ReferenceableDto {
     private Long id;
     private UUID tunniste;
-    private LokalisoituTekstiDto tavoite;
+    private PerusteenLokalisoituTekstiDto tavoite;
     @JsonIdentityReference(alwaysAsId = true)
     private Set<KeskeinenSisaltoalueDto> sisaltoalueet;
     @JsonIdentityReference(alwaysAsId = true)

@@ -32,11 +32,11 @@ import java.util.Set;
 @Setter
 public class PerusteDto {
     private Long id;
-    private LokalisoituTekstiDto nimi;
+    private PerusteenLokalisoituTekstiDto nimi;
     private KoulutusTyyppi koulutustyyppi;
     private Set<KoulutusDto> koulutukset;
     private Set<Kieli> kielet;
-    private LokalisoituTekstiDto kuvaus;
+    private PerusteenLokalisoituTekstiDto kuvaus;
     private String diaarinumero;
     private Date voimassaoloAlkaa;
     private Date siirtymaPaattyy;

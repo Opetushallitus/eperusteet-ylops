@@ -31,6 +31,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
@@ -50,16 +51,21 @@ public class DtoMapperConfig {
     public DtoMapper dtoMapper(
             ReferenceableEntityConverter referenceableEntityConverter,
             LokalisoituTekstiConverter lokalisoituTekstiConverter,
+            PerusteenLokalisoituTekstiConverter perusteenLokalisoituTekstiConverter,
+            PerusteenLokalisoituTekstiToLokalisoituTekstiConverter perusteenLokalisoituTekstiToLokalisoituTekstiConverter,
             KoodistoKoodiConverter koodistoKoodiConverter) {
         DefaultMapperFactory factory = new DefaultMapperFactory.Builder()
                 .build();
 
         factory.getConverterFactory().registerConverter(referenceableEntityConverter);
         factory.getConverterFactory().registerConverter(lokalisoituTekstiConverter);
+        factory.getConverterFactory().registerConverter(perusteenLokalisoituTekstiConverter);
+        factory.getConverterFactory().registerConverter(perusteenLokalisoituTekstiToLokalisoituTekstiConverter);
         factory.getConverterFactory().registerConverter(koodistoKoodiConverter);
         factory.getConverterFactory().registerConverter(new LaajaalainenosaaminenViiteConverter());
         factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTeksti.class));
         factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTekstiDto.class));
+        factory.getConverterFactory().registerConverter(new PassThroughConverter(PerusteenLokalisoituTekstiDto.class));
         factory.getConverterFactory().registerConverter(new PassThroughConverter(Instant.class));
         factory.getConverterFactory().registerConverter(new OrganisaatioConverter());
         OptionalSupport.register(factory);

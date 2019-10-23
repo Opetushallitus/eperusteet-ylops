@@ -27,6 +27,6 @@ import lombok.Setter;
 @Setter
 public class TavoitteenArviointiDto implements ReferenceableDto {
     private Long id;
-    private LokalisoituTekstiDto arvioinninKohde;
-    private LokalisoituTekstiDto hyvanOsaamisenKuvaus;
+    private PerusteenLokalisoituTekstiDto arvioinninKohde;
+    private PerusteenLokalisoituTekstiDto hyvanOsaamisenKuvaus;
 }
