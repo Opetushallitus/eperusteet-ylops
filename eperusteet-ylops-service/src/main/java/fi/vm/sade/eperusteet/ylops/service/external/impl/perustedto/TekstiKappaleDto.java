@@ -15,10 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-
 import java.util.Date;
-
 import lombok.Getter;
 import lombok.Setter;
 

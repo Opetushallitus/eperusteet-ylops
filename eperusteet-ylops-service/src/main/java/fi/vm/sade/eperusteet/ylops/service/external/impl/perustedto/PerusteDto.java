@@ -18,12 +18,10 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Date;
 import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Created by jsikio.
