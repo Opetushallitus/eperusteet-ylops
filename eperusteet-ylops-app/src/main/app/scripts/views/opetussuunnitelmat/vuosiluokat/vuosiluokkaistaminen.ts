@@ -172,8 +172,6 @@ ylopsApp.controller("VuosiluokkaistaminenController", function(
     }
 
     function fetch() {
-        console.log('fetch');
-
         OppiaineenVlk.peruste(
             {
                 opsId: $stateParams.id,
@@ -181,9 +179,6 @@ ylopsApp.controller("VuosiluokkaistaminenController", function(
                 vlkId: $scope.oppiaineenVlk.id
             },
             function(res) {
-
-                console.log('peruste', res);
-
                 $scope.perusteOpVlk = res;
                 $scope.tavoitteet = $scope.perusteOpVlk.tavoitteet;
                 $scope.tavoiteMap = _.indexBy($scope.tavoitteet, "tunniste");

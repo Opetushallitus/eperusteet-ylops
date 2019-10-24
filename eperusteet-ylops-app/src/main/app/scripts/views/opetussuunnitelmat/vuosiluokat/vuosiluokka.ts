@@ -102,8 +102,6 @@ ylopsApp
                     item.$arvioinninkohteet = perusteTavoite.arvioinninkohteet;
                     item.$arvioinninKuvaus = perusteTavoite.arvioinninKuvaus;
                     item.$vapaaTeksti = perusteTavoite.vapaaTeksti;
-
-                    console.log('perusteTavoite ', perusteTavoite);
                 }
             });
 
