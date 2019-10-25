@@ -22,11 +22,3 @@ alter table opetuksen_tavoite
         add constraint FK_ekqnqsqo26rbif8boxlro647l
         foreign key (vapaaTeksti_id)
         references lokalisoituteksti;
-
---ALTER TABLE yl_opetuksen_tavoite ADD COLUMN vapaaTeksti_id int8;
---ALTER TABLE yl_opetuksen_tavoite_AUD ADD COLUMN vapaaTeksti_id int8;
-
---alter table opetuksen_tavoite
---   add constraint FK_1sqp85oi6r4mqe8qsm05ko0ok
---    foreign key (vapaaTeksti_id)
---    references tekstipalanen;
