@@ -624,6 +624,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             if (pohja.getPerusteenDiaarinumero() == null) {
                 throw new BusinessRuleViolationException("Pohjalta puuttuu perusteen diaarinumero");
             }
+
             ops.setPerusteenDiaarinumero(pohja.getPerusteenDiaarinumero());
             ops.setCachedPeruste(ops.getCachedPeruste());
             if (ops.getCachedPeruste() == null) {
@@ -791,13 +792,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         TekstiKappaleViite tkv = viiteRepository.save(new TekstiKappaleViite());
                         tkv.setOmistussuhde(teeKopio ? Omistussuhde.OMA : Omistussuhde.LAINATTU);
                         tkv.setLapset(new ArrayList<>());
+                        tkv.updateOriginal(vanhaTkv);
                         tkv.setVanhempi(parent);
                         tkv.setPakollinen(vanhaTkv.isPakollinen());
                         tkv.setNaytaPerusteenTeksti(vanhaTkv.isNaytaPerusteenTeksti());
                         tkv.setPerusteTekstikappaleId(vanhaTkv.getPerusteTekstikappaleId());
-                        tkv.setTekstiKappale(teeKopio
-                                ? tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy())
-                                : vanhaTkv.getTekstiKappale());
+                        TekstiKappale tkCopy = vanhaTkv.getTekstiKappale().copy();
+                        tkCopy.setTeksti(null);
+                        tkv.setTekstiKappale(tkCopy);
                         parent.getLapset().add(tkv);
                         kasitteleTekstit(vanhaTkv, tkv, teeKopio);
                     });

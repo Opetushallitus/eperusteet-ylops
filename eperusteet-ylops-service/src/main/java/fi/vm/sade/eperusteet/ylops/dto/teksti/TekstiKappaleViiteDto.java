@@ -36,6 +36,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class TekstiKappaleViiteDto {
     private Long id;
 
+    private Reference original;
+
     @JsonProperty("_tekstiKappale")
     private Reference tekstiKappaleRef;
     private TekstiKappaleDto tekstiKappale;
@@ -44,6 +46,7 @@ public class TekstiKappaleViiteDto {
     private boolean valmis;
     private Long perusteTekstikappaleId;
     private boolean naytaPerusteenTeksti = true;
+    private boolean naytaPohjanTeksti = false;
 
     public TekstiKappaleViiteDto() {
     }

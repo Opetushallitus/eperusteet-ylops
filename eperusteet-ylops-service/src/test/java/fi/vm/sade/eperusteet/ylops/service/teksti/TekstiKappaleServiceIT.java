@@ -20,6 +20,8 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
+import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import org.junit.Assert;

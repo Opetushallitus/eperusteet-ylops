@@ -156,6 +156,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         updateTekstiKappale(opsId, viite, uusi.getTekstiKappale(), false /* TODO: pakota lukitus */);
         viite.setPakollinen(uusi.isPakollinen());
         viite.setValmis(uusi.isValmis());
+        viite.setNaytaPerusteenTeksti(uusi.isNaytaPerusteenTeksti());
+        viite.setNaytaPohjanTeksti(uusi.isNaytaPohjanTeksti());
         viite = tekstikappaleviiteRepository.save(viite);
         return mapper.map(viite, TekstiKappaleViiteDto.class);
     }
@@ -282,6 +284,12 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                         poistettuTekstiKappale.setTekstiKappale(rev.getId());
                     }
                 });
+    }
+
+    @Override
+    public TekstiKappaleViiteDto.Matala getTekstiKappaleViiteOriginal(Long opsId, Long viiteId) {
+        TekstiKappaleViite viite = findViite(opsId, viiteId);
+        return mapper.map(viite.getOriginal(), TekstiKappaleViiteDto.Matala.class);
     }
 
     @Override
