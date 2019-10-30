@@ -99,7 +99,7 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Getter
     @Setter
     @BatchSize(size = 100)
-    private List<TekstiKappaleViite> lapset;
+    private List<TekstiKappaleViite> lapset = new ArrayList<>();
 
     @Getter
     @Column(name = "peruste_tekstikappale_id")

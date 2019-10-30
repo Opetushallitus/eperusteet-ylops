@@ -66,5 +66,5 @@ public interface TekstiKappaleViiteService {
     TekstiKappaleDto returnRemovedTekstikappale(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    TekstiKappaleViiteDto.Matala getTekstiKappaleViiteOriginal(Long opsId, Long viiteId);
+    TekstiKappaleViiteDto.Matala getTekstiKappaleViiteOriginal(@P("opsId") Long opsId, Long viiteId);
 }

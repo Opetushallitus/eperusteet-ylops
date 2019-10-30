@@ -799,7 +799,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         tkv.setPerusteTekstikappaleId(vanhaTkv.getPerusteTekstikappaleId());
                         TekstiKappale tkCopy = vanhaTkv.getTekstiKappale().copy();
                         tkCopy.setTeksti(null);
-                        tkv.setTekstiKappale(tkCopy);
+                        tkv.setTekstiKappale(tekstiKappaleRepository.save(tkCopy));
                         parent.getLapset().add(tkv);
                         kasitteleTekstit(vanhaTkv, tkv, teeKopio);
                     });

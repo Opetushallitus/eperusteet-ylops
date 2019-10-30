@@ -44,6 +44,8 @@ import javax.validation.constraints.NotNull;
 
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiDto;
+import fi.vm.sade.eperusteet.ylops.service.ops.Identifiable;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsIdentifiable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -57,7 +59,7 @@ import org.springframework.util.StringUtils;
 @Audited
 @Table(name = "opetussuunnitelma")
 public class Opetussuunnitelma extends AbstractAuditedEntity
-        implements Serializable, ReferenceableEntity, Validable {
+        implements Serializable, ReferenceableEntity, Validable, OpsIdentifiable, Identifiable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Getter

@@ -17,7 +17,6 @@ package fi.vm.sade.eperusteet.ylops.dto.teksti;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -36,7 +35,6 @@ public class TekstiKappaleDto {
     private String muokkaaja;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String muokkaajanNimi;
-    private Reference original;
 
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto teksti;
