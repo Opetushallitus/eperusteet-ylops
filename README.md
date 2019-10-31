@@ -1,82 +1,85 @@
-ePerusteet-ylops
-================
-
+# ePerusteet-ylops
 
 Yleissivistävän koulutuksen paikallisten opetussuunnitelmien laadintatyökalu.
 
-Kehitysympäristön vaatimukset
------------------------------
+## Kehitysympäristön vaatimukset
 
 - JDK 8
 - Maven 3
+- [käyttäjäkohtaisien asetuksien pohjat - dev-settings](https://github.com/Opetushallitus/eperusteet/blob/master/dev-settings.md)    
 - Nodejs sekä yo front-end-kehitystä varten
   - <http://nodejs.org/download/>
   - (sudo) npm -g install yo
-  - Jos bower ja/tai grunt puuttuvat niin aja myös
-    (sudo) npm -g install bower
-    (sudo) npm -g install grunt-cli
-- PostgreSQL 9.3 (luo tietokanta paikallista kehitystä varten)
-- Tomcat [7.0.42,8)
+  - Asenna riippupvuudet, jos puuttuvat 
+    - (sudo) npm -g install bower
+    - (sudo) npm -g install grunt-cli
 
 Riippuvuuksien takia käännösaikana tarvitaan pääsy sisäiseen pakettien hallintaan, koska osa paketeista (lähinnä build-parent) ei ole julkisissa repoissa.
 
 Ajoaikana riippuu mm. keskitetystä autentikaatiosta (CAS), käyttäjähallinnasta, organisaatiopalvelusta, koodistosta ja eperusteista joihin täytyy olla ajoympäristöstä pääsy.
 
 
-Ajaminen paikallisesti
+## Ajaminen paikallisesti
 ----------------------
 
-eperusteet-ylops-app: 
+### eperusteet-ylops-service: 
+
+  #### &nbsp;&nbsp;Käynnistys
+
+  ```
+  cd eperusteet-ylops-service
+  mvn tomcat7:run
+  ```  
+    
+  #### &nbsp;&nbsp;Testaus
+
+  ```
+  cd eperusteet-ylops-service
+  mvn clean install -Poph
+  ```
+
+  #### &nbsp;&nbsp;API-generointi
+
+  ```
+  cd eperusteet-ylops-service
+  mvn clean compile -Pgenerate-openapi
+  specfile="$YLOPS_SERVICE_DIR/target/openapi/ylops.spec.json"
+  npx openapi-generator generate -c ../../generator.config.json -i "$specfile" -g typescript-axios
+  ```  
+
+### eperusteet-ylops-app: 
+
+  #### &nbsp;&nbsp;Käynnistys
 
     cd eperusteet-ylops-app/yo
     npm install
-    bower install
-    grunt server
+    npm run dev
 
-eperusteet-ylops-service: 
+  #### &nbsp;&nbsp;Testaus
 
-    mvn install
-    cd eperusteet-ylops-service
-    (jos muisti loppuu: MAVEN_OPTS="-Xmx2048m")
-    mvn tomcat7:run -Deperusteet-ylops.devdb.user=<user> -Deperusteet-ylops.devdb.password=<password> -Deperusteet-ylops.devdb.jdbcurl=<jdbcurl>
+  ```
+  cd eperusteet-ylops-app/yo
+  npm run test
+  ```  
     
-Sovelluksen voi myös kääntää kahdeksi eri war-paketiksi joita voi aja erillisessä Tomcatissa. 
+### Tietokannat (vaihtoehtoinen)
+  
+  #### &nbsp;&nbsp;Käynnistys
 
-Konfiguraatioon tarvitaan seuraavat muutokset:
+  docker-compose.yml tiedosto talteen ( [käyttäjäkohtaisien asetuksien pohjat - dev-settings](https://github.com/Opetushallitus/eperusteet/blob/master/dev-settings.md) )
 
-  - URIEncoding="UTF-8": 
-```
-    <Connector port="8080" protocol="HTTP/1.1" (...) URIEncoding="UTF-8"/>
-```
-  - PostgreSQL 9.3 JDBC-ajuri lib-hakemistoon
-  - Kehityskannan resurssi:    
-```
-    <GlobalNamingResources>
-    ...
-    <Resource name="jdbc/eperusteet-ylops" auth="Container" type="javax.sql.DataSource"
-                 maxActive="100" maxIdle="30" maxWait="10000"
-                 username="..." password="..." driverClassName="org.postgresql.Driver"
-                 url="jdbc:postgresql://localhost:5432/..."/>
-    ...
-    </GlobalNamingResources>
-```
+  ```
+  docker-compose up
+  ```
 
-Web-sovelluksen (app) osalta maven käyttää yeoman-maven-plugin:ia joka tarvitsee nodejs:n ja yo:n toimiakseen.
+## ePerusteet-projektit
 
-
-# Lukio
-
-```sh
-
-# Lataa perusteita testikäyttöön
-$ mkdir -p eperusteet-ylops-service/src/main/resources/fakedata/
-$ http "https://eperusteet.opintopolku.fi/eperusteet-service/api/perusteet/1266381/kaikki" > eperusteet-ylops-service/src/main/resources/fakedata/varhaiskasvatus.json
-
-# Käynnistä palvelu e2e-profiililla
-$ mvn  tomcat7:run -Dspring.profiles.active=e2e
-
-```
-
-# Uusi käyttöliittymä
-
-Uusi käyttöliittymä rakennetaan kansioon /uusi.
+  Projekti | Build status | Maintainability | Test Coverage | Known Vulnerabilities
+  -------- | ------------ | --------------- | ------------- | ----------------------
+  [ePerusteet](https://github.com/Opetushallitus/eperusteet) | [![Build Status](https://travis-ci.org/Opetushallitus/eperusteet.svg?branch=master)](https://travis-ci.org/Opetushallitus/eperusteet)
+  [ePerusteet-amosaa](https://github.com/Opetushallitus/eperusteet-amosaa) | [![Build Status](https://travis-ci.org/Opetushallitus/eperusteet-amosaa.svg?branch=master)](https://travis-ci.org/Opetushallitus/eperusteet-amosaa)
+  [ePerusteet-ylops](https://github.com/Opetushallitus/eperusteet-ylops) | [![Build Status](https://travis-ci.org/Opetushallitus/eperusteet-ylops.svg?branch=master)](https://travis-ci.org/Opetushallitus/eperusteet-ylops)
+  [ePerusteet-ylops-lukio](https://github.com/Opetushallitus/eperusteet-ylops-lukio) | [![Build Status](https://travis-ci.org/Opetushallitus/eperusteet-ylops-lukio.svg?branch=master)](https://travis-ci.org/Opetushallitus/eperusteet-ylops-lukio) | [![Maintainability](https://api.codeclimate.com/v1/badges/eea9e59302df6e343d57/maintainability)](https://codeclimate.com/github/Opetushallitus/eperusteet-ylops-lukio/maintainability) | [![Test Coverage](https://api.codeclimate.com/v1/badges/eea9e59302df6e343d57/test_coverage)](https://codeclimate.com/github/Opetushallitus/eperusteet-ylops-lukio/test_coverage) | [![Known Vulnerabilities](https://snyk.io/test/github/Opetushallitus/eperusteet-ylops-lukio/badge.svg)](https://snyk.io/test/github/Opetushallitus/eperusteet-ylops-lukio)
+  [ePerusteet-opintopolku](https://github.com/Opetushallitus/eperusteet-opintopolku) | [![Build Status](https://travis-ci.org/Opetushallitus/eperusteet-opintopolku.svg?branch=master)](https://travis-ci.org/Opetushallitus/eperusteet-opintopolku) | [![Maintainability](https://api.codeclimate.com/v1/badges/24fc0c3e2b968b432319/maintainability)](https://codeclimate.com/github/Opetushallitus/eperusteet-opintopolku/maintainability) | [![Test Coverage](https://api.codeclimate.com/v1/badges/24fc0c3e2b968b432319/test_coverage)](https://codeclimate.com/github/Opetushallitus/eperusteet-opintopolku/test_coverage)
+  [ePerusteet-backend-utils](https://github.com/Opetushallitus/eperusteet-backend-utils) | [![Build Status](https://travis-ci.org/Opetushallitus/eperusteet-backend-utils.svg?branch=master)](https://travis-ci.org/Opetushallitus/eperusteet-backend-utils)
+  [ePerusteet-frontend-utils](https://github.com/Opetushallitus/eperusteet-frontend-utils) | [![Build Status](https://travis-ci.org/Opetushallitus/eperusteet-frontend-utils.svg?branch=master)](https://travis-ci.org/Opetushallitus/eperusteet-frontend-utils) | [![Maintainability](https://api.codeclimate.com/v1/badges/f782a4a50622ae34a2bd/maintainability)](https://codeclimate.com/github/Opetushallitus/eperusteet-frontend-utils/maintainability) | [![Test Coverage](https://api.codeclimate.com/v1/badges/f782a4a50622ae34a2bd/test_coverage)](https://codeclimate.com/github/Opetushallitus/eperusteet-frontend-utils/test_coverage)
