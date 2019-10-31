@@ -167,9 +167,6 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId) {
         TekstiKappaleViiteDto.Matala dto = tekstiKappaleViiteService.getTekstiKappaleViiteOriginal(opsId, viiteId);
-        if (dto == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(dto, HttpStatus.OK);
     }
 
