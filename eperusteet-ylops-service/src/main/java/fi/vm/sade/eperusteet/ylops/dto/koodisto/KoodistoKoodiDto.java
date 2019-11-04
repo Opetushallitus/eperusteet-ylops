@@ -16,8 +16,12 @@
 package fi.vm.sade.eperusteet.ylops.dto.koodisto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author mikkom
@@ -33,4 +37,16 @@ public class KoodistoKoodiDto {
     private String voimassaAlkuPvm;
     private String voimassaLoppuPvm;
     private KoodistoMetadataDto[] metadata;
+
+    public LokalisoituTekstiDto getNimi() {
+        Map<String, String> tekstit = new HashMap<>();
+        for (KoodistoMetadataDto metadata : this.getMetadata()) {
+            try {
+                tekstit.put(metadata.getKieli(), metadata.getNimi());
+            }
+            catch (IllegalArgumentException ignored) {
+            }
+        }
+        return new LokalisoituTekstiDto(tekstit);
+    }
 }

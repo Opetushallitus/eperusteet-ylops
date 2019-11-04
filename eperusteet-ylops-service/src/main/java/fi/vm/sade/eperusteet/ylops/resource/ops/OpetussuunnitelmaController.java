@@ -19,9 +19,11 @@ import com.codahale.metrics.annotation.Timed;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
+import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
@@ -47,6 +49,9 @@ public class OpetussuunnitelmaController {
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
+
+    @Autowired
+    private KoodistoService koodistoService;
 
     @Autowired
     private PermissionManager permissionManager;
@@ -145,6 +150,16 @@ public class OpetussuunnitelmaController {
             return new ResponseEntity<>(opetussuunnitelmaService.addOpetussuunnitelma(opetussuunnitelmaDto),
                     HttpStatus.OK);
         }
+    }
+
+    @RequestMapping(value = "/{opsId}/koodisto/{koodisto}", method = RequestMethod.GET)
+    @ResponseBody
+    @Timed
+    public ResponseEntity<List<KoodistoKoodiDto>> getKoodistonKoodit(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable final String koodisto) {
+        List<KoodistoKoodiDto> koodit = koodistoService.getAll(koodisto);
+        return new ResponseEntity<>(koodit, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/oppiainejarjestys", method = RequestMethod.POST)
