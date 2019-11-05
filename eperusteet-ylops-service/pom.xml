@@ -400,7 +400,7 @@
         <dependency>
             <groupId>org.jasig.cas.client</groupId>
             <artifactId>cas-client-support-distributed-ehcache</artifactId>
-            <version>3.3.3</version>
+            <version>3.6.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>net.sf.ehcache</groupId>
