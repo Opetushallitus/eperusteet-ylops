@@ -301,20 +301,19 @@ public class EperusteetServiceImpl implements EperusteetService {
         if (jalkeen != null) {
             params = "?alkaen=" + String.valueOf(jalkeen);
         }
-        return client.getForObject(eperusteetServiceUrl + "/api/tiedotteet" + params, JsonNode.class);
+        return client.exchange(eperusteetServiceUrl + "/api/tiedotteet" + params, HttpMethod.GET, httpEntity, JsonNode.class).getBody();
     }
 
     @Override
     public JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto) {
         String uri = eperusteetServiceUrl.concat("/api/tiedotteet/haku").concat(queryDto.toRequestParams());
-        JsonNode result = client.getForObject(uri, JsonNode.class);
+        JsonNode result = client.exchange(uri, HttpMethod.GET, httpEntity, JsonNode.class).getBody();
         return result;
     }
 
     @Override
     public byte[] getLiite(Long perusteId, UUID id) {
-        return client.getForObject(eperusteetServiceUrl
-                + "/api/perusteet/{perusteId}/kuvat/{id}", byte[].class, perusteId, id);
+        return client.exchange(eperusteetServiceUrl + "/api/perusteet/{perusteId}/kuvat/{id}", HttpMethod.GET, httpEntity, byte[].class, perusteId, id).getBody();
     }
 
     @Getter
