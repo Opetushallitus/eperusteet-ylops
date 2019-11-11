@@ -437,7 +437,6 @@ angular
                                                     ui.item.sortable.droptargetNode
                                                 )
                                             ) {
-                                                console.log("canceled");
                                                 (<any>$(ui.sender)).sortable("cancel");
                                                 ui.item.sortable = true;
                                                 //$log.info('cancled');

@@ -185,15 +185,8 @@ ylopsApp
                 $scope.ylarelaatioTyyppi = $scope.ylarelaatiotyyppi || "";
 
                 if (!$scope.valmis) {
-                    console.log("koodisto-select: valmis-callback puuttuu");
                     return;
                 } else if (_.indexOf(Koodisto.vaihtoehdot, $scope.tyyppi) === -1) {
-                    console.log(
-                        "koodisto-select:",
-                        $scope.tyyppi,
-                        "ei vastaa mitään mitään vaihtoehtoa:",
-                        Koodisto.vaihtoehdot
-                    );
                     return;
                 }
             },
