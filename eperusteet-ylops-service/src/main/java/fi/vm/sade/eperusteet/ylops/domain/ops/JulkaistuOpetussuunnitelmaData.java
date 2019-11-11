@@ -1,19 +1,20 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import fi.vm.sade.eperusteet.ylops.repository.dialect.JsonBType;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Immutable
 @Table(name = "opetussuunnitelman_julkaisu_data")
+@TypeDef(name = "jsonb", defaultForType = JsonBType.class, typeClass = JsonBType.class)
 public class JulkaistuOpetussuunnitelmaData {
 
     @Id
@@ -28,8 +29,10 @@ public class JulkaistuOpetussuunnitelmaData {
 
     @NotNull
     @Getter
-    @Column(nullable = false, updatable = false, columnDefinition = "text")
-    private String opsData; // TODO: Käytä jsonb:tä
+    @Setter
+    @Type(type = "jsonb")
+    @Column(name = "opsdata")
+    private ObjectNode opsData;
 
     @PrePersist
     void prepersist() {
@@ -39,7 +42,8 @@ public class JulkaistuOpetussuunnitelmaData {
     public JulkaistuOpetussuunnitelmaData() {
     }
 
-    public JulkaistuOpetussuunnitelmaData(String opsData) {
+    public JulkaistuOpetussuunnitelmaData(ObjectNode opsData) {
         this.opsData = opsData;
     }
+
 }

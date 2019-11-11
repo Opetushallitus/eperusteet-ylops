@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fi.vm.sade.eperusteet.ylops.domain.*;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache_;
@@ -41,6 +42,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
+import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaDataRepository;
@@ -79,6 +81,7 @@ import java.util.stream.StreamSupport;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -118,6 +121,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private OppiaineService oppiaineService;
+
+    @Autowired
+    private JulkaisuRepositoryCustom julkaisuRepositoryCustom;
 
     @Autowired
     private KoodistoService koodistoService;
@@ -391,6 +397,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    public JsonNode queryOpetussuunnitelmaJulkaisu(Long opsId, String query) {
+        Opetussuunnitelma ops = repository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        OpetussuunnitelmanJulkaisu julkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(ops);
+        assertExists(julkaisu, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        JsonNode data = julkaisuRepositoryCustom.querySisalto(julkaisu.getId(), query);
+        return data;
+    }
+
+
+    @Override
     public OpetussuunnitelmanJulkaisuDto addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
         Opetussuunnitelma ops = repository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
@@ -420,7 +437,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         OpetussuunnitelmaLaajaDto opsData = getOpetussuunnitelmaEnempi(opsId);
 
         try {
-            String opsDataJson = jsonMapper.serialize(opsData);
+            ObjectNode opsDataJson = (ObjectNode)jsonMapper.toJson(opsData);
             List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
             if (!vanhatJulkaisut.isEmpty()) {
                 int lastHash = vanhatJulkaisut.get(vanhatJulkaisut.size() - 1).getData().getHash();
@@ -434,6 +451,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             julkaisu.setData(data);
             julkaisu.setRevision(vanhatJulkaisut.size() + 1);
             julkaisu = julkaisuRepository.save(julkaisu);
+            em.flush();
             return mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class);
         } catch (IOException e) {
             e.printStackTrace();
@@ -646,7 +664,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             else {
                 luoOpsPohjasta(pohja, ops);
                 ops = repository.save(ops);
-
                 if (isPohjastaTehtyPohja(pohja) && pohja.getKoulutustyyppi().isLukio()) {
                     lisaaTeemaopinnotJosPohjassa(ops, pohja);
                 }

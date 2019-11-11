@@ -21,6 +21,5 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
  * @author jhyoty
  */
 public interface TekstikappaleviiteRepositoryCustom {
-
     TekstiKappaleViite findInOps(Long opsId, Long viiteId);
 }

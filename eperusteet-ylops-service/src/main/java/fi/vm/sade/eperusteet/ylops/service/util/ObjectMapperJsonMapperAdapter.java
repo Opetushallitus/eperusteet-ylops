@@ -16,6 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.service.util;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 
@@ -46,6 +47,21 @@ public class ObjectMapperJsonMapperAdapter implements JsonMapper {
     }
 
     @Override
+    public JsonNode readTree(String str) throws IOException {
+        return mapper.readTree(str);
+    }
+
+    @Override
+    public JsonNode readTree(byte[] bytes) throws IOException {
+        return mapper.readTree(bytes);
+    }
+
+    @Override
+    public <T> byte[] writeValueAsBytes(T data) throws IOException {
+        return mapper.writeValueAsBytes(data);
+    }
+
+    @Override
     public <T> T deserialize(Class<T> t, String from) throws IOException {
         return mapper.readerFor(t).readValue(from);
     }
@@ -61,6 +77,11 @@ public class ObjectMapperJsonMapperAdapter implements JsonMapper {
             return Optional.of((T) mapper);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public <T> JsonNode toJson(T obj) {
+        return mapper.valueToTree(obj);
     }
 
     @Override

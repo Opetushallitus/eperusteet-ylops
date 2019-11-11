@@ -16,6 +16,9 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.codahale.metrics.annotation.Timed;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
@@ -23,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
@@ -33,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -65,10 +70,10 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi, tila);
     }
 
-
     @RequestMapping(value = "/peruste", method = GET)
     @ResponseBody
-    public PerusteInfoDto getOpetussuunnitelmanPeruste(@PathVariable(value = "id") final Long id) {
+    public PerusteInfoDto getOpetussuunnitelmanPeruste(
+            @PathVariable(value = "id") final Long id) {
         return opetussuunnitelmaService.getPerusteBase(id);
     }
 
@@ -91,6 +96,16 @@ public class OpetussuunnitelmaController {
     @Timed
     public ResponseEntity<OpetussuunnitelmaKevytDto> getOpetussuunnitelma(@PathVariable("id") final Long id) {
         return ResponseEntity.ok(opetussuunnitelmaService.getOpetussuunnitelma(id));
+    }
+
+    @RequestMapping(value = "/{id}/sisalto", method = RequestMethod.GET)
+    @ResponseBody
+    @Timed
+    public ResponseEntity<JsonNode> getOpetussuunnitelmaSisalto(
+            @PathVariable("id") final Long id,
+            @RequestParam String query) {
+        JsonNode result = opetussuunnitelmaService.queryOpetussuunnitelmaJulkaisu(id, query);
+        return ResponseEntity.ok(result);
     }
 
     @RequestMapping(value = "/{id}/kaikki", method = RequestMethod.GET)

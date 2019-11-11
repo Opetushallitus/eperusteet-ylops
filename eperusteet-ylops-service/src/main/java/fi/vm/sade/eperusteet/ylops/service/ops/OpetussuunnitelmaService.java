@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
@@ -129,4 +130,7 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'TILANVAIHTO')")
     OpetussuunnitelmanJulkaisuDto addJulkaisu(@P("opsId") Long opsId, UusiJulkaisuDto julkaisuDto);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    JsonNode queryOpetussuunnitelmaJulkaisu(@P("opsId") Long opsId, String query);
 }

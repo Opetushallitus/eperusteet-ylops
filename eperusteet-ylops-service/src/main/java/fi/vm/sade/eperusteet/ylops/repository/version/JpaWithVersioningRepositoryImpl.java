@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.repository.version;
 
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo;
 import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo_;
@@ -30,7 +29,6 @@ import javax.persistence.LockModeType;
 
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
-import org.hibernate.envers.RevisionType;
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
