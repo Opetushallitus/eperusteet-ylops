@@ -451,7 +451,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             julkaisu.setData(data);
             julkaisu.setRevision(vanhatJulkaisut.size() + 1);
             julkaisu = julkaisuRepository.save(julkaisu);
-            em.flush();
             return mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class);
         } catch (IOException e) {
             e.printStackTrace();
