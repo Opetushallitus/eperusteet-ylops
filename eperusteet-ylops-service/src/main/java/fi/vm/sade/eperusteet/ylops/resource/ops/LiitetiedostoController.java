@@ -29,7 +29,6 @@ import java.io.PushbackInputStream;
 import java.util.*;
 import java.util.List;
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 
@@ -37,8 +36,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.mime.MimeTypeException;
 import org.apache.tika.mime.MimeTypes;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -65,8 +62,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 @Api("Liitetiedostot")
 public class LiitetiedostoController {
 
-    private static final Logger LOG = LoggerFactory.getLogger(LiitetiedostoController.class);
-
     private static final int BUFSIZE = 64 * 1024;
     final Tika tika = new Tika();
 
@@ -88,7 +83,6 @@ public class LiitetiedostoController {
                            @RequestParam Integer height,
                            @RequestParam Part file) {
         //TODO implement image rescaling
-
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -114,7 +108,7 @@ public class LiitetiedostoController {
                 throw new HttpMediaTypeNotSupportedException(tyyppi + "ei ole tuettu");
             }
 
-            UUID id = null;
+            UUID id;
             if (width != null && height != null) {
                 ByteArrayOutputStream os = scaleImage(file, tyyppi, width, height);
                 id = liitteet.add(opsId, tyyppi, nimi, os.size(), new PushbackInputStream(new ByteArrayInputStream(os.toByteArray())));
@@ -160,7 +154,6 @@ public class LiitetiedostoController {
             @PathVariable Long opsId,
             @PathVariable String fileName,
             @RequestHeader(value = "If-None-Match", required = false) String etag,
-            HttpServletRequest request,
             HttpServletResponse response
     ) throws IOException {
         UUID id = UUID.fromString(FilenameUtils.removeExtension(fileName));
