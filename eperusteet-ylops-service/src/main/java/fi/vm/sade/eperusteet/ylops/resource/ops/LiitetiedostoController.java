@@ -26,16 +26,17 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PushbackInputStream;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
+import org.apache.tika.mime.MimeTypeException;
+import org.apache.tika.mime.MimeTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -97,7 +99,7 @@ public class LiitetiedostoController {
                                          @RequestParam Integer width,
                                          @RequestParam Integer height,
                                          UriComponentsBuilder ucb)
-            throws IOException, HttpMediaTypeNotSupportedException {
+            throws IOException, HttpMediaTypeNotSupportedException, MimeTypeException {
         final long koko = file.getSize();
 
         try (PushbackInputStream pis = new PushbackInputStream(file.getInputStream(), BUFSIZE)) {
@@ -120,8 +122,11 @@ public class LiitetiedostoController {
                 id = liitteet.add(opsId, tyyppi, nimi, koko, pis);
             }
 
+            MimeTypes mimeTypes = MimeTypes.getDefaultMimeTypes();
+            String extension = mimeTypes.forName(tyyppi).getExtension();
+
             HttpHeaders h = new HttpHeaders();
-            h.setLocation(ucb.path("/opetussuunnitelmat/{opsId}/kuvat/{id}").buildAndExpand(opsId, id.toString()).toUri());
+            h.setLocation(ucb.path("/opetussuunnitelmat/{opsId}/kuvat/{id}" + extension).buildAndExpand(opsId, id.toString()).toUri());
             return new ResponseEntity<>(id.toString(), h, HttpStatus.CREATED);
         }
     }
@@ -149,16 +154,29 @@ public class LiitetiedostoController {
         return preview;
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{fileName}", method = RequestMethod.GET)
     @CacheControl(age = CacheControl.ONE_YEAR)
-    public void getLiitetiedosto(@PathVariable Long opsId,
-                                 @PathVariable UUID id,
-                                 @RequestHeader(value = "If-None-Match", required = false) String etag,
-                                 HttpServletResponse response) throws IOException {
+    public void getLiitetiedosto(
+            @PathVariable Long opsId,
+            @PathVariable String fileName,
+            @RequestHeader(value = "If-None-Match", required = false) String etag,
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws IOException {
+        UUID id = UUID.fromString(FilenameUtils.removeExtension(fileName));
+        String extension = FilenameUtils.getExtension(fileName);
 
         LiiteDto dto = liitteet.get(opsId, id);
-        if (dto != null) {
-            if (etag != null && dto.getId().toString().equals(etag)) {
+
+        boolean isCorrectExtension = true;
+
+        // Tarkistetaan tiedostopääte jos asetettu kutsuun
+        if (!ObjectUtils.isEmpty(extension)) {
+            isCorrectExtension = Objects.equals(dto.getTyyppi(), "image/" + extension);
+        }
+
+        if (dto != null && isCorrectExtension) {
+            if (dto.getId().toString().equals(etag)) {
                 response.setStatus(HttpStatus.NOT_MODIFIED.value());
             } else {
                 response.setHeader("Content-Type", dto.getTyyppi());

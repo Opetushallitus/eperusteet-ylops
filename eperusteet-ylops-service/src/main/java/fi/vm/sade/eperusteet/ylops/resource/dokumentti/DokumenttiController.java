@@ -30,12 +30,17 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
+
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -48,6 +53,7 @@ import org.springframework.web.multipart.MultipartFile;
 /**
  * @author iSaul
  */
+@Slf4j
 @Api("Dokumentit")
 @RestController
 @RequestMapping("/dokumentit")
@@ -95,9 +101,20 @@ public class DokumenttiController {
         return newDate.before(new Date());
     }
 
-    @RequestMapping(value = "/{dokumenttiId}", method = RequestMethod.GET, produces = "application/pdf")
-    public ResponseEntity<Object> get(@PathVariable final Long dokumenttiId) {
+    @RequestMapping(value = "/{fileName}", method = RequestMethod.GET, produces = "application/pdf")
+    public ResponseEntity<Object> get(
+            @PathVariable("fileName") String fileName
+    ) {
+        Long dokumenttiId = Long.valueOf(FilenameUtils.removeExtension(fileName));
+        String extension = FilenameUtils.getExtension(fileName);
+
         byte[] pdfdata = service.get(dokumenttiId);
+
+        // Tarkistetaan tiedostopääte jos asetettu kutsuun
+        if (!ObjectUtils.isEmpty(extension) && !Objects.equals(extension, "pdf")) {
+            log.error("Got wrong file extension");
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         if (pdfdata == null || pdfdata.length == 0) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
