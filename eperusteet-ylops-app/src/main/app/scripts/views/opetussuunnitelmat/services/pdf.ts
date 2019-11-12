@@ -69,8 +69,7 @@ ylopsApp
         }
 
         function haeLinkki(tokenId) {
-            // dis like, ewwww
-            return SERVICE_LOC + "/dokumentit/" + tokenId;
+            return SERVICE_LOC + "/dokumentit/" + tokenId + ".pdf";
         }
 
         function haeUusin(opsId, kieli, success, failure) {
