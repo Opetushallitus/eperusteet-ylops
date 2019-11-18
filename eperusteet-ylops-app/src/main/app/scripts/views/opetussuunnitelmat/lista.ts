@@ -72,9 +72,7 @@ ylopsApp
         $scope.items = OpetussuunnitelmaCRUD.query(
             {},
             function(res) {
-                $scope.items = _.filter(res, function(item) {
-                    return item.tila !== "poistettu";
-                });
+                $scope.items = Utils.opsFilter(res);
                 $scope.items.$resolved = true;
             },
             Notifikaatiot.serverCb

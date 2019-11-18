@@ -15,13 +15,16 @@
 */
 
 ylopsApp
-    .service("OpsListaService", function(OpetussuunnitelmaCRUD) {
+    .service("OpsListaService", function(OpetussuunnitelmaCRUD, Utils) {
         var cached = null;
-        this.query = function(useCache) {
+        this.query = (useCache) => {
             if (useCache && cached) {
                 return cached;
             }
-            cached = OpetussuunnitelmaCRUD.query();
+            cached = OpetussuunnitelmaCRUD.query().$promise.then(res => {
+                cached = Utils.opsFilter(res);
+                return cached;
+            });
             return cached;
         };
     })

@@ -27,14 +27,20 @@ ylopsApp
                 i => i === $scope.model.koulutustyyppi
             );
     })
-    .controller("PohjaListaController", function($scope, $state, OpetussuunnitelmaCRUD, ListaSorter, Notifikaatiot) {
+    .controller("PohjaListaController", function(
+        $scope,
+        $state,
+        OpetussuunnitelmaCRUD,
+        Utils,
+        ListaSorter,
+        Notifikaatiot) {
         $scope.pohjaMaxLimit = 9999;
         $scope.pohjaMinLimit = 7;
 
         OpetussuunnitelmaCRUD.query(
             { tyyppi: "pohja" },
             function(res) {
-                $scope.items = res;
+                $scope.items = Utils.opsFilter(res);
                 $scope.items.$resolved = true;
             },
             Notifikaatiot.serverCb

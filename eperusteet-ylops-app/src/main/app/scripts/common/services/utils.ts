@@ -23,6 +23,16 @@ ylopsApp
             }
         };
 
+        this.perusteFilter = (perusteet: any[]) => _.chain(perusteet)
+            .filter((peruste) => peruste.tila === "poistettu") // Poistettuja ei voi käyttää
+            .filter((peruste) => peruste.toteutus !== "lops2019") // lops2019 tuki vain uudessa työkalussa
+            .value();
+
+        this.opsFilter = (opetussuunnitelmat: any[]) => _.chain(opetussuunnitelmat)
+            .filter((ops) => ops.tila !== "poistettu") // Poistettuja ei voi käyttää
+            .filter((ops) => ops.toteutus !== "lops2019") // lops2019 tuki vain uudessa työkalussa
+            .value();
+
         this.hasLocalizedText = function(field) {
             if (!_.isObject(field)) {
                 return false;
