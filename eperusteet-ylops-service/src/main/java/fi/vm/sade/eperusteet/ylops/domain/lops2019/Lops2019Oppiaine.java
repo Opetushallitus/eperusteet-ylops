@@ -16,6 +16,10 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 @Entity
 @Audited
@@ -72,11 +76,9 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
     private Lops2019PaikallinenArviointi arviointi;
 
     @Getter
-    @Setter
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
-    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    private LokalisoituTeksti laajaAlainenOsaaminen;
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @OrderColumn
+    private List<PaikallinenLaajaAlainenOsaaminen> laajaAlainenOsaaminen = new ArrayList<>();
 
     @Getter
     @Setter
@@ -88,6 +90,14 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinTable(name = "lops2019_oppiaine_tavoitteet")
     private Lops2019Tavoitteet tavoitteet;
+
+    void setLaajaAlainenOsaaminen(Collection<PaikallinenLaajaAlainenOsaaminen> osaamiset) {
+        if (laajaAlainenOsaaminen == null) {
+            laajaAlainenOsaaminen = new ArrayList<>();
+        }
+        laajaAlainenOsaaminen.clear();
+        laajaAlainenOsaaminen.addAll(osaamiset);
+    }
 
     public void setSisalto(Lops2019Sisalto uusi) {
         if (this.sisalto == null) {

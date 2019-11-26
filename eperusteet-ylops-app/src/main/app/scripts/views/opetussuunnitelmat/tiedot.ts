@@ -69,7 +69,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
     $scope.editableModel = _.clone($scope.model);
     if ($scope.luonnissa) {
         OpetussuunnitelmaCRUD.query({ tyyppi: "pohja", tila: "valmis" }, function(pohjat) {
-            $scope.pohjat = pohjat;
+            $scope.pohjat = Utils.opsFilter(pohjat);
         });
         $scope.editableModel.julkaisukielet = [_.first($scope.kielivalinnat)];
         $scope.editableModel._pohja = $stateParams.pohjaId === "" ? null : $stateParams.pohjaId;

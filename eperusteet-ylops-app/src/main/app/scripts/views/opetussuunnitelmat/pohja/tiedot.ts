@@ -57,7 +57,7 @@ ylopsApp.controller("PohjaTiedotController", function(
     };
 
     if (perusteet) {
-        $scope.perustelista = perusteet;
+        $scope.perustelista = Utils.perusteFilter(perusteet);
     }
 
     const fetch = (notify?) =>

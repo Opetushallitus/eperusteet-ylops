@@ -41,6 +41,9 @@ public interface EperusteetService {
     List<PerusteInfoDto> findPerusteet();
 
     @PreAuthorize("permitAll()")
+    List<PerusteInfoDto> findPerusteet(boolean forceRefresh);
+
+    @PreAuthorize("permitAll()")
     List<PerusteInfoDto> findPerusteet(Set<KoulutusTyyppi> tyypit);
 
     @PreAuthorize("permitAll()")

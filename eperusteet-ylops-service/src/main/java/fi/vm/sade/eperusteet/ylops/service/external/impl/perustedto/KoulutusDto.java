@@ -16,7 +16,6 @@
 
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class KoulutusDto {
-    private LokalisoituTekstiDto nimi;
+    private PerusteenLokalisoituTekstiDto nimi;
     private String koulutuskoodiArvo;
     private String koulutuskoodiUri;
     private String koulutusalakoodi;

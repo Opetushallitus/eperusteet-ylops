@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.repository.teksti;
 
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import org.springframework.data.jpa.repository.Query;

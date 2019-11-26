@@ -28,6 +28,7 @@ import lombok.AllArgsConstructor;
 public enum KoulutustyyppiToteutus {
     YKSINKERTAINEN("yksinkertainen"), // Sisältää ainoastaan tekstikappaleita
     PERUSOPETUS("perusopetus"),
+    TPO("taiteenperusopetus"),
     LOPS("lops"),
     LOPS2019("lops2019");
 

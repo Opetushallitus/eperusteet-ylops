@@ -18,10 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-
 import java.util.UUID;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,6 +31,6 @@ import lombok.Setter;
 public class KeskeinenSisaltoalueDto implements ReferenceableDto {
     private Long id;
     private UUID tunniste;
-    private LokalisoituTekstiDto nimi;
-    private LokalisoituTekstiDto kuvaus;
+    private PerusteenLokalisoituTekstiDto nimi;
+    private PerusteenLokalisoituTekstiDto kuvaus;
 }

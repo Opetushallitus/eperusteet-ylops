@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -30,6 +29,6 @@ import lombok.Setter;
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class OpetuksenKohdealueDto implements ReferenceableDto {
     public Long id;
-    public LokalisoituTekstiDto nimi;
-    public LokalisoituTekstiDto kuvaus;
+    public PerusteenLokalisoituTekstiDto nimi;
+    public PerusteenLokalisoituTekstiDto kuvaus;
 }

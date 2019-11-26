@@ -18,7 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,5 +31,5 @@ public class VuosiluokkakokonaisuudenLaajaalainenOsaaminenDto implements Referen
     @JsonIdentityReference(alwaysAsId = true)
     @JsonProperty("_laajaalainenOsaaminen")
     private LaajaalainenOsaaminenDto laajaalainenOsaaminen;
-    private LokalisoituTekstiDto kuvaus;
+    private PerusteenLokalisoituTekstiDto kuvaus;
 }

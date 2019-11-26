@@ -26,6 +26,9 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
+
+import fi.vm.sade.eperusteet.ylops.service.ops.Identifiable;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsIdentifiable;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -34,7 +37,8 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-public abstract class OpetussuunnitelmaBaseDto implements Serializable {
+public abstract class OpetussuunnitelmaBaseDto
+        implements Serializable, Identifiable, OpsIdentifiable {
     private Long id;
     private Set<Kieli> julkaisukielet;
     private Set<OrganisaatioDto> organisaatiot;

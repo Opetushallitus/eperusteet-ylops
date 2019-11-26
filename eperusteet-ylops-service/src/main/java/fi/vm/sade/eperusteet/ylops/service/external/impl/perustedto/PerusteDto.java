@@ -18,12 +18,10 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.Date;
 import java.util.Set;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Created by jsikio.
@@ -32,11 +30,11 @@ import java.util.Set;
 @Setter
 public class PerusteDto {
     private Long id;
-    private LokalisoituTekstiDto nimi;
+    private PerusteenLokalisoituTekstiDto nimi;
     private KoulutusTyyppi koulutustyyppi;
     private Set<KoulutusDto> koulutukset;
     private Set<Kieli> kielet;
-    private LokalisoituTekstiDto kuvaus;
+    private PerusteenLokalisoituTekstiDto kuvaus;
     private String diaarinumero;
     private Date voimassaoloAlkaa;
     private Date siirtymaPaattyy;

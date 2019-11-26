@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -43,4 +44,5 @@ public class OpetussuunnitelmaJulkinenDto implements Serializable {
     private Tila tila;
     private Tyyppi tyyppi;
     private boolean esikatseltavissa;
+    private KoulutustyyppiToteutus toteutus;
 }

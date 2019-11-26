@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,6 +25,6 @@ import lombok.Setter;
 @Setter
 public class TekstiOsaDto {
     private Long id;
-    private LokalisoituTekstiDto otsikko;
-    private LokalisoituTekstiDto teksti;
+    private PerusteenLokalisoituTekstiDto otsikko;
+    private PerusteenLokalisoituTekstiDto teksti;
 }

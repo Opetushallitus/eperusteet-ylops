@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
@@ -16,6 +17,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.Lops2019DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
+import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
@@ -47,6 +49,9 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
     @Autowired
     private Lops2019OpintojaksoService opintojaksoService;
+
+    @Autowired
+    private KoodistoService koodistoService;
 
     @Override
     public void addLops2019Sisalto(DokumenttiBase docBase) {
@@ -244,18 +249,25 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             }
         }
 
-        // Arviointi
-        fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ArviointiDto arviointi = poa.getArviointi();
-        if (arviointi != null && arviointi.getKuvaus() != null) {
-            addTeksti(docBase, messages.translate("arviointi", docBase.getKieli()), "h6");
-            addLokalisoituteksti(docBase, arviointi.getKuvaus(), "div");
+        { // Arviointi
+            fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ArviointiDto arviointi = poa.getArviointi();
+            if (arviointi != null && arviointi.getKuvaus() != null) {
+                addTeksti(docBase, messages.translate("arviointi", docBase.getKieli()), "h6");
+                addLokalisoituteksti(docBase, arviointi.getKuvaus(), "div");
+            }
         }
 
-        // Laaja-alainen osaaminen
-        LokalisoituTekstiDto laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
-        if (laajaAlainenOsaaminen != null) {
-            addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
-            addLokalisoituteksti(docBase, laajaAlainenOsaaminen, "div");
+        { // Laaja-alainen osaaminen
+            List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
+            if (laajaAlainenOsaaminen != null) {
+                addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
+                laajaAlainenOsaaminen.forEach(lao -> {
+                    addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
+                    KoodistoKoodiDto laoKoodi = koodistoService.get("laajaalainenosaaminenlops2021", lao.getKoodi());
+                    addLokalisoituteksti(docBase, laoKoodi.getNimi(), "h6");
+                    addLokalisoituteksti(docBase, lao.getKuvaus(), "p");
+                });
+            }
         }
 
         if (!ObjectUtils.isEmpty(opintojaksot)) {
@@ -698,14 +710,19 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             List<Lops2019PaikallinenOppiaineDto> poppiaineet
     ) {
         if (!ObjectUtils.isEmpty(poppiaineet)) {
-            poppiaineet.forEach(poa -> {
-                if (poa != null) {
-                    LokalisoituTekstiDto laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
-                    if (laajaAlainenOsaaminen != null) {
-                        addTeksti(docBase, getTextString(docBase, poa.getNimi()), "h6");
-                        addLokalisoituteksti(docBase, laajaAlainenOsaaminen, "div");
-                    }
-                }
+            poppiaineet.forEach(poa -> addPaikallinenLaajaalainen(docBase, poa));
+        }
+    }
+
+    private void addPaikallinenLaajaalainen(DokumenttiBase docBase, Lops2019PaikallinenOppiaineDto poa) {
+        // Laaja-alainen osaaminen
+        List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
+        if (!ObjectUtils.isEmpty(laajaAlainenOsaaminen)) {
+            addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
+            laajaAlainenOsaaminen.forEach(lao -> {
+                KoodistoKoodiDto laoKoodi = koodistoService.get("laajaalainenosaaminenlops2021", lao.getKoodi());
+                addLokalisoituteksti(docBase, laoKoodi.getNimi(), "h6");
+                addLokalisoituteksti(docBase, lao.getKuvaus(), "p");
             });
         }
     }

@@ -1,5 +1,6 @@
 sudo: required
 
+
 language: java
 
 jdk:
@@ -39,6 +40,7 @@ script:
   # Rakennetaan uuden lukion front end
   - export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
   - cd eperusteet-ylops-lukio
+  - git rev-parse HEAD
   - yarn install
   - yarn run gen:api
   - yarn run build

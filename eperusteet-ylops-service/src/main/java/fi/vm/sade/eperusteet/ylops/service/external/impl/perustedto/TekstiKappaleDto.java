@@ -15,10 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
-import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-
 import java.util.Date;
-
 import lombok.Getter;
 import lombok.Setter;
 
@@ -33,8 +30,8 @@ public class TekstiKappaleDto {
     private Date muokattu;
     private String muokkaaja;
     private String muokkaajanNimi;
-    private LokalisoituTekstiDto nimi;
-    private LokalisoituTekstiDto teksti;
+    private PerusteenLokalisoituTekstiDto nimi;
+    private PerusteenLokalisoituTekstiDto teksti;
     private String tila;
     private String tunniste;
     private String osanTyyppi;

@@ -19,8 +19,6 @@ import java.util.Set;
 
 
 @Entity
-@Cacheable
-@Cache(usage = CacheConcurrencyStrategy.READ_ONLY)
 @Immutable
 @Getter
 @Setter
@@ -53,7 +51,7 @@ public class OpetussuunnitelmanJulkaisu extends AbstractReferenceableEntity {
     private Set<Long> dokumentit = new HashSet<>();
 
     @NotNull
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.ALL}, orphanRemoval = true)
     private JulkaistuOpetussuunnitelmaData data;
 
     @PrePersist

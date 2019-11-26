@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulkaisu, Long> {
     List<OpetussuunnitelmanJulkaisu> findAllByOpetussuunnitelma(Opetussuunnitelma ops);
+
+    OpetussuunnitelmanJulkaisu findFirstByOpetussuunnitelmaOrderByRevisionDesc(Opetussuunnitelma opetussuunnitelma);
 }

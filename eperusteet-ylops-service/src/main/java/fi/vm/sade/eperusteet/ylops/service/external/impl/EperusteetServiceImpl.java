@@ -119,7 +119,8 @@ public class EperusteetServiceImpl implements EperusteetService {
         return findPerusteet(getKoulutuskoodit(), false);
     }
 
-    private List<PerusteInfoDto> findPerusteet(boolean forceRefresh) {
+    @Override
+    public List<PerusteInfoDto> findPerusteet(boolean forceRefresh) {
         return findPerusteet(getKoulutuskoodit(), forceRefresh);
     }
 
@@ -137,12 +138,13 @@ public class EperusteetServiceImpl implements EperusteetService {
             }
             log.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
                     + " Trying from DB-cache.", e);
-            return perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit).stream()
+            List<PerusteInfoDto> result = perusteCacheRepository.findNewestEntrieByKoulutustyyppis(tyypit).stream()
                     .map(wrapRuntime(
                             c -> c.getPerusteJson(jsonMapper),
                             (IOException e1) -> new IllegalStateException("Failed deserialize DB-fallback peruste: " + e1.getMessage(), e)))
                     .map(f -> mapper.map(f, PerusteInfoDto.class))
                     .collect(toList());
+            return result;
         }
     }
 
@@ -301,20 +303,19 @@ public class EperusteetServiceImpl implements EperusteetService {
         if (jalkeen != null) {
             params = "?alkaen=" + String.valueOf(jalkeen);
         }
-        return client.getForObject(eperusteetServiceUrl + "/api/tiedotteet" + params, JsonNode.class);
+        return client.exchange(eperusteetServiceUrl + "/api/tiedotteet" + params, HttpMethod.GET, httpEntity, JsonNode.class).getBody();
     }
 
     @Override
     public JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto) {
         String uri = eperusteetServiceUrl.concat("/api/tiedotteet/haku").concat(queryDto.toRequestParams());
-        JsonNode result = client.getForObject(uri, JsonNode.class);
+        JsonNode result = client.exchange(uri, HttpMethod.GET, httpEntity, JsonNode.class).getBody();
         return result;
     }
 
     @Override
     public byte[] getLiite(Long perusteId, UUID id) {
-        return client.getForObject(eperusteetServiceUrl
-                + "/api/perusteet/{perusteId}/kuvat/{id}", byte[].class, perusteId, id);
+        return client.exchange(eperusteetServiceUrl + "/api/perusteet/{perusteId}/kuvat/{id}", HttpMethod.GET, httpEntity, byte[].class, perusteId, id).getBody();
     }
 
     @Getter

@@ -87,7 +87,7 @@ public class UlkopuolisetController {
     @RequestMapping(value = "/julkaistutperusteet", method = GET)
     @ResponseBody
     public ResponseEntity<List<PerusteInfoDto>> getPerusteet() {
-        return new ResponseEntity<>(eperusteetService.findPerusteet(), HttpStatus.OK);
+        return new ResponseEntity<>(eperusteetService.findPerusteet(true), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/perusopetusperusteet", method = GET)

@@ -75,6 +75,14 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Setter
     private TekstiKappale tekstiKappale;
 
+    @ManyToOne
+    @Getter
+    private TekstiKappaleViite original;
+
+    public void updateOriginal(TekstiKappaleViite other) {
+        original = other;
+    }
+
     /**
      * Kertoo viitattavan tekstikappaleen omistussuhteen.
      * Vain omaa tekstikappaletta voidaan muokata, lainatusta tekstikappaleesta
@@ -91,7 +99,7 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Getter
     @Setter
     @BatchSize(size = 100)
-    private List<TekstiKappaleViite> lapset;
+    private List<TekstiKappaleViite> lapset = new ArrayList<>();
 
     @Getter
     @Column(name = "peruste_tekstikappale_id")
@@ -101,6 +109,11 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
     @Setter
     @Column(name = "nayta_perusteen_teksti")
     private boolean naytaPerusteenTeksti = true;
+
+    @Getter
+    @Setter
+    @Column(name = "nayta_pohjan_teksti")
+    private boolean naytaPohjanTeksti = true;
 
 
     public TekstiKappaleViite() {

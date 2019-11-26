@@ -15,27 +15,64 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.mapping;
 
+import com.google.common.collect.ImmutableMap;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.Collections;
 import java.util.Set;
 
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
+import org.assertj.core.api.Assertions;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.cache.CacheManager;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author mikkom
  */
+@RunWith(MockitoJUnitRunner.class)
 public class MappingTest {
+
+    @Mock
+    LokalisoituTekstiRepository repository;
+
+    @InjectMocks
+    LokalisoituTekstiConverter lokalisoituTekstiConverter = new LokalisoituTekstiConverter();
+
+    private MapperFacade mapper;
+
+    @Before
+    public void buildMapper() {
+        DefaultMapperFactory factory = new DefaultMapperFactory.Builder().build();
+        factory.getConverterFactory().registerConverter(lokalisoituTekstiConverter);
+        factory.getConverterFactory().registerConverter(new PerusteenLokalisoituTekstiConverter());
+        factory.getConverterFactory().registerConverter(new PerusteenLokalisoituTekstiToLokalisoituTekstiConverter());
+
+        mapper =  factory.getMapperFacade();
+    }
 
     @Getter
     @Setter
@@ -89,4 +126,54 @@ public class MappingTest {
         Opetussuunnitelma ops = mapper.map(opsDto, Opetussuunnitelma.class);
         Assert.assertNotNull(ops);
     }
+
+    @Test
+    public void testPerusteLokalisointiTekstiMapping() {
+
+        PerusteenLokalisoituTekstiDto perusteenLokalisoituTekstiDto = new PerusteenLokalisoituTekstiDto(1l, UUID.randomUUID(), ImmutableMap.of(Kieli.FI, "teksti"));
+
+        LokalisoituTekstiDto lokalisoituTekstiDto = mapper.map(perusteenLokalisoituTekstiDto, LokalisoituTekstiDto.class);
+
+        assertThat(lokalisoituTekstiDto.getTekstit()).containsValues("teksti");
+        assertThat(lokalisoituTekstiDto.getId()).isNull();
+        assertThat(lokalisoituTekstiDto.getTunniste()).isNotNull();
+
+        LokalisoituTeksti lokalisoituTeksti = mapper.map(lokalisoituTekstiDto, LokalisoituTeksti.class);
+        assertThat(lokalisoituTeksti.getTeksti()).containsValues("teksti");
+        assertThat(lokalisoituTeksti.getId()).isNull();
+        assertThat(lokalisoituTeksti.getTunniste()).isNotNull();
+        assertThat(lokalisoituTeksti.getTunniste()).isNotEqualTo(perusteenLokalisoituTekstiDto.getTunniste());
+        assertThat(lokalisoituTeksti.getTunniste()).isNotEqualTo(lokalisoituTekstiDto.getTunniste());
+
+        Mockito.verifyZeroInteractions(repository);
+    }
+
+    @Test
+    public void testPerusteLokalisointiTekstiToLokalisoituTekstiMapping() {
+
+        PerusteenLokalisoituTekstiDto perusteenLokalisoituTekstiDto = new PerusteenLokalisoituTekstiDto(1l, UUID.randomUUID(), ImmutableMap.of(Kieli.FI, "teksti"));
+
+        LokalisoituTeksti lokalisoituTeksti = mapper.map(perusteenLokalisoituTekstiDto, LokalisoituTeksti.class);
+        assertThat(lokalisoituTeksti.getTeksti()).containsValues("teksti");
+        assertThat(lokalisoituTeksti.getId()).isNull();
+        assertThat(lokalisoituTeksti.getTunniste()).isNotNull();
+        assertThat(lokalisoituTeksti.getTunniste()).isNotEqualTo(perusteenLokalisoituTekstiDto.getTunniste());
+
+        Mockito.verifyZeroInteractions(repository);
+    }
+
+    @Test
+    public void testLokalisoituTekstiDtoMapping() {
+
+        LokalisoituTekstiDto lokalisoituTekstiDto = new LokalisoituTekstiDto(1l, UUID.randomUUID(), ImmutableMap.of(Kieli.FI, "teksti"));
+
+        LokalisoituTeksti lokalisoituTeksti = mapper.map(lokalisoituTekstiDto, LokalisoituTeksti.class);
+        assertThat(lokalisoituTeksti.getTeksti()).containsValues("teksti");
+        assertThat(lokalisoituTeksti.getId()).isNull();
+        assertThat(lokalisoituTeksti.getTunniste()).isNotNull();
+        assertThat(lokalisoituTeksti.getTunniste()).isNotEqualTo(lokalisoituTekstiDto.getTunniste());
+
+        Mockito.verify(repository, Mockito.times(1)).findOne(lokalisoituTekstiDto.getId());
+    }
+
 }
