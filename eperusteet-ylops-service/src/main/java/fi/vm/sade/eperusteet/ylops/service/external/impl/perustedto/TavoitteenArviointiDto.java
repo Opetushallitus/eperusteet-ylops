@@ -26,11 +26,11 @@ import lombok.Setter;
 @Setter
 public class TavoitteenArviointiDto implements ReferenceableDto {
     private Long id;
-    private LokalisoituTekstiDto arvioinninKohde;
-    private LokalisoituTekstiDto osaamisenKuvaus;
+    private PerusteenLokalisoituTekstiDto arvioinninKohde;
+    private PerusteenLokalisoituTekstiDto osaamisenKuvaus;
     private Integer arvosana;
 
-    public LokalisoituTekstiDto getHyvanOsaamisenKuvaus() {
+    public PerusteenLokalisoituTekstiDto getHyvanOsaamisenKuvaus() {
         if(arvosana == null || arvosana == 8) {
             return osaamisenKuvaus;
         }
