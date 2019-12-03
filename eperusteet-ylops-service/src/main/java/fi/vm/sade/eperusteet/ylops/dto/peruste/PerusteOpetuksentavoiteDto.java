@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
 import java.util.Set;
 import java.util.UUID;
 
@@ -45,4 +46,5 @@ public class PerusteOpetuksentavoiteDto implements ReferenceableDto {
     private Set<PerusteTavoitteenArviointiDto> arvioinninkohteet;
     private LokalisoituTekstiDto arvioinninKuvaus;
     private LokalisoituTekstiDto vapaaTeksti;
+    private LokalisoituTekstiDto tavoitteistaJohdetutOppimisenTavoitteet;
 }

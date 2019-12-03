@@ -95,6 +95,13 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
     private LokalisoituTeksti vapaaTeksti;
 
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Getter
+    @Setter
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
+    private LokalisoituTeksti tavoitteistaJohdetutOppimisenTavoitteet;
+
     public Set<Tavoitteenarviointi> getArvioinninkohteet() {
         return new HashSet<>(arvioinninkohteet);
     }
@@ -134,6 +141,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
         );
         ot.setVapaaTeksti(other.getVapaaTeksti());
         ot.setArvioinninKuvaus(other.getArvioinninKuvaus());
+        ot.setTavoitteistaJohdetutOppimisenTavoitteet(other.getTavoitteistaJohdetutOppimisenTavoitteet());
         return ot;
     }
 

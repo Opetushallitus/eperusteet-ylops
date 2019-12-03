@@ -24,7 +24,7 @@ ylopsApp
         };
 
         this.perusteFilter = (perusteet: any[]) => _.chain(perusteet)
-            .filter((peruste) => peruste.tila === "poistettu") // Poistettuja ei voi käyttää
+            .filter((peruste) => peruste.tila !== "poistettu") // Poistettuja ei voi käyttää
             .filter((peruste) => peruste.toteutus !== "lops2019") // lops2019 tuki vain uudessa työkalussa
             .value();
 

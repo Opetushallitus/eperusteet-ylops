@@ -40,5 +40,6 @@ public class OpetuksenTavoiteDto implements ReferenceableDto {
     private Set<OpetuksenKeskeinensisaltoalueDto> sisaltoalueet;
     private LokalisoituTekstiDto arvioinninKuvaus;
     private LokalisoituTekstiDto vapaaTeksti;
+    private LokalisoituTekstiDto tavoitteistaJohdetutOppimisenTavoitteet;
 
 }

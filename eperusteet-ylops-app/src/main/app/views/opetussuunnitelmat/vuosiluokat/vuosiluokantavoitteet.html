@@ -73,9 +73,9 @@
         </div>
       </div>
 
-      <div class="arviointi" ng-if="tavoiteMap[tunniste].tavoitteistaJohdetutOppimisenTavoitteet">
-          <h4 kaanna="'arviointi-vuosiluokan-paatteeksi'"></h4>
-          <p ng-bind="tavoiteMap[tunniste].tavoitteistaJohdetutOppimisenTavoitteet | kaanna"></p>
+      <div class="arviointi" ng-if="tavoiteMap[tunniste].$tavoitteistaJohdetutOppimisenTavoitteet">
+          <h4 kaanna="'tavoitteista-johdetut-oppimisen-tavoitteet'"></h4>
+          <span ng-bind-html="tavoiteMap[tunniste].$tavoitteistaJohdetutOppimisenTavoitteet | kaanna | unsafe"></span>
         </div>
 
       <div class="arviointi">

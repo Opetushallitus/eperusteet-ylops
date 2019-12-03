@@ -1002,6 +1002,18 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                     opst.setArvioinninkohteet(t.getArvioinninkohteet().stream()
                             .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getOsaamisenKuvaus()), new Integer(a.getArvosana())))
                             .collect(Collectors.toSet()));
+
+                    if(t.getArvioinninKuvaus() != null) {
+                        opst.setArvioinninKuvaus(LokalisoituTeksti.of(t.getArvioinninKuvaus().getTekstit()));
+                    }
+
+                    if(t.getVapaaTeksti() != null) {
+                        opst.setVapaaTeksti(LokalisoituTeksti.of(t.getVapaaTeksti().getTekstit()));
+                    }
+                    if(t.getTavoitteistaJohdetutOppimisenTavoitteet() != null) {
+                        opst.setTavoitteistaJohdetutOppimisenTavoitteet(LokalisoituTeksti.of(t.getTavoitteistaJohdetutOppimisenTavoitteet().getTekstit()));
+                    }
+
                     return opst;
                 })
                 .collect(Collectors.toList());
