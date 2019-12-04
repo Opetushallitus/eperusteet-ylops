@@ -87,6 +87,12 @@ $active-tab-bg: #e4e4e4;
         background-color: white;
         position: relative;
         border: $tavoite-border;
+
+        .vapaateksti {
+            font-size: 130%;
+            padding: 10px;
+        }
+
         .header {
             font-size: 130%;
             position: relative;

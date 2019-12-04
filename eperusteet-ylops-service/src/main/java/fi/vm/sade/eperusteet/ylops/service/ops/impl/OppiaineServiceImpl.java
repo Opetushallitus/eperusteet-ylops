@@ -1018,6 +1018,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 })
                 .collect(Collectors.toList());
         ov.setTavoitteet(tmp);
+
+        if(pvk.getVapaaTeksti() != null) {
+            ov.setVapaaTeksti(LokalisoituTeksti.of(pvk.getVapaaTeksti().getTekstit()));
+        }
     }
 
     private LokalisoituTeksti fromDto(LokalisoituTekstiDto dto) {

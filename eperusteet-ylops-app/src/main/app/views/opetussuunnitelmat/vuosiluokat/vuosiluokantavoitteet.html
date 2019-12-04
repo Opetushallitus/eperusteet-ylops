@@ -1,4 +1,10 @@
 <div class="tavoitteet" ng-if="!onValinnaiselle">
+  <div class="tavoite" ng-if="vuosiluokka.vapaaTeksti">
+    <div class="vapaateksti">
+      <p ng-bind-html="vuosiluokka.vapaaTeksti | kaanna"></p>
+    </div>
+  </div>
+
   <div class="tavoite" ng-repeat="tunniste in tunnisteet">
     <div class="header" ng-class="{kohdealueeton: !tavoiteMap[tunniste].$kohdealue}">
       <div class="kohdealue" ng-bind="tavoiteMap[tunniste].$kohdealue.nimi | kaanna"></div>

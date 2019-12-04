@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -45,6 +46,7 @@ public class PerusteOppiaineenVuosiluokkakokonaisuusDto implements Referenceable
     private PerusteTekstiOsaDto ohjaus;
     private PerusteTekstiOsaDto arviointi;
     private PerusteTekstiOsaDto sisaltoalueinfo;
+    private LokalisoituTekstiDto vapaaTeksti;
     private List<PerusteOpetuksentavoiteDto> tavoitteet;
     private List<PerusteKeskeinensisaltoalueDto> sisaltoalueet;
 

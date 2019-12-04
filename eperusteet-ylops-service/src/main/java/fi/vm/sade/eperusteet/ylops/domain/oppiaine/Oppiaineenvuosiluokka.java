@@ -18,6 +18,8 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +48,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 /**
  * @author jhyoty
@@ -78,6 +81,13 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity im
     @OrderColumn
     @BatchSize(size = 25)
     private List<Keskeinensisaltoalue> sisaltoalueet = new ArrayList<>();
+
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @Getter
+    @Setter
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
+    private LokalisoituTeksti vapaaTeksti;
 
     public Oppiaineenvuosiluokka() {
     }
@@ -131,6 +141,11 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity im
                 other.tavoitteet.stream()
                         .map(t -> Opetuksentavoite.copyOf(t, kohdealueet, sisaltoalueet))
                         .collect(Collectors.toList()));
+
+        if (other.getVapaaTeksti() != null) {
+            ovl.setVapaaTeksti(LokalisoituTeksti.of(other.getVapaaTeksti().getTeksti()));
+        }
+
         return ovl;
     }
 

@@ -193,6 +193,7 @@ ylopsApp
                     resolve();
                 });
             });
+
         $scope.vuosiluokka = vuosiluokkaSisalto;
         VuosiluokkaMapper.mapModel($scope);
         $scope.options = {
