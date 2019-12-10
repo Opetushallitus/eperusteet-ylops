@@ -47,6 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -262,11 +263,13 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         docBase.getOps().getOrganisaatiot().stream()
                 .map(org -> organisaatioService.getOrganisaatio(org))
                 .filter(node -> {
-                    JsonNode tyypit = node.get("tyypit");
-                    if (tyypit.isArray()) {
-                        for (JsonNode asd : tyypit) {
-                            if (asd.textValue().equals("Koulutustoimija")) {
-                                return true;
+                    if (node != null) {
+                        JsonNode tyypit = node.get("tyypit");
+                        if (tyypit != null && tyypit.isArray()) {
+                            for (JsonNode tyyppi : tyypit) {
+                                if (tyyppi != null && Objects.equals(tyyppi.textValue(), "Koulutustoimija")) {
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -278,9 +281,11 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 .filter(Objects::nonNull)
                 .map(JsonNode::asText)
                 .forEach(koulu -> {
-                    Element orgEl = docBase.getDocument().createElement("koulu");
-                    orgEl.setTextContent(koulu);
-                    organisaatiot.appendChild(orgEl);
+                    if (!ObjectUtils.isEmpty(koulu)) {
+                        Element orgEl = docBase.getDocument().createElement("koulu");
+                        orgEl.setTextContent(koulu);
+                        organisaatiot.appendChild(orgEl);
+                    }
                 });
 
         docBase.getHeadElement().appendChild(organisaatiot);
