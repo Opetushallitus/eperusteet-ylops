@@ -210,6 +210,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         byte[] pdf = pdfService.xhtml2pdf(doc, meta);
 
         // Validointi
+        /* EP-1979
         ValidationResult result = DokumenttiUtils.validatePdf(pdf);
         if (result.isValid()) {
             LOG.info("PDF (ops " + ops.getId() + ") is a valid PDF/A-1b file");
@@ -220,6 +221,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 LOG.warn(error.getErrorCode() + " : " + error.getDetails());
             }
         }
+        */
 
         return pdf;
     }
