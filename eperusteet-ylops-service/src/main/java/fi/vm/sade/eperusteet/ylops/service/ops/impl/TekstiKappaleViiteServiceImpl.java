@@ -145,7 +145,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public TekstiKappaleViiteDto updateTekstiKappaleViite(
             @P("opsId") Long opsId,
             Long viiteId,
-            TekstiKappaleViiteDto uusi) {
+            TekstiKappaleViiteDto uusi
+    ) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         // Nopea ratkaisu sisällön häviämiseen, korjaantuu oikein uuden näkymän avulla
         if (uusi.getTekstiKappale().getTeksti() == null) {

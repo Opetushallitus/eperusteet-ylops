@@ -156,7 +156,9 @@ public class EperusteetServiceImpl implements EperusteetService {
                     .filter(p -> p.getGlobalVersion() != null)
                     .forEach(p -> {
                         PerusteCache current = byId.get(p.getId());
-                        if (current == null || current.getAikaleima().compareTo(p.getGlobalVersion().getAikaleima()) < 0) {
+                        if (current == null
+                                || current.getAikaleima().compareTo(p.getGlobalVersion().getAikaleima()) < 0
+                                || !Objects.equals(current.getKoulutustyyppi(), p.getKoulutustyyppi())) {
                             getPerusteById(p.getId());
                         }
                     });
