@@ -359,6 +359,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             TekstiKappaleViite uusiViite = mapper.map(uusi, TekstiKappaleViite.class);
             uusiViite.getTekstiKappale().setValmis(false);
             uusiViite.getTekstiKappale().setTila(Tila.LUONNOS);
+            uusiViite.getLapset().clear();
             uusiViite.setTekstiKappale(tekstiKappaleRepository.save(uusiViite.getTekstiKappale()));
             viite = tekstikappaleviiteRepository.save(uusiViite);
             refs.add(viite);
