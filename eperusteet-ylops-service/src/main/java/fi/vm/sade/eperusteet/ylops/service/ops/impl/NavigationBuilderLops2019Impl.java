@@ -91,7 +91,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                         .map(oa -> mapOppiaine(oa, opintojaksotMap))
                         .collect(toList()))
                 .addAll(paikallisetOppiaineet.stream()
-                        .map(this::mapPaikallinenOppiaine)
+                        .map(poa -> mapPaikallinenOppiaine(poa, opintojaksotMap))
                         .collect(toList()));
     }
 
@@ -139,10 +139,26 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
     }
 
     private NavigationNodeDto mapPaikallinenOppiaine(
-            Lops2019PaikallinenOppiaineDto poa
+            Lops2019PaikallinenOppiaineDto poa,
+            Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap
     ) {
-        return NavigationNodeDto
-                .of(NavigationType.oppiaine, mapper.map(poa.getNimi(), LokalisoituTekstiDto.class), poa.getId())
-                .meta("koodi", mapper.map(poa.getKoodi(), KoodiDto.class));
+        NavigationNodeDto result = NavigationNodeDto
+                .of(NavigationType.poppiaine, mapper.map(poa.getNimi(), LokalisoituTekstiDto.class), poa.getId())
+                .meta("koodi", poa.getKoodi());
+
+        if (poa.getKoodi() != null
+                && opintojaksotMap.containsKey(poa.getKoodi())
+                && !ObjectUtils.isEmpty(opintojaksotMap.get(poa.getKoodi()))) {
+            Set<Lops2019OpintojaksoDto> poaOpintojaksot = opintojaksotMap.get(poa.getKoodi());
+            result.add(NavigationNodeDto.of(NavigationType.opintojaksot)
+                    .addAll(poaOpintojaksot.stream()
+                            .map(ojPoa -> NavigationNodeDto.of(
+                                    NavigationType.opintojakso,
+                                    mapper.map(ojPoa.getNimi(), LokalisoituTekstiDto.class),
+                                    ojPoa.getId())
+                                    .meta("koodi", ojPoa.getKoodi()))));
+        }
+
+        return result;
     }
 }

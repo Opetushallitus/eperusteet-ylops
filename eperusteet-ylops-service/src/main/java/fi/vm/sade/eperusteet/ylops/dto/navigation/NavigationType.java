@@ -6,7 +6,7 @@ public enum NavigationType {
     viite,
     liitteet, liite,
     laajaalaiset, laajaalainen,
-    oppiaineet, oppimaarat, oppiaine,
+    oppiaineet, oppimaarat, oppiaine, poppiaine,
     moduulit, moduuli,
     opintojaksot, opintojakso
 }
