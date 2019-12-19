@@ -49,6 +49,9 @@ ylopsApp
                         var viiteId: any = jqEl.attr("data-viite");
 
                         KasitteetService.getWithAvain($stateParams.id, viiteId).then(function(res) {
+                            if (res.termi === undefined && res.selitys === undefined) {
+                                return;
+                            }
                             var popover = jqEl
                                 .popover({
                                     placement: "auto",
