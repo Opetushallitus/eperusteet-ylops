@@ -16,7 +16,7 @@
             <h5>{{ valittu.nimi | kaanna }} <a class="pull-right" ng-click="poista(valittu)" icon-role="remove"></a></h5>
           </div>
           <div ng-show="$vaihtoehdot.length !== 0">
-            <select class="form-control" ng-model="$valittu" ng-click="valitse($valittu)"
+            <select class="form-control" ng-model="$valittu" ng-change="valitse($valittu)"
                     ng-options="(om.nimi || 'muu-uskonto' | kaanna) for om in $kaikki track by om.id"></select>
           </div>
         </div>
