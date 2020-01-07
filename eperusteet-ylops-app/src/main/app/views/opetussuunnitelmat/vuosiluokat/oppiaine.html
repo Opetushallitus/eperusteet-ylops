@@ -11,7 +11,7 @@
     <versiotiedot></versiotiedot>
 </div>
 
-<div ng-hide="options.editing" ng-if="oppiaine.tyyppi === 'yhteinen' || !oppiaine.oma" class="action-buttons-inline">
+<div ng-hide="options.editing" ng-if="(oppiaine.tyyppi !== 'yhteinen' || !oppiaine.oma || ($itseKieliTaiUskonto && !oppiaine.$parent))" class="action-buttons-inline">
     <span class="lukko-wrapper">
         <lukko ng-if="lukkotiedot.lukittu" tip="lukkotiedot.tip" size="small"></lukko>
     </span>

@@ -203,7 +203,7 @@ ylopsApp
             !_.some(["AI", "VK", "TK", "KT"], koodi => koodi === oppiaine.koodiArvo) &&
             !!(
                 _.some(["AI", "VK", "TK", "KT"], koodi => _.startsWith(oppiaine.koodiArvo, koodi)) ||
-                oppiaine.koodiArvo.match(/^((RU)[AB])\d+/g)
+                oppiaine.koodiArvo.match(/^(RU|A|B)\d+/g)
             );
 
         $scope.$itseKieliTaiUskonto = oppimaaraUskontoTaiKieli($scope.oppiaine);
