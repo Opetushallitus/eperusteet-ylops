@@ -1,0 +1,1 @@
+alter table tekstikappaleviite_aud alter column nayta_pohjan_teksti drop not null;
