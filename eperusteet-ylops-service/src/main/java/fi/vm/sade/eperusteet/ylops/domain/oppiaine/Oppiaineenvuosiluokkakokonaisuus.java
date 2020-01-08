@@ -151,6 +151,7 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
         ovk.setOhjaus(Tekstiosa.copyOf(other.getOhjaus()));
         ovk.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
         ovk.setTyotavat(Tekstiosa.copyOf(other.getTyotavat()));
+        ovk.setJnro(other.getJnro());
 
         other.getVuosiluokat().forEach(vl -> ovk.addVuosiluokka(Oppiaineenvuosiluokka.copyOf(vl, kohdealueet)));
 

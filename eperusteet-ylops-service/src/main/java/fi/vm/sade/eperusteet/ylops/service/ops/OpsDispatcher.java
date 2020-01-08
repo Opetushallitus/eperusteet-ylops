@@ -19,7 +19,6 @@ import java.util.Set;
 @Transactional
 public class OpsDispatcher {
 
-
     @Autowired
     private OpetussuunnitelmaRepository opsRepository;
 

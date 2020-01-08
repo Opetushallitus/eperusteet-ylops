@@ -67,6 +67,10 @@ public class OpsOppiaine implements Serializable {
     }
 
     public static ConstructedCopier<OpsOppiaine> copier(ConstructedCopier<Oppiaine> oppiaineCopier, boolean oma) {
-        return oa -> new OpsOppiaine(oppiaineCopier.copy(oa.getOppiaine()), oma);
+        return oa -> {
+            OpsOppiaine uusi = new OpsOppiaine(oppiaineCopier.copy(oa.getOppiaine()), oma);
+            uusi.setJnro(oa.getJnro());
+            return uusi;
+        };
     }
 }
