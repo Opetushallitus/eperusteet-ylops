@@ -15,6 +15,8 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtumaAuditointitiedoilla;
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
@@ -23,6 +25,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -34,6 +37,7 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockManager;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsFeaturesFactory;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategy;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
@@ -81,6 +85,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Autowired
     private LockManager lockMgr;
+
+    @Autowired
+    private MuokkaustietoService muokkaustietoService;
 
     @Override
     public <T> T getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId, Class<T> t) {
@@ -137,6 +144,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         }
 
         tekstikappaleviiteRepository.flush();
+
+
+        muokkaustietoService.addOpsMuokkausTieto(rootId, uusiViite, MuokkausTapahtuma.LUONTI);
         return mapper.map(uusiViite, TekstiKappaleViiteDto.Matala.class);
     }
 
@@ -161,6 +171,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.setNaytaPohjanTeksti(uusi.isNaytaPohjanTeksti());
         viite.setLiite(uusi.isLiite());
         viite = tekstikappaleviiteRepository.save(viite);
+        muokkaustietoService.addOpsMuokkausTieto(opsId, viite, MuokkausTapahtuma.PAIVITYS);
         return mapper.map(viite, TekstiKappaleViiteDto.class);
     }
 
@@ -183,6 +194,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         TekstiKappaleViite parent = viite.getVanhempi();
         clearChildren(viite, refs);
         updateTraverse(opsId, parent, uusi, refs);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(ops), MuokkausTapahtuma.PAIVITYS, NavigationType.opetussuunnitelma_rakenne);
     }
 
 

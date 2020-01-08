@@ -8,5 +8,8 @@ public enum NavigationType {
     laajaalaiset, laajaalainen,
     oppiaineet, oppimaarat, oppiaine, poppiaine,
     moduulit, moduuli,
-    opintojaksot, opintojakso
+    opintojaksot, opintojakso,
+    opetussuunnitelma,
+    opetussuunnitelma_rakenne,
+    termi
 }

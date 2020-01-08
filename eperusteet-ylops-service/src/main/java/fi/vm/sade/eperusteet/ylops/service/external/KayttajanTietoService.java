@@ -53,4 +53,5 @@ public interface KayttajanTietoService {
 
     @PreAuthorize("isAuthenticated()")
     EtusivuDto haeKayttajanEtusivu();
+
 }

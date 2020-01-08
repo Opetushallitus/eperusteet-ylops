@@ -18,12 +18,14 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
+import fi.vm.sade.eperusteet.utils.client.OphClientHelper;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
 import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
+import fi.vm.sade.eperusteet.ylops.service.external.KayttajaClient;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 
@@ -116,48 +118,6 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
         result.setPohjatKeskeneraiset(opetussuunnitelmaService.getAmount(Tyyppi.POHJA, Sets.newHashSet(Tila.LUONNOS)));
         result.setPohjatJulkaistut(opetussuunnitelmaService.getAmount(Tyyppi.POHJA, Sets.newHashSet(Tila.VALMIS)));
         return result;
-    }
-
-    @Component
-    public static class KayttajaClient {
-
-        @Autowired
-        private RestClientFactory restClientFactory;
-
-        @Value("${cas.service.oppijanumerorekisteri-service:''}")
-        private String onrServiceUrl;
-
-        private static final String HENKILO_API = "/henkilo/";
-        private final ObjectMapper mapper = new ObjectMapper();
-
-        @Cacheable("kayttajat")
-        public KayttajanTietoDto hae(String oid) {
-            OphHttpClient client = restClientFactory.get(onrServiceUrl, true);
-            String url = onrServiceUrl + HENKILO_API + oid;
-
-            OphHttpRequest request = OphHttpRequest.Builder
-                    .get(url)
-                    .build();
-
-            try {
-                return client.<KayttajanTietoDto>execute(request)
-                        .handleErrorStatus(SC_UNAUTHORIZED, SC_FORBIDDEN)
-                        .with((res) -> Optional.of(new KayttajanTietoDto(oid)))
-                        .expectedStatus(SC_OK)
-                        .mapWith(text -> {
-                            try {
-                                JsonNode json = mapper.readTree(text);
-                                return parsiKayttaja(json);
-                            } catch (IOException e) {
-                                return new KayttajanTietoDto(oid);
-                            }
-                        })
-                        .orElse(new KayttajanTietoDto(oid));
-            }
-            catch (RuntimeException ex) {
-                return new KayttajanTietoDto(oid);
-            }
-        }
     }
 
     @Override

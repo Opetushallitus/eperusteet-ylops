@@ -1,0 +1,84 @@
+package fi.vm.sade.eperusteet.ylops.service.ops.impl;
+
+import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustieto;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
+import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
+import fi.vm.sade.eperusteet.ylops.repository.ops.MuokkaustietoRepository;
+import fi.vm.sade.eperusteet.ylops.service.external.KayttajaClient;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+@Slf4j
+public class MuokkaustietoServiceImpl implements MuokkaustietoService {
+
+    @Autowired
+    private MuokkaustietoRepository muokkausTietoRepository;
+
+    @Autowired
+    private KayttajaClient kayttajaClient;
+
+    @Autowired
+    private DtoMapper mapper;
+
+    @Override
+    public List<MuokkaustietoKayttajallaDto> getOpsMuokkausTietos(Long opsId, Date viimeisinLuontiaika, int lukumaara) {
+
+        List<MuokkaustietoKayttajallaDto> muokkaustiedot = mapper
+                .mapAsList(muokkausTietoRepository.findTop10ByOpetussuunnitelmaIdAndLuotuBeforeOrderByLuotuDesc(opsId, viimeisinLuontiaika, lukumaara),  MuokkaustietoKayttajallaDto.class);
+
+        Map<String, KayttajanTietoDto> kayttajatiedot = kayttajaClient
+                .haeKayttajatiedot(muokkaustiedot.stream().map(MuokkaustietoKayttajallaDto::getMuokkaaja).collect(Collectors.toList()))
+                .stream().collect(Collectors.toMap(kayttajanTieto -> kayttajanTieto.getOidHenkilo(), kayttajanTieto -> kayttajanTieto));
+
+        muokkaustiedot.forEach(muokkaustieto -> muokkaustieto.setKayttajanTieto(kayttajatiedot.get(muokkaustieto.getMuokkaaja())));
+
+        return muokkaustiedot;
+    }
+
+    @Override
+    public void addOpsMuokkausTieto(Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma) {
+        addOpsMuokkausTieto(opsId, historiaTapahtuma, muokkausTapahtuma, historiaTapahtuma.getNavigationType(), null);
+    }
+
+    @Override
+    public void addOpsMuokkausTieto(Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma, String lisatieto) {
+        addOpsMuokkausTieto(opsId, historiaTapahtuma, muokkausTapahtuma, historiaTapahtuma.getNavigationType(), lisatieto);
+    }
+
+    @Override
+    public void addOpsMuokkausTieto(Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma, NavigationType navigationType) {
+        addOpsMuokkausTieto(opsId, historiaTapahtuma, muokkausTapahtuma, navigationType, null);
+    }
+
+    @Override
+    public void addOpsMuokkausTieto(Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma, NavigationType navigationType, String lisatieto) {
+        try {
+            OpetussuunnitelmanMuokkaustieto muokkaustieto = OpetussuunnitelmanMuokkaustieto.builder()
+                    .opetussuunnitelmaId(opsId)
+                    .nimi(historiaTapahtuma.getNimi())
+                    .tapahtuma(muokkausTapahtuma)
+                    .muokkaaja(SecurityUtil.getAuthenticatedPrincipal().getName())
+                    .kohde(navigationType)
+                    .kohdeId(historiaTapahtuma.getId())
+                    .luotu(historiaTapahtuma.getMuokattu())
+                    .lisatieto(lisatieto)
+                    .build();
+
+            muokkausTietoRepository.save(muokkaustieto);
+        } catch(RuntimeException e) {
+            log.error("Historiatiedon lisääminen epäonnistui", e);
+        }
+    }
+}

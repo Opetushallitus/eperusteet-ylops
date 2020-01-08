@@ -15,11 +15,14 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
+import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -49,7 +52,7 @@ import org.hibernate.envers.Audited;
                 + "from tekstikappaleviite tv, vanhemmat v where tv.id = v.vanhempi_id) "
                 + "select id from vanhemmat where vanhempi_id is null"
 )
-public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
+public class TekstiKappaleViite implements ReferenceableEntity, Serializable, HistoriaTapahtuma {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -192,5 +195,35 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable {
         if (this.perusteTekstikappaleId == null) {
             this.perusteTekstikappaleId = perusteTekstikappaleId;
         }
+    }
+
+    @Override
+    public Date getLuotu() {
+        return tekstiKappale.getLuotu();
+    }
+
+    @Override
+    public Date getMuokattu() {
+        return tekstiKappale.getMuokattu();
+    }
+
+    @Override
+    public String getLuoja() {
+        return tekstiKappale.getLuoja();
+    }
+
+    @Override
+    public String getMuokkaaja() {
+        return tekstiKappale.getMuokkaaja();
+    }
+
+    @Override
+    public LokalisoituTeksti getNimi() {
+        return tekstiKappale.getNimi();
+    }
+
+    @Override
+    public NavigationType getNavigationType() {
+        return NavigationType.viite;
     }
 }

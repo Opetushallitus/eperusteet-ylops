@@ -13,7 +13,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hibernate.version>4.3.9.Final</hibernate.version>
-        <spring.version>4.3.12.RELEASE</spring.version>
+        <spring.version>4.3.23.RELEASE</spring.version>
         <logback.version>1.2.3</logback.version>
         <spring.security.version>4.2.13.RELEASE</spring.security.version>
         <spring.data.jpa.version>1.11.22.RELEASE</spring.data.jpa.version>
@@ -36,7 +36,7 @@
         <flyway.version>5.2.4</flyway.version>
         <metrics.version>4.0.2</metrics.version>
         <apache.httpclient.version>4.5.3</apache.httpclient.version>
-        <eperusteet.backendutils.version>2.2-SNAPSHOT</eperusteet.backendutils.version>
+        <eperusteet.backendutils.version>2.3-SNAPSHOT</eperusteet.backendutils.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -606,21 +606,22 @@
                                     </schemes>
                                     <basePath>/api</basePath>
                                     <locations>
-                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmaController</location>
-                                        <location>${eperusteet.resources}.ops.KommenttiController</location>
-                                        <location>${eperusteet.resources}.ops.LiitetiedostoController</location>
-                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmaJulkisetController</location>
-                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmanSisaltoController</location>
-                                        <location>${eperusteet.resources}.lops2019.Lops2019PerusteController</location>
+                                        <location>${eperusteet.resources}.dokumentti.*</location>
+                                        <location>${eperusteet.resources}.external.*</location>
+                                        <location>${eperusteet.resources}.lops2019.Lops2019Controller</location>
                                         <location>${eperusteet.resources}.lops2019.Lops2019OpintojaksoController</location>
                                         <location>${eperusteet.resources}.lops2019.Lops2019OppiaineController</location>
-                                        <location>${eperusteet.resources}.lops2019.Lops2019Controller</location>
-                                        <location>${eperusteet.resources}.ops.TermistoController</location>
+                                        <location>${eperusteet.resources}.lops2019.Lops2019PerusteController</location>
                                         <location>${eperusteet.resources}.ohje.*</location>
+                                        <location>${eperusteet.resources}.ops.KommenttiController</location>
+                                        <location>${eperusteet.resources}.ops.LiitetiedostoController</location>
+                                        <location>${eperusteet.resources}.ops.MuokkausietoController</location>
+                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmaJulkisetController</location>
+                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmanSisaltoController</location>
+                                        <location>${eperusteet.resources}.ops.TermistoController</location>
                                         <location>${eperusteet.resources}.ukk.*</location>
-                                        <location>${eperusteet.resources}.external.*</location>
-                                        <location>${eperusteet.resources}.dokumentti.*</location>
                                         <location>${eperusteet.resources}.util.KayttajaController</location>
+                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmaController</location>
                                     </locations>
                                     <modelSubstitute>/substitutes.map</modelSubstitute>
                                     <info>

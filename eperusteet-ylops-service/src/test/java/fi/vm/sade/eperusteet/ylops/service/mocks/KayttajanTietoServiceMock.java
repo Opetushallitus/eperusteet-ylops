@@ -72,4 +72,5 @@ public class KayttajanTietoServiceMock implements KayttajanTietoService {
     public EtusivuDto haeKayttajanEtusivu() {
         return null;
     }
+
 }

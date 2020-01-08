@@ -85,6 +85,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 
 import org.apache.commons.lang.StringUtils;
+import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -172,6 +173,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @PersistenceContext
     private EntityManager em;
 
+    @Autowired
+    private MuokkaustietoService muokkaustietoService;
 
     private List<Opetussuunnitelma> findByQuery(OpetussuunnitelmaQuery pquery) {
         CriteriaQuery<Opetussuunnitelma> query = getQuery(pquery);
@@ -1220,6 +1223,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         mapper.map(opetussuunnitelmaDto, ops);
         ops = repository.save(ops);
 
+        muokkaustietoService.addOpsMuokkausTieto(ops.getId(), ops, MuokkausTapahtuma.PAIVITYS);
+
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
@@ -1461,6 +1466,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
             ops.setTila(tila);
             ops = repository.save(ops);
+
+            muokkaustietoService.addOpsMuokkausTieto(id, ops, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-tila-"+tila);
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);

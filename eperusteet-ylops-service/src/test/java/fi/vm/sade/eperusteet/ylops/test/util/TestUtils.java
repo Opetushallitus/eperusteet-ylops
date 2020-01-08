@@ -15,15 +15,18 @@
  */
 package fi.vm.sade.eperusteet.ylops.test.util;
 
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenTavoiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -105,6 +108,7 @@ public abstract class TestUtils {
         ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
         ops.setTila(Tila.LUONNOS);
         ops.setTyyppi(Tyyppi.OPS);
+        ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
         KoodistoDto kunta = new KoodistoDto();
         kunta.setKoodiUri("kunta_837");
         ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
@@ -112,6 +116,16 @@ public abstract class TestUtils {
         kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
         kouluDto.setOid("1.2.15252345624572462");
         ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+        return ops;
+    }
+
+    public static OpetussuunnitelmaLuontiDto createOpsPohja() {
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTyyppi(Tyyppi.POHJA);
+        ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
         return ops;
     }
 

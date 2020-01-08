@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
@@ -18,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +65,9 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     @Autowired
     private EntityManager em;
+
+    @Autowired
+    private MuokkaustietoService muokkaustietoService;
 
     private Opetussuunnitelma getOpetussuunnitelma(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
@@ -191,6 +196,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         ops.getLops2019().addOpintojakso(opintojakso);
         Lops2019OpintojaksoDto result = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
         result.setLaajuus(getOpintojaksonLaajuus(opsId, result));
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, opintojakso, MuokkausTapahtuma.LUONTI);
         return result;
     }
 
@@ -202,6 +209,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         opintojakso = opintojaksoRepository.save(opintojakso);
         Lops2019OpintojaksoDto result = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
         result.setLaajuus(getOpintojaksonLaajuus(opsId, result));
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, opintojakso, MuokkausTapahtuma.PAIVITYS);
         return result;
     }
 
@@ -217,6 +226,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         poistettu.setTyyppi(PoistetunTyyppi.OPINTOJAKSO);
         poistetutRepository.save(poistettu);
         ops.getLops2019().getOpintojaksot().remove(opintojakso);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, opintojakso, MuokkausTapahtuma.POISTO);
     }
 
     @Override

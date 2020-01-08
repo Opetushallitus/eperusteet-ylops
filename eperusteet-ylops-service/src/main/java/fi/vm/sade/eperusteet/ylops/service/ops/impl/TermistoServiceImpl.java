@@ -16,6 +16,10 @@
 
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtumaAuditointitiedoilla;
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
+import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.Termi;
@@ -47,6 +51,9 @@ public class TermistoServiceImpl implements TermistoService {
 
     @Autowired
     OpetussuunnitelmaRepository opsit;
+
+    @Autowired
+    private MuokkaustietoService muokkaustietoService;
 
     @Override
     @Transactional(readOnly = true)
@@ -83,6 +90,8 @@ public class TermistoServiceImpl implements TermistoService {
         Termi tmp = mapper.map(dto, Termi.class);
         tmp.setOps(ops);
         tmp = termisto.save(tmp);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(ops.getId(), tmp.getTermi(), NavigationType.termi), MuokkausTapahtuma.LUONTI);
         return mapper.map(tmp, TermiDto.class);
     }
 
@@ -94,6 +103,8 @@ public class TermistoServiceImpl implements TermistoService {
         assertExists(current, "Päivitettävää tietoa ei ole olemassa");
         mapper.map(dto, current);
         termisto.save(current);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(ops.getId(), current.getTermi(), NavigationType.termi), MuokkausTapahtuma.PAIVITYS);
         return mapper.map(current, TermiDto.class);
     }
 
@@ -101,6 +112,8 @@ public class TermistoServiceImpl implements TermistoService {
     public void deleteTermi(Long opsId, Long id) {
         Termi termi = termisto.findOne(id);
         termisto.delete(termi);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(opsId, termi.getTermi(), NavigationType.termi), MuokkausTapahtuma.POISTO);
     }
 
     private static void assertExists(Object o, String msg) {

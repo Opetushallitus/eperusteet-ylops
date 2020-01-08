@@ -16,9 +16,11 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
+import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -46,7 +48,7 @@ import javax.persistence.Column;
 @Table(name = "tekstikappale")
 @Audited
 public class TekstiKappale extends AbstractAuditedEntity
-        implements Serializable, ReferenceableEntity {
+        implements Serializable, ReferenceableEntity, HistoriaTapahtuma {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -111,5 +113,11 @@ public class TekstiKappale extends AbstractAuditedEntity
     private void copyState(TekstiKappale other) {
         this.setNimi(other.getNimi());
         this.setTeksti(other.getTeksti());
+    }
+
+
+    @Override
+    public NavigationType getNavigationType() {
+        return NavigationType.viite;
     }
 }

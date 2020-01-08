@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
@@ -14,6 +15,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,6 +66,9 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     @Autowired
     private EntityManager em;
 
+    @Autowired
+    private MuokkaustietoService muokkaustietoService;
+
     private Opetussuunnitelma getOpetussuunnitelma(@P("opsId") Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         if (ops == null) {
@@ -100,6 +105,8 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         oppiaine.setId(null);
         oppiaine.setSisalto(opetussuunnitelma.getLops2019());
         oppiaine = oppiaineRepository.save(oppiaine);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.LUONTI);
         return mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
     }
 
@@ -118,6 +125,7 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
             }
         }
 
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.PAIVITYS);
         return mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
     }
 
@@ -133,6 +141,8 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         poistettu.setTyyppi(PoistetunTyyppi.LOPS2019OPPIAINE);
         poistetutRepository.save(poistettu);
         oppiaineRepository.delete(oppiaine);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
     }
 
     @Override

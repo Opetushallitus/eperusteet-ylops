@@ -32,6 +32,8 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
+
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import java.io.Serializable;
 import java.util.*;
 import static java.util.Comparator.comparing;
@@ -59,7 +61,7 @@ import org.springframework.util.StringUtils;
 @Audited
 @Table(name = "opetussuunnitelma")
 public class Opetussuunnitelma extends AbstractAuditedEntity
-        implements Serializable, ReferenceableEntity, Validable, OpsIdentifiable, Identifiable {
+        implements Serializable, ReferenceableEntity, Validable, OpsIdentifiable, Identifiable, HistoriaTapahtuma {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Getter
@@ -379,5 +381,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Override
     public ValidationCategory category() {
         return ValidationCategory.OPETUSSUUNNITELMA;
+    }
+
+    @Override
+    public NavigationType getNavigationType() {
+        return NavigationType.opetussuunnitelma;
     }
 }
