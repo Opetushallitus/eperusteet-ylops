@@ -12,6 +12,6 @@ public interface MuokkaustietoRepository extends JpaRepository<Opetussuunnitelma
     List<OpetussuunnitelmanMuokkaustieto> findByOpetussuunnitelmaIdAndLuotuBeforeOrderByLuotuDesc(Long opsId, Date viimeisinLuontiaika, Pageable pageable);
 
     default List<OpetussuunnitelmanMuokkaustieto> findTop10ByOpetussuunnitelmaIdAndLuotuBeforeOrderByLuotuDesc(Long opsId, Date viimeisinLuontiaika, int lukumaara) {
-        return findByOpetussuunnitelmaIdAndLuotuBeforeOrderByLuotuDesc(opsId, viimeisinLuontiaika, new PageRequest(0, lukumaara));
+        return findByOpetussuunnitelmaIdAndLuotuBeforeOrderByLuotuDesc(opsId, viimeisinLuontiaika, new PageRequest(0, Math.min(lukumaara, 100)));
     }
 }
