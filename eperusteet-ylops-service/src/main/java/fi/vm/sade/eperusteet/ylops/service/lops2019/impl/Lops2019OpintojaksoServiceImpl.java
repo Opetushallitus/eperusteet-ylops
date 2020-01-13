@@ -19,7 +19,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +67,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     private EntityManager em;
 
     @Autowired
-    private MuokkaustietoService muokkaustietoService;
+    private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     private Opetussuunnitelma getOpetussuunnitelma(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);

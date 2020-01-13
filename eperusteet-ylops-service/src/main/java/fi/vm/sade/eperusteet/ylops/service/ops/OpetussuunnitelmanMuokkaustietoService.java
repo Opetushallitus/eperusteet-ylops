@@ -10,7 +10,7 @@ import java.util.Set;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
-public interface MuokkaustietoService {
+public interface OpetussuunnitelmanMuokkaustietoService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<MuokkaustietoKayttajallaDto> getOpsMuokkausTietos(@P("opsId") Long opsId, Date viimeisinLuontiaika, int lukumaara);

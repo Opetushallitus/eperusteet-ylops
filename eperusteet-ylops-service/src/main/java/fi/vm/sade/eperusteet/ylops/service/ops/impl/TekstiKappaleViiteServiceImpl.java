@@ -37,7 +37,7 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockManager;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsFeaturesFactory;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategy;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
@@ -87,7 +87,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     private LockManager lockMgr;
 
     @Autowired
-    private MuokkaustietoService muokkaustietoService;
+    private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     @Override
     public <T> T getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId, Class<T> t) {

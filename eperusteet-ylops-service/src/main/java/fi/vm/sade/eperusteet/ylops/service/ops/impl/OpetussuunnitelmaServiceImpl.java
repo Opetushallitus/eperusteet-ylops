@@ -85,7 +85,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 
 import org.apache.commons.lang.StringUtils;
-import org.mockito.internal.util.collections.Sets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -174,7 +173,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private EntityManager em;
 
     @Autowired
-    private MuokkaustietoService muokkaustietoService;
+    private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     private List<Opetussuunnitelma> findByQuery(OpetussuunnitelmaQuery pquery) {
         CriteriaQuery<Opetussuunnitelma> query = getQuery(pquery);

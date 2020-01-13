@@ -32,7 +32,7 @@ public class MuokkaustietoServiceIT extends AbstractIntegrationTest {
     private final Date MUOKKAUS_AIKA = new Date();
 
     @Autowired
-    MuokkaustietoService service;
+    OpetussuunnitelmanMuokkaustietoService service;
 
     @Autowired
     OpetussuunnitelmaService opetussuunnitelmaService;

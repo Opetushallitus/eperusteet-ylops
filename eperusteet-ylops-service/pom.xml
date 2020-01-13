@@ -615,7 +615,8 @@
                                         <location>${eperusteet.resources}.ohje.*</location>
                                         <location>${eperusteet.resources}.ops.KommenttiController</location>
                                         <location>${eperusteet.resources}.ops.LiitetiedostoController</location>
-                                        <location>${eperusteet.resources}.ops.MuokkausietoController</location>
+                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmanAikatauluController</location>
+                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmanMuokkausietoController</location>
                                         <location>${eperusteet.resources}.ops.OpetussuunnitelmaJulkisetController</location>
                                         <location>${eperusteet.resources}.ops.OpetussuunnitelmanSisaltoController</location>
                                         <location>${eperusteet.resources}.ops.TermistoController</location>

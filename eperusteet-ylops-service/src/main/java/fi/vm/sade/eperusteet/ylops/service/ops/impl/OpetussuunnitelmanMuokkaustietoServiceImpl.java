@@ -6,10 +6,10 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustieto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
-import fi.vm.sade.eperusteet.ylops.repository.ops.MuokkaustietoRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmanMuokkaustietoRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajaClient;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import java.util.Date;
 import java.util.List;
@@ -21,10 +21,10 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
-public class MuokkaustietoServiceImpl implements MuokkaustietoService {
+public class OpetussuunnitelmanMuokkaustietoServiceImpl implements OpetussuunnitelmanMuokkaustietoService {
 
     @Autowired
-    private MuokkaustietoRepository muokkausTietoRepository;
+    private OpetussuunnitelmanMuokkaustietoRepository muokkausTietoRepository;
 
     @Autowired
     private KayttajaClient kayttajaClient;

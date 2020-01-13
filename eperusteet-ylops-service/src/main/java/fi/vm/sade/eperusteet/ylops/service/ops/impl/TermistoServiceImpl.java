@@ -19,7 +19,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtumaAuditointitiedoilla;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.Termi;
@@ -53,7 +53,7 @@ public class TermistoServiceImpl implements TermistoService {
     OpetussuunnitelmaRepository opsit;
 
     @Autowired
-    private MuokkaustietoService muokkaustietoService;
+    private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     @Override
     @Transactional(readOnly = true)

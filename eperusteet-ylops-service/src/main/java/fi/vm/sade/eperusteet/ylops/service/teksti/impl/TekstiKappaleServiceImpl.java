@@ -26,7 +26,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.PoistettuTekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,7 +54,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     private PoistettuTekstiKappaleRepository poistettuTekstiKappaleRepository;
 
     @Autowired
-    private MuokkaustietoService muokkaustietoService;
+    private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     @Override
     @Transactional(readOnly = true)

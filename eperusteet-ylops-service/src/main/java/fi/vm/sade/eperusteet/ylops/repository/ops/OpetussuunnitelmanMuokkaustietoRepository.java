@@ -6,8 +6,10 @@ import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-public interface MuokkaustietoRepository extends JpaRepository<OpetussuunnitelmanMuokkaustieto, Long> {
+@Repository
+public interface OpetussuunnitelmanMuokkaustietoRepository extends JpaRepository<OpetussuunnitelmanMuokkaustieto, Long> {
 
     List<OpetussuunnitelmanMuokkaustieto> findByOpetussuunnitelmaIdAndLuotuBeforeOrderByLuotuDesc(Long opsId, Date viimeisinLuontiaika, Pageable pageable);
 

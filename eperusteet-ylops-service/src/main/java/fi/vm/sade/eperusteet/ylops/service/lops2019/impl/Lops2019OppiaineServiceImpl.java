@@ -19,7 +19,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import java.util.List;
@@ -69,7 +69,7 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     private EntityManager em;
 
     @Autowired
-    private MuokkaustietoService muokkaustietoService;
+    private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     private Opetussuunnitelma getOpetussuunnitelma(@P("opsId") Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
