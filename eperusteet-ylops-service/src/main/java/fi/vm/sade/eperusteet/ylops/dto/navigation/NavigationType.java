@@ -11,5 +11,6 @@ public enum NavigationType {
     opintojaksot, opintojakso,
     opetussuunnitelma,
     opetussuunnitelma_rakenne,
-    termi
+    termi,
+    kommentti
 }

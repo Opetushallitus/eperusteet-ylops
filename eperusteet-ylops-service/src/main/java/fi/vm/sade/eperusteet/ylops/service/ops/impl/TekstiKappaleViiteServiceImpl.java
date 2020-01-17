@@ -223,6 +223,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             TekstiKappale tekstiKappale = viite.getTekstiKappale();
             tekstiKappaleService.removeTekstiKappaleFromOps(tekstiKappale.getId(), opsId);
         }
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
+
         viite.setTekstiKappale(null);
         viite.getVanhempi().getLapset().remove(viite);
         viite.setVanhempi(null);
