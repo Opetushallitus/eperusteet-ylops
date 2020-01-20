@@ -1,0 +1,2 @@
+CREATE INDEX opetussuunnitelman_muokkaustieto_luotu_index on opetussuunnitelman_muokkaustieto (luotu);
+CREATE INDEX opetussuunnitelman_opetussuunnitelma_id_index on opetussuunnitelman_muokkaustieto (opetussuunnitelma_id);

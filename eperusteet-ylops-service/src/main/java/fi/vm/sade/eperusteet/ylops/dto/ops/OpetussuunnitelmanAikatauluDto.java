@@ -21,6 +21,4 @@ public class OpetussuunnitelmanAikatauluDto {
     private LokalisoituTekstiDto tavoite;
     private AikatauluTapahtuma tapahtuma;
     private Date tapahtumapaiva;
-    private Date luotu;
-    private String luoja;
 }

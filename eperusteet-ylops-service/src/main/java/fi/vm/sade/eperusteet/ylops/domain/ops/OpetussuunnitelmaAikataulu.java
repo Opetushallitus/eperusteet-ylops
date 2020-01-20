@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
 import fi.vm.sade.eperusteet.ylops.domain.AikatauluTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
@@ -26,15 +27,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 @Getter
 @Setter
 @Entity
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Audited
 @Table(name = "opetussuunnitelman_aikataulu")
-public class OpetussuunnitelmaAikataulu implements Serializable {
+public class OpetussuunnitelmaAikataulu extends AbstractAuditedEntity {
 
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Id
@@ -44,6 +47,7 @@ public class OpetussuunnitelmaAikataulu implements Serializable {
     @Column(name = "opetussuunnitelma_id")
     private Long opetussuunnitelmaId;
 
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private LokalisoituTeksti tavoite;
@@ -56,10 +60,4 @@ public class OpetussuunnitelmaAikataulu implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date tapahtumapaiva;
 
-    @Column(updatable = false)
-    private String luoja;
-
-    @Column(updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date luotu;
 }

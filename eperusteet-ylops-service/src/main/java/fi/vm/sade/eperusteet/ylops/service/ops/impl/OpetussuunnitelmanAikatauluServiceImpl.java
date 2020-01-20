@@ -29,11 +29,7 @@ public class OpetussuunnitelmanAikatauluServiceImpl implements Opetussuunnitelma
 
     @Override
     public OpetussuunnitelmanAikatauluDto add(Long opsId, OpetussuunnitelmanAikatauluDto opetussuunnitelmanAikatauluDto) {
-
         OpetussuunnitelmaAikataulu opetussuunnitelmaAikataulu = mapper.map(opetussuunnitelmanAikatauluDto, OpetussuunnitelmaAikataulu.class);
-        opetussuunnitelmaAikataulu.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
-        opetussuunnitelmaAikataulu.setLuotu(new Date());
-
         return mapper.map(opetussuunnitelmanAikatauluRepository.save(opetussuunnitelmaAikataulu), OpetussuunnitelmanAikatauluDto.class);
     }
 

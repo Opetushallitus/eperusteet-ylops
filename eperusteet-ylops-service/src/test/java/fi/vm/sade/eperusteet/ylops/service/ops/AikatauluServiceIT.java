@@ -50,8 +50,6 @@ public class AikatauluServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmanAikatauluDto dto = createDto();
 
         OpetussuunnitelmanAikatauluDto saved = opetussuunnitelmanAikatauluService.add(this.opsDto.getId(), dto);
-        assertThat(saved.getLuotu()).isNotNull();
-        assertThat(saved.getLuoja()).isNotNull();
 
         List<OpetussuunnitelmanAikatauluDto> dtos = opetussuunnitelmanAikatauluService.getAll(this.opsDto.getId());
         assertThat(dtos).hasSize(1);
@@ -62,14 +60,12 @@ public class AikatauluServiceIT extends AbstractIntegrationTest {
                         "tavoite.tekstit",
                         "tapahtuma",
                         "tapahtumapaiva",
-                        "opetussuunnitelmaId",
-                        "luoja")
+                        "opetussuunnitelmaId")
                 .containsExactly(
                         LokalisoituTekstiDto.of(TAPAHTUMA_TEKSTI).getTekstit(),
                         AikatauluTapahtuma.TAVOITE,
                         TAPAHTUMAPAIVA,
-                        this.opsDto.getId(),
-                        "test"
+                        this.opsDto.getId()
                 );
     }
 
