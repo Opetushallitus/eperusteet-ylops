@@ -250,7 +250,12 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     @Override
     public Lops2019OpintojaksoDto revertTo(Long opsId, Long opintojaksoId, Integer versio) {
-        throw new UnsupportedOperationException("not implemented yet");
+        getOpintojakso(opsId, opintojaksoId);
+        Lops2019Opintojakso revision = opintojaksoRepository.findRevision(opintojaksoId, versio);
+        Lops2019OpintojaksoDto dto = mapper.map(revision, Lops2019OpintojaksoDto.class);
+        UpdateWrapperDto<Lops2019OpintojaksoDto> wrapperDto = new UpdateWrapperDto<>();
+        wrapperDto.setData(dto);
+        return updateOpintojakso(opsId, opintojaksoId, wrapperDto);
     }
 
     @Override

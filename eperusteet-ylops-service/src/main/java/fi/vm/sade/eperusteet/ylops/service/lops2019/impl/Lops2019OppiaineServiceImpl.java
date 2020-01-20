@@ -172,6 +172,11 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
 
     @Override
     public Lops2019PaikallinenOppiaineDto revertTo(Long opsId, Long oppiaineId, Integer versio) {
-        throw new UnsupportedOperationException("not implemented yet");
+        getOppiaine(opsId, oppiaineId);
+        Lops2019Oppiaine revision = oppiaineRepository.findRevision(oppiaineId, versio);
+        Lops2019PaikallinenOppiaineDto dto = mapper.map(revision, Lops2019PaikallinenOppiaineDto.class);
+        UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> wrapperDto = new UpdateWrapperDto<>();
+        wrapperDto.setData(dto);
+        return updateOppiaine(opsId, oppiaineId, wrapperDto);
     }
 }
