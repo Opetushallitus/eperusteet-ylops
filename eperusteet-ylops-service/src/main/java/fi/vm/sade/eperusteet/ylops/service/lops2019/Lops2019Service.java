@@ -70,5 +70,6 @@ public interface Lops2019Service {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     List<Lops2019PoistettuDto> getRemoved(@P("opsId") Long opsId);
 
+    @PreAuthorize("permitAll()")
     Lops2019LaajaAlainenOsaaminenDto getLaajaAlaisetOsaamiset();
 }
