@@ -206,15 +206,15 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
         if (viite.getVanhempi() == null) {
-            throw new BusinessRuleViolationException("Sisällön juurielementtiä ei voi poistaa");
+            throw new BusinessRuleViolationException("sisallon-juurielementtia-ei-voi-poistaa");
         }
 
         if (viite.getLapset() != null && !viite.getLapset().isEmpty()) {
-            throw new BusinessRuleViolationException("Sisällöllä on lapsia, ei voida poistaa");
+            throw new BusinessRuleViolationException("sisallolla-on-lapsia-ei-voida-poistaa");
         }
 
         if (viite.isPakollinen()) {
-            throw new BusinessRuleViolationException("Pakollista tekstikappaletta ei voi poistaa");
+            throw new BusinessRuleViolationException("pakollista-tekstikappaletta-ei-voi-poistaa");
         }
 
         tekstikappaleviiteRepository.lock(viite.getRoot());
