@@ -17,5 +17,8 @@ public class Lops2019PoistettuDto {
     private PoistetunTyyppi tyyppi;
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto parent;
+    private String luoja;
     private Date luotu;
+    private String muokkaaja;
+    private Date muokattu;
 }
