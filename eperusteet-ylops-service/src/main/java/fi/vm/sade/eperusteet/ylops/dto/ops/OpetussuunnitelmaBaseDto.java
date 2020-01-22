@@ -60,4 +60,5 @@ public abstract class OpetussuunnitelmaBaseDto
     private String ryhmaoid;
     private String ryhmanNimi;
     private boolean esikatseltavissa;
+    private boolean ainepainoitteinen;
 }

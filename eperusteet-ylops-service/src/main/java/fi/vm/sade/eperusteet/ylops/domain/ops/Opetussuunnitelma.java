@@ -223,6 +223,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Column(name = "ryhman_nimi")
     private String ryhmanNimi;
 
+    @Getter
+    @Setter
+    private boolean ainepainoitteinen;
+
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
         vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));
     }

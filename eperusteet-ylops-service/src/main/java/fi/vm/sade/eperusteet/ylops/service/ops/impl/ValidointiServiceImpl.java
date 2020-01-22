@@ -114,26 +114,28 @@ public class ValidointiServiceImpl implements ValidointiService {
 
         ops.validate(validointi, ctx);
 
-        moduulit.forEach(moduuli -> {
-            List<Lops2019OpintojaksoDto> moduulinOpintojaksot = liitokset.getOrDefault(
-                    moduuli.getKoodi().getUri(),
-                    new ArrayList<>());
+        if (!ops.isAinepainoitteinen()) {
+            moduulit.forEach(moduuli -> {
+                List<Lops2019OpintojaksoDto> moduulinOpintojaksot = liitokset.getOrDefault(
+                        moduuli.getKoodi().getUri(),
+                        new ArrayList<>());
 
-            // - Moduuli vähintään yhdessä opintojaksossa
-            validointi.virhe(ValidationCategory.MODUULI, "moduuli-kuuluttava-vahintaan-yhteen-opintojaksoon", moduuli.getId(), moduuli.getNimi(),
-                    moduulinOpintojaksot.isEmpty());
+                // - Moduuli vähintään yhdessä opintojaksossa
+                validointi.virhe(ValidationCategory.MODUULI, "moduuli-kuuluttava-vahintaan-yhteen-opintojaksoon", moduuli.getId(), moduuli.getNimi(),
+                        moduulinOpintojaksot.isEmpty());
 
-            // - Pakollinen moduuli vähintään yhdessä opintojaksossa missä on vain muita saman oppiaineen pakollisia
-            validointi.virhe(ValidationCategory.MODUULI, "pakollinen-moduuli-mahdollista-suorittaa-erillaan", moduuli.getId(), moduuli.getNimi(),
-                    moduulinOpintojaksot.stream()
-                            .anyMatch(oj -> oj.getOppiaineet().size() == 1 && oj.getModuulit().stream()
-                                    .allMatch(ojm -> moduulitMap.get(ojm.getKoodiUri()).isPakollinen())));
+                // - Pakollinen moduuli vähintään yhdessä opintojaksossa missä on vain muita saman oppiaineen pakollisia
+                validointi.virhe(ValidationCategory.MODUULI, "pakollinen-moduuli-mahdollista-suorittaa-erillaan", moduuli.getId(), moduuli.getNimi(),
+                        moduulinOpintojaksot.stream()
+                                .anyMatch(oj -> oj.getOppiaineet().size() == 1 && oj.getModuulit().stream()
+                                        .allMatch(ojm -> moduulitMap.get(ojm.getKoodiUri()).isPakollinen())));
 
-            // - Valinnainen moduuli vähintään yhdessä opintojaksossa suoritettavissa kahden opintopisteen kokonaisuutena
-            validointi.virhe(ValidationCategory.MODUULI, "valinnainen-moduuli-suoritettavissa-kahden-opintopisteen-kokonaisuutena", moduuli.getId(), moduuli.getNimi(),
-                    !moduuli.isPakollinen() && moduulinOpintojaksot.stream()
-                            .anyMatch(oj -> oj.getModuulit().stream().allMatch(ojm -> oj.getLaajuus() == 2L)));
-        });
+                // - Valinnainen moduuli vähintään yhdessä opintojaksossa suoritettavissa kahden opintopisteen kokonaisuutena
+                validointi.virhe(ValidationCategory.MODUULI, "valinnainen-moduuli-suoritettavissa-kahden-opintopisteen-kokonaisuutena", moduuli.getId(), moduuli.getNimi(),
+                        !moduuli.isPakollinen() && moduulinOpintojaksot.stream()
+                                .anyMatch(oj -> oj.getModuulit().stream().allMatch(ojm -> oj.getLaajuus() == 2L)));
+            });
+        }
 
         { // Opintojaksot
             ops.getLops2019().getOpintojaksot().forEach(oj -> oj.validate(validointi, ctx));
