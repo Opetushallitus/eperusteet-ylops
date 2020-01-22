@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -156,6 +157,10 @@ public class ValidointiServiceImpl implements ValidointiService {
                             .collect(Collectors.toSet())
                             .contains(oa.getKoodi())));
         });
+
+        if (!ops.getPohja().getTila().equals(Tila.JULKAISTU)) {
+            validointi.virhe("opetussuunnitelma-pohja-julkaisematon", ops.getPohja(), true);
+        }
 
         return validointi;
     }
