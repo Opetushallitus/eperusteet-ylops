@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Oppiaine;
@@ -108,7 +109,7 @@ public class Lops2019ServiceImpl implements Lops2019Service {
         Lops2019Oppiaine latest = oppiaineRepository.getLatestNotNull(poistettuInfo.getPoistettu_id());
         Lops2019Oppiaine oppiaine = Lops2019Oppiaine.copy(latest);
         Lops2019PaikallinenOppiaineDto uusi = mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
-        oppiaineService.addOppiaine(opsId, uusi);
+        oppiaineService.addOppiaine(opsId, uusi, MuokkausTapahtuma.PALAUTUS);
         poistetutRepository.delete(poistettuInfo);
     }
 
@@ -116,7 +117,7 @@ public class Lops2019ServiceImpl implements Lops2019Service {
         Lops2019Opintojakso latest = opintojaksoRepository.getLatestNotNull(poistettuInfo.getPoistettu_id());
         Lops2019Opintojakso opintojakso = Lops2019Opintojakso.copy(latest);
         Lops2019OpintojaksoDto opintojaksoDto = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
-        opintojaksoService.addOpintojakso(opsId, opintojaksoDto);
+        opintojaksoService.addOpintojakso(opsId, opintojaksoDto, MuokkausTapahtuma.PALAUTUS);
         poistetutRepository.delete(poistettuInfo);
     }
 

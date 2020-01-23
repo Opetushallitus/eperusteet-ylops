@@ -9,7 +9,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class HistoriaTapahtumaAuditointitiedoilla implements HistoriaTapahtuma{
+public class HistoriaTapahtumaAuditointitiedoilla implements HistoriaTapahtuma {
 
     private Date luotu;
     private Date muokattu;

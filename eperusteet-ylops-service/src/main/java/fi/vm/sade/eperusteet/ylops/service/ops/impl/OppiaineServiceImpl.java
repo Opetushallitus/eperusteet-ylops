@@ -131,7 +131,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .orElseThrow(() -> new BusinessRuleViolationException("Oppiainetta tai vuosiluokkakokonaisuutta ei ole perusteessa"));
 
         oppiaineet.lock(oppiaine);
-        updateVuosiluokkakokonaisuudenTavoitteet(ovk, pov, tavoitteet);
+        updateVuosiluokkakokonaisuudenTavoitteet(opsId, ovk, pov, tavoitteet);
 
     }
 
@@ -144,7 +144,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     @Transactional(readOnly = true)
-    public List<OppiaineDto> getAll(@P("opsId") Long opsId) {
+    public List<OppiaineDto> getAll(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         return mapper.mapAsList(oppiaineet.findByOpsId(opsId), OppiaineDto.class);
@@ -152,7 +152,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     @Transactional(readOnly = true)
-    public List<OppiaineDto> getAll(@P("opsId") Long opsId, boolean valinnaiset) {
+    public List<OppiaineDto> getAll(Long opsId, boolean valinnaiset) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         Set<Oppiaine> aineet = valinnaiset ?
@@ -163,7 +163,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     @Transactional(readOnly = true)
-    public List<OppiaineDto> getAll(@P("opsId") Long opsId, OppiaineTyyppi tyyppi) {
+    public List<OppiaineDto> getAll(Long opsId, OppiaineTyyppi tyyppi) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         return mapper.mapAsList(oppiaineet.findByOpsIdAndTyyppi(opsId, tyyppi), OppiaineDto.class);
@@ -171,7 +171,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     @Transactional(readOnly = true)
-    public OpsOppiaineDto get(@P("opsId") Long opsId, Long id) {
+    public OpsOppiaineDto get(Long opsId, Long id) {
         return getOpsOppiaine(opsId, id, null);
     }
 
@@ -187,13 +187,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     @Transactional(readOnly = true)
-    public OppiaineDto getParent(@P("opsId") Long opsId, Long id) {
+    public OppiaineDto getParent(Long opsId, Long id) {
         Oppiaine oppiaine = getOppiaine(opsId, id);
         return mapper.map(oppiaine.getOppiaine(), OppiaineDto.class);
     }
 
     @Override
-    public OppiaineLaajaDto add(@P("opsId") Long opsId, OppiaineLaajaDto oppiaineDto) {
+    public OppiaineLaajaDto add(Long opsId, OppiaineLaajaDto oppiaineDto) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         opetussuunnitelmaRepository.lock(ops);
@@ -204,7 +204,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineDto addCopyOppimaara(@P("opsId") Long opsId, Long oppiaineId, KopioOppimaaraDto kt) {
+    public OppiaineDto addCopyOppimaara(Long opsId, Long oppiaineId, KopioOppimaaraDto kt) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
@@ -236,7 +236,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineDto add(@P("opsId") Long opsId, OppiaineDto oppiaineDto) {
+    public OppiaineDto add(Long opsId, OppiaineDto oppiaineDto) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         opetussuunnitelmaRepository.lock(ops);
@@ -247,7 +247,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineDto addValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
+    public OppiaineDto addValinnainen(Long opsId, OppiaineDto oppiaineDto, Long vlkId,
                                       Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto,
                                       Integer oldJnro, OppiaineenVuosiluokkakokonaisuusDto oldOaVlk, boolean updateOld) {
 
@@ -359,7 +359,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineDto updateValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
+    public OppiaineDto updateValinnainen(Long opsId, OppiaineDto oppiaineDto, Long vlkId,
                                          Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto) {
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
         assertExists(oppiaine, "Päivitettävää oppiainetta ei ole olemassa");
@@ -549,7 +549,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OpsOppiaineDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long id) {
+    public OpsOppiaineDto kopioiMuokattavaksi(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         opetussuunnitelmaRepository.lock(ops);
@@ -632,7 +632,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OpsOppiaineDto update(@P("opsId") Long opsId, OppiaineDto oppiaineDto) {
+    public OpsOppiaineDto update(Long opsId, OppiaineDto oppiaineDto) {
         Boolean isOma = oppiaineet.isOma(opsId, oppiaineDto.getId());
         if (isOma == null) {
             throw new BusinessRuleViolationException("Päivitettävää oppiainetta ei ole olemassa");
@@ -653,7 +653,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public PoistettuOppiaineDto delete(@P("opsId") Long opsId, Long id) {
+    public PoistettuOppiaineDto delete(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         Oppiaine oppiaine = getOppiaine(opsId, id);
         oppiaineet.lock(oppiaine);
@@ -669,7 +669,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         oppiaine.getVuosiluokkakokonaisuudet().forEach(vuosiluokkakokonaisuus -> vuosiluokkakokonaisuusService
-                .removeSisaltoalueetInKeskeinensisaltoalueet(vuosiluokkakokonaisuus, true));
+                .removeSisaltoalueetInKeskeinensisaltoalueet(opsId, vuosiluokkakokonaisuus, true));
 
         lukioOppiaineJarjestysRepository.delete(lukioOppiaineJarjestysRepository
                 .findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
@@ -706,7 +706,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(@P("opsId") Long opsId, Long id, OppiaineenVuosiluokkakokonaisuusDto dto) {
+    public OppiaineenVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuudenSisalto(Long opsId, Long id, OppiaineenVuosiluokkakokonaisuusDto dto) {
         Oppiaine oppiaine = getOppiaine(opsId, id);
         Oppiaineenvuosiluokkakokonaisuus oavlk
                 = oppiaine.getVuosiluokkakokonaisuudet().stream()
@@ -738,7 +738,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(@P("opsId") Long opsId, Long oppiaineId, OppiaineenVuosiluokkaDto dto) {
+    public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(Long opsId, Long oppiaineId, OppiaineenVuosiluokkaDto dto) {
         if (!oppiaineet.isOma(opsId, oppiaineId)) {
             throw new BusinessRuleViolationException("vain-omaa-oppiainetta-saa-muokata");
         }
@@ -776,7 +776,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         return mapper.map(oppiaineenVuosiluokka, OppiaineenVuosiluokkaDto.class);
     }
 
-    public OppiaineenVuosiluokkaDto updateValinnaisenVuosiluokanSisalto(@P("opsId") Long opsId, Long id,
+    @Override
+    public OppiaineenVuosiluokkaDto updateValinnaisenVuosiluokanSisalto(Long opsId, Long id,
                                                                         Long oppiaineenVuosiluokkaId,
                                                                         List<TekstiosaDto> tavoitteetDto) {
         Oppiaineenvuosiluokka oavl = assertExists(findVuosiluokka(opsId, id, oppiaineenVuosiluokkaId), "Vuosiluokkaa ei löydy");
@@ -933,15 +934,17 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private void updateVuosiluokkakokonaisuudenTavoitteet(
+            Long opsId,
             Oppiaineenvuosiluokkakokonaisuus v,
             PerusteOppiaineenVuosiluokkakokonaisuusDto vuosiluokkakokonaisuus,
-            Map<Vuosiluokka, Set<UUID>> tavoitteet) {
+            Map<Vuosiluokka, Set<UUID>> tavoitteet
+    ) {
 
         if (!vuosiluokkakokonaisuus.getVuosiluokkaKokonaisuus().getVuosiluokat().containsAll(tavoitteet.keySet())) {
             throw new BusinessRuleViolationException("Yksi tai useampi vuosiluokka ei kuulu tähän vuosiluokkakokonaisuuteen");
         }
 
-        vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(v, false);
+        vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(opsId, v, false);
 
         tavoitteet.entrySet().stream()
                 .filter(e -> v.getVuosiluokkakokonaisuus().getVuosiluokat().contains(e.getKey()))

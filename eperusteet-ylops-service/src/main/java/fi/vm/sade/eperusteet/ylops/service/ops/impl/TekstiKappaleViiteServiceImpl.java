@@ -42,6 +42,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsFeaturesFactory;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategy;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
@@ -90,13 +91,13 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     @Override
-    public <T> T getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId, Class<T> t) {
+    public <T> T getTekstiKappaleViite(Long opsId, Long viiteId, Class<T> t) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         return mapper.map(viite, t);
     }
 
     @Override
-    public TekstiKappaleViiteDto.Matala getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId) {
+    public TekstiKappaleViiteDto.Matala getTekstiKappaleViite(Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         TekstiKappaleViiteDto.Matala viiteDto = mapper.map(viite, TekstiKappaleViiteDto.Matala.class);
         viiteDto.getTekstiKappale().setMuokkaaja(kayttajanTietoService.haeKayttajanimi(viiteDto.getTekstiKappale().getMuokkaaja()));
@@ -105,10 +106,23 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = false)
-    public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("rootId") Long rootId,
-                                                              Long parentViiteId,
-                                                              TekstiKappaleViiteDto.Matala viiteDto) {
-        TekstiKappaleViite parentViite = findViite(rootId, parentViiteId);
+    public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(
+            Long opsId,
+            Long parentViiteId,
+            TekstiKappaleViiteDto.Matala viiteDto
+    ) {
+        return this.addTekstiKappaleViite(opsId, parentViiteId, viiteDto, null);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public TekstiKappaleViiteDto.Matala addTekstiKappaleViite(
+            Long opsId,
+            Long parentViiteId,
+            TekstiKappaleViiteDto.Matala viiteDto,
+            MuokkausTapahtuma tapahtuma
+    ) {
+        TekstiKappaleViite parentViite = findViite(opsId, parentViiteId);
         TekstiKappaleViite uusiViite = new TekstiKappaleViite(Omistussuhde.OMA);
         if (viiteDto != null) {
             uusiViite.setPakollinen(viiteDto.isPakollinen());
@@ -139,21 +153,22 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                 // TODO: Lisää tähän tekstikappaleiden lukuoikeuden tarkistelu
                 uusiViite.setTekstiKappale(viiteEntity.getTekstiKappale());
             } else if (viiteDto.getTekstiKappale() != null) {
-                tekstiKappaleService.add(uusiViite, viiteDto.getTekstiKappale());
+                tekstiKappaleService.add(opsId, uusiViite, viiteDto.getTekstiKappale());
             }
         }
 
         tekstikappaleviiteRepository.flush();
 
 
-        muokkaustietoService.addOpsMuokkausTieto(rootId, uusiViite, MuokkausTapahtuma.LUONTI);
+        muokkaustietoService.addOpsMuokkausTieto(opsId, uusiViite,
+                tapahtuma != null ? tapahtuma : MuokkausTapahtuma.LUONTI);
         return mapper.map(uusiViite, TekstiKappaleViiteDto.Matala.class);
     }
 
     @Override
     @Transactional(readOnly = false)
     public TekstiKappaleViiteDto updateTekstiKappaleViite(
-            @P("opsId") Long opsId,
+            Long opsId,
             Long viiteId,
             TekstiKappaleViiteDto uusi
     ) {
@@ -177,7 +192,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = false)
-    public void reorderSubTree(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi) {
+    public void reorderSubTree(Long opsId, Long rootViiteId, TekstiKappaleViiteDto.Puu uusi) {
         TekstiKappaleViite viite = findViite(opsId, rootViiteId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
@@ -201,7 +216,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = false)
-    public void removeTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId) {
+    public void removeTekstiKappaleViite(Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
@@ -221,7 +236,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         if (viite.getTekstiKappale() != null && viite.getTekstiKappale().getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
             lockMgr.lock(viite.getTekstiKappale().getId());
             TekstiKappale tekstiKappale = viite.getTekstiKappale();
-            tekstiKappaleService.removeTekstiKappaleFromOps(tekstiKappale.getId(), opsId);
+            tekstiKappaleService.removeTekstiKappaleFromOps(opsId, tekstiKappale.getId());
         }
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
@@ -234,7 +249,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = false)
-    public TekstiKappaleViiteDto.Puu kloonaaTekstiKappale(@P("opsId") Long opsId, Long viiteId) {
+    public TekstiKappaleViiteDto.Puu kloonaaTekstiKappale(Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         TekstiKappale originaali = viite.getTekstiKappale();
         // TODO: Tarkista onko tekstikappaleeseen lukuoikeutta
@@ -248,7 +263,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = true)
-    public List<RevisionDto> getVersions(long viiteId) {
+    public List<RevisionDto> getVersions(Long opsId, long viiteId) {
         List<Revision> versions = tekstiKappaleRepository.getRevisions(viiteId);
         return mapper.mapAsList(versions, RevisionDto.class);
     }
@@ -269,7 +284,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         Long kappaleId = getTekstiKappaleViite(opsId, viiteId).getTekstiKappale().getId();
         TekstiKappale tekstiKappale = tekstiKappaleRepository.findRevision(kappaleId, versio);
         TekstiKappaleDto dto = mapper.map(tekstiKappale, TekstiKappaleDto.class);
-        tekstiKappaleService.update(dto);
+        tekstiKappaleService.update(opsId, dto, MuokkausTapahtuma.PALAUTUS);
     }
 
     @Override
@@ -278,7 +293,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         connectMissingTekstikappaleetIfAny(opsId);
         List<PoistettuTekstiKappaleDto> list = mapper.mapAsList(poistettuTekstiKappaleRepository.findPoistetutByOpsId(opsId), PoistettuTekstiKappaleDto.class);
         list.forEach(poistettuTekstiKappaleDto -> {
-            TekstiKappaleDto teksti = tekstiKappaleService.get(poistettuTekstiKappaleDto.getTekstiKappale());
+            TekstiKappaleDto teksti = tekstiKappaleService.get(opsId, poistettuTekstiKappaleDto.getTekstiKappale());
             poistettuTekstiKappaleDto.setMuokkaaja(kayttajanTietoService.haeKayttajanimi(poistettuTekstiKappaleDto.getMuokkaaja()));
             poistettuTekstiKappaleDto.setNimi(teksti.getNimi());
             poistettuTekstiKappaleDto.setTekstiKappale(teksti.getId());
@@ -321,7 +336,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         TekstiKappale tekstikappale = tekstiKappaleRepository.findOne(poistettu.getTekstiKappale());
         TekstiKappaleDto dto = mapper.map(tekstikappale, TekstiKappaleDto.class);
         dto.setId(null);
-        addTekstiKappaleViite(opsId, teksti.getId(), new TekstiKappaleViiteDto.Matala(dto));
+        addTekstiKappaleViite(opsId, teksti.getId(), new TekstiKappaleViiteDto.Matala(dto), MuokkausTapahtuma.PALAUTUS);
         Collections.rotate(teksti.getLapset(), 1);
         poistettu.setPalautettu(true);
 
@@ -355,7 +370,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                         lockMgr.ensureLockedByAuthenticatedUser(tid);
                     }
                 }
-                tekstiKappaleService.update(uusiTekstiKappale);
+                tekstiKappaleService.update(opsId, uusiTekstiKappale, MuokkausTapahtuma.PAIVITYS);
             } else {
                 throw new BusinessRuleViolationException("Lainattua tekstikappaletta ei voida muokata");
             }

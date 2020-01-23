@@ -31,7 +31,7 @@ public interface TermistoService {
     List<TermiDto> getTermit(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    TermiDto getTermi(Long opsId, String avain);
+    TermiDto getTermi(@P("opsId") Long opsId, String avain);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS') or hasPermission(#opsId, 'opetussuunnitelma', 'KORJAUS')")
     TermiDto addTermi(@P("opsId") Long opsId, TermiDto dto);

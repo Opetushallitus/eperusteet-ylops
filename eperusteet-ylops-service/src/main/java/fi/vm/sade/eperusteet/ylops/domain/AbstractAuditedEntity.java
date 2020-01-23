@@ -71,14 +71,18 @@ public abstract class AbstractAuditedEntity implements Serializable {
 
     @PrePersist
     private void prepersist() {
-        muokattu = luotu = new Date();
-        luoja = muokkaaja = SecurityUtil.getAuthenticatedPrincipal().getName();
+        luotu = new Date();
+        updateMuokkaustiedot();
     }
 
     @PreUpdate
     private void preupdate() {
+        this.updateMuokkaustiedot();
+    }
+
+    // Fixme: ilman tämän kutsumista, palauttaminen ei päivitä muokkaustietoja
+    public void updateMuokkaustiedot() {
         muokattu = new Date();
         muokkaaja = SecurityUtil.getAuthenticatedPrincipal().getName();
     }
-
 }

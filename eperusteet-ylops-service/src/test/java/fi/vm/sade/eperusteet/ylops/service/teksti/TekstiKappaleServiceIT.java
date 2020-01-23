@@ -54,7 +54,7 @@ public class TekstiKappaleServiceIT extends AbstractIntegrationTest {
 
         tekstiKappale = tekstiKappaleRepository.save(tekstiKappale);
 
-        TekstiKappaleDto dto = tekstiKappaleService.get(tekstiKappale.getId());
+        TekstiKappaleDto dto = tekstiKappaleService.get(null, tekstiKappale.getId());
         Assert.assertNotNull(dto);
 
         Assert.assertEquals(NIMI, dto.getNimi().get(Kieli.SV));

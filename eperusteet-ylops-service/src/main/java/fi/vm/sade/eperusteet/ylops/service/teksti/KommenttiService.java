@@ -26,16 +26,16 @@ import java.util.List;
  */
 public interface KommenttiService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    public List<KommenttiDto> getAllByTekstiKappaleViite(Long opsId, Long tekstiKappaleViiteId);
+    public List<KommenttiDto> getAllByTekstiKappaleViite(@P("opsId") Long opsId, Long tekstiKappaleViiteId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    public List<KommenttiDto> getAllByOppiaine(Long opsId, Long vlkId, Long oppiaineId);
+    public List<KommenttiDto> getAllByOppiaine(@P("opsId") Long opsId, Long vlkId, Long oppiaineId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    public List<KommenttiDto> getAllByVuosiluokka(Long opsId, Long vlkId, Long oppiaineId, Long vlId);
+    public List<KommenttiDto> getAllByVuosiluokka(@P("opsId") Long opsId, Long vlkId, Long oppiaineId, Long vlId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    public List<KommenttiDto> getAllByOpetussuunnitelma(Long opsId);
+    public List<KommenttiDto> getAllByOpetussuunnitelma(@P("opsId") Long opsId);
 
     @PreAuthorize("isAuthenticated()")
     public List<KommenttiDto> getAllByParent(Long id);

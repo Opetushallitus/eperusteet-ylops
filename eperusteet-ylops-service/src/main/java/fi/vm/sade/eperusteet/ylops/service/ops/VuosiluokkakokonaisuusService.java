@@ -42,5 +42,5 @@ public interface VuosiluokkakokonaisuusService {
     void delete(@P("opsId") Long opsId, Long kokonaisuusId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void removeSisaltoalueetInKeskeinensisaltoalueet(Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus, boolean clearSisaltoalueet);
+    void removeSisaltoalueetInKeskeinensisaltoalueet(@P("opsId") Long opsId, Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus, boolean clearSisaltoalueet);
 }

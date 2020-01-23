@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
@@ -35,8 +36,15 @@ public interface TekstiKappaleViiteService {
     <T> T getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId, Class<T> t);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId,
+    TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("opsId") Long opsId,
+                                                       Long viiteId,
                                                        TekstiKappaleViiteDto.Matala viiteDto);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("opsId") Long opsId,
+                                                       Long viiteId,
+                                                       TekstiKappaleViiteDto.Matala viiteDto,
+                                                       MuokkausTapahtuma tapahtuma);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto updateTekstiKappaleViite(@P("opsId") Long opsId, Long rootViiteId, TekstiKappaleViiteDto uusi);
@@ -51,7 +59,7 @@ public interface TekstiKappaleViiteService {
     TekstiKappaleViiteDto.Puu kloonaaTekstiKappale(@P("opsId") Long opsId, Long viiteId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<RevisionDto> getVersions(long viiteId);
+    List<RevisionDto> getVersions(@P("opsId") Long opsId, long viiteId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     TekstiKappaleDto findTekstikappaleVersion(@P("opsId") long opsId, long viiteId, long versio);

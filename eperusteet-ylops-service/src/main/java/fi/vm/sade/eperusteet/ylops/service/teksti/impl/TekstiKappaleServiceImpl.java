@@ -15,6 +15,8 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.teksti.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtumaAuditointitiedoilla;
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
@@ -28,9 +30,12 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
@@ -58,14 +63,14 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
 
     @Override
     @Transactional(readOnly = true)
-    public TekstiKappaleDto get(Long id) {
+    public TekstiKappaleDto get(Long opsId, Long id) {
         TekstiKappale tekstiKappale = repository.findOne(id);
         assertExists(tekstiKappale, "Pyydettyä tekstikappaletta ei ole olemassa");
         return mapper.map(tekstiKappale, TekstiKappaleDto.class);
     }
 
     @Override
-    public TekstiKappaleDto add(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto) {
+    public TekstiKappaleDto add(Long opsId, TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto) {
         TekstiKappale tekstiKappale = mapper.map(tekstiKappaleDto, TekstiKappale.class);
         tekstiKappale.setTila(Tila.LUONNOS);
         viite.setTekstiKappale(tekstiKappale);
@@ -75,16 +80,19 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     }
 
     @Override
-    public TekstiKappaleDto update(TekstiKappaleDto tekstiKappaleDto) {
+    public TekstiKappaleDto update(Long opsId, TekstiKappaleDto tekstiKappaleDto, MuokkausTapahtuma tapahtuma) {
         Long id = tekstiKappaleDto.getId();
         TekstiKappale current = assertExists(repository.findOne(id), "Tekstikappaletta ei ole olemassa");
         repository.lock(current);
         mapper.map(tekstiKappaleDto, current);
-        return mapper.map(repository.save(current), TekstiKappaleDto.class);
+        current.updateMuokkaustiedot();
+        TekstiKappale tekstiKappale = repository.save(current);
+        muokkaustietoService.addOpsMuokkausTieto(opsId, tekstiKappale, tapahtuma);
+        return mapper.map(tekstiKappale, TekstiKappaleDto.class);
     }
 
     @Override
-    public TekstiKappaleDto mergeNew(TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto) {
+    public TekstiKappaleDto mergeNew(Long opsId, TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto) {
         if (viite.getTekstiKappale() == null || viite.getTekstiKappale().getId() == null) {
             throw new IllegalArgumentException("Virheellinen viite");
         }
@@ -101,7 +109,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     }
 
     @Override
-    public void removeTekstiKappaleFromOps(Long id, Long opsId) {
+    public void removeTekstiKappaleFromOps(Long opsId, Long id) {
         PoistettuTekstiKappale poistettu = new PoistettuTekstiKappale();
         TekstiKappale tekstiKappale = repository.findOne(id);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
@@ -112,7 +120,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     }
 
     @Override
-    public void delete(Long id) {
+    public void delete(Long opsId, Long id) {
         repository.delete(id);
     }
 }

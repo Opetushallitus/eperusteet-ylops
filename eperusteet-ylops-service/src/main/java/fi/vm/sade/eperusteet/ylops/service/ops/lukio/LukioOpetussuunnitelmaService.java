@@ -17,6 +17,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
+import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
@@ -27,62 +28,62 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public interface LukioOpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    LukioOpetussuunnitelmaRakenneOpsDto getRakenne(long opsId);
+    LukioOpetussuunnitelmaRakenneOpsDto getRakenne(@P("opsId") long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    LukioOppiaineTiedotDto getOppiaineTiedot(long opsId, long oppiaineId);
+    LukioOppiaineTiedotDto getOppiaineTiedot(@P("opsId") long opsId, long oppiaineId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    AihekokonaisuudetPerusteOpsDto getAihekokonaisuudet(long opsId);
+    AihekokonaisuudetPerusteOpsDto getAihekokonaisuudet(@P("opsId") long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpetuksenYleisetTavoitteetPerusteOpsDto getOpetuksenYleisetTavoitteet(long opsId);
+    OpetuksenYleisetTavoitteetPerusteOpsDto getOpetuksenYleisetTavoitteet(@P("opsId") long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void updateOpetuksenYleisetTavoitteet(long opsId, OpetuksenYleisetTavoitteetUpdateDto tavoitteet);
+    void updateOpetuksenYleisetTavoitteet(@P("opsId") long opsId, OpetuksenYleisetTavoitteetUpdateDto tavoitteet);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    long saveOppiaine(long opsId, LukioOppiaineSaveDto oppiaine);
+    long saveOppiaine(@P("opsId") long opsId, LukioOppiaineSaveDto oppiaine);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void updateTreeStructure(Long opsId, OppaineKurssiTreeStructureDto structureDto);
+    void updateTreeStructure(@P("opsId") Long opsId, OppaineKurssiTreeStructureDto structureDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void updateOppiaine(long opsId, LukioOppiaineSaveDto oppiaine);
+    void updateOppiaine(@P("opsId") long opsId, LukioOppiaineSaveDto oppiaine);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    long addOppimaara(long opsId, long oppiaineId, LukioKopioiOppimaaraDto kt);
+    long addOppimaara(@P("opsId") long opsId, long oppiaineId, LukioKopioiOppimaaraDto kt);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    long addAbstraktiOppiaine(long opsId, LukioAbstraktiOppiaineTuontiDto tuonti);
+    long addAbstraktiOppiaine(@P("opsId") long opsId, LukioAbstraktiOppiaineTuontiDto tuonti);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    long saveKurssi(long opsId, LukiokurssiSaveDto kurssi);
+    long saveKurssi(@P("opsId") long opsId, LukiokurssiSaveDto kurssi);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void updateKurssi(long opsId, long kurssiId, LukiokurssiUpdateDto kurssi);
+    void updateKurssi(@P("opsId") long opsId, long kurssiId, LukiokurssiUpdateDto kurssi);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    long disconnectKurssi(Long kurssiId, Long oppiaineId, Long opsId);
+    long disconnectKurssi(Long kurssiId, Long oppiaineId, @P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    long reconnectKurssi(Long kurssiId, Long oppiaineId, Long opsId);
+    long reconnectKurssi(Long kurssiId, Long oppiaineId, @P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    long saveAihekokonaisuus(long opsId, AihekokonaisuusSaveDto kokonaisuus);
+    long saveAihekokonaisuus(@P("opsId") long opsId, AihekokonaisuusSaveDto kokonaisuus);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void reArrangeAihekokonaisuudet(long opsId, AihekokonaisuudetJarjestaDto jarjestys);
+    void reArrangeAihekokonaisuudet(@P("opsId") long opsId, AihekokonaisuudetJarjestaDto jarjestys);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void updateAihekokonaisuusYleiskuvaus(long opsId, AihekokonaisuusSaveDto yleiskuvaus);
+    void updateAihekokonaisuusYleiskuvaus(@P("opsId") long opsId, AihekokonaisuusSaveDto yleiskuvaus);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void updateAihekokonaisuus(long opsId, long id, AihekokonaisuusSaveDto kokonaisuus);
+    void updateAihekokonaisuus(@P("opsId") long opsId, long id, AihekokonaisuusSaveDto kokonaisuus);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void deleteAihekokonaisuus(long opsId, long id);
+    void deleteAihekokonaisuus(@P("opsId") long opsId, long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void removeKurssi(long opsId, long kurssiId);
+    void removeKurssi(@P("opsId") long opsId, long kurssiId);
 }

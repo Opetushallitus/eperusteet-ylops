@@ -1419,7 +1419,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public OpetussuunnitelmaDto updateTila(@P("id") Long id, Tila tila) {
+    public OpetussuunnitelmaDto updateTila(Long id, Tila tila) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
@@ -1543,7 +1543,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public OpetussuunnitelmaDto restore(@P("id") Long id) {
+    public OpetussuunnitelmaDto restore(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 

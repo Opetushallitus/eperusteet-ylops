@@ -99,7 +99,11 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
     }
 
     @Override
-    public void removeSisaltoalueetInKeskeinensisaltoalueet(Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus, boolean clearSisaltoalueet) {
+    public void removeSisaltoalueetInKeskeinensisaltoalueet(
+            Long opsId,
+            Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus,
+            boolean clearSisaltoalueet
+    ) {
         vuosiluokkakokonaisuus.getVuosiluokat().forEach(oppiaineenvuosiluokka -> {
             oppiaineenvuosiluokka.getTavoitteet().forEach(opetuksentavoite -> {
                 opetuksentavoite.getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
@@ -128,7 +132,7 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
     }
 
     @Override
-    public OpsVuosiluokkakokonaisuusDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long kokonaisuusId) {
+    public OpsVuosiluokkakokonaisuusDto kopioiMuokattavaksi(Long opsId, Long kokonaisuusId) {
         Boolean isOma = kokonaisuudet.isOma(opsId, kokonaisuusId);
         if (isOma == null) {
             throw new BusinessRuleViolationException("Vuosiluokkakokonaisuutta ei ole");

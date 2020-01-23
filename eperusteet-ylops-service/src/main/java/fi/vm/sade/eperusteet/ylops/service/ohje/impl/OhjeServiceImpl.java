@@ -48,7 +48,7 @@ public class OhjeServiceImpl implements OhjeService {
 
     @Override
     @Transactional(readOnly = true)
-    public OhjeDto getOhje(@P("id") Long id) {
+    public OhjeDto getOhje(Long id) {
         Ohje ohje = repository.findOne(id);
         assertExists(ohje, "Pyydettyä ohjetta ei ole olemassa");
         return mapper.map(ohje, OhjeDto.class);
@@ -56,7 +56,7 @@ public class OhjeServiceImpl implements OhjeService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OhjeDto> getTekstiKappaleOhjeet(@P("uuid") UUID uuid) {
+    public List<OhjeDto> getTekstiKappaleOhjeet(UUID uuid) {
         List<Ohje> ohjeet = repository.findByKohde(uuid);
         return mapper.mapAsList(ohjeet, OhjeDto.class);
     }
@@ -85,7 +85,7 @@ public class OhjeServiceImpl implements OhjeService {
     }
 
     @Override
-    public void removeOhje(@P("id") Long id) {
+    public void removeOhje(Long id) {
         Ohje ohje = repository.findOne(id);
         repository.delete(ohje);
     }

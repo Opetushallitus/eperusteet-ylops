@@ -34,13 +34,13 @@ public interface LiiteService {
     UUID add(@P("opsId") final Long opsId, String tyyppi, String nimi, long length, InputStream is);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    LiiteDto get(Long opsId, UUID id);
+    LiiteDto get(@P("opsId") Long opsId, UUID id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<LiiteDto> getAll(Long opsId);
+    List<LiiteDto> getAll(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void delete(Long opsId, UUID id);
+    void delete(@P("opsId") Long opsId, UUID id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     void export(@P("opsId") final Long opsId, UUID id, OutputStream os);

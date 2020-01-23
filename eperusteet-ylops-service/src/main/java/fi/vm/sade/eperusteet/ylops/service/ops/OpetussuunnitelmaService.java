@@ -40,7 +40,7 @@ import java.util.Set;
 public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    Set<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(@P("opsId") Long id);
+    Set<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(null, 'tarkastelu', 'HALLINTA') ||" +
             "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).OPS and (hasPermission(null, 'opetussuunnitelma', 'LUKU'))) || " +
@@ -54,7 +54,7 @@ public interface OpetussuunnitelmaService {
     List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query);
 
     @PreAuthorize("permitAll()")
-    OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(@P("opsId") Long id);
+    OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(Long opsId);
 
     @PreAuthorize("isAuthenticated()")
     List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi);
@@ -66,13 +66,13 @@ public interface OpetussuunnitelmaService {
     List<OpetussuunnitelmaInfoDto> getAdminList();
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpetussuunnitelmaKevytDto getOpetussuunnitelma(@P("opsId") Long id);
+    OpetussuunnitelmaKevytDto getOpetussuunnitelma(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpetussuunnitelmaDto getOpetussuunnitelmaKaikki(@P("opsId") Long id);
+    OpetussuunnitelmaDto getOpetussuunnitelmaKaikki(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpetussuunnitelmaLaajaDto getOpetussuunnitelmaEnempi(@P("opsId") Long id);
+    OpetussuunnitelmaLaajaDto getOpetussuunnitelmaEnempi(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUONTI')")
     OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto);
@@ -90,19 +90,19 @@ public interface OpetussuunnitelmaService {
     OpetussuunnitelmaDto restore(@P("id") Long id);
 
     @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'MUOKKAUS')")
-    List<OpetussuunnitelmaInfoDto> getLapsiOpetussuunnitelmat(Long id);
+    List<OpetussuunnitelmaInfoDto> getLapsiOpetussuunnitelmat(@P("id") Long id);
 
     @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'MUOKKAUS')")
-    List<Validointi> validoiOpetussuunnitelma(Long id);
+    List<Validointi> validoiOpetussuunnitelma(@P("id") Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void updateLapsiOpetussuunnitelmat(Long opsId);
+    void updateLapsiOpetussuunnitelmat(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#pohjaId, 'opetussuunnitelma', 'HALLINTA')")
-    void syncPohja(Long pohjaId);
+    void syncPohja(@P("pohjaId") Long pohjaId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
-    void updateOppiainejarjestys(Long opsId, List<JarjestysDto> oppiainejarjestys);
+    void updateOppiainejarjestys(@P("opsId") Long opsId, List<JarjestysDto> oppiainejarjestys);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     <T> T getTekstit(@P("opsId") final Long opsId, Class<T> t);

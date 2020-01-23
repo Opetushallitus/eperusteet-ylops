@@ -136,7 +136,7 @@ public class KommenttiServiceImpl implements KommenttiService {
     }
 
     @Override
-    public KommenttiDto add(@P("k") KommenttiDto kommenttiDto) {
+    public KommenttiDto add(KommenttiDto kommenttiDto) {
         Kommentti kommentti = mapper.map(kommenttiDto, Kommentti.class);
         kommentti.setSisalto(clip(kommenttiDto.getSisalto()));
         if (kommentti.getParentId() != null) {

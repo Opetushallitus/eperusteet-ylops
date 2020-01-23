@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
@@ -20,7 +21,20 @@ public interface Lops2019OppiaineService {
     Lops2019PaikallinenOppiaineDto addOppiaine(@P("opsId") Long opsId, Lops2019PaikallinenOppiaineDto oppiaineDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    Lops2019PaikallinenOppiaineDto updateOppiaine(@P("opsId") Long opsId, Long oppiaineId, UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> oppiaineDto);
+    Lops2019PaikallinenOppiaineDto addOppiaine(@P("opsId") Long opsId,
+                                               Lops2019PaikallinenOppiaineDto oppiaineDto,
+                                               MuokkausTapahtuma tapahtuma);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    Lops2019PaikallinenOppiaineDto updateOppiaine(@P("opsId") Long opsId,
+                                                  Long oppiaineId,
+                                                  UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> oppiaineDto);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    Lops2019PaikallinenOppiaineDto updateOppiaine(@P("opsId") Long opsId,
+                                                  Long oppiaineId,
+                                                  UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> oppiaineDto,
+                                                  MuokkausTapahtuma tapahtuma);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void removeOne(@P("opsId") Long opsId, Long oppiaineId);

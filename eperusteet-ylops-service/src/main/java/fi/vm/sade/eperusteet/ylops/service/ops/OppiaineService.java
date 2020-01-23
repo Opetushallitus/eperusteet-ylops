@@ -34,7 +34,7 @@ import java.util.UUID;
  */
 public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void updateVuosiluokkienTavoitteet(Long opsId, Long oppiaineId, Long vlkId, Map<Vuosiluokka, Set<UUID>> tavoitteet);
+    void updateVuosiluokkienTavoitteet(@P("opsId") Long opsId, Long oppiaineId, Long vlkId, Map<Vuosiluokka, Set<UUID>> tavoitteet);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<OppiaineDto> getAll(@P("opsId") Long opsId);
@@ -73,7 +73,7 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
                                   Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteet);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'POISTO')")
-    List<OppiaineLaajaDto> getAllVersions(Long opsId, Long oppiaineId);
+    List<OppiaineLaajaDto> getAllVersions(@P("opsId") Long opsId, Long oppiaineId);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI') || hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OppiainePalautettuDto restore(@P("opsId") Long opsId, Long oppiaineId, Long oppimaaraId);
@@ -111,7 +111,7 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OpsOppiaineDto getVersion(@P("opsId") Long opsId, Long id, Integer versio);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
-    OppiaineDto getRevision(@P("opsId") Long opsId, Long id, Integer versio);
+    OppiaineDto getRevision(Long opsId, Long id, Integer versio);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OpsOppiaineDto revertTo(@P("opsId") Long opsId, Long id, Integer versio);

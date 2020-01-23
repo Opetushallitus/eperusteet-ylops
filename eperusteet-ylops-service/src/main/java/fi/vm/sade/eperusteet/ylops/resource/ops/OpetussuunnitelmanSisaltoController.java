@@ -68,7 +68,7 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final long viiteId) {
 
-        return new ResponseEntity<>(tekstiKappaleViiteService.getVersions(viiteId), HttpStatus.OK);
+        return new ResponseEntity<>(tekstiKappaleViiteService.getVersions(opsId, viiteId), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/tekstit/{viiteId}/versio/{versio}", method = GET)
