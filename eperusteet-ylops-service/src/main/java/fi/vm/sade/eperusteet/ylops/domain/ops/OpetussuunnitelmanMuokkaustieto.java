@@ -33,7 +33,6 @@ import org.hibernate.annotations.Immutable;
 @Setter
 @Entity
 @Builder
-@Immutable
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "opetussuunnitelman_muokkaustieto")
@@ -68,8 +67,8 @@ public class OpetussuunnitelmanMuokkaustieto implements Serializable {
     @Column(name="kohde_id")
     private Long kohdeId;
 
-    @Getter
-    @Setter
     private String lisatieto;
 
+    @NotNull
+    private boolean poistettu = false;
 }
