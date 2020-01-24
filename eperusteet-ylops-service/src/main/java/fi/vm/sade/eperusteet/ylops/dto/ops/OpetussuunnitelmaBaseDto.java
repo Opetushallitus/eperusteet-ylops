@@ -61,4 +61,6 @@ public abstract class OpetussuunnitelmaBaseDto
     private String ryhmanNimi;
     private boolean esikatseltavissa;
     private boolean ainepainoitteinen;
+    private Date perusteenVoimassaoloAlkaa;
+    private Date perusteenVoimassaoloLoppuu;
 }

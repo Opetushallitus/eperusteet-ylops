@@ -391,4 +391,16 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     public NavigationType getNavigationType() {
         return NavigationType.opetussuunnitelma;
     }
+
+    public Date getPerusteenVoimassaoloAlkaa() {
+        return cachedPeruste.getVoimassaoloAlkaa();
+    }
+
+    public Date getPerusteenVoimassaoloLoppuu(){
+        return cachedPeruste.getVoimassaoloLoppuu();
+    }
+
+    public void setPerusteenVoimassaoloAlkaa() {}
+
+    public void setPerusteenVoimassaoloLoppuu() {}
 }
