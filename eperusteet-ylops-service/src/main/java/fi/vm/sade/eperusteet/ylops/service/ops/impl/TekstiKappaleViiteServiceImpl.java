@@ -370,7 +370,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                         lockMgr.ensureLockedByAuthenticatedUser(tid);
                     }
                 }
-                tekstiKappaleService.update(opsId, uusiTekstiKappale, MuokkausTapahtuma.PAIVITYS);
             } else {
                 throw new BusinessRuleViolationException("Lainattua tekstikappaletta ei voida muokata");
             }

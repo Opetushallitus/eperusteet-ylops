@@ -70,11 +70,11 @@ public class OpetussuunnitelmanMuokkaustietoServiceImpl implements Opetussuunnit
         try {
             // Merkataan aiemmat tapahtumat poistetuksi
             if (Objects.equals(muokkausTapahtuma.getTapahtuma(), MuokkausTapahtuma.POISTO.toString())) {
-                List<OpetussuunnitelmanMuokkaustieto> aiemminPoistetut = muokkausTietoRepository
+                List<OpetussuunnitelmanMuokkaustieto> aiemminTapahtumat = muokkausTietoRepository
                         .findByKohdeId(historiaTapahtuma.getId()).stream()
                         .peek(tapahtuma -> tapahtuma.setPoistettu(true))
                         .collect(Collectors.toList());
-                muokkausTietoRepository.save(aiemminPoistetut);
+                muokkausTietoRepository.save(aiemminTapahtumat);
             }
 
             // Lisäään uusi tapahtuma
