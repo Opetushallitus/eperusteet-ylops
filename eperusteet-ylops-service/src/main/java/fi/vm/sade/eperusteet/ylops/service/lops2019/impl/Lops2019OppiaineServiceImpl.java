@@ -170,6 +170,7 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         poistettu.setPoistettu_id(oppiaineId);
         poistettu.setPalautettu(false);
         poistettu.setTyyppi(PoistetunTyyppi.LOPS2019OPPIAINE);
+        oppiaine.updateMuokkaustiedot();
         poistetutRepository.save(poistettu);
         oppiaineRepository.delete(oppiaine);
 

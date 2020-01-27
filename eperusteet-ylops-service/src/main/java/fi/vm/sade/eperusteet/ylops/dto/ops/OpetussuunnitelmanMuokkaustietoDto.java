@@ -24,4 +24,5 @@ public class OpetussuunnitelmanMuokkaustietoDto {
     private Date luotu;
     private String muokkaaja;
     private String lisatieto;
+    private boolean poistettu;
 }

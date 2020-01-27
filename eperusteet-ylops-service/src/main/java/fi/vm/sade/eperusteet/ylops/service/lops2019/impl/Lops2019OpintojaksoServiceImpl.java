@@ -255,6 +255,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         poistettu.setPoistettu_id(opintojaksoId);
         poistettu.setPalautettu(false);
         poistettu.setTyyppi(PoistetunTyyppi.OPINTOJAKSO);
+        opintojakso.updateMuokkaustiedot();
         poistetutRepository.save(poistettu);
         ops.getLops2019().getOpintojaksot().remove(opintojakso);
 
