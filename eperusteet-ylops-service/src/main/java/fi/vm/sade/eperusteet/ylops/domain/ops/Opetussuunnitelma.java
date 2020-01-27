@@ -393,11 +393,11 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     }
 
     public Date getPerusteenVoimassaoloAlkaa() {
-        return cachedPeruste.getVoimassaoloAlkaa();
+        return cachedPeruste != null ? cachedPeruste.getVoimassaoloAlkaa() : null;
     }
 
     public Date getPerusteenVoimassaoloLoppuu(){
-        return cachedPeruste.getVoimassaoloLoppuu();
+        return cachedPeruste != null ? cachedPeruste.getVoimassaoloLoppuu() : null;
     }
 
     public void setPerusteenVoimassaoloAlkaa() {}
