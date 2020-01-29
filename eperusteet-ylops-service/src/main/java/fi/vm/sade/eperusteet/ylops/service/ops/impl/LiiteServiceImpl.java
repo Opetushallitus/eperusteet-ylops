@@ -37,8 +37,10 @@ import java.util.UUID;
 
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 /**
  * @author jhyoty
@@ -85,15 +87,23 @@ public class LiiteServiceImpl implements LiiteService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, noRollbackFor = NotExistsException.class)
     public InputStream export(Long opsId, UUID id, Long perusteId) {
         if (perusteId != null) {
             // Perusteen kuva
-            byte[] liite = eperusteetService.getLiite(perusteId, id);
-            if (liite.length > 0) {
-                return new ByteArrayInputStream(liite);
-            } else {
-                throw new NotExistsException("liite-ei-ole");
+            try {
+                byte[] liite = eperusteetService.getLiite(perusteId, id);
+                if (liite.length > 0) {
+                    return new ByteArrayInputStream(liite);
+                } else {
+                    throw new NotExistsException("liite-ei-ole");
+                }
+            } catch(HttpClientErrorException e) {
+                if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
+                    throw new NotExistsException("liite-ei-ole");
+                }
+
+                throw e;
             }
         } else {
             // Opsin kuva
