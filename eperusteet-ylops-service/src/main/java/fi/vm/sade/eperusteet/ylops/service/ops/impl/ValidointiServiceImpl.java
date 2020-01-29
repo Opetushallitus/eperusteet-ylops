@@ -158,7 +158,7 @@ public class ValidointiServiceImpl implements ValidointiService {
                             .contains(oa.getKoodi())));
         });
 
-        if (!ops.getPohja().getTila().equals(Tila.JULKAISTU)) {
+        if (ops.getPohja() != null && !ops.getPohja().getTila().equals(Tila.JULKAISTU)) {
             validointi.virhe("opetussuunnitelma-pohja-julkaisematon", ops.getPohja(), true);
         }
 
