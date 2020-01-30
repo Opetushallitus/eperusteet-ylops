@@ -182,6 +182,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         updateTekstiKappale(opsId, viite, uusi.getTekstiKappale(), false /* TODO: pakota lukitus */);
         viite.setPakollinen(uusi.isPakollinen());
         viite.setValmis(uusi.isValmis());
+        viite.getTekstiKappale().setTeksti(mapper.map(uusi.getTekstiKappale(), TekstiKappale.class).getTeksti());
         viite.setNaytaPerusteenTeksti(uusi.isNaytaPerusteenTeksti());
         viite.setNaytaPohjanTeksti(uusi.isNaytaPohjanTeksti());
         viite.setLiite(uusi.isLiite());
