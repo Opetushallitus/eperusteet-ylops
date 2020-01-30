@@ -87,7 +87,9 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
         mapper.map(tekstiKappaleDto, current);
         current.updateMuokkaustiedot();
         TekstiKappale tekstiKappale = repository.save(current);
-        muokkaustietoService.addOpsMuokkausTieto(opsId, tekstiKappale, tapahtuma);
+        if (tapahtuma != null) {
+            muokkaustietoService.addOpsMuokkausTieto(opsId, tekstiKappale, tapahtuma);
+        }
         return mapper.map(tekstiKappale, TekstiKappaleDto.class);
     }
 
