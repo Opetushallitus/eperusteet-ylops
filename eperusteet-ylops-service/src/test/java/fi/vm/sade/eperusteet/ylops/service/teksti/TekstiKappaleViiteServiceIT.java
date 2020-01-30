@@ -79,14 +79,16 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
         TekstiKappaleViiteDto.Matala uusi = opetussuunnitelmaService.addTekstiKappale(ops.getId(), viiteDto);
         assertThat(uusi.isNaytaPerusteenTeksti()).isTrue();
         assertThat(uusi.isNaytaPerusteenTeksti()).isTrue();
+        assertThat(uusi.getTekstiKappale().getTeksti().get(Kieli.FI)).isEqualTo("B");
 
         uusi.setNaytaPerusteenTeksti(false);
         uusi.setNaytaPohjanTeksti(false);
         uusi.getTekstiKappale().setTeksti(lt("teksti"));
         TekstiKappaleViiteDto updated = tekstiKappaleViiteService.updateTekstiKappaleViite(opsDto.getId(), uusi.getId(), uusi);
 
-        assertThat(uusi.isNaytaPerusteenTeksti()).isFalse();
-        assertThat(uusi.isNaytaPerusteenTeksti()).isFalse();
-        assertThat(uusi.getTekstiKappale().getTeksti().get(Kieli.FI)).isNotBlank();
+        assertThat(updated.isNaytaPerusteenTeksti()).isFalse();
+        assertThat(updated.isNaytaPerusteenTeksti()).isFalse();
+        assertThat(updated.getTekstiKappale().getTeksti().get(Kieli.FI)).isNotBlank();
+        assertThat(updated.getTekstiKappale().getTeksti().get(Kieli.FI)).isEqualTo("teksti");
     }
 }
