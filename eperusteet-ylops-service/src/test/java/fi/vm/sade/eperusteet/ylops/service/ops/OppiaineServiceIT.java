@@ -99,6 +99,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
     @Test
     public void testPalautaYlempi() {
         OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
 
         OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
 
@@ -154,7 +155,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
     @Test
     public void testMuokattavaksiKopioiminen() {
         OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
-
+        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
 
         OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
 

@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
@@ -43,6 +44,8 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         pohjaLuontiDto.setPerusteenDiaarinumero("1/2/3");
         pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.LOPS2019);
         OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
+        opetussuunnitelmaService.updateTila(pohjaDto.getId(), Tila.VALMIS);
+
         OpetussuunnitelmaLuontiDto opsLuontiDto = new OpetussuunnitelmaLuontiDto();
         opsLuontiDto.setTyyppi(Tyyppi.OPS);
         opsLuontiDto.setOrganisaatiot(Stream.of("1.2.246.562.10.83037752777")
