@@ -34,16 +34,24 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashSet;
+import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
-import java.util.*;
-
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author mikkom
@@ -186,6 +194,45 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         OpetussuunnitelmaDto dto = opetussuunnitelmaService.addOpetussuunnitelma(ops);
         assertNotNull(dto);
+    }
+
+    @Test
+    public void testOpsLuontiPohjanTIloilla() {
+        assertNotNull(addOpsPohjanTilalla(Tila.VALMIS));
+        assertNotNull(addOpsPohjanTilalla(Tila.JULKAISTU));
+
+        assertThatThrownBy(() -> {
+            addOpsPohjanTilalla(Tila.LUONNOS);
+        }).isInstanceOf(BusinessRuleViolationException.class).hasMessageContaining("pohjan-pitaa-olla-julkaistu");
+    }
+
+    private OpetussuunnitelmaDto addOpsPohjanTilalla(Tila paivitettavaTila){
+        OpetussuunnitelmaLuontiDto pohja = new OpetussuunnitelmaLuontiDto();
+        pohja.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
+        pohja.setNimi(lt(uniikkiString()));
+        pohja.setKuvaus(lt(uniikkiString()));
+        pohja.setTyyppi(Tyyppi.POHJA);
+        pohja.setTila(Tila.LUONNOS);
+        OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohja);
+        opetussuunnitelmaService.updateTila(pohjaDto.getId(), paivitettavaTila);
+
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTila(Tila.LUONNOS);
+        ops.setPohja(new Reference(pohjaDto.getId().toString()));
+        ops.setTyyppi(Tyyppi.OPS);
+        ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.246.562.10.00000000001");
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+
+        return opetussuunnitelmaService.addOpetussuunnitelma(ops);
     }
 
     @Test

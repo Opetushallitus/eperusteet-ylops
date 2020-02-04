@@ -689,6 +689,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             ops.setTekstit(new TekstiKappaleViite(Omistussuhde.OMA));
             ops.getTekstit().setLapset(new ArrayList<>());
 
+            checkValidPohja(ops);
+
             if (pohja.getPerusteenDiaarinumero() == null) {
                 throw new BusinessRuleViolationException("Pohjalta puuttuu perusteen diaarinumero");
             }
@@ -725,6 +727,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    private void checkValidPohja(Opetussuunnitelma ops) {
+        if(ops.getPohja().getPohja() == null) {
+            if (!Tila.VALMIS.equals(ops.getPohja().getTila()) & !Tila.JULKAISTU.equals(ops.getPohja().getTila())) {
+                throw new BusinessRuleViolationException("pohjan-pitaa-olla-julkaistu");
+            }
+        }
     }
 
     private void lisaaTeemaopinnotJosPohjassa(Opetussuunnitelma ops, Opetussuunnitelma pohja) {
