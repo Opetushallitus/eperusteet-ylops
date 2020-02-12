@@ -380,8 +380,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Laaja-alainen osaaminen ja paikallinen lisäys
         addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
-        addOpintojaksonOppiaineenLaajaAlainenOsaaminen(docBase, oppiaineet);
-        addOpintojaksonOppiaineenPaikallinenLaajaAlainenOsaaminen(docBase, paikallisetOppiaineet);
+
+        // NOTE: mahdollisesti palautetaan tulevaisuudessa
+        //addOpintojaksonOppiaineenLaajaAlainenOsaaminen(docBase, oppiaineet);
+        //addOpintojaksonOppiaineenPaikallinenLaajaAlainenOsaaminen(docBase, paikallisetOppiaineet);
         addOpintojaksonLaajaAlainenOsaaminenPaikallinenLisays(docBase, oj);
 
         // Arviointi
@@ -488,8 +490,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Laaja-alainen osaaminen ja paikallinen lisäys
         addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
-        addOpintojaksonOppiaineenLaajaAlainenOsaaminen(docBase, oppiaineet);
-        addOpintojaksonOppiaineenPaikallinenLaajaAlainenOsaaminen(docBase, paikallisetOppiaineet);
+
+        // NOTE: mahdollisesti palautetaan tulevaisuudessa
+        //addOpintojaksonOppiaineenLaajaAlainenOsaaminen(docBase, oppiaineet);
+        //addOpintojaksonOppiaineenPaikallinenLaajaAlainenOsaaminen(docBase, paikallisetOppiaineet);
         addOpintojaksonLaajaAlainenOsaaminenPaikallinenLisays(docBase, oj);
 
         // Arviointi
@@ -716,14 +720,16 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
     private void addPaikallinenLaajaalainen(DokumenttiBase docBase, Lops2019PaikallinenOppiaineDto poa) {
         // Laaja-alainen osaaminen
-        List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
-        if (!ObjectUtils.isEmpty(laajaAlainenOsaaminen)) {
-            addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
-            laajaAlainenOsaaminen.forEach(lao -> {
-                KoodistoKoodiDto laoKoodi = koodistoService.get("laajaalainenosaaminenlops2021", lao.getKoodi());
-                addLokalisoituteksti(docBase, laoKoodi.getNimi(), "h6");
-                addLokalisoituteksti(docBase, lao.getKuvaus(), "p");
-            });
+        if (poa != null) {
+            List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
+            if (!ObjectUtils.isEmpty(laajaAlainenOsaaminen)) {
+                addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
+                laajaAlainenOsaaminen.forEach(lao -> {
+                    KoodistoKoodiDto laoKoodi = koodistoService.get("laajaalainenosaaminenlops2021", lao.getKoodi());
+                    addLokalisoituteksti(docBase, laoKoodi.getNimi(), "h6");
+                    addLokalisoituteksti(docBase, lao.getKuvaus(), "p");
+                });
+            }
         }
     }
 
