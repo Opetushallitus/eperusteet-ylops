@@ -25,7 +25,7 @@ import java.util.List;
  */
 public interface KoodistoService {
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("permitAll()")
     List<KoodistoKoodiDto> getAll(String koodisto);
 
     @PreAuthorize("permitAll()")
