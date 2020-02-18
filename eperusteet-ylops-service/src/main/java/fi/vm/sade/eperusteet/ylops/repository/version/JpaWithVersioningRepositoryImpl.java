@@ -18,15 +18,14 @@ package fi.vm.sade.eperusteet.ylops.repository.version;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo;
 import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo_;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
-
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
@@ -68,6 +67,12 @@ class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends Simple
         }
 
         return revisions;
+    }
+
+    @Override
+    public Number getRevisionNumberForDate(Date revisionTime) {
+        AuditReader auditReader = AuditReaderFactory.get(entityManager);
+        return auditReader.getRevisionNumberForDate(revisionTime);
     }
 
     @Override

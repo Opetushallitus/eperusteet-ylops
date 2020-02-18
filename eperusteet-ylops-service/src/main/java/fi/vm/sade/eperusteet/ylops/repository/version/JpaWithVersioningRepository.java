@@ -16,10 +16,9 @@
 package fi.vm.sade.eperusteet.ylops.repository.version;
 
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
-
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
-
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
@@ -30,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 public interface JpaWithVersioningRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
 
     List<Revision> getRevisions(final ID id);
+
+    Number getRevisionNumberForDate(Date revisionTime);
 
     T findRevision(final ID id, final Integer revisionId);
 

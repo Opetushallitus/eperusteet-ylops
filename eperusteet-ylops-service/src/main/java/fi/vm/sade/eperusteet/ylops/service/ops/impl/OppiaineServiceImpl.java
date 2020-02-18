@@ -379,6 +379,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         return addValinnainen(opsId, oppiaineDto, vlkId, vuosiluokat, null, oldJnro, oldOavlk, true);
     }
 
+    private Oppiaine latestNotNull(Long oppiaineId, Date deleteTime) {
+        Number revNumber = oppiaineet.getRevisionNumberForDate(deleteTime);
+        if(revNumber != null) {
+            return oppiaineet.findRevision(oppiaineId, revNumber.intValue());
+        }
+
+        return null;
+    }
+
     private Oppiaine latestNotNull(Long oppiaineId) {
         List<Revision> revisions = oppiaineet.getRevisions(oppiaineId);
         revisions = revisions.stream()
@@ -441,7 +450,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             throw new BusinessRuleViolationException("Oppiaine olemassa, ei tarvitse palauttaa.");
         }
 
-        Oppiaine latest = latestNotNull(poistettu.getOppiaine());
+        Oppiaine latest = latestNotNull(poistettu.getOppiaine(), poistettu.getMuokattu());
         if (latest != null) {
             Optional.ofNullable(latest.getTavoitteet()).ifPresent(Object::toString);
             Optional.ofNullable(latest.getArviointi()).ifPresent(Object::toString);
