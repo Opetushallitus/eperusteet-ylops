@@ -93,6 +93,13 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
             inverseJoinColumns = @JoinColumn(name = "oj_oppiaine_id"))
     private Set<Lops2019OpintojaksonOppiaine> oppiaineet = new HashSet<>();
 
+    @Getter
+    @ManyToMany
+    @JoinTable(name = "lops2019_opintojakso_opintojakso",
+            joinColumns = @JoinColumn(name = "opintojakso_id"),
+            inverseJoinColumns = @JoinColumn(name = "oj_opintojakso_id"))
+    private Set<Lops2019Opintojakso> paikallisetOpintojaksot = new HashSet<>();
+
     public void setTavoitteet(List<Lops2019OpintojaksonTavoite> tavoitteet) {
         this.tavoitteet.clear();
         this.tavoitteet.addAll(tavoitteet);
@@ -116,6 +123,15 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     public void setLaajaAlainenOsaaminen(Set<Lops2019LaajaAlainenOsaaminen> laajaAlaiset) {
         this.laajaAlainenOsaaminen.clear();
         this.laajaAlainenOsaaminen.addAll(laajaAlaiset);
+    }
+
+    public void setPaikallisetOpintojaksot(Set<Lops2019Opintojakso> paikallisetOpintojaksot) {
+        if(this.paikallisetOpintojaksot == null) {
+            this.paikallisetOpintojaksot = new HashSet<>();
+        }
+
+        this.paikallisetOpintojaksot.clear();
+        this.paikallisetOpintojaksot.addAll(paikallisetOpintojaksot);
     }
 
     @Override
@@ -147,6 +163,9 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
                     .collect(Collectors.toSet()));
             result.setOppiaineet(original.getOppiaineet().stream()
                     .map(Lops2019OpintojaksonOppiaine::copy)
+                    .collect(Collectors.toSet()));
+            result.setPaikallisetOpintojaksot(original.getPaikallisetOpintojaksot().stream()
+                    .map(Lops2019Opintojakso::copy)
                     .collect(Collectors.toSet()));
             return result;
         }

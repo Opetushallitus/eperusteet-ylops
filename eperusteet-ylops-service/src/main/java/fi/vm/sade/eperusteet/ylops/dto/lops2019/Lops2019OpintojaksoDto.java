@@ -26,4 +26,6 @@ public class Lops2019OpintojaksoDto extends Lops2019OpintojaksoBaseDto {
 
     @Singular("moduuli")
     private List<Lops2019OpintojaksonModuuliDto> moduulit = new ArrayList<>();
+
+    private List<Lops2019OpintojaksoDto> paikallisetOpintojaksot = new ArrayList();
 }

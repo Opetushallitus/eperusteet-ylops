@@ -22,7 +22,9 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -84,8 +86,18 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     @Override
     public long getOpintojaksonLaajuus(Long opsId, Lops2019OpintojaksoDto opintojakso) {
+
+        Long laajuudet = 0l;
+
+        if (!CollectionUtils.isEmpty(opintojakso.getPaikallisetOpintojaksot())) {
+            laajuudet += opintojakso.getPaikallisetOpintojaksot().stream()
+                    .map(paikallinenOpintojakso -> getOpintojaksonLaajuus(opsId, paikallinenOpintojakso))
+                    .mapToLong(Long::longValue)
+                    .sum();
+        }
+
         if (opintojakso.getModuulit().isEmpty()) {
-            return opintojakso.getOppiaineet().stream()
+            laajuudet +=  opintojakso.getOppiaineet().stream()
                 .filter(Objects::nonNull)
                 .map(Lops2019OpintojaksonOppiaineDto::getLaajuus)
                 .filter(Objects::nonNull)
@@ -98,11 +110,13 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                     .collect(Collectors.toSet());
             Set<fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto> perusteModuulit
                     = lopsService.getPerusteModuulit(opsId, moduulikoodit);
-            return perusteModuulit.stream()
+            laajuudet +=  perusteModuulit.stream()
                     .map(fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto::getLaajuus)
                     .mapToLong(BigDecimal::longValue)
                     .sum();
         }
+
+        return laajuudet;
     }
 
     private Lops2019Opintojakso getOpintojakso(Long opsId, Long opintojaksoId) {
@@ -121,6 +135,11 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                 .map(oj -> mapper.map(oj, Lops2019OpintojaksoDto.class))
                 .map(oj -> {
                     oj.setLaajuus(getOpintojaksonLaajuus(opsId, oj));
+                    if(oj.getPaikallisetOpintojaksot() != null) {
+                        oj.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
+                            paikallinenOpintojakso.setLaajuus(getOpintojaksonLaajuus(opsId, paikallinenOpintojakso));
+                        });
+                    }
                     return oj;
                 })
                 .collect(Collectors.toList());
@@ -131,6 +150,11 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
         Lops2019OpintojaksoDto result = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
         result.setLaajuus(getOpintojaksonLaajuus(opsId, result));
+        if(result.getPaikallisetOpintojaksot() != null) {
+            result.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
+                paikallinenOpintojakso.setLaajuus(getOpintojaksonLaajuus(opsId, paikallinenOpintojakso));
+            });
+        }
         return result;
     }
 
@@ -162,6 +186,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         if (opintojaksoDto.getOppiaineet() == null) {
             throw new BusinessRuleViolationException("perusteen-oppiainetta-ei-olemassa");
         }
+
+        tarkistaOpintojakso(ops, opintojaksoDto);
 
         Set<Lops2019OppiaineKaikkiDto> perusteenOppiaineet
                 = lopsService.getPerusteenOppiaineet(opsId, opintojaksoDto.getOppiaineet().stream()
@@ -231,6 +257,9 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
             UpdateWrapperDto<Lops2019OpintojaksoDto> opintojaksoDto,
             MuokkausTapahtuma tapahtuma
     ) {
+        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        tarkistaOpintojakso(ops, opintojaksoDto.getData());
+
         opintojaksoDto.getData().setId(opintojaksoId);
         Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
         opintojakso = mapper.map(opintojaksoDto.getData(), opintojakso);
@@ -299,5 +328,36 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                 .map(koodi -> lopsService.getPerusteModuuli(opsId, koodi))
                 .collect(Collectors.toList()));
         return opintojaksoPerusteDto;
+    }
+
+    private void tarkistaOpintojakso(Opetussuunnitelma ops, Lops2019OpintojaksoDto opintojaksoDto) {
+        List<Lops2019OpintojaksoDto> opsOpintojaksot = mapper.mapAsList(ops.getLops2019().getOpintojaksot(), Lops2019OpintojaksoDto.class);
+
+        Set<Long> opintojaksotPaikallisillaopintojaksoilla = opsOpintojaksot.stream()
+                .filter(opintojakso -> !CollectionUtils.isEmpty(opintojakso.getPaikallisetOpintojaksot()))
+                .map(Lops2019OpintojaksoBaseDto::getId)
+                .collect(Collectors.toSet());
+
+        if(!CollectionUtils.isEmpty(opintojaksoDto.getPaikallisetOpintojaksot())) {
+            opintojaksoDto.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
+                if (opintojaksotPaikallisillaopintojaksoilla.contains(paikallinenOpintojakso.getId())) {
+                    throw new BusinessRuleViolationException("paikalliseen-opintojaksoon-on-jo-lisatty-opintojaksoja");
+                }
+            });
+        }
+    }
+
+    @Override
+    public boolean tarkistaOpintojaksot(@P("opsId") Long opsId) {
+
+        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        List<Lops2019OpintojaksoDto> opsOpintojaksot = mapper.mapAsList(ops.getLops2019().getOpintojaksot(), Lops2019OpintojaksoDto.class);
+
+        try {
+            opsOpintojaksot.forEach(opintojakso -> tarkistaOpintojakso(ops, opintojakso));
+            return true;
+        } catch(BusinessRuleViolationException ex) {
+            return false;
+        }
     }
 }

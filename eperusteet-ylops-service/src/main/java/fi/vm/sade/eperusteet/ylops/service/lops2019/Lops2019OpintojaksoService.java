@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
@@ -54,4 +55,7 @@ public interface Lops2019OpintojaksoService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     long getOpintojaksonLaajuus(@P("opsId") Long opsId, Lops2019OpintojaksoDto opintojakso);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    boolean tarkistaOpintojaksot(@P("opsId") Long opsId);
 }

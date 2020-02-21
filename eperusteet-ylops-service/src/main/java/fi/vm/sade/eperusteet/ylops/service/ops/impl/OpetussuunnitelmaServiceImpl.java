@@ -59,6 +59,7 @@ import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
@@ -168,6 +169,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private OpsDispatcher dispatcher;
+
+    @Autowired
+    private Lops2019OpintojaksoService lops2019OpintojaksoService;
 
     @PersistenceContext
     private EntityManager em;
@@ -1361,6 +1365,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Set<Kieli> julkaisukielet = ops.getJulkaisukielet();
 
         validateOpetussuunnitelmaTiedot(ops, validointi);
+        validoiPaikallisetOpintojaksot(ops, validointi);
         validateTextHierarchy(ops, julkaisukielet, validointi);
 
         ops.getVuosiluokkakokonaisuudet().stream()
@@ -1393,6 +1398,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         return validointi;
+    }
+
+    private void validoiPaikallisetOpintojaksot(Opetussuunnitelma ops, Validointi validointi) {
+        if(KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus()) && !lops2019OpintojaksoService.tarkistaOpintojaksot(ops.getId())){
+            validointi.virhe("ops-paikallinen-opintojakso-rakennevirhe");
+        }
     }
 
     private void validateOpetussuunnitelmaTiedot(Opetussuunnitelma ops, Validointi validointi) {

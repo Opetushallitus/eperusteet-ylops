@@ -1,9 +1,11 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
+import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
@@ -27,6 +29,8 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import java.util.Arrays;
+import org.apache.commons.collections.CollectionUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -39,6 +43,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -294,4 +300,124 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThat(oppiaineDto.getId()).isNotNull();
     }
 
+    @Test
+    @Transactional
+    public void testOpintojaksosValid() {
+
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+
+        Lops2019OpintojaksoDto opintojaksoDtoPaikallinen1 = Lops2019OpintojaksoDto.builder()
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                        .koodi("oppiaineet_maa")
+                        .build()))
+                .build();
+        opintojaksoDtoPaikallinen1.setNimi(LokalisoituTekstiDto.of("Paikallinen1"));
+        opintojaksoDtoPaikallinen1.setKoodi("Paikallinen1");
+        opintojaksoDtoPaikallinen1 = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDtoPaikallinen1);
+
+        Lops2019OpintojaksoDto opintojaksoDtoPaikallinen2 = Lops2019OpintojaksoDto.builder()
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                        .koodi("oppiaineet_maa")
+                        .build()))
+                .build();
+        opintojaksoDtoPaikallinen2.setNimi(LokalisoituTekstiDto.of("Paikallinen1"));
+        opintojaksoDtoPaikallinen2.setKoodi("Paikallinen1");
+        opintojaksoDtoPaikallinen2 = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDtoPaikallinen2);
+
+        Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                        .koodi("oppiaineet_maa")
+                        .build()))
+                .build();
+        opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+        opintojaksoDto.setKoodi("1234");
+
+        opintojaksoDto.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDtoPaikallinen1, opintojaksoDtoPaikallinen2));
+        opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
+
+        assertThat(opintojaksoService.tarkistaOpintojaksot(ops.getId())).isTrue();
+
+    }
+
+    @Test
+    @Transactional
+    public void testAddOpintojaksoPaikallinenInvalid() {
+
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+
+        Lops2019OpintojaksoDto opintojaksoDtoPaikallinen1 = Lops2019OpintojaksoDto.builder()
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                        .koodi("oppiaineet_maa")
+                        .build()))
+                .build();
+        opintojaksoDtoPaikallinen1.setNimi(LokalisoituTekstiDto.of("Paikallinen1"));
+        opintojaksoDtoPaikallinen1.setKoodi("Paikallinen1");
+        opintojaksoDtoPaikallinen1 = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDtoPaikallinen1);
+
+        Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                        .koodi("oppiaineet_maa")
+                        .build()))
+                .build();
+        opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+        opintojaksoDto.setKoodi("1234");
+        opintojaksoDto.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDtoPaikallinen1));
+        opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
+
+        Lops2019OpintojaksoDto opintojaksoDto2 = Lops2019OpintojaksoDto.builder()
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                        .koodi("oppiaineet_maa")
+                        .build()))
+                .build();
+        opintojaksoDto2.setNimi(LokalisoituTekstiDto.of("Geometriat 2"));
+        opintojaksoDto2.setKoodi("2234");
+        opintojaksoDto2.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDto));
+
+        assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto2)).hasMessage("paikalliseen-opintojaksoon-on-jo-lisatty-opintojaksoja");
+    }
+
+    @Test
+    @Transactional
+    public void testOpetussuunnitelmanOpintojaksot_tarkistus() {
+
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+
+        Lops2019OpintojaksoDto opintojaksoDtoPaikallinen1 = Lops2019OpintojaksoDto.builder()
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                        .koodi("oppiaineet_maa")
+                        .build()))
+                .build();
+        opintojaksoDtoPaikallinen1.setNimi(LokalisoituTekstiDto.of("Paikallinen1"));
+        opintojaksoDtoPaikallinen1.setKoodi("Paikallinen1");
+        opintojaksoDtoPaikallinen1 = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDtoPaikallinen1);
+
+        Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                        .koodi("oppiaineet_maa")
+                        .build()))
+                .build();
+        opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+        opintojaksoDto.setKoodi("1234");
+        opintojaksoDto.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDtoPaikallinen1));
+        opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
+
+        Lops2019OpintojaksoDto opintojaksoDto2 = Lops2019OpintojaksoDto.builder()
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                        .koodi("oppiaineet_maa")
+                        .build()))
+                .build();
+        opintojaksoDto2.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+        opintojaksoDto2.setKoodi("2234");
+        opintojaksoDto2.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDtoPaikallinen1));
+        opintojaksoDto2 = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto2);
+
+        assertThat(opintojaksoService.tarkistaOpintojaksot(ops.getId())).isTrue();
+
+        opintojaksoDto2.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDto));
+
+        Lops2019Opintojakso opintojakso = opintojaksoRepository.save(mapper.map(opintojaksoDto2, Lops2019Opintojakso.class));
+
+        assertThat(opintojaksoService.tarkistaOpintojaksot(ops.getId())).isFalse();
+
+    }
 }
