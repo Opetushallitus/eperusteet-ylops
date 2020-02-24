@@ -25,14 +25,14 @@ public class Kysymys extends AbstractAuditedEntity {
 
     @Getter
     @Setter
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private LokalisoituTeksti kysymys;
 
     @Getter
     @Setter
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private LokalisoituTeksti vastaus;
