@@ -6,6 +6,8 @@ import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Poistettu;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -21,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
@@ -68,6 +71,9 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
+    @Autowired
+    private KoodistoService koodistoService;
 
     private Opetussuunnitelma getOpetussuunnitelma(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
@@ -261,26 +267,15 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     }
 
     @Override
-    public Lops2019LaajaAlainenOsaaminenDto getLaajaAlaisetOsaamiset() {
+    public Lops2019LaajaAlainenOsaaminenDto getLaajaAlaisetOsaamiset(Kieli kieli) {
+
+        List<KoodistoKoodiDto> laajaAlaisetkoodit = koodistoService.getAll("laajaalainenosaaminenlops2021");
+
         Lops2019LaajaAlainenOsaaminenDto laajaAlaisetOsaamiset = new Lops2019LaajaAlainenOsaaminenDto();
-
-        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "1", "Globaali- ja kulttuuriosaaminen"));
-
-        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "2", "Hyvinvointiosaaminen"));
-
-        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "3", "Vuorovaikutusosaaminen"));
-
-        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "4", "Eettisyys ja ympäristöosaaminen"));
-
-        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "5", "Yhteiskunnallinen osaaminen"));
-
-        laajaAlaisetOsaamiset.getLaajaAlaisetOsaamiset().add(
-                Lops2019LaajaAlainenDto.of("lops2019laajaalainenosaaminen", "6", "Monitieteinen ja luova osaaminen"));
+        laajaAlaisetOsaamiset.setLaajaAlaisetOsaamiset(laajaAlaisetkoodit.stream()
+                .map(laajaAlainenKoodi -> Lops2019LaajaAlainenDto
+                        .of("laajaalainenosaaminenlops2021", laajaAlainenKoodi.getKoodiArvo(), laajaAlainenKoodi.getNimi().get(kieli)))
+                .collect(Collectors.toList()));
 
         return laajaAlaisetOsaamiset;
     }
