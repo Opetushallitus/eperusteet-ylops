@@ -15,6 +15,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliBaseDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
@@ -25,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -79,6 +81,9 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     @Autowired
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
+
+    @Autowired
+    private Lops2019OppiaineService lops2019OppiaineService;
 
     private Opetussuunnitelma getOpetussuunnitelma(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
@@ -198,10 +203,18 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
         tarkistaOpintojakso(ops, opintojaksoDto);
 
-        Set<Lops2019OppiaineKaikkiDto> perusteenOppiaineet
-                = lopsService.getPerusteenOppiaineet(opsId, opintojaksoDto.getOppiaineet().stream()
+        Set<String> opintojaksonOppiaineKoodit = opintojaksoDto.getOppiaineet().stream()
                 .map(Lops2019OpintojaksonOppiaineDto::getKoodi)
-                .collect(Collectors.toSet()));
+                .collect(Collectors.toSet());
+
+        opintojaksonOppiaineKoodit.addAll(
+                lops2019OppiaineService.getAll(opsId).stream()
+                        .filter(paikallinen -> opintojaksonOppiaineKoodit.contains(paikallinen.getKoodi()))
+                        .map(Lops2019PaikallinenOppiaineDto::getPerusteenOppiaineUri)
+                        .collect(Collectors.toSet()));
+
+        Set<Lops2019OppiaineKaikkiDto> perusteenOppiaineet
+                = lopsService.getPerusteenOppiaineet(opsId, opintojaksonOppiaineKoodit);
 
         Set<String> oppiaineKoodit = Stream.concat(
                 oppiaineRepository.findAllBySisalto(ops.getLops2019()).stream()
@@ -347,7 +360,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                 .map(Lops2019OpintojaksoBaseDto::getId)
                 .collect(Collectors.toSet());
 
-        if(!CollectionUtils.isEmpty(opintojaksoDto.getPaikallisetOpintojaksot())) {
+        if (!CollectionUtils.isEmpty(opintojaksoDto.getPaikallisetOpintojaksot())) {
             opintojaksoDto.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
                 if (opintojaksotPaikallisillaopintojaksoilla.contains(paikallinenOpintojakso.getId())) {
                     throw new BusinessRuleViolationException("paikalliseen-opintojaksoon-on-jo-lisatty-opintojaksoja");
@@ -365,7 +378,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
         try {
             opsOpintojaksot.forEach(opintojakso -> tarkistaOpintojakso(ops, opintojakso));
             return true;
-        } catch(BusinessRuleViolationException ex) {
+        } catch (BusinessRuleViolationException ex) {
             return false;
         }
     }

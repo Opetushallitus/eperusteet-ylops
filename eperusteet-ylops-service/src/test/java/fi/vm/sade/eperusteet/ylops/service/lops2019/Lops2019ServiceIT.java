@@ -10,8 +10,14 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.*;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.Kommentti2019Dto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.Kommentti2019LuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleDto;
@@ -22,7 +28,6 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
-import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -30,20 +35,17 @@ import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.Arrays;
-import org.apache.commons.collections.CollectionUtils;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -208,6 +210,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         }).isInstanceOf(BusinessRuleViolationException.class);
     }
 
+    @Test
     @Rollback
     public void testVirheellisetKoodit() {
         OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
@@ -233,7 +236,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
         assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto))
                 .isInstanceOf(BusinessRuleViolationException.class)
-                .hasMessage("perusteen-oppiainetta-ei-olemassa");
+                .hasMessage("oppiainetta-ei-ole");
 
         opintojaksoDto.setOppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
                 .koodi("oppiaineet_bi")
@@ -259,6 +262,47 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto))
                 .isInstanceOf(BusinessRuleViolationException.class)
                 .hasMessage("liitetyt-moduulit-tulee-loytya-opintojakson-oppiaineilta");
+
+        {
+            Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
+                    .nimi(LokalisoituTekstiDto.of("Biologia"))
+                    .kuvaus(LokalisoituTekstiDto.of("Kuvaus"))
+                    .koodi("paikallinen1")
+                    .build();
+            oppiaineDto = oppiaineService.addOppiaine(ops.getId(), oppiaineDto);
+
+            opintojaksoDto.setOppiaineet(Sets.newHashSet(
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi(oppiaineDto.getKoodi()).build(),
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_maa").build()));
+
+            opintojaksoDto.setModuulit(Arrays.asList(
+                    Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_bi1").build(),
+                    Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_maa2").build()));
+
+            assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto))
+                    .isInstanceOf(BusinessRuleViolationException.class)
+                    .hasMessage("liitetyt-moduulit-tulee-loytya-opintojakson-oppiaineilta");
+        }
+
+        {
+            Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
+                    .nimi(LokalisoituTekstiDto.of("Biologia"))
+                    .kuvaus(LokalisoituTekstiDto.of("Kuvaus"))
+                    .koodi("paikallinen2")
+                    .perusteenOppiaineUri("oppiaineet_bi")
+                    .build();
+            oppiaineDto = oppiaineService.addOppiaine(ops.getId(), oppiaineDto);
+
+            opintojaksoDto.setOppiaineet(Sets.newHashSet(
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi(oppiaineDto.getKoodi()).build(),
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_maa").build()));
+
+            opintojaksoDto.setModuulit(Arrays.asList(
+                    Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_bi1").build(),
+                    Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_maa2").build()));
+
+            assertThat(opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto)).isNotNull();
+        }
     }
 
     @Test
