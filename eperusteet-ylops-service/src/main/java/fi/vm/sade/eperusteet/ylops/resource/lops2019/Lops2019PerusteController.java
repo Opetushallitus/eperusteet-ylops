@@ -8,6 +8,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import io.swagger.annotations.Api;
+import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,6 +55,13 @@ public class Lops2019PerusteController {
             @PathVariable final Long opsId,
             @PathVariable final String oppiaineUri) {
         return lopsService.getPerusteOppiaine(opsId, oppiaineUri);
+    }
+
+    @RequestMapping(value = "/moduulit", method = RequestMethod.GET)
+    public Set<Lops2019ModuuliDto> getAllLops2019PerusteModuulit(
+            @PathVariable final Long opsId,
+            @RequestParam Set<String> moduuliKoodiUris) {
+        return lopsService.getPerusteModuulit(opsId, moduuliKoodiUris);
     }
 
     @RequestMapping(value = "/oppiaineet/{oppiaineUri}/moduulit", method = RequestMethod.GET)
