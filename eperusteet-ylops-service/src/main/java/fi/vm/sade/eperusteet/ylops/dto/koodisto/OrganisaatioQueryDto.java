@@ -31,5 +31,5 @@ import lombok.Setter;
 @Setter
 public class OrganisaatioQueryDto {
     Set<String> kunta = new HashSet<>();
-    Set<Integer> oppilaitostyyppi = Stream.of(11, 12, 15, 21, 64).collect(Collectors.toSet());
+    Set<Integer> oppilaitostyyppi = Stream.of(11, 12, 15, 19, 21, 63, 64).collect(Collectors.toSet());
 }
