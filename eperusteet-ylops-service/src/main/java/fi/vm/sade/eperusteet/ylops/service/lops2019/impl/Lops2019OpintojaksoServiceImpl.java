@@ -354,6 +354,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     private void tarkistaOpintojakso(Opetussuunnitelma ops, Lops2019OpintojaksoDto opintojaksoDto) {
         List<Lops2019OpintojaksoDto> opsOpintojaksot = mapper.mapAsList(ops.getLops2019().getOpintojaksot(), Lops2019OpintojaksoDto.class);
+        List<String> oppiaineKoodit = opintojaksoDto.getOppiaineet().stream().map(Lops2019OpintojaksonOppiaineDto::getKoodi).collect(Collectors.toList());
+        List<String> moduuliKoodit = opintojaksoDto.getModuulit().stream().map(Lops2019OpintojaksonModuuliDto::getKoodiUri).collect(Collectors.toList());
 
         Set<Long> opintojaksotPaikallisillaopintojaksoilla = opsOpintojaksot.stream()
                 .filter(opintojakso -> !CollectionUtils.isEmpty(opintojakso.getPaikallisetOpintojaksot()))
@@ -364,6 +366,19 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
             opintojaksoDto.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
                 if (opintojaksotPaikallisillaopintojaksoilla.contains(paikallinenOpintojakso.getId())) {
                     throw new BusinessRuleViolationException("paikalliseen-opintojaksoon-on-jo-lisatty-opintojaksoja");
+                }
+            });
+
+            opintojaksoDto.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
+                List<String> paikallisenOpintojaksonOppiaineKoodit = paikallinenOpintojakso.getOppiaineet().stream().map(Lops2019OpintojaksonOppiaineDto::getKoodi).collect(Collectors.toList());
+                List<String> paikallisenOpintojaksonModuuliKoodit = paikallinenOpintojakso.getModuulit().stream().map(Lops2019OpintojaksonModuuliDto::getKoodiUri).collect(Collectors.toList());
+
+                if (CollectionUtils.intersection(oppiaineKoodit, paikallisenOpintojaksonOppiaineKoodit).isEmpty()) {
+                    throw new BusinessRuleViolationException("opintojaksoon-lisatty-paikallinen-opintojakso-vaaralla-oppiaineella");
+                }
+
+                if (!CollectionUtils.intersection(moduuliKoodit, paikallisenOpintojaksonModuuliKoodit).isEmpty()) {
+                    throw new BusinessRuleViolationException("opintojaksoon-lisatty-paikallisen-opintojakson-moduuleita");
                 }
             });
         }

@@ -393,10 +393,40 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                 .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
                         .koodi("oppiaineet_maa")
                         .build()))
+                .moduulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder()
+                        .koodiUri("moduulit_maa3")
+                        .build()))
                 .build();
         opintojaksoDtoPaikallinen1.setNimi(LokalisoituTekstiDto.of("Paikallinen1"));
         opintojaksoDtoPaikallinen1.setKoodi("Paikallinen1");
         opintojaksoDtoPaikallinen1 = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDtoPaikallinen1);
+
+        {
+            Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                    .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                            .koodi("oppiaineet_maa2")
+                            .build()))
+                    .build();
+            opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+            opintojaksoDto.setKoodi("1234");
+            opintojaksoDto.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDtoPaikallinen1));
+            assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto)).hasMessage("opintojaksoon-lisatty-paikallinen-opintojakso-vaaralla-oppiaineella");
+        }
+
+        {
+            Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                    .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                            .koodi("oppiaineet_maa")
+                            .build()))
+                    .moduulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder()
+                            .koodiUri("moduulit_maa3")
+                            .build()))
+                    .build();
+            opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+            opintojaksoDto.setKoodi("1234");
+            opintojaksoDto.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDtoPaikallinen1));
+            assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto)).hasMessage("opintojaksoon-lisatty-paikallisen-opintojakson-moduuleita");
+        }
 
         Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
                 .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
@@ -408,16 +438,19 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         opintojaksoDto.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDtoPaikallinen1));
         opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
 
-        Lops2019OpintojaksoDto opintojaksoDto2 = Lops2019OpintojaksoDto.builder()
-                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
-                        .koodi("oppiaineet_maa")
-                        .build()))
-                .build();
-        opintojaksoDto2.setNimi(LokalisoituTekstiDto.of("Geometriat 2"));
-        opintojaksoDto2.setKoodi("2234");
-        opintojaksoDto2.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDto));
 
-        assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto2)).hasMessage("paikalliseen-opintojaksoon-on-jo-lisatty-opintojaksoja");
+        {
+            Lops2019OpintojaksoDto opintojaksoDto2 = Lops2019OpintojaksoDto.builder()
+                    .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                            .koodi("oppiaineet_maa")
+                            .build()))
+                    .build();
+            opintojaksoDto2.setNimi(LokalisoituTekstiDto.of("Geometriat 2"));
+            opintojaksoDto2.setKoodi("2234");
+            opintojaksoDto2.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDto));
+
+            assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto2)).hasMessage("paikalliseen-opintojaksoon-on-jo-lisatty-opintojaksoja");
+        }
     }
 
     @Test
