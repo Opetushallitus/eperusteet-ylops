@@ -285,6 +285,18 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         }
 
         {
+            opintojaksoDto.setOppiaineet(Sets.newHashSet(
+                    Lops2019OpintojaksonOppiaineDto.builder()
+                            .koodi("oppiaineet_maa")
+                            .laajuus(-1l)
+                            .build()));
+
+            assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto))
+                    .isInstanceOf(BusinessRuleViolationException.class)
+                    .hasMessage("opintojakson-oppiaineen-laajuus-virheellinen");
+        }
+
+        {
             Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
                     .nimi(LokalisoituTekstiDto.of("Biologia"))
                     .kuvaus(LokalisoituTekstiDto.of("Kuvaus"))
@@ -295,7 +307,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
             opintojaksoDto.setOppiaineet(Sets.newHashSet(
                     Lops2019OpintojaksonOppiaineDto.builder().koodi(oppiaineDto.getKoodi()).build(),
-                    Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_maa").build()));
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_maa").laajuus(1l).build()));
 
             opintojaksoDto.setModuulit(Arrays.asList(
                     Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_bi1").build(),

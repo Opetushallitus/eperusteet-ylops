@@ -382,6 +382,14 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                 }
             });
         }
+
+        if (!CollectionUtils.isEmpty(opintojaksoDto.getOppiaineet())) {
+            opintojaksoDto.getOppiaineet().forEach((oppiaine -> {
+                if (oppiaine.getLaajuus() != null && oppiaine.getLaajuus() < 0) {
+                    throw new BusinessRuleViolationException("opintojakson-oppiaineen-laajuus-virheellinen");
+                }
+            }));
+        }
     }
 
     @Override
