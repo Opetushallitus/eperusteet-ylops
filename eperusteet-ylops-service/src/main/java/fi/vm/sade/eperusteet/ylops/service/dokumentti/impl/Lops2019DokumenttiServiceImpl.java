@@ -73,6 +73,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         Map<String, List<Lops2019OpintojaksoDto>> opintojaksotMap = new HashMap<>();
         {
             List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(ops.getId());
+            opintojaksot.addAll(opintojaksoService.getTuodut(ops.getId()));
             opintojaksot.forEach(oj -> oj.getOppiaineet().stream()
                     .map(Lops2019OpintojaksonOppiaineDto::getKoodi)
                     .forEach(koodi -> {
@@ -87,7 +88,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         // Perusteen oppiaineet
         perusteenSisalto.getOppiaineet().forEach(oa -> {
             KoodiDto koodi = oa.getKoodi();
-            addOppiaine(docBase, oa, koodi != null ? opintojaksotMap.get(koodi.getUri()) : null);
+            addOppiaine(docBase, oa, koodi != null ? opintojaksotMap.get(koodi.getUri()) : null, opintojaksotMap);
         });
 
         // Paikalliset oppiaineet
@@ -104,7 +105,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
     private void addOppiaine(
             DokumenttiBase docBase,
             Lops2019OppiaineKaikkiDto oa,
-            List<Lops2019OpintojaksoDto> opintojaksot
+            List<Lops2019OpintojaksoDto> opintojaksot,
+            Map<String, List<Lops2019OpintojaksoDto>> opintojaksotMap
     ) {
         StringBuilder nimiBuilder = new StringBuilder();
         nimiBuilder.append(getTextString(docBase, oa.getNimi()));
@@ -184,7 +186,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Oppimäärät
         docBase.getGenerator().increaseDepth();
-        oa.getOppimaarat().forEach(om -> addOppiaine(docBase, om, opintojaksot));
+        oa.getOppimaarat().forEach(om -> {
+            KoodiDto omKoodi = om.getKoodi();
+            addOppiaine(docBase, om, omKoodi != null ? opintojaksotMap.get(omKoodi.getUri()) : null, opintojaksotMap);
+        });
         docBase.getGenerator().decreaseDepth();
         docBase.getGenerator().increaseNumber();
     }
@@ -452,6 +457,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         Lops2019SisaltoDto sisaltoDto = docBase.getPerusteDto().getLops2019();
         List<Lops2019OppiaineKaikkiDto> oppiaineetKaikki = sisaltoDto.getOppiaineet();
         List<Lops2019PaikallinenOppiaineDto> poppiaineetKaikki = oppiaineService.getAll(docBase.getOps().getId());
+
+        oppiaineetKaikki.addAll(oppiaineetKaikki.stream().map(oppiaine -> oppiaine.getOppimaarat()).flatMap(Collection::stream).collect(Collectors.toList()));
 
         // Haetaan opintojakson perusteen oppiaineet
         List<Lops2019OppiaineKaikkiDto> oppiaineet = new ArrayList<>();

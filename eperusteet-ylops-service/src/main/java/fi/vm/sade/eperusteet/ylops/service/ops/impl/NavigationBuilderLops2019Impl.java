@@ -77,7 +77,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
         List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = oppiaineService.getAll(opsId);
 
         // Järjestetään oppiaineen koodilla opintojaksot
-        Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap = opintojaksoService.getAll(opsId).stream()
+        Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap = opintojaksoService.getAllTuodut(opsId).stream()
                 .flatMap(oj -> oj.getOppiaineet().stream()
                         .map(oa -> new AbstractMap.SimpleImmutableEntry<>(oa.getKoodi(), oj)))
                 .collect(Collectors.groupingBy(

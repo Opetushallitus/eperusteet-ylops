@@ -37,6 +37,24 @@ public class Lops2019Sisalto extends AbstractAuditedEntity implements Serializab
         inverseJoinColumns = @JoinColumn(name = "opintojakso_id"))
     private Set<Lops2019Opintojakso> opintojaksot = new HashSet<>();
 
+    @Getter
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinTable(name = "lops2019_sisalto_tuotu_opintojakso",
+            joinColumns = @JoinColumn(name = "sisalto_id"),
+            inverseJoinColumns = @JoinColumn(name = "opintojakso_id"))
+    private Set<Lops2019Opintojakso> tuodutOpintojaksot = new HashSet<>();
+
+    @Getter
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinTable(name = "lops2019_sisalto_piilotettu_opintojakso",
+            joinColumns = @JoinColumn(name = "sisalto_id"),
+            inverseJoinColumns = @JoinColumn(name = "opintojakso_id"))
+    private Set<Lops2019Opintojakso> piilotetutOpintojaksot = new HashSet<>();
+
+    public void addTuotuOpintojakso(Lops2019Opintojakso opintojakso) {
+        tuodutOpintojaksot.add(opintojakso);
+    }
+
     public void addOpintojakso(Lops2019Opintojakso opintojakso) {
         opintojaksot.add(opintojakso);
     }

@@ -35,11 +35,14 @@ import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -48,7 +51,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -508,5 +511,43 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
         assertThat(opintojaksoService.tarkistaOpintojaksot(ops.getId())).isFalse();
 
+    }
+
+    @Test
+    public void testOpetussuunitelma_addTuotuOpintojakso() {
+
+        Set<Long> ids = new HashSet<>();
+
+        OpetussuunnitelmaDto ops1 = createLukioOpetussuunnitelma();
+        {
+            Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                    .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                            .koodi("oppiaineet_maa")
+                            .build()))
+                    .build();
+            opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+            opintojaksoDto.setKoodi("1234");
+            ids.add(opintojaksoService.addOpintojakso(ops1.getId(), opintojaksoDto).getId());
+        }
+
+        OpetussuunnitelmaDto ops2 = createLukioOpetussuunnitelma();
+        {
+            Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                    .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
+                            .koodi("oppiaineet_maa")
+                            .build()))
+                    .build();
+            opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
+            opintojaksoDto.setKoodi("1234");
+            ids.add(opintojaksoService.addOpintojakso(ops2.getId(), opintojaksoDto).getId());
+        }
+
+        List<Lops2019OpintojaksoDto> ops1Opintojaksot = opintojaksoService.getAll(ops1.getId());
+        opintojaksoService.addTuodutOpintojaksot(ops2.getId(), ops1Opintojaksot);
+
+        assertThat(opintojaksoService.getAll(ops2.getId())).hasSize(1);
+        assertThat(opintojaksoService.getTuodut(ops2.getId())).hasSize(1);
+        assertThat(opintojaksoService.getAllTuodut(ops2.getId())).hasSize(2);
+        assertThat(opintojaksoService.getAllTuodut(ops2.getId())).extracting("id").containsExactlyInAnyOrderElementsOf(ids);
     }
 }

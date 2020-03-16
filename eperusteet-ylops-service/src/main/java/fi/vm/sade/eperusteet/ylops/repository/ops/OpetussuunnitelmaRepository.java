@@ -84,4 +84,6 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
 
     @Query(value = "SELECT o FROM Opetussuunnitelma o JOIN o.vuosiluokkakokonaisuudet ov JOIN ov.vuosiluokkakokonaisuus v WHERE v.id = ?1")
     Set<Opetussuunnitelma> findByVuosiluokkakokonaisuusId(long id);
+
+    Opetussuunnitelma findByLops2019OpintojaksotIdIn(List<Long> ids);
 }

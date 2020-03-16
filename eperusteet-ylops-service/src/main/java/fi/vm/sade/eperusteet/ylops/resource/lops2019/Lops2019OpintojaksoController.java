@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.resource.lops2019;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import io.swagger.annotations.Api;
@@ -30,11 +31,31 @@ public class Lops2019OpintojaksoController {
         return opintojaksoService.getAll(opsId);
     }
 
+    @RequestMapping(value = "/tuodut", method = RequestMethod.GET)
+    public List<Lops2019OpintojaksoDto> getTuodutOpintojaksot(
+            @PathVariable final Long opsId) {
+        return opintojaksoService.getTuodut(opsId);
+    }
+
+    @RequestMapping(value = "/tuodut/{opintojaksoId}", method = RequestMethod.GET)
+    public Lops2019OpintojaksoDto getTuotuOpintojakso(
+            @PathVariable final Long opsId,
+            @PathVariable final Long opintojaksoId) {
+        return opintojaksoService.getTuotu(opsId, opintojaksoId);
+    }
+
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.GET)
     public Lops2019OpintojaksoDto getOpintojakso(
             @PathVariable final Long opsId,
             @PathVariable final Long opintojaksoId) {
         return opintojaksoService.getOne(opsId, opintojaksoId);
+    }
+
+    @RequestMapping(value = "/{opintojaksoId}/opetussuunnitelma", method = RequestMethod.GET)
+    public OpetussuunnitelmaDto getOpintojaksonOpetussuunnitelma(
+            @PathVariable final Long opsId,
+            @PathVariable final Long opintojaksoId) {
+        return opintojaksoService.getOpintojaksonOpetussuunnitelma(opsId, opintojaksoId);
     }
 
     @RequestMapping(value = "/{opintojaksoId}/peruste", method = RequestMethod.GET)
@@ -49,6 +70,13 @@ public class Lops2019OpintojaksoController {
             @PathVariable final Long opsId,
             @RequestBody final Lops2019OpintojaksoDto opintojaksoDto) {
         return opintojaksoService.addOpintojakso(opsId, opintojaksoDto);
+    }
+
+    @RequestMapping(value = "/tuodut", method = RequestMethod.POST)
+    public void addTuodutOpintojaksot(
+            @PathVariable final Long opsId,
+            @RequestBody final List<Lops2019OpintojaksoDto> opintojaksoDto) {
+        opintojaksoService.addTuodutOpintojaksot(opsId, opintojaksoDto);
     }
 
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.POST)
