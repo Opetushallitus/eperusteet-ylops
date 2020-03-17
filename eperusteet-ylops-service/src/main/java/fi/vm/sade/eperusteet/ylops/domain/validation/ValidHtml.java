@@ -49,10 +49,10 @@ public @interface ValidHtml {
         SIMPLIFIED(Whitelist.none().addTags("p", "strong", "em", "i", "s", "ol", "li", "ul")),
         NORMAL(Whitelist.none()
                 .addTags("p", "strong", "em", "i", "s", "ol", "li", "ul", "blockquote", "table", "caption",
-                        "tbody", "tr", "td", "hr", "pre", "th", "thead", "a", "abbr", "comment", "figcaption")
+                        "tbody", "tr", "td", "hr", "pre", "th", "thead", "a", "abbr", "comment", "figcaption", "br")
                 .addAttributes("table", "align", "border", "cellpadding", "cellspacing", "style", "summary")
                 .addAttributes("th", "scope", "colspan", "rowspan", "style")
-                .addAttributes("td", "colspan", "rowspan", "style", "style")
+                .addAttributes("td", "colspan", "rowspan", "style", "style", "data-colwidth")
                 .addAttributes("a", "href", "target", "rel")
                 .addAttributes("img", "data-uid", "alt", "style", "src")
                 .addAttributes("figure", "class")
