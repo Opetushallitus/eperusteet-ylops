@@ -326,6 +326,21 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     }
 
     @Override
+    public List<TekstiKappaleViiteDto.Matala> getTekstiKappaleViiteOriginals(Long opsId, Long viiteId) {
+        List<TekstiKappaleViiteDto.Matala> viiteList = new ArrayList<>();
+
+        TekstiKappaleViite viite = findViite(opsId, viiteId);
+        TekstiKappaleViite viiteOriginal = viite.getOriginal();
+
+        if (viiteOriginal.getOriginal() != null && viiteOriginal.isNaytaPohjanTeksti()) {
+            viiteList.add(mapper.map(viiteOriginal.getOriginal(), TekstiKappaleViiteDto.Matala.class));
+        }
+
+        viiteList.add(mapper.map(viiteOriginal, TekstiKappaleViiteDto.Matala.class));
+        return viiteList;
+    }
+
+    @Override
     @Transactional
     public TekstiKappaleDto returnRemovedTekstikappale(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
