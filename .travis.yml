@@ -26,6 +26,7 @@ env:
     - secure: "Td60mqV9jZhw/IZo9ST2ynVYeOlVqRK7YZ2IOEFepWa5h9lNv6105Iz9cwCWNIzDu/9dM9locy/E4y5w4o5yShc16X2C0Vkm+0eCDpdpxQ4er8D8I6lTrMFe5IDoFmGJH7NISl60bBl4xu25JiYQc+EFP0uvUQ59/aozn3VrI6o="
     # TSD_GITHUB_TOKEN
     - secure: "KqrSR15Pz3UN51NYl70J6og0A0tgwufnR96S6cVXWBu8lt8Ez5JOR8Sn0F850wrVX2ioQsPHxqrU8Plpp0Cn5KGR7QB/6iu9dcIuoaS18J1V0VWhc85mRrkLAjhZSvCkWxfAKk/FAsdYIspTf63iOKvxQYkdMHJa+nOgHWdKxzM="
+    - EPERUSTEET_SERVICE_DIR=$PWD/eperusteet/eperusteet/eperusteet-service
 
 before_install:
   - nvm install $NODE_VERSION
@@ -40,7 +41,6 @@ install:
 script:
   # Rakennetaan uuden lukion front end
   - export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
-  - export EPERUSTEET_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-service
   - cd eperusteet-ylops-lukio
   - yarn install --silent
   - cd eperusteet-frontend-utils/vue
