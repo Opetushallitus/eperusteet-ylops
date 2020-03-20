@@ -40,12 +40,15 @@ script:
   # Rakennetaan uuden lukion front end
   - export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
   - cd eperusteet-ylops-lukio
+  - yarn install --silent
+  - cd eperusteet-frontend-utils/vue
+  - yarn install --silent
+  - yarn gen:api
+  - rm -rf node_modules
+  - cd ../..
   - git rev-parse HEAD
-  - yarn install
-  - yarn run gen:api
   - yarn run build
   - cd ..
-
 
   # Rakennetaan palvelu
   - mvn clean install -B -Dbranch=${TRAVIS_BRANCH} -Drevision=${TRAVIS_COMMIT} -DbuildNumber=${TRAVIS_BUILD_NUMBER}
