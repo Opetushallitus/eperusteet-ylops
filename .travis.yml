@@ -33,12 +33,14 @@ before_install:
 install:
   - git clone --recurse-submodules --depth 1 https://github.com/Opetushallitus/eperusteet-ylops-lukio.git
   - git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
+  - git clone --depth=1 https://github.com/Opetushallitus/eperusteet
   - source ci-tools/common/setup-tools.sh
   - export ARTIFACT_NAME="eperusteet-ylops"
 
 script:
   # Rakennetaan uuden lukion front end
   - export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
+  - export EPERUSTEET_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-service
   - cd eperusteet-ylops-lukio
   - yarn install --silent
   - cd eperusteet-frontend-utils/vue
