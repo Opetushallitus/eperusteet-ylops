@@ -27,6 +27,7 @@ env:
     # TSD_GITHUB_TOKEN
     - secure: "KqrSR15Pz3UN51NYl70J6og0A0tgwufnR96S6cVXWBu8lt8Ez5JOR8Sn0F850wrVX2ioQsPHxqrU8Plpp0Cn5KGR7QB/6iu9dcIuoaS18J1V0VWhc85mRrkLAjhZSvCkWxfAKk/FAsdYIspTf63iOKvxQYkdMHJa+nOgHWdKxzM="
     - EPERUSTEET_SERVICE_DIR=$PWD/eperusteet/eperusteet/eperusteet-service
+    - AMOSAA_SERVICE_DIR=$PWD/eperusteet-amosaa/eperusteet-amosaa-service
 
 before_install:
   - nvm install $NODE_VERSION
@@ -35,6 +36,7 @@ install:
   - git clone --recurse-submodules --depth 1 https://github.com/Opetushallitus/eperusteet-ylops-lukio.git
   - git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
   - git clone --depth=1 https://github.com/Opetushallitus/eperusteet
+  - git clone --depth=1 https://github.com/Opetushallitus/eperusteet-amosaa
   - source ci-tools/common/setup-tools.sh
   - export ARTIFACT_NAME="eperusteet-ylops"
 
