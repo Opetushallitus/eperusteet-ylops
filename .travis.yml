@@ -34,7 +34,6 @@ before_install:
 install:
   - git clone --recurse-submodules --depth 1 https://github.com/Opetushallitus/eperusteet-ylops-lukio.git
   - git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
-  - git clone --depth=1 https://github.com/Opetushallitus/eperusteet
   - source ci-tools/common/setup-tools.sh
   - export ARTIFACT_NAME="eperusteet-ylops"
 
@@ -45,7 +44,7 @@ script:
   - yarn install --silent
   - cd eperusteet-frontend-utils/vue
   - yarn install --silent
-  - yarn gen:api
+  - yarn gen:api:ylops
   - rm -rf node_modules
   - cd ../..
   - git rev-parse HEAD
