@@ -13,6 +13,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetuksenkohdealueRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
@@ -92,5 +94,44 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
         assertThat(updated.isNaytaPerusteenTeksti()).isFalse();
         assertThat(updated.getTekstiKappale().getTeksti().get(Kieli.FI)).isNotBlank();
         assertThat(updated.getTekstiKappale().getTeksti().get(Kieli.FI)).isEqualTo("teksti");
+    }
+
+    @Test
+    public void testTekstikappalePuuReorder() {
+        OpetussuunnitelmaDto opsDto = createLukioOpetussuunnitelma();
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.getOne(opsDto.getId());
+
+        {
+            final TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(opsDto.getId(), TekstiKappaleViiteDto.Puu.class);
+            assertThat(tekstit.getLapset()).hasSize(6);
+            tekstiKappaleViiteService.reorderSubTree(opsDto.getId(), tekstit.getId(), tekstit);
+
+            TekstiKappaleDto tekstiKappaleDto = new TekstiKappaleDto();
+            tekstiKappaleDto.setNimi(lt("A"));
+            tekstiKappaleDto.setTeksti(lt("B"));
+
+            TekstiKappaleViiteDto.Puu viiteDto = new TekstiKappaleViiteDto.Puu();
+            viiteDto.setPakollinen(true);
+            viiteDto.setTekstiKappale(tekstiKappaleDto);
+
+            tekstit.getLapset().add(viiteDto);
+
+            assertThatThrownBy(() -> tekstiKappaleViiteService.reorderSubTree(opsDto.getId(), tekstit.getId(), tekstit))
+                    .isInstanceOf(BusinessRuleViolationException.class)
+                    .hasMessage("paatasolle-ei-sallita-muutoksia");
+        }
+
+        {
+            final TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(opsDto.getId(), TekstiKappaleViiteDto.Puu.class);
+            assertThat(tekstit.getLapset()).hasSize(6);
+            tekstiKappaleViiteService.reorderSubTree(opsDto.getId(), tekstit.getId(), tekstit);
+
+            tekstit.getLapset().remove(0);
+
+            assertThatThrownBy(() -> tekstiKappaleViiteService.reorderSubTree(opsDto.getId(), tekstit.getId(), tekstit))
+                    .isInstanceOf(BusinessRuleViolationException.class)
+                    .hasMessage("paatasolle-ei-sallita-muutoksia");
+        }
+
     }
 }

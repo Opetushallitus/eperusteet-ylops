@@ -3,11 +3,14 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategy;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategyQualifier;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +27,17 @@ public class OpsStrategyLops2019Impl implements OpsStrategy {
                     .map(x -> x.getTekstiKappale().getTunniste())
                     .collect(Collectors.toSet());
 
-            // Pois päätason tekstit joita ei pohjassa ole määritelty
-            tree.setLapset(tree.getLapset().stream()
-                    .filter(x -> {
-                        return pohjaTekstit.contains(x.getTekstiKappale().getTunniste());
-                    })
-                    .collect(Collectors.toList()));
+            Set<UUID> tekstit = tree.getLapset().stream()
+                    .map(x -> x.getTekstiKappale().getTunniste())
+                    .collect(Collectors.toSet());
+
+            Collection disjunction = CollectionUtils.disjunction(pohjaTekstit, tekstit);
+
+            // Päätasolle ei sallita muutoksia
+            if (!disjunction.isEmpty()) {
+                throw new BusinessRuleViolationException("paatasolle-ei-sallita-muutoksia");
+            }
+
         }
     }
 }
