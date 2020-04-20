@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -123,7 +124,7 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity im
         return new ArrayList<>(sisaltoalueet);
     }
 
-    public void setSisaltoalueet(Collection<Keskeinensisaltoalue> sisaltoalueet) {
+    public void setSisaltoalueet(List<Keskeinensisaltoalue> sisaltoalueet) {
         this.sisaltoalueet.clear();
         if (sisaltoalueet != null) {
             this.sisaltoalueet.addAll(sisaltoalueet);
@@ -136,7 +137,7 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity im
 
         Map<Long, Keskeinensisaltoalue> sisaltoalueet = other.getSisaltoalueet().stream()
                 .collect(Collectors.toMap(s -> s.getId(), s -> Keskeinensisaltoalue.copyOf(s), (u, v) -> u, LinkedHashMap::new));
-        ovl.setSisaltoalueet(sisaltoalueet.values());
+        ovl.setSisaltoalueet(new ArrayList(sisaltoalueet.values()));
         ovl.setTavoitteet(
                 other.tavoitteet.stream()
                         .map(t -> Opetuksentavoite.copyOf(t, kohdealueet, sisaltoalueet))
