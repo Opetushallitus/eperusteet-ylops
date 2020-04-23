@@ -419,8 +419,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public NavigationNodeDto buildNavigationWithDate(Long opsId, Date pvm) {
-        NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilder.class)
+    public <T extends NavigationBuilder> NavigationNodeDto buildNavigationWithDate(Long opsId, Date pvm, Class<T> clazz) {
+        NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, clazz)
                 .buildNavigation(opsId);
         return siirraLiitteetLoppuun(navigationNodeDto);
     }
@@ -428,7 +428,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public NavigationNodeDto buildNavigation(Long opsId) {
         // Todo: toteuta global version, jotta navigaatio voidaan cachea
-        return buildNavigationWithDate(opsId, new Date());
+        return buildNavigationWithDate(opsId, new Date(), NavigationBuilder.class);
+    }
+
+    @Override
+    public NavigationNodeDto buildNavigationPublic(Long opsId) {
+        // Todo: toteuta global version, jotta navigaatio voidaan cachea
+        return buildNavigationWithDate(opsId, new Date(), NavigationBuilderPublic.class);
     }
 
 

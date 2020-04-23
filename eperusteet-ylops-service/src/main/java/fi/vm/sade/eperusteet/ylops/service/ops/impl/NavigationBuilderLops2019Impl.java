@@ -52,10 +52,10 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Autowired
-    private Lops2019Service lopsService;
+    protected Lops2019Service lopsService;
 
     @Autowired
-    private Lops2019OppiaineService oppiaineService;
+    protected Lops2019OppiaineService oppiaineService;
 
     @Autowired
     private DtoMapper mapper;
@@ -73,9 +73,6 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
     }
 
     private NavigationNodeDto oppiaineet(Long opsId) {
-        List<Lops2019OppiaineKaikkiDto> oppiaineet = lopsService.getPerusteOppiaineet(opsId);
-        List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = oppiaineService.getAll(opsId);
-
         // Järjestetään oppiaineen koodilla opintojaksot
         Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap = opintojaksoService.getAllTuodut(opsId).stream()
                 .flatMap(oj -> oj.getOppiaineet().stream()
@@ -85,6 +82,8 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                         Collectors.mapping(Map.Entry::getValue, toSet())
                 ));
 
+        List<Lops2019OppiaineKaikkiDto> oppiaineet = getOppiaineet(opsId, opintojaksotMap);
+        List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = getPaikallisetOppiaineet(opsId, opintojaksotMap);
 
         return NavigationNodeDto.of(NavigationType.oppiaineet)
                 .addAll(oppiaineet.stream()
@@ -93,6 +92,14 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 .addAll(paikallisetOppiaineet.stream()
                         .map(poa -> mapPaikallinenOppiaine(poa, opintojaksotMap))
                         .collect(toList()));
+    }
+
+    protected List<Lops2019OppiaineKaikkiDto> getOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
+        return lopsService.getPerusteOppiaineet(opsId);
+    }
+
+    protected List<Lops2019PaikallinenOppiaineDto> getPaikallisetOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
+        return oppiaineService.getAll(opsId);
     }
 
     private NavigationNodeDto mapOppiaine(

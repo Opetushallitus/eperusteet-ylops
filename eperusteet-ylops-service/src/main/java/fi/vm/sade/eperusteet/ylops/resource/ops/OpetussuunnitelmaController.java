@@ -248,4 +248,12 @@ public class OpetussuunnitelmaController {
     ) {
         return opetussuunnitelmaService.buildNavigation(id);
     }
+
+    @InternalApi
+    @RequestMapping(value = "/{id}/navigaatio/julkinen", method = GET)
+    public NavigationNodeDto getNavigationJulkinen(
+            @PathVariable final Long id
+    ) {
+        return opetussuunnitelmaService.buildNavigationPublic(id);
+    }
 }

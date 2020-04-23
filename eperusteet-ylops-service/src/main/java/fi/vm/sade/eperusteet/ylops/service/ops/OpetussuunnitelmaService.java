@@ -137,8 +137,11 @@ public interface OpetussuunnitelmaService {
 
     @Cacheable("ops-navigation")
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    NavigationNodeDto buildNavigationWithDate(@P("opsId") Long opsId, Date pvm);
+    <T extends NavigationBuilder> NavigationNodeDto buildNavigationWithDate(@P("opsId") Long opsId, Date pvm, Class<T> clazz);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     NavigationNodeDto buildNavigation(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    NavigationNodeDto buildNavigationPublic(@P("opsId") Long opsId);
 }
