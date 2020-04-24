@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -86,13 +87,24 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         }
 
         // Perusteen oppiaineet
-        perusteenSisalto.getOppiaineet().forEach(oa -> {
+        perusteenSisalto.getOppiaineet().stream()
+                .map(oppiaine -> {
+                    if (!CollectionUtils.isEmpty(oppiaine.getOppimaarat())) {
+                        oppiaine.setOppimaarat(oppiaine.getOppimaarat().stream()
+                                .filter(oppimaara -> opintojaksotMap.keySet().contains(oppimaara.getKoodi().getUri()))
+                                .collect(Collectors.toList()));
+                    }
+                    return oppiaine;
+                })
+                .filter(oppiaine -> opintojaksotMap.keySet().contains(oppiaine.getKoodi().getUri()) || !CollectionUtils.isEmpty(oppiaine.getOppimaarat()))
+                .forEach(oa -> {
             KoodiDto koodi = oa.getKoodi();
             addOppiaine(docBase, oa, koodi != null ? opintojaksotMap.get(koodi.getUri()) : null, opintojaksotMap);
         });
 
         // Paikalliset oppiaineet
-        List<Lops2019PaikallinenOppiaineDto> oppiaineet = oppiaineService.getAll(ops.getId());
+        List<Lops2019PaikallinenOppiaineDto> oppiaineet = oppiaineService.getAll(ops.getId()).stream()
+                .filter(oppiaine -> opintojaksotMap.keySet().contains(oppiaine.getKoodi())).collect(Collectors.toList());
         oppiaineet.forEach(poa -> addPaikallinenOppiaine(docBase, poa, opintojaksotMap.get(poa.getKoodi())));
 
         // Integraatio opintojaksot
@@ -314,11 +326,15 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
                 // Oppiaine
                 List<Lops2019OppiaineKaikkiDto> oaList = new ArrayList<>();
-                oaList.add(oa);
+                if (oa != null) {
+                    oaList.add(oa);
+                }
 
                 // Paikallinen oppiaine
                 List<Lops2019PaikallinenOppiaineDto> poaList = new ArrayList<>();
-                poaList.add(poa);
+                if (poa != null) {
+                    poaList.add(poa);
+                }
 
                 addYhdenOppiaineenOpintojakso(docBase, oj, oaList, poaList);
             }

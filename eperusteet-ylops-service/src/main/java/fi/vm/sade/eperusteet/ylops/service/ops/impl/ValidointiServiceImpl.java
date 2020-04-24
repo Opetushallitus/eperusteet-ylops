@@ -3,24 +3,31 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
+import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
+import java.util.Collection;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +68,9 @@ public class ValidointiServiceImpl implements ValidointiService {
     @Autowired
     private DtoMapper mapper;
 
+    @Autowired
+    private KoodistoService koodistoService;
+
     private Opetussuunnitelma getOpetussuunnitelma(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         if (ops == null) {
@@ -93,7 +103,7 @@ public class ValidointiServiceImpl implements ValidointiService {
 //                        Lops2019OpintojaksoBaseDto::getKoodi,
 //                        Function.identity()));
 //        List<Lops2019OppiaineDto> oppiaineetAndOppimaarat = lops2019Service.getPerusteOppiaineetAndOppimaarat(opsId);
-        List<Lops2019ModuuliDto> moduulit = lops2019Service.getPerusteModuulit(ops.getId());
+        List<Lops2019ModuuliDto> moduulit = haeValidoitavatModuulit(opsId);
         Map<String, Lops2019ModuuliDto> moduulitMap = moduulit.stream().collect(Collectors.toMap(m -> m.getKoodi().getUri(), Function.identity()));
         Map<String, List<Lops2019OpintojaksoDto>> liitokset = lops2019Service.getModuuliToOpintojaksoMap(opintojaksot);
 
@@ -163,5 +173,20 @@ public class ValidointiServiceImpl implements ValidointiService {
         }
 
         return validointi;
+    }
+
+    private List<Lops2019ModuuliDto> haeValidoitavatModuulit(Long opsId) {
+        List<Lops2019OppiaineKaikkiDto> oppiaineetAndOppimaarat = lops2019Service.getPerusteOppiaineetAndOppimaarat(opsId);
+        oppiaineetAndOppimaarat.addAll(oppiaineetAndOppimaarat.stream().map(oppiaine -> oppiaine.getOppimaarat()).flatMap(Collection::stream).collect(Collectors.toList()));
+        List<KoodistoKoodiDto> opintojaksottomatOppiaineetKoodit = koodistoService.getAll("opsvalidointiopintojaksottomatoppiaineet");
+        if (!CollectionUtils.isEmpty(opintojaksottomatOppiaineetKoodit)) {
+            List<String> opintojaksottomatOppiaineet = opintojaksottomatOppiaineetKoodit.stream().map(KoodistoKoodiDto::getKoodiArvo).collect(Collectors.toList());
+            oppiaineetAndOppimaarat = oppiaineetAndOppimaarat.stream()
+                    .filter(oppiaine -> !opintojaksottomatOppiaineet.contains(oppiaine.getKoodi().getUri()))
+                    .collect(Collectors.toList());
+        }
+
+        List<String> moduuliKoodiUrit = oppiaineetAndOppimaarat.stream().flatMap(oppiaine -> oppiaine.getModuulit().stream()).map(moduuli -> moduuli.getKoodi().getUri()).collect(Collectors.toList());
+        return lops2019Service.getPerusteModuulit(opsId).stream().filter(moduuli -> moduuliKoodiUrit.contains((moduuli.getKoodi().getUri()))).collect(Collectors.toList());
     }
 }
