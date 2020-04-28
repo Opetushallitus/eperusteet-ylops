@@ -623,6 +623,8 @@
                                         <location>${eperusteet.resources}.ukk.*</location>
                                         <location>${eperusteet.resources}.util.KayttajaController</location>
                                         <location>${eperusteet.resources}.ops.OpetussuunnitelmaController</location>
+                                        <location>${eperusteet.resources}.ops.VuosiluokkakokonaisuusController
+                                        </location>
                                     </locations>
                                     <modelSubstitute>/substitutes.map</modelSubstitute>
                                     <info>
