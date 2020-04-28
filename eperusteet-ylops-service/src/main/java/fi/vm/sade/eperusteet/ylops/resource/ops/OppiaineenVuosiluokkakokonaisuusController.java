@@ -59,7 +59,7 @@ public class OppiaineenVuosiluokkakokonaisuusController {
     private OpetussuunnitelmaService ops;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<OppiaineenVuosiluokkakokonaisuusDto> get(
+    public ResponseEntity<OppiaineenVuosiluokkakokonaisuusDto> getOppiaineenVuosiluokkakokonaisuus(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("oppiaineId") final Long oppiaineId,
             @PathVariable("id") final Long id) {
@@ -121,7 +121,7 @@ public class OppiaineenVuosiluokkakokonaisuusController {
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     @CacheControl(nonpublic = false, age = 3600)
-    public ResponseEntity<PerusteOppiaineenVuosiluokkakokonaisuusDto> getPerusteSisalto(
+    public ResponseEntity<PerusteOppiaineenVuosiluokkakokonaisuusDto> getOppiaineenVuosiluokkakokonaisuudenPerusteSisalto(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("oppiaineId") final Long oppiaineId,
             @PathVariable("id") final Long id) {

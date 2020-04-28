@@ -64,7 +64,7 @@ public class VuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
-    public PerusteVuosiluokkakokonaisuusDto getPerusteSisalto(
+    public PerusteVuosiluokkakokonaisuusDto getVuosiluokkakokonaisuudenPerusteSisalto(
             @PathVariable final Long opsId,
             @PathVariable final Long id
     ) {
@@ -99,7 +99,7 @@ public class VuosiluokkakokonaisuusController {
     }
 
     @RequestMapping(value = "/{id}/muokattavakopio", method = RequestMethod.POST)
-    public UnwrappedOpsVuosiluokkakokonaisuusDto kopioiMuokattavaksi(
+    public UnwrappedOpsVuosiluokkakokonaisuusDto kopioiVuosiluokkakokonaisuusMuokattavaksi(
             @PathVariable final Long opsId,
             @PathVariable final Long id) {
         return new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.kopioiMuokattavaksi(opsId, id));

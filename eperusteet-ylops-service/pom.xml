@@ -625,6 +625,10 @@
                                         <location>${eperusteet.resources}.ops.OpetussuunnitelmaController</location>
                                         <location>${eperusteet.resources}.ops.VuosiluokkakokonaisuusController
                                         </location>
+                                        <location>${eperusteet.resources}.ops.OppiaineController</location>
+                                        <location>
+                                            ${eperusteet.resources}.ops.OppiaineenVuosiluokkakokonaisuusController
+                                        </location>
                                     </locations>
                                     <modelSubstitute>/substitutes.map</modelSubstitute>
                                     <info>

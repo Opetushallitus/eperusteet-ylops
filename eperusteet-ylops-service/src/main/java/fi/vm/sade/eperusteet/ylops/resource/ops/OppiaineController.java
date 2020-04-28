@@ -87,7 +87,7 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/versio/{versio}", method = RequestMethod.GET)
-    public ResponseEntity<UnwrappedOpsOppiaineDto> getVersion(
+    public ResponseEntity<UnwrappedOpsOppiaineDto> getOppiaineVersion(
             @PathVariable final Long opsId,
             @PathVariable final Long id,
             @PathVariable final Integer versio) {
@@ -95,7 +95,7 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/raakaversio/{versio}", method = RequestMethod.GET)
-    public ResponseEntity<OppiaineDto> getRevision(
+    public ResponseEntity<OppiaineDto> getOppiaineRevision(
             @PathVariable final Long opsId,
             @PathVariable final Long id,
             @PathVariable final Integer versio) {
@@ -103,7 +103,7 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/versio/{versio}", method = RequestMethod.POST)
-    public ResponseEntity<UnwrappedOpsOppiaineDto> revertToVersion(
+    public ResponseEntity<UnwrappedOpsOppiaineDto> revertOppiaineToVersion(
             @PathVariable final Long opsId,
             @PathVariable final Long id,
             @PathVariable final Integer versio) {
@@ -118,7 +118,7 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/palauta/{oppimaaraId}", method = RequestMethod.POST)
-    public OppiainePalautettuDto restoreOppiaine(
+    public OppiainePalautettuDto restoreOppiaineOppimaara(
             @PathVariable final Long opsId,
             @PathVariable final Long id,
             @PathVariable final Long oppimaaraId) {
@@ -126,7 +126,7 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/palauta/{oppimaaraId}/{versio}", method = RequestMethod.POST)
-    public OppiainePalautettuDto restoreOppiaine(
+    public OppiainePalautettuDto restoreOppiaineOppimaaraVersio(
             @PathVariable final Long opsId,
             @PathVariable final Long id,
             @PathVariable final Long oppimaaraId,
@@ -135,17 +135,17 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/versiot", method = RequestMethod.GET)
-    public List<RevisionDto> getVersionHistory(@PathVariable final Long opsId, @PathVariable final Long id) {
+    public List<RevisionDto> getOppiaineVersionHistory(@PathVariable final Long opsId, @PathVariable final Long id) {
         return oppiaineService.getVersions(opsId, id);
     }
 
     @RequestMapping(value = "/poistetut", method = RequestMethod.GET)
-    public ResponseEntity<List<PoistettuOppiaineDto>> getRemoved(@PathVariable final Long opsId) {
+    public ResponseEntity<List<PoistettuOppiaineDto>> getRemovedOppiaineet(@PathVariable final Long opsId) {
         return Responses.ofNullable(oppiaineService.getRemoved(opsId));
     }
 
     @RequestMapping(value = "/{id}/parent", method = RequestMethod.GET)
-    public ResponseEntity<OppiaineDto> getParent(@PathVariable final Long opsId, @PathVariable final Long id) {
+    public ResponseEntity<OppiaineDto> getOppiaineParent(@PathVariable final Long opsId, @PathVariable final Long id) {
         return Responses.ofNullable(oppiaineService.getParent(opsId, id));
     }
 
