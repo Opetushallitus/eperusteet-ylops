@@ -39,6 +39,8 @@
     "name" : "Termisto"
   }, {
     "name" : "Ulkopuoliset"
+  }, {
+    "name" : "Vuosiluokkakokonaisuudet"
   } ],
   "schemes" : [ "http", "https" ],
   "paths" : {
@@ -3245,6 +3247,200 @@
         }
       }
     },
+    "/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet" : {
+      "post" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "add",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/VuosiluokkakokonaisuusDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/VuosiluokkakokonaisuusDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet/{id}" : {
+      "get" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "getVuosiluokkakokonaisuus",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UnwrappedOpsVuosiluokkakokonaisuusDto"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "updateVuosiluokkakokonaisuus",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/VuosiluokkakokonaisuusDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UnwrappedOpsVuosiluokkakokonaisuusDto"
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "deleteVuosiluokkakokonaisuus",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet/{id}/muokattavakopio" : {
+      "post" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "kopioiMuokattavaksi",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UnwrappedOpsVuosiluokkakokonaisuusDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet/{id}/oppiaineet" : {
+      "get" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "findOppiaineet",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "uniqueItems" : true,
+              "items" : {
+                "$ref" : "#/definitions/OppiaineDto"
+              }
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet/{id}/peruste" : {
+      "get" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "getPerusteSisalto",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PerusteVuosiluokkakokonaisuusDto"
+            }
+          }
+        }
+      }
+    },
     "/ulkopuoliset/julkaistutperusteet" : {
       "get" : {
         "tags" : [ "Ulkopuoliset" ],
@@ -4906,12 +5102,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -7824,6 +8020,50 @@
         },
         "alaviite" : {
           "type" : "boolean"
+        }
+      }
+    },
+    "UnwrappedOpsVuosiluokkakokonaisuusDto" : {
+      "type" : "object",
+      "properties" : {
+        "oma" : {
+          "type" : "boolean"
+        },
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "tunniste" : {
+          "$ref" : "#/definitions/Reference"
+        },
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "siirtymaEdellisesta" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "tehtava" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "siirtymaSeuraavaan" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "laajaalainenosaaminen" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "tila" : {
+          "type" : "string",
+          "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
+        },
+        "laajaalaisetosaamiset" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/LaajaalainenosaaminenDto"
+          }
         }
       }
     },
