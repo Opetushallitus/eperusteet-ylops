@@ -43,9 +43,10 @@ public class OppiaineenVuosiluokkaController {
     private OppiaineService oppiaineService;
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<OppiaineenVuosiluokkaDto> get(
+    public ResponseEntity<OppiaineenVuosiluokkaDto> getOppiaineenvuosiluokka(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("oppiaineId") final Long oppiaineId,
+            @PathVariable("kokonaisuusId") final Long kokonaisuusId,
             @PathVariable("id") final Long id) {
         OppiaineenVuosiluokkaDto oa = oppiaineService.getVuosiluokka(opsId, oppiaineId, id);
         return Responses.ofNullable(oa);
@@ -55,6 +56,7 @@ public class OppiaineenVuosiluokkaController {
     public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("oppiaineId") final Long oppiaineId,
+            @PathVariable("kokonaisuusId") final Long kokonaisuusId,
             @PathVariable("id") final Long id,
             @RequestBody OppiaineenVuosiluokkaDto dto) {
         dto.setId(id);
@@ -65,6 +67,7 @@ public class OppiaineenVuosiluokkaController {
     public OppiaineenVuosiluokkaDto updateValinnaisenVuosiluokanSisalto(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("oppiaineId") final Long oppiaineId,
+            @PathVariable("kokonaisuusId") final Long kokonaisuusId,
             @PathVariable("id") final Long id,
             @RequestBody List<TekstiosaDto> tavoitteetDto) {
         return oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, oppiaineId, id, tavoitteetDto);

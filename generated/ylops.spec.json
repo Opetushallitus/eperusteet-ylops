@@ -36,6 +36,8 @@
   }, {
     "name" : "Opetussuunnitelmat julkiset"
   }, {
+    "name" : "OppiaineenVuosiluokat"
+  }, {
     "name" : "OppiaineenVuosiluokkakokonaisuudet"
   }, {
     "name" : "Oppiaineet"
@@ -3211,6 +3213,138 @@
         "responses" : {
           "204" : {
             "description" : ""
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat/{id}" : {
+      "get" : {
+        "tags" : [ "OppiaineenVuosiluokat" ],
+        "operationId" : "getOppiaineenvuosiluokka",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "oppiaineId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "kokonaisuusId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OppiaineenVuosiluokkaDto"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "OppiaineenVuosiluokat" ],
+        "operationId" : "updateVuosiluokanSisalto",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "oppiaineId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "kokonaisuusId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/OppiaineenVuosiluokkaDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OppiaineenVuosiluokkaDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat/{id}/valinnainen" : {
+      "post" : {
+        "tags" : [ "OppiaineenVuosiluokat" ],
+        "operationId" : "updateValinnaisenVuosiluokanSisalto",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "oppiaineId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "kokonaisuusId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/definitions/TekstiosaDto"
+            }
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OppiaineenVuosiluokkaDto"
+            }
           }
         }
       }
