@@ -137,11 +137,17 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity im
 
         Map<Long, Keskeinensisaltoalue> sisaltoalueet = other.getSisaltoalueet().stream()
                 .collect(Collectors.toMap(s -> s.getId(), s -> Keskeinensisaltoalue.copyOf(s), (u, v) -> u, LinkedHashMap::new));
-        ovl.setSisaltoalueet(new ArrayList(sisaltoalueet.values()));
         ovl.setTavoitteet(
                 other.tavoitteet.stream()
                         .map(t -> Opetuksentavoite.copyOf(t, kohdealueet, sisaltoalueet))
                         .collect(Collectors.toList()));
+
+        List<Keskeinensisaltoalue> keskeisetSisaltoalueet = ovl.getTavoitteet().stream()
+                .map(Opetuksentavoite::getSisaltoalueet)
+                .flatMap(x -> x.stream())
+                .map(OpetuksenKeskeinensisaltoalue::getSisaltoalueet)
+                .collect(Collectors.toList());
+        ovl.setSisaltoalueet(keskeisetSisaltoalueet);
 
         if (other.getVapaaTeksti() != null) {
             ovl.setVapaaTeksti(LokalisoituTeksti.of(other.getVapaaTeksti().getTeksti()));

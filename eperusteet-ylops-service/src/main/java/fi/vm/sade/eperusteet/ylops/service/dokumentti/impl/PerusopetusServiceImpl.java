@@ -46,6 +46,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
     @Autowired
     private LocalizedMessagesService messages;
 
+    @Override
     public void addVuosiluokkakokonaisuudet(DokumenttiBase docBase) {
         Set<OpsVuosiluokkakokonaisuus> opsVlkset = docBase.getOps().getVuosiluokkakokonaisuudet();
 
@@ -541,7 +542,10 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                 addVuosiluokkaTavoitteenSisaltoalueet(docBase, opetuksentavoite);
 
                 // Sisältöalue ops
-                opetuksentavoite.getSisaltoalueet().forEach(sisaltoAlue -> addLokalisoituteksti(
+                opetuksentavoite.getSisaltoalueet()
+                        .stream()
+                        .sorted(Comparator.comparing(sisaltoAlue -> sisaltoAlue.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
+                        .forEach(sisaltoAlue -> addLokalisoituteksti(
                         docBase, sisaltoAlue.getSisaltoalueet().getKuvaus(), "div"));
             }
         }
