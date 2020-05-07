@@ -623,12 +623,9 @@
                                         <location>${eperusteet.resources}.ukk.*</location>
                                         <location>${eperusteet.resources}.util.KayttajaController</location>
                                         <location>${eperusteet.resources}.ops.OpetussuunnitelmaController</location>
-                                        <location>${eperusteet.resources}.ops.VuosiluokkakokonaisuusController
-                                        </location>
+                                        <location>${eperusteet.resources}.ops.VuosiluokkakokonaisuusController</location>
                                         <location>${eperusteet.resources}.ops.OppiaineController</location>
-                                        <location>
-                                            ${eperusteet.resources}.ops.OppiaineenVuosiluokkakokonaisuusController
-                                        </location>
+                                        <location>${eperusteet.resources}.ops.OppiaineenVuosiluokkakokonaisuusController</location>
                                         <location>${eperusteet.resources}.ops.OppiaineenVuosiluokkaController</location>
                                     </locations>
                                     <modelSubstitute>/substitutes.map</modelSubstitute>
