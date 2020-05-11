@@ -184,7 +184,23 @@ public class OppiaineController {
     ) {
         dto.getOppiaine().setId(id);
         return oppiaineService.updateValinnainen(
-                opsId, dto.getOppiaine(),
+                opsId,
+                dto.getOppiaine(),
+                dto.getVuosiluokkakokonaisuusId(),
+                dto.getVuosiluokat(),
+                dto.getTavoitteet());
+    }
+
+    @RequestMapping(value = "/{id}/yksinkertainen", method = RequestMethod.POST)
+    public OppiaineDto updateYksinkertainen(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id,
+            @RequestBody OppiaineenTallennusDto dto
+    ) {
+        dto.getOppiaine().setId(id);
+        return oppiaineService.updateYksinkertainen(
+                opsId,
+                dto.getOppiaine(),
                 dto.getVuosiluokkakokonaisuusId(),
                 dto.getVuosiluokat(),
                 dto.getTavoitteet());

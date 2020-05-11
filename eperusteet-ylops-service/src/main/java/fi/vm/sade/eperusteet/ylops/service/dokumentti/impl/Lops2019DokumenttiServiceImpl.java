@@ -146,7 +146,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Tavoitteet
         Lops2019OppiaineTavoitteetDto tavoitteet = oa.getTavoitteet();
-        if (tavoitteet != null) {
+        if (tavoitteet != null && (tavoitteet.getKuvaus() != null || !ObjectUtils.isEmpty(tavoitteet.getTavoitealueet()))) {
             addTeksti(docBase, messages.translate("tavoitteet", docBase.getKieli()), "h6");
             addLokalisoituteksti(docBase, tavoitteet.getKuvaus(), "cite");
 
