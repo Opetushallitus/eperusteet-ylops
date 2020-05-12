@@ -84,10 +84,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     private EperusteetService perusteet;
 
     @Autowired
-    private OppiaineenvuosiluokkaRepository vuosiluokat;
+    private OppiaineenvuosiluokkaRepository oppiaineenvuosiluokkaRepository;
 
     @Autowired
-    private VuosiluokkakokonaisuusRepository kokonaisuudet;
+    private VuosiluokkakokonaisuusRepository vuosiluokkakokonaisuusRepository;
 
     @Autowired
     private LukioOppiaineJarjestysRepository lukioOppiaineJarjestysRepository;
@@ -96,7 +96,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     private OppiaineLukiokurssiRepository oppiaineLukiokurssiRepository;
 
     @Autowired
-    private OppiaineenvuosiluokkakokonaisuusRepository oppiaineenKokonaisuudet;
+    private OppiaineenvuosiluokkakokonaisuusRepository oppiaineenvuosiluokkakokonaisuusRepository;
 
     @Autowired
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuusService;
@@ -281,7 +281,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oppiaine = oppiaineet.save(oppiaine);
         ops.addOppiaine(oppiaine);
 
-        Vuosiluokkakokonaisuus vlk = kokonaisuudet.findBy(opsId, vlkId);
+        Vuosiluokkakokonaisuus vlk = vuosiluokkakokonaisuusRepository.findBy(opsId, vlkId);
         assertExists(vlk, "Pyydettyä vuosiluokkakokonaisuutta ei ole olemassa");
 
         Oppiaineenvuosiluokkakokonaisuus oavlk = new Oppiaineenvuosiluokkakokonaisuus();
@@ -396,13 +396,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             oppiaineDto.setTyyppi(OppiaineTyyppi.MUU_VALINNAINEN);
         }
 
-        Vuosiluokkakokonaisuus vlk = kokonaisuudet.findBy(opsId, vlkId);
+        Vuosiluokkakokonaisuus vlk = vuosiluokkakokonaisuusRepository.findBy(opsId, vlkId);
         assertExists(vlk, "Pyydettyä vuosiluokkakokonaisuutta ei ole olemassa");
 
         Optional<OppiaineenVuosiluokkakokonaisuusDto> first = oppiaineDto.getVuosiluokkakokonaisuudet().stream().findFirst();
         if (first.isPresent()) {
             OppiaineenVuosiluokkakokonaisuusDto oavlktDto = first.get();
-            Oppiaineenvuosiluokkakokonaisuus oavlk = oppiaineenKokonaisuudet.findOne(oavlktDto.getId());
+            Oppiaineenvuosiluokkakokonaisuus oavlk = oppiaineenvuosiluokkakokonaisuusRepository.findOne(oavlktDto.getId());
 
             oavlk.setVuosiluokkakokonaisuus(vlk.getTunniste());
             oavlk.setTehtava(mapper.map(oavlktDto.getTehtava(), Tekstiosa.class));
@@ -411,7 +411,33 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             oavlk.setOhjaus(mapper.map(oavlktDto.getOhjaus(), Tekstiosa.class));
             oavlk.setArviointi(mapper.map(oavlktDto.getArviointi(), Tekstiosa.class));
 
-            oavlk = oppiaineenKokonaisuudet.save(oavlk);
+            // Lisätään puuttuvat
+            Set<Oppiaineenvuosiluokka> oaVuosiluokat = oavlk.getVuosiluokat();
+            vuosiluokat.forEach(vuosiluokka -> {
+                if (oaVuosiluokat.stream().noneMatch(e -> e.getVuosiluokka().equals(vuosiluokka))) {
+                    Oppiaineenvuosiluokka oaVl = new Oppiaineenvuosiluokka();
+                    oaVl.setVuosiluokka(vuosiluokka);
+                    oaVuosiluokat.add(oaVl);
+                }
+            });
+
+            // Poistetaan ylimääräiset
+            Set<Oppiaineenvuosiluokka> poistettavat = new HashSet<>();
+            oaVuosiluokat.forEach(oaVl -> {
+                if (!vuosiluokat.contains(oaVl.getVuosiluokka())) {
+                    oaVl.getTavoitteet().forEach(opetuksentavoite -> opetuksentavoite
+                            .getSisaltoalueet().forEach(opetuksenKeskeinensisaltoalue -> {
+                                opetuksenkeskeinenSisaltoalueRepository.delete(opetuksenKeskeinensisaltoalue);
+                            })
+                    );
+                    poistettavat.add(oaVl);
+                }
+            });
+            oaVuosiluokat.removeAll(poistettavat);
+
+            oavlk.setVuosiluokat(oaVuosiluokat);
+
+            oppiaineenvuosiluokkakokonaisuusRepository.save(oavlk);
         }
 
 
@@ -757,7 +783,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         if (!oppiaineExists(opsId, oppiaineId)) {
             throw new BusinessRuleViolationException("Opetussuunnitelmaa tai oppiainetta ei ole.");
         }
-        return vuosiluokat.findByOppiaine(oppiaineId, vuosiluokkaId);
+        return oppiaineenvuosiluokkaRepository.findByOppiaine(oppiaineId, vuosiluokkaId);
     }
 
     @Override
@@ -843,7 +869,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         oavl = asetaOppiaineenVuosiluokanSisalto(oavl, tavoitteetDto);
-        oavl = vuosiluokat.save(oavl);
+        oavl = oppiaineenvuosiluokkaRepository.save(oavl);
         return mapper.map(oavl, OppiaineenVuosiluokkaDto.class);
     }
 
@@ -1106,9 +1132,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             return oppiaineet.getLatestRevisionId(ctx.getOppiaineId());
         }
         if (ctx.getVuosiluokkaId() == null) {
-            return oppiaineenKokonaisuudet.getLatestRevisionId(ctx.getKokonaisuusId());
+            return oppiaineenvuosiluokkakokonaisuusRepository.getLatestRevisionId(ctx.getKokonaisuusId());
         }
-        return vuosiluokat.getLatestRevisionId(ctx.getVuosiluokkaId());
+        return oppiaineenvuosiluokkaRepository.getLatestRevisionId(ctx.getVuosiluokkaId());
     }
 
     @Override
@@ -1117,10 +1143,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             if (ctx.isOppiane()) {
                 return ctx.getOppiaineId();
             }
-            if (ctx.isKokonaisuus() && oppiaineenKokonaisuudet.exists(ctx.getOppiaineId(), ctx.getKokonaisuusId())) {
+            if (ctx.isKokonaisuus() && oppiaineenvuosiluokkakokonaisuusRepository.exists(ctx.getOppiaineId(), ctx.getKokonaisuusId())) {
                 return ctx.getKokonaisuusId();
             }
-            if (ctx.isVuosiluokka() && vuosiluokat.exists(ctx.getOppiaineId(), ctx.getKokonaisuusId(), ctx.getVuosiluokkaId())) {
+            if (ctx.isVuosiluokka() && oppiaineenvuosiluokkaRepository.exists(ctx.getOppiaineId(), ctx.getKokonaisuusId(), ctx.getVuosiluokkaId())) {
                 return ctx.getVuosiluokkaId();
             }
         }

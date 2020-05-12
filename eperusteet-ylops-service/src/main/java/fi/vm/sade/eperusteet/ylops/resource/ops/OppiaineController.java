@@ -64,7 +64,8 @@ public class OppiaineController {
     @RequestMapping(value = "/valinnainen", method = RequestMethod.POST)
     public OppiaineDto addValinnainen(@PathVariable final Long opsId, @RequestBody OppiaineenTallennusDto dto) {
         return oppiaineService.addValinnainen(
-                opsId, dto.getOppiaine(),
+                opsId,
+                dto.getOppiaine(),
                 dto.getVuosiluokkakokonaisuusId(),
                 dto.getVuosiluokat(),
                 dto.getTavoitteet(), null, null, false);
