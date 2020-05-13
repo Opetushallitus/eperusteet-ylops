@@ -3029,6 +3029,40 @@
         }
       }
     },
+    "/opetussuunnitelmat/{opsId}/oppiaineet/{id}/yksinkertainen" : {
+      "post" : {
+        "tags" : [ "Oppiaineet" ],
+        "operationId" : "updateYksinkertainen",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/OppiaineenTallennusDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OppiaineDto"
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{id}" : {
       "get" : {
         "tags" : [ "OppiaineenVuosiluokkakokonaisuudet" ],
@@ -6082,12 +6116,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
