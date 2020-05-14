@@ -34,7 +34,7 @@
         <eperusteet.resources>fi.vm.sade.eperusteet.ylops.resource</eperusteet.resources>
         <swagger-maven-plugin-version>3.1.7</swagger-maven-plugin-version>
         <flyway.version>5.2.4</flyway.version>
-        <metrics.version>4.0.2</metrics.version>
+        <metrics.version>4.1.6</metrics.version>
         <apache.httpclient.version>4.5.3</apache.httpclient.version>
         <eperusteet.backendutils.version>2.3-SNAPSHOT</eperusteet.backendutils.version>
     </properties>
