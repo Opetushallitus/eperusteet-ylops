@@ -892,9 +892,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         tkv.setNaytaPerusteenTeksti(vanhaTkv.isNaytaPerusteenTeksti());
                         tkv.setPerusteTekstikappaleId(vanhaTkv.getPerusteTekstikappaleId());
                         tkv.setLiite(vanhaTkv.isLiite());
-                        TekstiKappale tkCopy = vanhaTkv.getTekstiKappale().copy();
-                        tkCopy.setTeksti(null);
-                        tkv.setTekstiKappale(tekstiKappaleRepository.save(tkCopy));
+                        tkv.setTekstiKappale(teeKopio ? tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy()) : vanhaTkv.getTekstiKappale());
                         parent.getLapset().add(tkv);
                         kasitteleTekstit(vanhaTkv, tkv, teeKopio);
                     });
