@@ -1,11 +1,13 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
@@ -27,12 +29,15 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksonOppiaineRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.Arrays;
 import java.util.Collection;
@@ -86,6 +91,12 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private Kommentti2019Service kommenttiService;
+
+    @Autowired
+    private Lops2019OpintojaksonOppiaineRepository opintojaksonOppiaineRepository;
+
+    @Autowired
+    private Lops2019SisaltoRepository lops2019SisaltoRepository;
 
     private OpetussuunnitelmaDto createLukioOpetussuunnitelma() {
         OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
@@ -317,6 +328,116 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                     Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_maa2").build()));
 
             assertThat(opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto)).isNotNull();
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testOppiaineKoodiMuutos() {
+
+        OpetussuunnitelmaDto ops1 = createLukioOpetussuunnitelma();
+        OpetussuunnitelmaDto ops2 = createLukioOpetussuunnitelma();
+        OpetussuunnitelmaDto ops3 = createLukioOpetussuunnitelma();
+
+        {
+            Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
+                    .nimi(LokalisoituTekstiDto.of("Biologia"))
+                    .kuvaus(LokalisoituTekstiDto.of("Kuvaus"))
+                    .koodi("paikallinen")
+                    .perusteenOppiaineUri("oppiaineet_bi")
+                    .build();
+            oppiaineDto = oppiaineService.addOppiaine(ops1.getId(), oppiaineDto);
+            Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                    .build();
+            opintojaksoDto.setKoodi("1234");
+
+            opintojaksoDto.setOppiaineet(Sets.newHashSet(
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi(oppiaineDto.getKoodi()).build(),
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_maa").laajuus(1l).build()));
+
+            assertThat(opintojaksoService.addOpintojakso(ops1.getId(), opintojaksoDto)).isNotNull();
+        }
+
+        {
+            Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
+                    .nimi(LokalisoituTekstiDto.of("Biologia"))
+                    .kuvaus(LokalisoituTekstiDto.of("Kuvaus"))
+                    .koodi("paikallinen")
+                    .perusteenOppiaineUri("oppiaineet_bi")
+                    .build();
+            oppiaineDto = oppiaineService.addOppiaine(ops2.getId(), oppiaineDto);
+            Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                    .build();
+            opintojaksoDto.setKoodi("1234");
+
+            opintojaksoDto.setOppiaineet(Sets.newHashSet(
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi(oppiaineDto.getKoodi()).build(),
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_maa").laajuus(1l).build()));
+
+            assertThat(opintojaksoService.addOpintojakso(ops2.getId(), opintojaksoDto)).isNotNull();
+
+            oppiaineDto.setKoodi("muutettuKoodi");
+            UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> wrapperDto = new UpdateWrapperDto<>();
+            wrapperDto.setData(oppiaineDto);
+
+            oppiaineService.updateOppiaine(ops2.getId(), oppiaineDto.getId(), wrapperDto);
+        }
+
+        {
+            Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
+                    .nimi(LokalisoituTekstiDto.of("Biologia"))
+                    .kuvaus(LokalisoituTekstiDto.of("Kuvaus"))
+                    .koodi("paikallinen")
+                    .perusteenOppiaineUri("oppiaineet_bi")
+                    .build();
+            oppiaineDto = oppiaineService.addOppiaine(ops3.getId(), oppiaineDto);
+
+            Lops2019OpintojaksoDto paikallinenOpintojaksoDto = Lops2019OpintojaksoDto.builder()
+                    .build();
+            paikallinenOpintojaksoDto.setKoodi("pp1234");
+            paikallinenOpintojaksoDto.setOppiaineet(Sets.newHashSet(
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi(oppiaineDto.getKoodi()).build()));
+
+            paikallinenOpintojaksoDto = opintojaksoService.addOpintojakso(ops3.getId(), paikallinenOpintojaksoDto);
+
+            Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                    .build();
+            opintojaksoDto.setKoodi("1234");
+            opintojaksoDto.setOppiaineet(Sets.newHashSet(
+                    Lops2019OpintojaksonOppiaineDto.builder().koodi(oppiaineDto.getKoodi()).build()));
+            opintojaksoDto.setPaikallisetOpintojaksot(Arrays.asList(paikallinenOpintojaksoDto));
+
+            assertThat(opintojaksoService.addOpintojakso(ops3.getId(), opintojaksoDto)).isNotNull();
+
+            oppiaineDto.setKoodi("muutettuKoodi2");
+            UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> wrapperDto = new UpdateWrapperDto<>();
+            wrapperDto.setData(oppiaineDto);
+
+            oppiaineService.updateOppiaine(ops3.getId(), oppiaineDto.getId(), wrapperDto);
+        }
+
+        List<Lops2019OpintojaksonOppiaine> opintojaksonOppiaineet = opintojaksonOppiaineRepository.findAll();
+        assertThat(opintojaksonOppiaineet).hasSize(6);
+        assertThat(opintojaksonOppiaineet).extracting("koodi").containsExactlyInAnyOrder("paikallinen", "muutettuKoodi", "muutettuKoodi2", "muutettuKoodi2", "oppiaineet_maa", "oppiaineet_maa");
+
+        {
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops1.getId())).hasSize(2);
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops1.getId(), "paikallinen")).hasSize(1);
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops1.getId(), "muutettuKoodi")).hasSize(0);
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops1.getId(), "oppiaineet_maa")).hasSize(1);
+        }
+
+        {
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops2.getId())).hasSize(2);
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops2.getId(), "paikallinen")).hasSize(0);
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops2.getId(), "muutettuKoodi")).hasSize(1);
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops2.getId(), "oppiaineet_maa")).hasSize(1);
+        }
+
+        {
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops3.getId())).hasSize(2);
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops3.getId(), "paikallinen")).hasSize(0);
+            assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops3.getId(), "muutettuKoodi2")).hasSize(2);
         }
     }
 

@@ -149,8 +149,7 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         oppiaine.updateMuokkaustiedot();
         oppiaine = oppiaineRepository.save(oppiaine);
         if (!Objects.equals(oppiaineenKoodi, oppiaineDto.getData().getKoodi())) {
-            for (Lops2019OpintojaksonOppiaine ojOa : opintojaksonOppiaineRepository
-                    .findAllByKoodi(oppiaineenKoodi)) {
+            for (Lops2019OpintojaksonOppiaine ojOa : sisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(opsId, oppiaineenKoodi)) {
                 ojOa.setKoodi(oppiaine.getKoodi());
                 opintojaksonOppiaineRepository.save(ojOa);
             }
