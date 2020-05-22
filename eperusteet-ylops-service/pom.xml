@@ -25,7 +25,7 @@
         <jsoup.version>1.9.2</jsoup.version>
         <ehcache.version>2.6.11</ehcache.version>
         <slf4j.version>1.7.21</slf4j.version>
-        <fop.version>2.3</fop.version>
+        <fop.version>2.5</fop.version>
         <pdfbox.version>2.0.17</pdfbox.version>
         <flyway.version>5.2.4</flyway.version>
         <springfox.version>2.7.0</springfox.version>
@@ -377,6 +377,12 @@
             <groupId>org.apache.xmlgraphics</groupId>
             <artifactId>fop</artifactId>
             <version>${fop.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>

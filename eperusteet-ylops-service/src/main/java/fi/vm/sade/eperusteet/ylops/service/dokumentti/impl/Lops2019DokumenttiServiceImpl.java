@@ -406,6 +406,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             }
         }
 
+        addTeksti(docBase, "", "p");
         docBase.getGenerator().increaseNumber();
     }
 
@@ -782,12 +783,14 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                                     .filter(Objects::nonNull)
                                     .forEach(sisalto -> {
                                         LokalisoituTekstiDto kohde = sisalto.getKohde();
-                                        if (kohde != null && !ObjectUtils.isEmpty(sisalto.getSisallot())) {
+                                        if (kohde != null) {
                                             // Kohde
                                             Element kohdeEl = docBase.getDocument().createElement("p");
                                             kohdeEl.setTextContent(getTextString(docBase, kohde));
                                             cite.appendChild(kohdeEl);
+                                        }
 
+                                        if (!ObjectUtils.isEmpty(sisalto.getSisallot())) {
                                             // Sisallöt
                                             Element ul = docBase.getDocument().createElement("ul");
                                             sisalto.getSisallot().forEach(s -> {
