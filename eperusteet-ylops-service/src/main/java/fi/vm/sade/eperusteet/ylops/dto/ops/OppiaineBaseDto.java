@@ -15,8 +15,11 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineValinnainenTyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 
 import java.util.UUID;
@@ -34,6 +37,9 @@ public abstract class OppiaineBaseDto {
     private UUID tunniste;
     private Tila tila;
     private OppiaineTyyppi tyyppi;
+    private OppiaineValinnainenTyyppi valinnainenTyyppi;
+    @JsonProperty("_liittyvaOppiaine")
+    private Reference liittyvaOppiaine;
     private Long jnro;
     private String laajuus;
     private boolean koosteinen;

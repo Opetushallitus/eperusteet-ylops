@@ -67,6 +67,19 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Setter
     private OppiaineTyyppi tyyppi = OppiaineTyyppi.YHTEINEN;
 
+    @Enumerated(value = EnumType.STRING)
+    @NotNull
+    @Getter
+    @Setter
+    @Column(name = "valinnainen_tyyppi")
+    private OppiaineValinnainenTyyppi valinnainenTyyppi = OppiaineValinnainenTyyppi.EI_MAARITETTY;
+
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "liittyva_oppiaine_id")
+    @Getter
+    @Setter
+    private Oppiaine liittyvaOppiaine;
+
     /**
      * Laajuus vuosiviikkotunteina (vvh)
      */
