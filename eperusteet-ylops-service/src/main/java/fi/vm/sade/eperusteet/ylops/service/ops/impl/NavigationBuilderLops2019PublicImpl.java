@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -22,8 +23,8 @@ public class NavigationBuilderLops2019PublicImpl extends NavigationBuilderLops20
     private DtoMapper mapper;
 
     @Override
-    protected List<Lops2019OppiaineKaikkiDto> getOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
-        List<Lops2019OppiaineKaikkiDto> copyList = mapper.mapAsList(lopsService.getPerusteOppiaineet(opsId), Lops2019OppiaineKaikkiDto.class);
+    protected List<Lops2019OppiaineKevytDto> getOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
+        List<Lops2019OppiaineKevytDto> copyList = mapper.mapAsList(lopsService.getPerusteOppiaineet(opsId), Lops2019OppiaineKevytDto.class);
         return copyList.stream()
                 .map(oppiaine -> {
                     if (!CollectionUtils.isEmpty(oppiaine.getOppimaarat())) {
