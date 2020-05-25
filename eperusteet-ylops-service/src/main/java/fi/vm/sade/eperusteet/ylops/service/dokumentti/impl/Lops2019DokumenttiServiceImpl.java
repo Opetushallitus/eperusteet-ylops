@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -88,15 +89,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Perusteen oppiaineet
         perusteenSisalto.getOppiaineet().stream()
-                .map(oppiaine -> {
-                    if (!CollectionUtils.isEmpty(oppiaine.getOppimaarat())) {
-                        oppiaine.setOppimaarat(oppiaine.getOppimaarat().stream()
-                                .filter(oppimaara -> opintojaksotMap.keySet().contains(oppimaara.getKoodi().getUri()))
-                                .collect(Collectors.toList()));
-                    }
-                    return oppiaine;
-                })
-                .filter(oppiaine -> opintojaksotMap.keySet().contains(oppiaine.getKoodi().getUri()) || !CollectionUtils.isEmpty(oppiaine.getOppimaarat()))
+                .filter(oppiaine -> opintojaksotMap.keySet().contains(oppiaine.getKoodi().getUri())
+                        || !CollectionUtils.isEmpty(oppiaine.getOppimaarat().stream()
+                            .filter(oppimaara -> opintojaksotMap.keySet().contains(oppimaara.getKoodi().getUri()))
+                            .collect(Collectors.toList())))
                 .forEach(oa -> {
             KoodiDto koodi = oa.getKoodi();
             addOppiaine(docBase, oa, koodi != null ? opintojaksotMap.get(koodi.getUri()) : null, opintojaksotMap);
@@ -198,10 +194,12 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Oppimäärät
         docBase.getGenerator().increaseDepth();
-        oa.getOppimaarat().forEach(om -> {
-            KoodiDto omKoodi = om.getKoodi();
-            addOppiaine(docBase, om, omKoodi != null ? opintojaksotMap.get(omKoodi.getUri()) : null, opintojaksotMap);
-        });
+        oa.getOppimaarat().stream()
+                .filter(om -> om.getKoodi() != null && opintojaksotMap.keySet().contains(om.getKoodi().getUri()))
+                .forEach(om -> {
+                    KoodiDto omKoodi = om.getKoodi();
+                    addOppiaine(docBase, om, omKoodi != null ? opintojaksotMap.get(omKoodi.getUri()) : null, opintojaksotMap);
+                });
         docBase.getGenerator().decreaseDepth();
         docBase.getGenerator().increaseNumber();
     }
