@@ -350,6 +350,8 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineDto = oppiaineService.update(opsId, oppiaineDto).getOppiaine();
         assertNotNull(oppiaineDto.getLiittyvaOppiaine());
         assertEquals(oppiaineDto.getLiittyvaOppiaine().getId(), oppiaineDto.getId().toString());
+
+        oppiaineService.delete(opsId, oppiaineDto.getId());
     }
 
     private static TekstiosaDto getTekstiosa(String suffiksi) {
