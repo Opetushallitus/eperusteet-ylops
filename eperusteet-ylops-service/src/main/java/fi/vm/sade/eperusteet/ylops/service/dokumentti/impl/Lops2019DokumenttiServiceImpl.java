@@ -4,7 +4,6 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019ArviointiDto;
@@ -21,7 +20,9 @@ import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
+import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,9 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
     @Autowired
     private KoodistoService koodistoService;
+
+    @Autowired
+    private DtoMapper mapper;
 
     @Override
     public void addLops2019Sisalto(DokumenttiBase docBase) {
@@ -88,24 +92,31 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Perusteen oppiaineet
         perusteenSisalto.getOppiaineet().stream()
-                .map(oppiaine -> {
-                    if (!CollectionUtils.isEmpty(oppiaine.getOppimaarat())) {
-                        oppiaine.setOppimaarat(oppiaine.getOppimaarat().stream()
-                                .filter(oppimaara -> opintojaksotMap.keySet().contains(oppimaara.getKoodi().getUri()))
-                                .collect(Collectors.toList()));
-                    }
-                    return oppiaine;
-                })
-                .filter(oppiaine -> opintojaksotMap.keySet().contains(oppiaine.getKoodi().getUri()) || !CollectionUtils.isEmpty(oppiaine.getOppimaarat()))
+                .filter(oppiaine -> opintojaksotMap.keySet().contains(oppiaine.getKoodi().getUri())
+                        || !CollectionUtils.isEmpty(oppiaine.getOppimaarat().stream()
+                            .filter(oppimaara -> opintojaksotMap.keySet().contains(oppimaara.getKoodi().getUri()))
+                            .collect(Collectors.toList())))
                 .forEach(oa -> {
             KoodiDto koodi = oa.getKoodi();
             addOppiaine(docBase, oa, koodi != null ? opintojaksotMap.get(koodi.getUri()) : null, opintojaksotMap);
         });
 
+
         // Paikalliset oppiaineet
+        List<Lops2019OppiaineKaikkiDto> oppiaineetJaOppimaarat = perusteenSisalto.getOppiaineet().stream()
+                .map(oa -> Stream.concat(Stream.of(oa), oa.getOppimaarat().stream()))
+                .flatMap(Function.identity())
+                .collect(Collectors.toList());
+
         List<Lops2019PaikallinenOppiaineDto> oppiaineet = oppiaineService.getAll(ops.getId()).stream()
                 .filter(oppiaine -> opintojaksotMap.keySet().contains(oppiaine.getKoodi())).collect(Collectors.toList());
-        oppiaineet.forEach(poa -> addPaikallinenOppiaine(docBase, poa, opintojaksotMap.get(poa.getKoodi())));
+        oppiaineet.forEach(poa -> {
+            Lops2019OppiaineKaikkiDto oppimaaranOppiaine = oppiaineetJaOppimaarat.stream()
+                    .filter(oppiaineTaiOppimaara -> oppiaineTaiOppimaara.getKoodi().getUri().equals(poa.getPerusteenOppiaineUri()))
+                    .findFirst()
+                    .orElse(null);
+            addPaikallinenOppiaine(docBase, poa, opintojaksotMap.get(poa.getKoodi()), oppimaaranOppiaine);
+        });
 
         // Integraatio opintojaksot
         addIntegraatioOpintojaksot(docBase);
@@ -198,10 +209,12 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Oppimäärät
         docBase.getGenerator().increaseDepth();
-        oa.getOppimaarat().forEach(om -> {
-            KoodiDto omKoodi = om.getKoodi();
-            addOppiaine(docBase, om, omKoodi != null ? opintojaksotMap.get(omKoodi.getUri()) : null, opintojaksotMap);
-        });
+        oa.getOppimaarat().stream()
+                .filter(om -> om.getKoodi() != null && opintojaksotMap.keySet().contains(om.getKoodi().getUri()))
+                .forEach(om -> {
+                    KoodiDto omKoodi = om.getKoodi();
+                    addOppiaine(docBase, om, omKoodi != null ? opintojaksotMap.get(omKoodi.getUri()) : null, opintojaksotMap);
+                });
         docBase.getGenerator().decreaseDepth();
         docBase.getGenerator().increaseNumber();
     }
@@ -209,9 +222,9 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
     private void addPaikallinenOppiaine(
             DokumenttiBase docBase,
             Lops2019PaikallinenOppiaineDto poa,
-            List<Lops2019OpintojaksoDto> opintojaksot
+            List<Lops2019OpintojaksoDto> opintojaksot,
+            Lops2019OppiaineKaikkiDto oa
     ) {
-
         // Nimi
         StringBuilder nimiBuilder = new StringBuilder();
         nimiBuilder.append(getTextString(docBase, poa.getNimi()));
@@ -229,60 +242,113 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             // Vastaa toista oppiainetta
         }
 
-        // Tehtävä
-        fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019TehtavaDto tehtava = poa.getTehtava();
-        if (tehtava != null && tehtava.getKuvaus() != null) {
+        { // Tehtävä
+            Lops2019TehtavaDto oppiaineenTehtava = oa != null ? oa.getTehtava() : null;
+
             addTeksti(docBase, messages.translate("oppiaineen-tehtava", docBase.getKieli()), "h6");
-            addLokalisoituteksti(docBase, tehtava.getKuvaus(), "div");
+            if (oppiaineenTehtava != null && oppiaineenTehtava.getKuvaus() != null) {
+                addLokalisoituteksti(docBase, oppiaineenTehtava.getKuvaus(), "div");
+            }
+
+            fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019TehtavaDto tehtava = poa.getTehtava();
+            if (tehtava != null && tehtava.getKuvaus() != null) {
+                addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                addLokalisoituteksti(docBase, tehtava.getKuvaus(), "div");
+            }
         }
 
-        // Tavoitteet
-        Lops2019OppiaineenTavoitteetDto tavoitteet = poa.getTavoitteet();
-        if (tavoitteet != null) {
+        { // Tavoitteet
+
+            Lops2019OppiaineTavoitteetDto oppiaineenTavoitteet = oa != null ? oa.getTavoitteet() : null;
             addTeksti(docBase, messages.translate("tavoitteet", docBase.getKieli()), "h6");
-            addLokalisoituteksti(docBase, tavoitteet.getKuvaus(), "div");
+            if (oppiaineenTavoitteet != null) {
+                addLokalisoituteksti(docBase, oppiaineenTavoitteet.getKuvaus(), "div");
 
-            List<Lops2019OppiaineenTavoitealueDto> tavoitealueet = tavoitteet.getTavoitealueet();
-            if (!ObjectUtils.isEmpty(tavoitealueet)) {
-                tavoitealueet.forEach(ta -> {
-                    addLokalisoituteksti(docBase, ta.getNimi(), "h6");
+                List<Lops2019OppiaineTavoitealueDto> tavoitealueet = oppiaineenTavoitteet.getTavoitealueet();
+                if (!ObjectUtils.isEmpty(tavoitealueet)) {
+                    tavoitealueet.forEach(ta -> {
+                        addLokalisoituteksti(docBase, ta.getNimi(), "h6");
 
-                    LokalisoituTekstiDto kohde = ta.getKohde();
-                    if (kohde != null && !ObjectUtils.isEmpty(ta.getTavoitteet())) {
+                        LokalisoituTekstiDto kohde = ta.getKohde();
+                        if (kohde != null && !ObjectUtils.isEmpty(ta.getTavoitteet())) {
 
-                        addLokalisoituteksti(docBase, kohde, "p");
+                            addLokalisoituteksti(docBase, kohde, "p");
 
-                        Element ul = docBase.getDocument().createElement("ul");
-                        ta.getTavoitteet().stream()
-                                .filter(Objects::nonNull)
-                                .map(Lops2019TavoitealueenTavoite::getTavoite).forEach(tavoite -> {
-                            Element li = docBase.getDocument().createElement("li");
-                            li.setTextContent(getTextString(docBase, tavoite));
-                            ul.appendChild(li);
-                        });
-                        docBase.getBodyElement().appendChild(ul);
-                    }
-                });
+                            Element ul = docBase.getDocument().createElement("ul");
+                            ta.getTavoitteet().stream()
+                                    .filter(Objects::nonNull)
+                                    .forEach(tavoite -> {
+                                Element li = docBase.getDocument().createElement("li");
+                                li.setTextContent(getTextString(docBase, tavoite));
+                                ul.appendChild(li);
+                            });
+                            docBase.getBodyElement().appendChild(ul);
+                        }
+                    });
+                }
+
+            }
+
+            Lops2019OppiaineenTavoitteetDto tavoitteet = poa.getTavoitteet();
+            if (tavoitteet != null && (tavoitteet.getKuvaus() != null || !ObjectUtils.isEmpty(tavoitteet.getTavoitealueet()))) {
+                addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                addLokalisoituteksti(docBase, tavoitteet.getKuvaus(), "div");
+
+                List<Lops2019OppiaineenTavoitealueDto> tavoitealueet = tavoitteet.getTavoitealueet();
+                if (!ObjectUtils.isEmpty(tavoitealueet)) {
+                    tavoitealueet.forEach(ta -> {
+                        addLokalisoituteksti(docBase, ta.getNimi(), "h6");
+
+                        LokalisoituTekstiDto kohde = ta.getKohde();
+                        if (kohde != null && !ObjectUtils.isEmpty(ta.getTavoitteet())) {
+
+                            addLokalisoituteksti(docBase, kohde, "p");
+
+                            Element ul = docBase.getDocument().createElement("ul");
+                            ta.getTavoitteet().stream()
+                                    .filter(Objects::nonNull)
+                                    .map(Lops2019TavoitealueenTavoite::getTavoite).forEach(tavoite -> {
+                                Element li = docBase.getDocument().createElement("li");
+                                li.setTextContent(getTextString(docBase, tavoite));
+                                ul.appendChild(li);
+                            });
+                            docBase.getBodyElement().appendChild(ul);
+                        }
+                    });
+                }
             }
         }
 
         { // Arviointi
+
+            Lops2019ArviointiDto oppianeenArviointi = oa != null ? oa.getArviointi() : null;
+            addTeksti(docBase, messages.translate("arviointi", docBase.getKieli()), "h6");
+            if (oppianeenArviointi != null && oppianeenArviointi.getKuvaus() != null) {
+                addLokalisoituteksti(docBase, oppianeenArviointi.getKuvaus(), "div");
+            }
+
             fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ArviointiDto arviointi = poa.getArviointi();
             if (arviointi != null && arviointi.getKuvaus() != null) {
-                addTeksti(docBase, messages.translate("arviointi", docBase.getKieli()), "h6");
+                addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
                 addLokalisoituteksti(docBase, arviointi.getKuvaus(), "div");
             }
         }
 
         { // Laaja-alainen osaaminen
+
+            Lops2019OppiaineLaajaAlainenOsaaminenDto oppiaineenLaajaAlainenOsaaminen = oa != null ? oa.getLaajaAlaisetOsaamiset() : null;
+            addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
+            if (oppiaineenLaajaAlainenOsaaminen != null) {
+                addLokalisoituteksti(docBase, oppiaineenLaajaAlainenOsaaminen.getKuvaus(), "div");
+            }
+
             List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
-            if (laajaAlainenOsaaminen != null) {
-                addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
+            if (!ObjectUtils.isEmpty(laajaAlainenOsaaminen)) {
+                addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
                 laajaAlainenOsaaminen.forEach(lao -> {
-                    addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
                     KoodistoKoodiDto laoKoodi = koodistoService.get("laajaalainenosaaminenlops2021", lao.getKoodi());
                     addLokalisoituteksti(docBase, laoKoodi.getNimi(), "h6");
-                    addLokalisoituteksti(docBase, lao.getKuvaus(), "p");
+                    addLokalisoituteksti(docBase, lao.getKuvaus(), "div");
                 });
             }
         }
