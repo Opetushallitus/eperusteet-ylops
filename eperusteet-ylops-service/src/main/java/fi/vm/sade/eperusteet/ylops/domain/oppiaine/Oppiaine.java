@@ -391,6 +391,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
             to.setNimi(other.getNimi());
             to.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
             to.setTyyppi(other.getTyyppi());
+            to.setValinnainenTyyppi(other.getValinnainenTyyppi());
             to.setKoodi(other.getKoodi());
             to.setKoosteinen(other.isKoosteinen());
             to.setKoodiArvo(other.getKoodiArvo());

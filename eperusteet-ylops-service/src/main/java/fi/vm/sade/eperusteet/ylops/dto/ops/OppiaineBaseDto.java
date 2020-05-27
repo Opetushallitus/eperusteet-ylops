@@ -37,7 +37,7 @@ public abstract class OppiaineBaseDto {
     private UUID tunniste;
     private Tila tila;
     private OppiaineTyyppi tyyppi;
-    private OppiaineValinnainenTyyppi valinnainenTyyppi;
+    private OppiaineValinnainenTyyppi valinnainenTyyppi = OppiaineValinnainenTyyppi.EI_MAARITETTY;
     @JsonProperty("_liittyvaOppiaine")
     private Reference liittyvaOppiaine;
     private Long jnro;
