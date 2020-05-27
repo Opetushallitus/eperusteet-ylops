@@ -157,4 +157,8 @@ public class DokumenttiUtils {
 
         return result;
     }
+
+    public static void addPlaceholder(DokumenttiBase docBase) {
+        docBase.getBodyElement().appendChild(docBase.getDocument().createElement("br"));
+    }
 }

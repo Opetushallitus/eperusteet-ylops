@@ -407,7 +407,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         }
 
         // mahdollistetaan sivun vaihtuminen jos opintojaksolla vain h-tason otsikoita (ilman sisaltoja)
-        addTeksti(docBase, "", "br");
+        addPlaceholder(docBase);
         docBase.getGenerator().increaseNumber();
     }
 
