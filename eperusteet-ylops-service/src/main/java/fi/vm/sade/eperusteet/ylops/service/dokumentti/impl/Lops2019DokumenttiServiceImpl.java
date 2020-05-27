@@ -406,7 +406,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             }
         }
 
-        addTeksti(docBase, "", "p");
+        addTeksti(docBase, "", "br");
         docBase.getGenerator().increaseNumber();
     }
 
