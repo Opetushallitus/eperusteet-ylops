@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.*;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineValinnainenTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
@@ -320,6 +321,35 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         assertNotNull(oppiaineRepo.isOma(opsId, oppiaineDto.getId()));
         assertNull(oppiaineRepo.isOma(opsId, -1));
+    }
+
+    @Test
+    public void testValinnainenOppiaine() {
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+
+        VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
+        vlk.setNimi(Optional.of(lt("ykköskakkoset")));
+        vlk = vuosiluokkakokonaisuusService.add(ops.getId(), vlk);
+        assertNotNull(vlk);
+
+        OppiaineDto oppiaineDto = new OppiaineDto();
+        oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
+        oppiaineDto.setValinnainenTyyppi(OppiaineValinnainenTyyppi.SOVELTAVA);
+        oppiaineDto.setNimi(lt("Valinnainen"));
+        oppiaineDto.setKoodiUri("koodikoodi");
+        oppiaineDto.setTunniste(UUID.randomUUID());
+        oppiaineDto.setKoosteinen(false);
+
+        oppiaineDto = oppiaineService.add(opsId, oppiaineDto);
+        assertNotNull(oppiaineDto);
+        assertEquals(oppiaineDto.getValinnainenTyyppi(), OppiaineValinnainenTyyppi.SOVELTAVA);
+        assertNull(oppiaineDto.getLiittyvaOppiaine());
+
+        oppiaineDto.setLiittyvaOppiaine(Reference.of(oppiaineDto));
+
+        oppiaineDto = oppiaineService.update(opsId, oppiaineDto).getOppiaine();
+        assertNotNull(oppiaineDto.getLiittyvaOppiaine());
+        assertEquals(oppiaineDto.getLiittyvaOppiaine().getId(), oppiaineDto.getId().toString());
     }
 
     private static TekstiosaDto getTekstiosa(String suffiksi) {
