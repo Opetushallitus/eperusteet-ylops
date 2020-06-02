@@ -180,12 +180,11 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             }
 
             // Lukio
-            if (KoulutusTyyppi.LUKIOKOULUTUS.equals(ops.getKoulutustyyppi())) {
-                if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
-                    lops2019DokumenttiService.addLops2019Sisalto(docBase);
-                } else {
-                    lukioService.addOppimistavoitteetJaOpetuksenKeskeisetSisallot(docBase);
-                }
+            if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
+                lops2019DokumenttiService.addLops2019Sisalto(docBase);
+            }
+            else if (KoulutusTyyppi.LUKIOKOULUTUS.equals(ops.getKoulutustyyppi())) {
+                lukioService.addOppimistavoitteetJaOpetuksenKeskeisetSisallot(docBase);
             }
         }
 
