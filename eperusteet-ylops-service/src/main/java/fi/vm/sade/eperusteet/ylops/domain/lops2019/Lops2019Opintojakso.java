@@ -91,6 +91,7 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     @Getter
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @NotEmpty
+    @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "lops2019_opintojakso_oppiaine",
             joinColumns = @JoinColumn(name = "opintojakso_id"),
             inverseJoinColumns = @JoinColumn(name = "oj_oppiaine_id"))
