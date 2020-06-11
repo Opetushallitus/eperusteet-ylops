@@ -230,7 +230,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             throw new BusinessRuleViolationException("pakollista-tekstikappaletta-ei-voi-poistaa");
         }
 
-        // Poistetaan viirraus poistettavaan tekstikappale viitteeseen
+        // Poistetaan viittaus poistettavaan tekstikappale viitteeseen
         List<TekstiKappaleViite> viittaavat = tekstikappaleviiteRepository.findAllByOriginalId(viiteId);
         viittaavat.forEach(vierasViite -> {
             vierasViite.updateOriginal(null);
