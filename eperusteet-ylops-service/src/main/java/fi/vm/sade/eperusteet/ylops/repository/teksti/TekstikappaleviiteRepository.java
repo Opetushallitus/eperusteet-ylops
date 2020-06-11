@@ -29,4 +29,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TekstikappaleviiteRepository extends JpaWithVersioningRepository<TekstiKappaleViite, Long>, TekstikappaleviiteRepositoryCustom {
     List<TekstiKappaleViite> findAllByTekstiKappale(TekstiKappale tekstiKappale);
+
+    List<TekstiKappaleViite> findAllByOriginalId(Long originalId);
 }
