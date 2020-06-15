@@ -36,6 +36,7 @@ public class OppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
     private TekstiosaDto tyotavat;
     private TekstiosaDto ohjaus;
     private TekstiosaDto arviointi;
+    private TekstiosaDto tavoitteistaJohdetutOppimisenTavoitteet;
     private TekstiosaDto sisaltoalueinfo;
     private Integer jnro;
     private Boolean piilotettu;

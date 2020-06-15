@@ -87,6 +87,12 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
 
     @Getter
     @Setter
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "tavoitteista_johdetut_oppimisen_tavoitteet_id")
+    private Tekstiosa tavoitteistaJohdetutOppimisenTavoitteet;
+
+    @Getter
+    @Setter
     private Integer jnro;
 
     @Getter

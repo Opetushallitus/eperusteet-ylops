@@ -6116,12 +6116,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -8008,6 +8008,9 @@
           "$ref" : "#/definitions/TekstiosaDto"
         },
         "arviointi" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "tavoitteistaJohdetutOppimisenTavoitteet" : {
           "$ref" : "#/definitions/TekstiosaDto"
         },
         "sisaltoalueinfo" : {

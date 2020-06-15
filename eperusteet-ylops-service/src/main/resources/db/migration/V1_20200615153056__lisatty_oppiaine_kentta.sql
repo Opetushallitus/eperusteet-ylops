@@ -1,0 +1,2 @@
+alter table oppiaineen_vlkok add column tavoitteista_johdetut_oppimisen_tavoitteet_id int8;
+alter table oppiaineen_vlkok_AUD add column tavoitteista_johdetut_oppimisen_tavoitteet_id int8;

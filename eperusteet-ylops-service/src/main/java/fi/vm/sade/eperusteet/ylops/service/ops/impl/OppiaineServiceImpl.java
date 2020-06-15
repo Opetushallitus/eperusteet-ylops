@@ -291,6 +291,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oavlk.setTyotavat(mapper.map(oavlktDto.getTyotavat(), Tekstiosa.class));
         oavlk.setOhjaus(mapper.map(oavlktDto.getOhjaus(), Tekstiosa.class));
         oavlk.setArviointi(mapper.map(oavlktDto.getArviointi(), Tekstiosa.class));
+        oavlk.setTavoitteistaJohdetutOppimisenTavoitteet(mapper.map(oavlktDto.getTavoitteistaJohdetutOppimisenTavoitteet(), Tekstiosa.class));
 
         if (oldJnro != null) {
             oavlk.setJnro(oldJnro);
@@ -410,6 +411,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             oavlk.setTyotavat(mapper.map(oavlktDto.getTyotavat(), Tekstiosa.class));
             oavlk.setOhjaus(mapper.map(oavlktDto.getOhjaus(), Tekstiosa.class));
             oavlk.setArviointi(mapper.map(oavlktDto.getArviointi(), Tekstiosa.class));
+            oavlk.setTavoitteistaJohdetutOppimisenTavoitteet(mapper.map(oavlktDto.getTavoitteistaJohdetutOppimisenTavoitteet(), Tekstiosa.class));
 
             // Lisätään puuttuvat
             Set<Oppiaineenvuosiluokka> oaVuosiluokat = oavlk.getVuosiluokat();
@@ -809,6 +811,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
         if (dto.getArviointi() != null) {
             oavlk.setArviointi(mapper.map(dto.getArviointi(), Tekstiosa.class));
+        }
+        if (dto.getTavoitteistaJohdetutOppimisenTavoitteet() != null) {
+            oavlk.setTavoitteistaJohdetutOppimisenTavoitteet(mapper.map(dto.getTavoitteistaJohdetutOppimisenTavoitteet(), Tekstiosa.class));
         }
         if (dto.getPiilotettu() != null) {
             oavlk.setPiilotettu(dto.getPiilotettu());
