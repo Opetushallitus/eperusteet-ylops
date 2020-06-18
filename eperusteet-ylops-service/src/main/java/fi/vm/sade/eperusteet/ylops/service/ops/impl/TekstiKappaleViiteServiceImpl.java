@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtumaAuditointitiedoilla;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
@@ -26,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -34,6 +36,8 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.PoistettuTekstiKappaleRepos
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
+import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockManager;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -42,6 +46,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsFeaturesFactory;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategy;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
+import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,6 +88,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     private KayttajanTietoService kayttajanTietoService;
 
     @Autowired
+    private EperusteetService eperusteetService;
+
+    @Autowired
     private LockManager lockMgr;
 
     @Autowired
@@ -92,6 +100,36 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public <T> T getTekstiKappaleViite(Long opsId, Long viiteId, Class<T> t) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         return mapper.map(viite, t);
+    }
+
+    @Override
+    public fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto getPerusteTekstikappale(
+            Long opsId,
+            Long viiteId
+    ) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        if (ops == null) {
+            throw new BusinessRuleViolationException("ops-ei-loydy");
+        }
+        PerusteCache perusteCached = ops.getCachedPeruste();
+        if (perusteCached == null) {
+            throw new BusinessRuleViolationException("peruste-cache-puuttuu");
+        }
+        PerusteDto perusteDto = eperusteetService.getPerusteById(perusteCached.getPerusteId());
+
+        TekstiKappaleViiteDto.Matala tekstiKappaleViite = getTekstiKappaleViite(opsId, viiteId);
+
+        if (perusteDto.getPerusopetus() != null) {
+            fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto sisalto = perusteDto.getPerusopetus().getSisalto();
+            return CollectionUtil.treeToStream(
+                    sisalto,
+                    fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
+                    .filter(viiteDto -> viiteDto.getTesktiKappale() != null && tekstiKappaleViite != null
+                            && Objects.equals(tekstiKappaleViite.getPerusteTekstikappaleId(), viiteDto.getTesktiKappale().getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
+        }
+        throw new NotExistsException("tekstikappaletta-ei-ole");
     }
 
     @Override

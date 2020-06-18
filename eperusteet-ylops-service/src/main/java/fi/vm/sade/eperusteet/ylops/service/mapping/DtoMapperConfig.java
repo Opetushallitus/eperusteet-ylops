@@ -23,6 +23,8 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine_;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale_;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
@@ -30,6 +32,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
@@ -104,6 +107,11 @@ public class DtoMapperConfig {
         factory.classMap(Oppiaine.class, LukioOppiaineTiedotDto.class)
                 .exclude(Oppiaine_.oppimaarat.getName())
                 .exclude("kurssiTyyppiKuvaukset") // does not handle Optional correctly
+                .byDefault()
+                .register();
+
+        factory.classMap(TekstiKappale.class, TekstiKappaleDto.class)
+                .exclude(TekstiKappale_.tila.getName())
                 .byDefault()
                 .register();
 

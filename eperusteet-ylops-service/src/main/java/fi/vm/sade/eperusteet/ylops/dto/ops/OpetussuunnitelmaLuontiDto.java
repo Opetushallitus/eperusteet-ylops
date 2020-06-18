@@ -34,4 +34,5 @@ public class OpetussuunnitelmaLuontiDto extends OpetussuunnitelmaBaseDto {
     private Optional<TekstiKappaleViiteDto.Puu> tekstit;
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineDto> oppiaineet;
+    private boolean rakennePohjasta = false;
 }

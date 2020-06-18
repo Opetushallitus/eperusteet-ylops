@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.util.Nulls;
 
 import java.io.Serializable;
@@ -37,6 +38,7 @@ public class PerusopetuksenPerusteenSisaltoDto {
     private Set<PerusteLaajaalainenosaaminenDto> laajaalaisetosaamiset;
     private Set<PerusteVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<PerusteOppiaineDto> oppiaineet;
+    private TekstiKappaleViiteDto sisalto;
 
     public Optional<PerusteOppiaineDto> getOppiaine(UUID tunniste) {
         return oppiaineet.stream()

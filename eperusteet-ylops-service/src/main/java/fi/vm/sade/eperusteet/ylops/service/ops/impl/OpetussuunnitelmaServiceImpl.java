@@ -904,10 +904,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return ops;
     }
 
-    private Opetussuunnitelma addPohjaPerusopetus(Opetussuunnitelma ops, PerusteDto peruste) {
+    private Opetussuunnitelma addPohjaPerusopetus(
+            Opetussuunnitelma ops,
+            PerusteDto peruste,
+            OpetussuunnitelmaLuontiDto pohjaDto
+    ) {
         Long opsId = ops.getId();
-
         PerusopetuksenPerusteenSisaltoDto sisalto = peruste.getPerusopetus();
+
+        if (pohjaDto != null && pohjaDto.isRakennePohjasta()) {
+            lisaaTekstipuuPerusteesta(sisalto.getSisalto(), ops);
+        }
 
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {
             sisalto.getVuosiluokkakokonaisuudet()
@@ -1052,12 +1059,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         PerusteDto peruste = eperusteetService.getPerusteUpdateCache(pohja.getPerusteenDiaarinumero());
         pohja.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
-        lisaaPerusteenSisalto(pohja, peruste);
+        lisaaPerusteenSisalto(pohja, peruste, null);
     }
 
-    private Opetussuunnitelma lisaaPerusteenSisalto(Opetussuunnitelma ops, PerusteDto peruste) {
+    private Opetussuunnitelma lisaaPerusteenSisalto(
+            Opetussuunnitelma ops,
+            PerusteDto peruste,
+            OpetussuunnitelmaLuontiDto pohjaDto
+    ) {
         if (peruste.getKoulutustyyppi() == null || KoulutusTyyppi.PERUSOPETUS == peruste.getKoulutustyyppi()) {
-            return addPohjaPerusopetus(ops, peruste);
+            return addPohjaPerusopetus(ops, peruste, pohjaDto);
         } else if (KoulutusTyyppi.LISAOPETUS == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.ESIOPETUS == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.AIKUISTENPERUSOPETUS == peruste.getKoulutustyyppi()
@@ -1067,6 +1078,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             return addPohjaLisaJaEsiopetus(ops, peruste);
         } else if (KoulutustyyppiToteutus.LOPS2019.equals(peruste.getToteutus())) {
             return addPohjaLops2019(ops, peruste);
+        } else if (KoulutustyyppiToteutus.PERUSOPETUS.equals(peruste.getToteutus())) {
+            return addPohjaPerusopetus(ops, peruste, pohjaDto);
         } else if (peruste.getKoulutustyyppi().isLukio()) {
             return addPohjaLukiokoulutus(ops, peruste);
         } else {
@@ -1130,17 +1143,44 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         lisaaTekstipuunJuuri(pohja);
         pohja = repository.save(pohja);
 
-        if (!KoulutustyyppiToteutus.LOPS2019.equals(peruste.getToteutus())) {
-            lisaaTekstipuunJuuri(pohja);
-            pohja = repository.save(pohja);
+        if (!KoulutustyyppiToteutus.LOPS2019.equals(peruste.getToteutus()) && !pohjaDto.isRakennePohjasta()) {
             lisaaTekstipuunLapset(pohja);
         }
 
         pohja.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
         pohja.setKoulutustyyppi(peruste.getKoulutustyyppi() != null ? peruste.getKoulutustyyppi()
                 : KoulutusTyyppi.PERUSOPETUS);
-        pohja = lisaaPerusteenSisalto(pohja, peruste);
+        pohja = lisaaPerusteenSisalto(pohja, peruste, pohjaDto);
         return mapper.map(pohja, OpetussuunnitelmaDto.class);
+    }
+
+    private void lisaaTekstipuuPerusteesta(
+            fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto sisalto,
+            Opetussuunnitelma pohja
+    ) {
+        TekstiKappaleViite tekstiKappaleViite = CollectionUtil.mapRecursive(sisalto,
+                fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset,
+                TekstiKappaleViite::getLapset,
+                viiteDto -> {
+                    TekstiKappale kpl = new TekstiKappale();
+                    TekstiKappaleViite result = new TekstiKappaleViite();
+                    if (viiteDto.getTesktiKappale() != null) {
+                        TekstiKappale tk = mapper.map(viiteDto.getTesktiKappale(), TekstiKappale.class);
+                        result.setPerusteTekstikappaleId(tk.getId());
+                        kpl.setNimi(tk.getNimi());
+                    }
+                    kpl.setId(null);
+                    kpl.setTila(Tila.LUONNOS);
+                    kpl.setValmis(false);
+                    result.setTekstiKappale(tekstiKappaleRepository.save(kpl));
+                    result.setPakollinen(true);
+                    result.setOmistussuhde(Omistussuhde.OMA);
+                    result.setLapset(new ArrayList<>());
+                    return result;
+                });
+        tekstiKappaleViite.kiinnitaHierarkia(null);
+        TekstiKappaleViite viite = viiteRepository.saveAndFlush(tekstiKappaleViite);
+        pohja.setTekstit(viite);
     }
 
     private void lisaaTekstipuuPerusteesta(PerusteTekstiKappaleViiteDto sisalto, Opetussuunnitelma pohja) {

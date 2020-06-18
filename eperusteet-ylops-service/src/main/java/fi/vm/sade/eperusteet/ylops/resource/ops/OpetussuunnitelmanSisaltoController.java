@@ -154,8 +154,23 @@ public class OpetussuunnitelmanSisaltoController {
     @RequestMapping(value = "/tekstit/{viiteId}/kaikki", method = RequestMethod.GET)
     public ResponseEntity<TekstiKappaleViiteDto.Puu> getTekstiKappaleViiteSyva(
             @PathVariable("opsId") final Long opsId,
-            @PathVariable("viiteId") final Long viiteId) {
+            @PathVariable("viiteId") final Long viiteId
+    ) {
         TekstiKappaleViiteDto.Puu dto = tekstiKappaleViiteService.getTekstiKappaleViite(opsId, viiteId, TekstiKappaleViiteDto.Puu.class);
+        if (dto == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/tekstit/{viiteId}/peruste", method = RequestMethod.GET)
+    public ResponseEntity<fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto> getPerusteTekstikappale(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("viiteId") final Long viiteId
+    ) {
+        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto dto
+                = tekstiKappaleViiteService.getPerusteTekstikappale(opsId, viiteId);
+
         if (dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

@@ -35,6 +35,9 @@ public interface TekstiKappaleViiteService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     <T> T getTekstiKappaleViite(@P("opsId") Long opsId, Long viiteId, Class<T> t);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto getPerusteTekstikappale(@P("opsId") Long opsId, Long viiteId);
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleViiteDto.Matala addTekstiKappaleViite(@P("opsId") Long opsId,
                                                        Long viiteId,

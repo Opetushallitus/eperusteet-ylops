@@ -242,14 +242,18 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Override
     public PerusteTekstiKappaleViiteMatalaDto getPerusteTekstikappale(Long opsId, Long tekstikappaleId) {
-        PerusteTekstiKappaleViiteDto sisalto = getPerusteImpl(opsId).getLops2019().getSisalto();
-        return CollectionUtil.treeToStream(
-                sisalto,
-                PerusteTekstiKappaleViiteDto::getLapset)
+        PerusteDto perusteDto = getPerusteImpl(opsId);
+        if (perusteDto.getLops2019() != null) {
+            PerusteTekstiKappaleViiteDto sisalto = perusteDto.getLops2019().getSisalto();
+            return CollectionUtil.treeToStream(
+                    sisalto,
+                    PerusteTekstiKappaleViiteDto::getLapset)
                     .filter(viiteDto -> viiteDto.getPerusteenOsa() != null
                             && Objects.equals(tekstikappaleId, viiteDto.getPerusteenOsa().getId()))
                     .findFirst()
                     .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
+        }
+        throw new NotExistsException("tekstikappaletta-ei-ole");
     }
 
     @Override
