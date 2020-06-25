@@ -169,7 +169,7 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
 
     @Override
     public void asetaNimi(Kommentti2019Dto kommentti) {
-        kommentti.setNimi(haeNimi(kommentti.getLuoja()));
+        kommentti.setNimi(haeNimi(kommentti.getMuokkaaja()));
     }
 
     private String haeNimi(String oid) {
@@ -193,10 +193,6 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
 
     private void hasOpsPermissions(Long opsId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        KayttajanTietoDto kirjautunut = kayttajat.haeKirjautaunutKayttaja();
-//        if (kirjautunut.getOidHenkilo().equals(kommentti.getLuoja())) {
-//            return;
-//        }
         if (!permissionManager.hasPermission(authentication, opsId, PermissionManager.TargetType.OPETUSSUUNNITELMA, PermissionManager.Permission.LUKU)) {
             throw new BusinessRuleViolationException("ei-oikeutta");
         }
@@ -204,7 +200,7 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
 
     @Override
     public Kommentti2019Dto add(UUID uuid, Kommentti2019Dto kommenttiDto) {
-        kommenttiDto.setLuoja(getUser());
+        kommenttiDto.setMuokkaaja(getUser());
         Date luotu = new Date();
         kommenttiDto.setLuotu(luotu);
         kommenttiDto.setMuokattu(luotu);
@@ -218,7 +214,7 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
     @Override
     public Kommentti2019Dto update(Kommentti2019Dto kommenttiDto) {
         Kommentti2019 kommentti = getOne(kommenttiDto.getTunniste());
-        if (!kommentti.getLuoja().equals(getUser())) {
+        if (!kommentti.getMuokkaaja().equals(getUser())) {
             throw new BusinessRuleViolationException("vain-omaa-kommenttia-voi-muokata");
         }
 
