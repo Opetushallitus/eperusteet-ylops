@@ -1297,7 +1297,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
             // Ei sallita peruste cachen muuttamista
             PerusteCache cachedPeruste = ops.getCachedPeruste();
-            if (cachedPeruste.getPerusteId() != null) {
+            if (cachedPeruste != null && cachedPeruste.getPerusteId() != null) {
                 opetussuunnitelmaDto.setPerusteenId(cachedPeruste.getPerusteId());
             } else {
                 opetussuunnitelmaDto.setPerusteenId(null);
