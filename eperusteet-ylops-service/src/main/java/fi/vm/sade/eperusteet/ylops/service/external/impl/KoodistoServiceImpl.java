@@ -20,6 +20,8 @@ import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -33,6 +35,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -65,7 +68,7 @@ public class KoodistoServiceImpl implements KoodistoService {
         public <T> T getForObject(String url, Class<T> responseType) {
             try {
                 return restTemplate.exchange(url, HttpMethod.GET, httpEntity, responseType).getBody();
-            } catch (HttpServerErrorException e) {
+            } catch (HttpServerErrorException | HttpClientErrorException e) {
                 LOG.warn(e.getMessage());
                 return null;
             }
@@ -86,7 +89,7 @@ public class KoodistoServiceImpl implements KoodistoService {
                     .filter(kunta -> !"999".equals(kunta.getKoodiArvo()))
                     .collect(Collectors.toList());
         } else {
-            koodistoLista = koodistot == null ? null : Arrays.asList(koodistot);
+            koodistoLista = koodistot == null ? Collections.emptyList() : Arrays.asList(koodistot);
         }
         return koodistoLista;
     }

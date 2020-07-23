@@ -347,7 +347,9 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
                 laajaAlainenOsaaminen.forEach(lao -> {
                     KoodistoKoodiDto laoKoodi = koodistoService.get("laajaalainenosaaminenlops2021", lao.getKoodi());
-                    addLokalisoituteksti(docBase, laoKoodi.getNimi(), "h6");
+                    if (laoKoodi != null) {
+                        addLokalisoituteksti(docBase, laoKoodi.getNimi(), "h6");
+                    }
                     addLokalisoituteksti(docBase, lao.getKuvaus(), "div");
                 });
             }
@@ -884,7 +886,9 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
                 laajaAlainenOsaaminen.forEach(lao -> {
                     KoodistoKoodiDto laoKoodi = koodistoService.get("laajaalainenosaaminenlops2021", lao.getKoodi());
-                    addLokalisoituteksti(docBase, laoKoodi.getNimi(), "h6");
+                    if (laoKoodi != null) {
+                        addLokalisoituteksti(docBase, laoKoodi.getNimi(), "h6");
+                    }
                     addLokalisoituteksti(docBase, lao.getKuvaus(), "p");
                 });
             }
