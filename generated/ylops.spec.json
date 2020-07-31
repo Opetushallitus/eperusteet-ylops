@@ -1345,6 +1345,11 @@
           "required" : true,
           "type" : "integer",
           "format" : "int64"
+        }, {
+          "name" : "kieli",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
         } ],
         "responses" : {
           "200" : {
@@ -1366,6 +1371,11 @@
           "required" : true,
           "type" : "integer",
           "format" : "int64"
+        }, {
+          "name" : "kieli",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
         } ],
         "responses" : {
           "200" : {
@@ -6305,12 +6315,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -6685,7 +6695,7 @@
         },
         "kohde" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus" ]
         },
         "luotu" : {
           "type" : "string",
@@ -6720,7 +6730,7 @@
         },
         "type" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus" ]
         },
         "meta" : {
           "type" : "object",

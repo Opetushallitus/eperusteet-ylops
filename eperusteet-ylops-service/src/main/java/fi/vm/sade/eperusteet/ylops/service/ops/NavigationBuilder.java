@@ -12,5 +12,10 @@ public interface NavigationBuilder extends OpsToteutus {
     }
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    default NavigationNodeDto buildNavigation(@P("opsId") Long opsId, String kieli) {
+        return buildNavigation(opsId);
+    }
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     NavigationNodeDto buildNavigation(@P("opsId") Long opsId);
 }
