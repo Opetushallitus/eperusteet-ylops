@@ -5400,10 +5400,13 @@
           "type" : "string",
           "format" : "date-time"
         },
-        "luoja" : {
+        "muokkaaja" : {
           "type" : "string"
         },
         "nimi" : {
+          "type" : "string"
+        },
+        "luoja" : {
           "type" : "string"
         }
       }
@@ -6302,12 +6305,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
