@@ -28,7 +28,7 @@
         <fop.version>2.5</fop.version>
         <pdfbox.version>2.0.17</pdfbox.version>
         <flyway.version>5.2.4</flyway.version>
-        <springfox.version>2.7.0</springfox.version>
+        <springfox.version>2.10.5</springfox.version>
         <schema.file>${project.basedir}/target/schema.ddl</schema.file>
         <hibernate.export.type>CREATE</hibernate.export.type>
         <eperusteet.resources>fi.vm.sade.eperusteet.ylops.resource</eperusteet.resources>
