@@ -118,6 +118,7 @@ public class PdfServiceImpl implements PdfService {
         try {
             FOUserAgent foUserAgent = fopFactory.newFOUserAgent();
             foUserAgent.getRendererOptions().put("pdf-a-mode", "PDF/A-1b");
+            foUserAgent.setAccessibility(true);
             foUserAgent.getEventBroadcaster().addEventListener(new DokumenttiEventListener());
 
             if (meta != null && !ObjectUtils.isEmpty(meta.getTitle())) {
