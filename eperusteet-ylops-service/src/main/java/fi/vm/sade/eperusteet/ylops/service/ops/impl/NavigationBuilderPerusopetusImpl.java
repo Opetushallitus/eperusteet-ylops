@@ -12,13 +12,13 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -114,12 +114,21 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
         }
 
         return oppiaineet.stream()
-                .map(oppiaine -> NavigationNodeDto.of(NavigationType.perusopetusoppiaine, oppiaine.getNimi(), oppiaine.getId())
-                        .meta("vlkId", vlkId)
-                        .addAll(perusopetusOppiaine(oppiaine.getOppimaarat() == null ? Collections.emptyList() : oppiaine.getOppimaarat().stream()
-                                .sorted(Comparator.comparing(o -> o.getNimi().get(Kieli.of(kieli))))
-                                .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : 99l))
-                                .collect(Collectors.toList()), kieli, vlkId)))
+                .map(oppiaine -> {
+                    NavigationNodeDto oppiaineNavigationNode = NavigationNodeDto.of(NavigationType.perusopetusoppiaine, oppiaine.getNimi(), oppiaine.getId())
+                            .meta("vlkId", vlkId);
+
+                    if(!CollectionUtils.isEmpty(oppiaine.getOppimaarat())) {
+                        oppiaineNavigationNode.add(NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-subtype", true)
+                                .addAll(perusopetusOppiaine(oppiaine.getOppimaarat().stream()
+                                                .sorted(Comparator.comparing(o -> o.getNimi().get(Kieli.of(kieli))))
+                                                .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : 99l))
+                                                .collect(Collectors.toList()),
+                                        kieli,
+                                        vlkId)));
+                    }
+                    return oppiaineNavigationNode;
+                })
                 .collect(Collectors.toList());
     }
 

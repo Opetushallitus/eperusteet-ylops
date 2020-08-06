@@ -113,7 +113,8 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 .meta("koodi", mapper.map(oa.getKoodi(), KoodiDto.class));
 
         if (!ObjectUtils.isEmpty(oa.getOppimaarat())) {
-            result.add(NavigationNodeDto.of(NavigationType.oppimaarat)
+            result.add(NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-subtype", true)
+                    .meta("navigation-subtype", true)
                     .addAll(oa.getOppimaarat().stream().map(om -> mapOppiaine(om, opintojaksotMap))));
         }
 
@@ -121,7 +122,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 && opintojaksotMap.containsKey(oa.getKoodi().getUri())
                 && !ObjectUtils.isEmpty(opintojaksotMap.get(oa.getKoodi().getUri()))) {
             Set<Lops2019OpintojaksoDto> oaOpintojaksot = opintojaksotMap.get(oa.getKoodi().getUri());
-            result.add(NavigationNodeDto.of(NavigationType.opintojaksot)
+            result.add(NavigationNodeDto.of(NavigationType.opintojaksot).meta("navigation-subtype", true)
                     .addAll(oaOpintojaksot.stream()
                             .map(ojOa -> NavigationNodeDto.of(
                                     NavigationType.opintojakso,
@@ -132,7 +133,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
 
         List<Lops2019ModuuliDto> moduulit = oa.getModuulit();
         if (!ObjectUtils.isEmpty(moduulit)) {
-            result.add(NavigationNodeDto.of(NavigationType.moduulit)
+            result.add(NavigationNodeDto.of(NavigationType.moduulit).meta("navigation-subtype", true)
                     .addAll(moduulit.stream()
                             .map(m -> NavigationNodeDto.of(
                                     NavigationType.moduuli,
@@ -159,7 +160,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 && opintojaksotMap.containsKey(poa.getKoodi())
                 && !ObjectUtils.isEmpty(opintojaksotMap.get(poa.getKoodi()))) {
             Set<Lops2019OpintojaksoDto> poaOpintojaksot = opintojaksotMap.get(poa.getKoodi());
-            result.add(NavigationNodeDto.of(NavigationType.opintojaksot)
+            result.add(NavigationNodeDto.of(NavigationType.opintojaksot).meta("navigation-subtype", true)
                     .addAll(poaOpintojaksot.stream()
                             .map(ojPoa -> NavigationNodeDto.of(
                                     NavigationType.opintojakso,
