@@ -20,6 +20,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import fi.vm.sade.eperusteet.ylops.domain.*;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache_;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
@@ -28,23 +31,28 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.*;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.*;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineJarjestysRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaDataRepository;
@@ -60,6 +68,8 @@ import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
@@ -68,6 +78,7 @@ import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import fi.vm.sade.eperusteet.ylops.service.util.*;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
 import java.io.IOException;
@@ -90,7 +101,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -173,11 +183,23 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Autowired
     private Lops2019OpintojaksoService lops2019OpintojaksoService;
 
-    @PersistenceContext
-    private EntityManager em;
+    @Autowired
+    private Lops2019Service lops2019Service;
+
+    @Autowired
+    private Lops2019OpintojaksoRepository opintojaksoRepository;
+
+    @Autowired
+    private Lops2019OppiaineJarjestysRepository lops2019OppiaineJarjestysRepository;
+
+    @Autowired
+    private Lops2019OppiaineService lops2019OppiaineService;
 
     @Autowired
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
+
+    @PersistenceContext
+    private EntityManager em;
 
     private List<Opetussuunnitelma> findByQuery(OpetussuunnitelmaQuery pquery) {
         CriteriaQuery<Opetussuunnitelma> query = getQuery(pquery);
@@ -570,6 +592,89 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             oppimaara.getVuosiluokkakokonaisuudet().forEach(
                     oppiaineenvuosiluokkakokonaisuus -> oppiaineenvuosiluokkakokonaisuus.setJnro(node.getJnro()));
         }
+    }
+
+    private void jarjestaOppiaineet(
+            Opetussuunnitelma ops,
+            HashMap<Long, String> oaKoodiMap,
+            List<OppiaineOpintojaksoDto> oppiaineet
+    ) {
+        Lops2019Sisalto lops2019Sisalto = ops.getLops2019();
+        Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset = lops2019Sisalto.getOppiaineJarjestykset();
+        oppiaineJarjestykset.clear();
+
+        for (int i = 0; i < oppiaineet.size(); i++) {
+            OppiaineOpintojaksoDto lapsi = oppiaineet.get(i);
+            Long id = lapsi.getId();
+            if (id != null) {
+                String oppiaineKoodi = oaKoodiMap.get(id);
+                if (oppiaineKoodi != null) {
+                    Lops2019OppiaineJarjestys oppiaineJarjestys = new Lops2019OppiaineJarjestys();
+                    oppiaineJarjestys.setKoodi(oppiaineKoodi);
+                    oppiaineJarjestys.setJarjestys(i);
+                    oppiaineJarjestykset.add(oppiaineJarjestys);
+                }
+            }
+        }
+    }
+
+    private void jarjestaOpintojaksot(
+            List<OppiaineOpintojaksoDto> lapset,
+            HashMap<Long, String> oaKoodiMap,
+            HashMap<Long, Lops2019Opintojakso> ojMap,
+            String parentOaKoodi
+    ) {
+        for (int i = 0; i < lapset.size(); i++) {
+            OppiaineOpintojaksoDto lapsi = lapset.get(i);
+            Long id = lapsi.getId();
+            if (id != null) {
+                String oppiaineKoodi = oaKoodiMap.get(id);
+
+                if (parentOaKoodi != null
+                        && ojMap.get(id) != null) {
+                    Lops2019Opintojakso oj = ojMap.get(id);
+                    for (Lops2019OpintojaksonOppiaine ojOa : oj.getOppiaineet()) {
+                        if (ojOa.getKoodi() != null && ojOa.getKoodi().equals(parentOaKoodi)) {
+                            ojOa.setJarjestys(i);
+                        }
+                    }
+                    opintojaksoRepository.save(oj);
+                }
+
+                // Käydään rekursiivisesti läpi
+                if (!ObjectUtils.isEmpty(lapsi.getLapset())) {
+                    jarjestaOpintojaksot(lapsi.getLapset(), oaKoodiMap, ojMap, oppiaineKoodi);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void updateOppiaineJaOpintojaksojarjestys(
+            Long opsId,
+            List<OppiaineOpintojaksoDto> oppiaineopintojaksojarjestys
+    ) {
+        Opetussuunnitelma ops = repository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+
+        HashMap<Long, String> oaKoodiMap = new HashMap<>();
+        lops2019Service.getPerusteOppiaineetAndOppimaarat(opsId).forEach(oa -> {
+            if (oa.getKoodi() != null && oa.getKoodi().getUri() != null) {
+                oaKoodiMap.put(oa.getId(), oa.getKoodi().getUri());
+            }
+        });
+        lops2019OppiaineService.getAll(opsId).forEach(poa -> {
+            if (poa.getKoodi() != null) {
+                oaKoodiMap.put(poa.getId(), poa.getKoodi());
+            }
+        });
+
+        HashMap<Long, Lops2019Opintojakso> ojMap = new HashMap<>();
+        mapper.mapAsList(lops2019OpintojaksoService.getAll(opsId),
+                Lops2019Opintojakso.class).forEach(oj -> ojMap.put(oj.getId(), oj));
+
+        jarjestaOppiaineet(ops, oaKoodiMap, oppiaineopintojaksojarjestys);
+        jarjestaOpintojaksot(oppiaineopintojaksojarjestys, oaKoodiMap, ojMap, null);
     }
 
     private NavigationNodeDto siirraLiitteetLoppuun(NavigationNodeDto navigationNodeDto) {

@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.resource.lops2019;
 
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineJarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
@@ -33,6 +34,12 @@ public class Lops2019OppiaineController {
             @PathVariable final Long opsId,
             @PathVariable final Long oppiaineId) {
         return oppiaineService.getOne(opsId, oppiaineId);
+    }
+
+    @RequestMapping(value = "/jarjestys", method = RequestMethod.GET)
+    public List<Lops2019OppiaineJarjestysDto> getLops2019OppiaineJarjestys(
+            @PathVariable final Long opsId) {
+        return oppiaineService.getOppiaineJarjestys(opsId);
     }
 
     @RequestMapping(method = RequestMethod.POST)

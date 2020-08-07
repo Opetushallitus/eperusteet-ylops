@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -20,11 +21,17 @@ public class Lops2019OpintojaksonOppiaine extends AbstractAuditedReferenceableEn
     @Setter
     private Long laajuus;
 
+    @Getter
+    @Setter
+    @Column
+    private Integer jarjestys;
+
     static Lops2019OpintojaksonOppiaine copy(Lops2019OpintojaksonOppiaine original) {
         if (original != null) {
             Lops2019OpintojaksonOppiaine result = new Lops2019OpintojaksonOppiaine();
             result.setKoodi(original.getKoodi());
             result.setLaajuus(original.getLaajuus());
+            result.setJarjestys(original.getJarjestys());
             return result;
         }
         return null;

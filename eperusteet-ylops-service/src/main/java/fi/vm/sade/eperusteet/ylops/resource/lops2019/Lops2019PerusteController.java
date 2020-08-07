@@ -33,7 +33,8 @@ public class Lops2019PerusteController {
 
     @RequestMapping(value = "/sisalto", method = RequestMethod.GET)
     public Lops2019SisaltoDto getAllLops2019PerusteSisalto(
-            @PathVariable final Long opsId) {
+            @PathVariable final Long opsId
+    ) {
         return lopsService.getPerusteSisalto(opsId);
     }
 

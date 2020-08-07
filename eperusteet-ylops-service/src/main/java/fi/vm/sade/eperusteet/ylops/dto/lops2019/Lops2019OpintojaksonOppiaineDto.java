@@ -11,4 +11,5 @@ import lombok.*;
 public class Lops2019OpintojaksonOppiaineDto {
     private String koodi;
     private Long laajuus;
+    private Integer jarjestys;
 }

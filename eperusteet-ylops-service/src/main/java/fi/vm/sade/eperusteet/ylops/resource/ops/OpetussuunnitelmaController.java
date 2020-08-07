@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
@@ -182,6 +183,16 @@ public class OpetussuunnitelmaController {
             @PathVariable("id") final Long id,
             @RequestBody List<JarjestysDto> oppiainejarjestys) {
         opetussuunnitelmaService.updateOppiainejarjestys(id, oppiainejarjestys);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}/oppiaineopintojaksojarjestys", method = RequestMethod.POST)
+    @ResponseBody
+    @Timed
+    public ResponseEntity updateOppiaineJaOpintojaksojarjestys(
+            @PathVariable("id") final Long id,
+            @RequestBody List<OppiaineOpintojaksoDto> oppiaineopintojaksojarjestys) {
+        opetussuunnitelmaService.updateOppiaineJaOpintojaksojarjestys(id, oppiaineopintojaksojarjestys);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

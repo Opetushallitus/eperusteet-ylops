@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.service.lops2019;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineJarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import org.springframework.security.access.method.P;
@@ -35,6 +36,9 @@ public interface Lops2019OppiaineService {
                                                   Long oppiaineId,
                                                   UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> oppiaineDto,
                                                   MuokkausTapahtuma tapahtuma);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    List<Lops2019OppiaineJarjestysDto> getOppiaineJarjestys(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void removeOne(@P("opsId") Long opsId, Long oppiaineId);

@@ -2,7 +2,6 @@ package fi.vm.sade.eperusteet.ylops.repository.lops2019;
 
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

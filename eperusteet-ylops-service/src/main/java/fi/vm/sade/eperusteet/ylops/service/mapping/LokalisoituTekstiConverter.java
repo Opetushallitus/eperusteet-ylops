@@ -69,6 +69,7 @@ public class LokalisoituTekstiConverter extends BidirectionalConverter<Lokalisoi
         return new LokalisoituTekstiDto(tekstiPalanen.getId(), tekstiPalanen.getTunniste(), tekstitWithKommentit(tekstiPalanen));
     }
 
+
     private Map<Kieli, String> tekstitWithKommentit(LokalisoituTeksti source) {
         Map<Kieli, String> map = source.getTeksti();
 

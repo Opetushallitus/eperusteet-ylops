@@ -6,6 +6,7 @@ import fi.vm.sade.eperusteet.ylops.domain.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineJarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksonOppiaineRepository;
@@ -22,14 +23,16 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
 @Service
 @Transactional
@@ -157,6 +160,20 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, tapahtuma != null ? tapahtuma : MuokkausTapahtuma.PAIVITYS);
         return mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
+    }
+
+    @Override
+    public List<Lops2019OppiaineJarjestysDto> getOppiaineJarjestys(Long opsId) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+
+        Lops2019Sisalto lops2019Sisalto = ops.getLops2019();
+        if (lops2019Sisalto != null) {
+            return mapper.mapAsList(new ArrayList<>(lops2019Sisalto
+                    .getOppiaineJarjestykset()), Lops2019OppiaineJarjestysDto.class);
+        } else {
+            return new ArrayList<>();
+        }
     }
 
     @Override
