@@ -78,8 +78,13 @@ public class LokalisoituTekstiConverter extends BidirectionalConverter<Lokalisoi
             return map;
         }
 
-        ArrayList<String> h = Collections.list(request.getHeaders("disable-comments"));
-        if (!h.isEmpty()) {
+        try {
+            ArrayList<String> h = Collections.list(request.getHeaders("disable-comments"));
+            if (!h.isEmpty()) {
+                return map;
+            }
+        } catch (IllegalStateException e) {
+            // Dokumenttigeneraattori ajetaan async scopessa
             return map;
         }
 
