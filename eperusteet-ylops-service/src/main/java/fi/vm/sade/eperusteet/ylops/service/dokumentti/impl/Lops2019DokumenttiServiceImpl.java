@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.impl.Lops2019Utils;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import lombok.extern.slf4j.Slf4j;
@@ -93,77 +94,38 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             );
         }
 
-        Map<String, Lops2019PerustePaikallinenOppiaineDto> oppiaineJarjestyksetMap = new HashMap<>();
-
-        for (Lops2019OppiaineJarjestys oppiaineJarjestys : ops.getLops2019().getOppiaineJarjestykset()) {
-            String koodi = oppiaineJarjestys.getKoodi();
-            Integer jarjestys = oppiaineJarjestys.getJarjestys();
-            if (oppiaineJarjestyksetMap.containsKey(koodi)) {
-                Lops2019PerustePaikallinenOppiaineDto dto = oppiaineJarjestyksetMap.get(koodi);
-                dto.setJarjestys(jarjestys);
-            } else {
-                Lops2019PerustePaikallinenOppiaineDto dto = new Lops2019PerustePaikallinenOppiaineDto();
-                dto.setJarjestys(jarjestys);
-                oppiaineJarjestyksetMap.put(koodi, dto);
-            }
-        }
-
-        // Perusteen oppiaineet
-        perusteenSisalto.getOppiaineet().stream()
+        List<Lops2019OppiaineKaikkiDto> perusteOppiaineet = perusteenSisalto.getOppiaineet().stream()
                 .filter(oppiaine -> opintojaksotMap.containsKey(oppiaine.getKoodi().getUri())
                         || !CollectionUtils.isEmpty(oppiaine.getOppimaarat().stream()
                         .filter(oppimaara -> opintojaksotMap.containsKey(oppimaara.getKoodi().getUri()))
                         .collect(Collectors.toList())))
-                .forEach(oa -> {
-                    String koodi = oa.getKoodi().getUri();
-                    if (oppiaineJarjestyksetMap.containsKey(koodi)) {
-                        Lops2019PerustePaikallinenOppiaineDto dto = oppiaineJarjestyksetMap.get(koodi);
-                        dto.setOa(oa);
-                    } else {
-                        Lops2019PerustePaikallinenOppiaineDto dto = new Lops2019PerustePaikallinenOppiaineDto();
-                        dto.setOa(oa);
-                        oppiaineJarjestyksetMap.put(koodi, dto);
-                    }
-                });
+                .collect(Collectors.toList());
 
+        Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset = ops.getLops2019().getOppiaineJarjestykset();
 
-        // Paikalliset oppiaineet
         List<Lops2019OppiaineKaikkiDto> oppiaineetJaOppimaarat = perusteenSisalto.getOppiaineet().stream()
                 .flatMap(oa -> Stream.concat(Stream.of(oa), oa.getOppimaarat().stream()))
                 .collect(Collectors.toList());
 
-        List<Lops2019PaikallinenOppiaineDto> oppiaineet = oppiaineService.getAll(ops.getId()).stream()
+        List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = oppiaineService.getAll(ops.getId()).stream()
                 .filter(oppiaine -> opintojaksotMap.containsKey(oppiaine.getKoodi())).collect(Collectors.toList());
-        oppiaineet.forEach(poa -> {
-            String koodi = poa.getKoodi();
-            if (oppiaineJarjestyksetMap.containsKey(koodi)) {
-                Lops2019PerustePaikallinenOppiaineDto dto = oppiaineJarjestyksetMap.get(koodi);
-                dto.setPoa(poa);
-            } else {
-                Lops2019PerustePaikallinenOppiaineDto dto = new Lops2019PerustePaikallinenOppiaineDto();
-                dto.setPoa(poa);
-                oppiaineJarjestyksetMap.put(koodi, dto);
-            }
-        });
 
-        // Paikalliset ja perusteen oppiaineet
-        oppiaineJarjestyksetMap.values().stream()
-                .sorted(comparing((Lops2019PerustePaikallinenOppiaineDto dto) -> Optional
-                        .ofNullable(dto.getJarjestys()).orElse(0)))
-                .forEach(dto -> {
-                    Lops2019OppiaineKaikkiDto oa = dto.getOa();
-                    Lops2019PaikallinenOppiaineDto poa = dto.getPoa();
-                    if (oa != null) {
-                        addOppiaine(docBase, oa, opintojaksotMap.get(oa.getKoodi().getUri()), opintojaksotMap);
-                    } else if (poa != null) {
-                        Lops2019OppiaineKaikkiDto oppimaaranOppiaine = oppiaineetJaOppimaarat.stream()
-                                .filter(oppiaineTaiOppimaara -> oppiaineTaiOppimaara
-                                        .getKoodi().getUri().equals(poa.getPerusteenOppiaineUri()))
-                                .findFirst()
-                                .orElse(null);
-                        addPaikallinenOppiaine(docBase, poa, opintojaksotMap.get(poa.getKoodi()), oppimaaranOppiaine);
-                    }
-                });
+        Lops2019Utils.sortOppiaineet(
+                oppiaineJarjestykset,
+                null,
+                perusteOppiaineet,
+                paikallisetOppiaineet,
+                oaKevyt -> true,
+                oa -> addOppiaine(docBase, oa, opintojaksotMap.get(oa.getKoodi().getUri()), opintojaksotMap),
+                poa -> {
+                    Lops2019OppiaineKaikkiDto oppimaaranOppiaine = oppiaineetJaOppimaarat.stream()
+                            .filter(oppiaineTaiOppimaara -> oppiaineTaiOppimaara
+                                    .getKoodi().getUri().equals(poa.getPerusteenOppiaineUri()))
+                            .findFirst()
+                            .orElse(null);
+                    return addPaikallinenOppiaine(docBase, poa, opintojaksotMap.get(poa.getKoodi()), oppimaaranOppiaine);
+                }
+        );
 
         // Integraatio opintojaksot
         addIntegraatioOpintojaksot(docBase);
@@ -172,7 +134,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         docBase.getGenerator().increaseNumber();
     }
 
-    private void addOppiaine(
+    private boolean addOppiaine(
             DokumenttiBase docBase,
             Lops2019OppiaineKaikkiDto oa,
             List<Lops2019OpintojaksoDto> opintojaksot,
@@ -269,16 +231,18 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         // Oppimäärät
         docBase.getGenerator().increaseDepth();
         oa.getOppimaarat().stream()
-                .filter(om -> om.getKoodi() != null && opintojaksotMap.keySet().contains(om.getKoodi().getUri()))
+                .filter(om -> om.getKoodi() != null && opintojaksotMap.containsKey(om.getKoodi().getUri()))
                 .forEach(om -> {
                     KoodiDto omKoodi = om.getKoodi();
                     addOppiaine(docBase, om, omKoodi != null ? opintojaksotMap.get(omKoodi.getUri()) : null, opintojaksotMap);
                 });
         docBase.getGenerator().decreaseDepth();
         docBase.getGenerator().increaseNumber();
+
+        return true;
     }
 
-    private void addPaikallinenOppiaine(
+    private boolean addPaikallinenOppiaine(
             DokumenttiBase docBase,
             Lops2019PaikallinenOppiaineDto poa,
             List<Lops2019OpintojaksoDto> opintojaksot,
@@ -433,6 +397,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         }
 
         docBase.getGenerator().increaseNumber();
+
+        return true;
     }
 
     private <T> boolean hasLokalisoituTeksti(T objekti, Function<T, LokalisoituTekstiDto> getLokalisoituTeksti, DokumenttiBase docBase) {
@@ -618,7 +584,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         List<Lops2019OppiaineKaikkiDto> oppiaineetKaikki = sisaltoDto.getOppiaineet();
         List<Lops2019PaikallinenOppiaineDto> poppiaineetKaikki = oppiaineService.getAll(docBase.getOps().getId());
 
-        oppiaineetKaikki.addAll(oppiaineetKaikki.stream().map(oppiaine -> oppiaine.getOppimaarat()).flatMap(Collection::stream).collect(Collectors.toList()));
+        oppiaineetKaikki.addAll(oppiaineetKaikki.stream().map(Lops2019OppiaineKaikkiDto::getOppimaarat).flatMap(Collection::stream).collect(Collectors.toList()));
 
         // Haetaan opintojakson perusteen oppiaineet
         List<Lops2019OppiaineKaikkiDto> oppiaineet = new ArrayList<>();
@@ -745,9 +711,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             addTeksti(docBase, messages.translate("opintojakson-paikalliset-opintojaksot", docBase.getKieli()), "h6");
             oj.getPaikallisetOpintojaksot().stream()
                     .sorted(Comparator.comparing(Lops2019OpintojaksoDto::getKoodi))
-                    .forEach(paikallinenOpintojakso -> {
-                        addPaikallinenOpintojakso(docBase, paikallinenOpintojakso, ul);
-                    });
+                    .forEach(paikallinenOpintojakso -> addPaikallinenOpintojakso(docBase, paikallinenOpintojakso, ul));
             docBase.getBodyElement().appendChild(ul);
         }
     }

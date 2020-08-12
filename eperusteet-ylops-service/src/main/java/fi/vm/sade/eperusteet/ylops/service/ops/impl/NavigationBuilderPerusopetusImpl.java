@@ -6,18 +6,18 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusSuppeaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,13 +50,13 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
 
         List<VuosiluokkakokonaisuusSuppeaDto> vuosiluokkakokonaisuudet = ops.getVuosiluokkakokonaisuudet().stream()
                 .sorted(Comparator.comparing(vlk -> vlk.getVuosiluokkakokonaisuus().getNimi().get(Kieli.of(kieli))))
-                .map(vlk -> vlk.getVuosiluokkakokonaisuus())
+                .map(OpsVuosiluokkakokonaisuusKevytDto::getVuosiluokkakokonaisuus)
                 .collect(Collectors.toList());
 
         List<OppiaineSuppeaDto> oppiaineet = ops.getOppiaineet().stream()
-                .map(oppiaine -> oppiaine.getOppiaine())
+                .map(OpsOppiaineKevytDto::getOppiaine)
                 .sorted(Comparator.comparing(o -> o.getNimi().get(Kieli.of(kieli))))
-                .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : 99l))
+                .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : Long.MAX_VALUE))
                 .collect(Collectors.toList());
 
         return NavigationNodeDto.of(NavigationType.root)
@@ -68,24 +68,24 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
     private List<NavigationNodeDto> vuosiluokkakokonaisuudet(List<VuosiluokkakokonaisuusSuppeaDto> vuosiluokkakokonaisuudet, List<OppiaineSuppeaDto> oppiaineet, String kieli) {
         return vuosiluokkakokonaisuudet.stream()
                 .map(vlk ->
-                    NavigationNodeDto.of(NavigationType.vuosiluokkakokonaisuus, vlk.getNimi(), vlk.getId())
-                            .addAll(perusopetusOppiaine(oppiaineet.stream()
-                                    .filter(oppiaine -> oppiaine.getTyyppi() == OppiaineTyyppi.YHTEINEN)
-                                    .filter(oppiaine -> oppiaine.getVuosiluokkakokonaisuudet().stream()
-                                                .map(oppiaineVlk -> oppiaineVlk.getVuosiluokkakokonaisuus())
-                                                .collect(Collectors.toList())
-                                            .contains(vlk.getTunniste()))
-                                    .collect(Collectors.toList()),
-                                    kieli,
-                                    vlk.getId()))
-                            .add(valinnaisetOppiaineet(oppiaineet.stream()
-                                            .filter(oppiaine -> oppiaine.getVuosiluokkakokonaisuudet().stream()
-                                                    .map(oppiaineVlk -> oppiaineVlk.getVuosiluokkakokonaisuus())
-                                                    .collect(Collectors.toList())
-                                                    .contains(vlk.getTunniste()))
-                                            .collect(Collectors.toList()),
-                                    kieli,
-                                    vlk.getId()))
+                        NavigationNodeDto.of(NavigationType.vuosiluokkakokonaisuus, vlk.getNimi(), vlk.getId())
+                                .addAll(perusopetusOppiaine(oppiaineet.stream()
+                                                .filter(oppiaine -> oppiaine.getTyyppi() == OppiaineTyyppi.YHTEINEN)
+                                                .filter(oppiaine -> oppiaine.getVuosiluokkakokonaisuudet().stream()
+                                                        .map(OppiaineenVuosiluokkakokonaisuusSuppeaDto::getVuosiluokkakokonaisuus)
+                                                        .collect(Collectors.toList())
+                                                        .contains(vlk.getTunniste()))
+                                                .collect(Collectors.toList()),
+                                        kieli,
+                                        vlk.getId()))
+                                .add(valinnaisetOppiaineet(oppiaineet.stream()
+                                                .filter(oppiaine -> oppiaine.getVuosiluokkakokonaisuudet().stream()
+                                                        .map(OppiaineenVuosiluokkakokonaisuusSuppeaDto::getVuosiluokkakokonaisuus)
+                                                        .collect(Collectors.toList())
+                                                        .contains(vlk.getTunniste()))
+                                                .collect(Collectors.toList()),
+                                        kieli,
+                                        vlk.getId()))
                 )
                 .collect(Collectors.toList());
 
@@ -118,11 +118,11 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
                     NavigationNodeDto oppiaineNavigationNode = NavigationNodeDto.of(NavigationType.perusopetusoppiaine, oppiaine.getNimi(), oppiaine.getId())
                             .meta("vlkId", vlkId);
 
-                    if(!CollectionUtils.isEmpty(oppiaine.getOppimaarat())) {
+                    if (!CollectionUtils.isEmpty(oppiaine.getOppimaarat())) {
                         oppiaineNavigationNode.add(NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-subtype", true)
                                 .addAll(perusopetusOppiaine(oppiaine.getOppimaarat().stream()
                                                 .sorted(Comparator.comparing(o -> o.getNimi().get(Kieli.of(kieli))))
-                                                .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : 99l))
+                                                .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : Long.MAX_VALUE))
                                                 .collect(Collectors.toList()),
                                         kieli,
                                         vlkId)));

@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class Lops2019PerustePaikallinenOppiaineDto {
     private Integer jarjestys;
+    private Lops2019OppiaineKevytDto oaKevyt;
     private Lops2019OppiaineKaikkiDto oa;
     private Lops2019PaikallinenOppiaineDto poa;
 }

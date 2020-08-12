@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
@@ -8,8 +7,10 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
@@ -37,19 +38,14 @@ import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.assertj.core.api.Assertions;
+
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -408,6 +404,35 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
             assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops3.getId(), "paikallinen")).hasSize(0);
             assertThat(lops2019SisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(ops3.getId(), "muutettuKoodi2")).hasSize(2);
         }
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    public void testOppiaineetJarjestamien() {
+        OpetussuunnitelmaDto opsDto = createLukioOpetussuunnitelma();
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsDto.getId());
+
+        Lops2019Sisalto lops2019 = ops.getLops2019();
+        assertThat(lops2019.getOppiaineJarjestykset()).hasSize(0);
+
+        List<OppiaineOpintojaksoDto> jarjestykset = new ArrayList<>();
+        opetussuunnitelmaService.updateOppiaineJaOpintojaksojarjestys(opsDto.getId(), jarjestykset);
+        assertThat(lops2019.getOppiaineJarjestykset()).hasSize(0);
+
+        List<Lops2019OppiaineKaikkiDto> oppiaineet = lopsService.getPerusteOppiaineet(opsDto.getId());
+        assertThat(oppiaineet).hasSize(2);
+
+        OppiaineOpintojaksoDto biologia = new OppiaineOpintojaksoDto();
+        biologia.setId(oppiaineet.get(0).getId());
+        jarjestykset.add(biologia);
+
+        OppiaineOpintojaksoDto matematiikka = new OppiaineOpintojaksoDto();
+        matematiikka.setId(oppiaineet.get(1).getId());
+        jarjestykset.add(matematiikka);
+
+        opetussuunnitelmaService.updateOppiaineJaOpintojaksojarjestys(opsDto.getId(), jarjestykset);
+        assertThat(lops2019.getOppiaineJarjestykset()).hasSize(2);
     }
 
     @Test
