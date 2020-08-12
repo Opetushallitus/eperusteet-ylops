@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
@@ -25,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import java.util.function.Function;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -246,13 +248,15 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             Lops2019TehtavaDto oppiaineenTehtava = oa != null ? oa.getTehtava() : null;
 
             addTeksti(docBase, messages.translate("oppiaineen-tehtava", docBase.getKieli()), "h6");
-            if (oppiaineenTehtava != null && oppiaineenTehtava.getKuvaus() != null) {
+            if (hasLokalisoituTeksti(oppiaineenTehtava, Lops2019TehtavaDto::getKuvaus, docBase)) {
                 addLokalisoituteksti(docBase, oppiaineenTehtava.getKuvaus(), "div");
             }
 
             fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019TehtavaDto tehtava = poa.getTehtava();
-            if (tehtava != null && tehtava.getKuvaus() != null) {
-                addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+            if (hasLokalisoituTeksti(tehtava, fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019TehtavaDto::getKuvaus, docBase)) {
+                if (hasLokalisoituTeksti(oppiaineenTehtava, Lops2019TehtavaDto::getKuvaus, docBase)) {
+                    addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                }
                 addLokalisoituteksti(docBase, tehtava.getKuvaus(), "div");
             }
         }
@@ -291,7 +295,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
             Lops2019OppiaineenTavoitteetDto tavoitteet = poa.getTavoitteet();
             if (tavoitteet != null && (tavoitteet.getKuvaus() != null || !ObjectUtils.isEmpty(tavoitteet.getTavoitealueet()))) {
-                addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                if (hasLokalisoituTeksti(oppiaineenTavoitteet, Lops2019OppiaineTavoitteetDto::getKuvaus, docBase)
+                        || (oppiaineenTavoitteet != null && !ObjectUtils.isEmpty(oppiaineenTavoitteet.getTavoitealueet()))) {
+                    addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                }
                 addLokalisoituteksti(docBase, tavoitteet.getKuvaus(), "div");
 
                 List<Lops2019OppiaineenTavoitealueDto> tavoitealueet = tavoitteet.getTavoitealueet();
@@ -323,13 +330,15 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
             Lops2019ArviointiDto oppianeenArviointi = oa != null ? oa.getArviointi() : null;
             addTeksti(docBase, messages.translate("arviointi", docBase.getKieli()), "h6");
-            if (oppianeenArviointi != null && oppianeenArviointi.getKuvaus() != null) {
+            if (hasLokalisoituTeksti(oppianeenArviointi, Lops2019ArviointiDto::getKuvaus, docBase)) {
                 addLokalisoituteksti(docBase, oppianeenArviointi.getKuvaus(), "div");
             }
 
             fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ArviointiDto arviointi = poa.getArviointi();
-            if (arviointi != null && arviointi.getKuvaus() != null) {
-                addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+            if (hasLokalisoituTeksti(arviointi, fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ArviointiDto::getKuvaus, docBase)) {
+                if (hasLokalisoituTeksti(oppianeenArviointi, Lops2019ArviointiDto::getKuvaus, docBase)) {
+                    addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                }
                 addLokalisoituteksti(docBase, arviointi.getKuvaus(), "div");
             }
         }
@@ -338,13 +347,15 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
             Lops2019OppiaineLaajaAlainenOsaaminenDto oppiaineenLaajaAlainenOsaaminen = oa != null ? oa.getLaajaAlaisetOsaamiset() : null;
             addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
-            if (oppiaineenLaajaAlainenOsaaminen != null) {
+            if (hasLokalisoituTeksti(oppiaineenLaajaAlainenOsaaminen, Lops2019OppiaineLaajaAlainenOsaaminenDto::getKuvaus, docBase)) {
                 addLokalisoituteksti(docBase, oppiaineenLaajaAlainenOsaaminen.getKuvaus(), "div");
             }
 
             List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
             if (!ObjectUtils.isEmpty(laajaAlainenOsaaminen)) {
-                addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                if (hasLokalisoituTeksti(oppiaineenLaajaAlainenOsaaminen, Lops2019OppiaineLaajaAlainenOsaaminenDto::getKuvaus, docBase)) {
+                    addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                }
                 laajaAlainenOsaaminen.forEach(lao -> {
                     KoodistoKoodiDto laoKoodi = koodistoService.get("laajaalainenosaaminenlops2021", lao.getKoodi());
                     if (laoKoodi != null) {
@@ -365,6 +376,12 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         }
 
         docBase.getGenerator().increaseNumber();
+    }
+
+    private <T> boolean hasLokalisoituTeksti(T objekti, Function<T, LokalisoituTekstiDto> getLokalisoituTeksti, DokumenttiBase docBase) {
+        return objekti != null
+                && getLokalisoituTeksti.apply(objekti) != null
+                && !ObjectUtils.isEmpty(Jsoup.parse(getLokalisoituTeksti.apply(objekti).get(docBase.getKieli())).text());
     }
 
     private void addOpintojakso(
