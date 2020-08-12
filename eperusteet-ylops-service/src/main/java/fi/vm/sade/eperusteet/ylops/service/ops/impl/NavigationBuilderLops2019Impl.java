@@ -96,10 +96,8 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
         Lops2019Utils.sortOppiaineet(
                 oppiaineJarjestykset,
                 oppiaineet,
-                null,
                 paikallisetOppiaineet,
-                oaKevyt -> navigationOppiaineet.add(mapOppiaine(oaKevyt, opintojaksotMap)),
-                oa -> true,
+                oa -> navigationOppiaineet.add(mapOppiaine((Lops2019OppiaineKevytDto) oa, opintojaksotMap)),
                 poa -> navigationOppiaineet.add(mapPaikallinenOppiaine(poa, opintojaksotMap))
         );
 

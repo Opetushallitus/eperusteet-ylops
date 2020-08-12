@@ -16,7 +16,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Lops2019OppiaineKevytDto implements ReferenceableDto {
+public class Lops2019OppiaineKevytDto implements ReferenceableDto, Lops2019SortableOppiaineDto {
 
     private Long id;
     private LokalisoituTekstiDto nimi;

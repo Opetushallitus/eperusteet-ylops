@@ -34,6 +34,7 @@ import org.springframework.util.ObjectUtils;
 import org.w3c.dom.Element;
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -112,11 +113,9 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         Lops2019Utils.sortOppiaineet(
                 oppiaineJarjestykset,
-                null,
                 perusteOppiaineet,
                 paikallisetOppiaineet,
-                oaKevyt -> true,
-                oa -> addOppiaine(docBase, oa, opintojaksotMap.get(oa.getKoodi().getUri()), opintojaksotMap),
+                oa -> addOppiaine(docBase, (Lops2019OppiaineKaikkiDto) oa, opintojaksotMap.get(oa.getKoodi().getUri()), opintojaksotMap),
                 poa -> {
                     Lops2019OppiaineKaikkiDto oppimaaranOppiaine = oppiaineetJaOppimaarat.stream()
                             .filter(oppiaineTaiOppimaara -> oppiaineTaiOppimaara

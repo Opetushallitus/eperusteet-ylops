@@ -1,10 +1,9 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OppiaineJarjestys;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PerustePaikallinenOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019SortableOppiaineDto;
 
 import java.util.*;
 import java.util.function.Function;
@@ -14,11 +13,9 @@ import static java.util.Comparator.comparing;
 public class Lops2019Utils {
     public static void sortOppiaineet(
             Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset,
-            List<Lops2019OppiaineKevytDto> oppiaineetKevyt,
-            List<Lops2019OppiaineKaikkiDto> oppiaineet,
+            List<?> oppiaineet,
             List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet,
-            Function<Lops2019OppiaineKevytDto, Boolean> oaKevytFunction,
-            Function<Lops2019OppiaineKaikkiDto, Boolean> oaFunction,
+            Function<Lops2019SortableOppiaineDto, Boolean> oaFunction,
             Function<Lops2019PaikallinenOppiaineDto, Boolean> poaFunction
     ) {
 
@@ -39,31 +36,16 @@ public class Lops2019Utils {
             }
         }
 
-        // Perusteen kevyt oppiaineet
-        if (oppiaineetKevyt != null) {
-            oppiaineetKevyt.forEach(oa -> {
-                String koodi = oa.getKoodi().getUri();
-                if (oppiaineJarjestyksetMap.containsKey(koodi)) {
-                    Lops2019PerustePaikallinenOppiaineDto dto = oppiaineJarjestyksetMap.get(koodi);
-                    dto.setOaKevyt(oa);
-                } else {
-                    Lops2019PerustePaikallinenOppiaineDto dto = new Lops2019PerustePaikallinenOppiaineDto();
-                    dto.setOaKevyt(oa);
-                    oppiaineJarjestyksetMap.put(koodi, dto);
-                }
-            });
-        }
-
-        // Perusteen kevyt oppiaineet
+        // Perusteen oppiaineet
         if (oppiaineet != null) {
             oppiaineet.forEach(oa -> {
-                String koodi = oa.getKoodi().getUri();
+                String koodi = ((Lops2019SortableOppiaineDto) oa).getKoodi().getUri();
                 if (oppiaineJarjestyksetMap.containsKey(koodi)) {
                     Lops2019PerustePaikallinenOppiaineDto dto = oppiaineJarjestyksetMap.get(koodi);
-                    dto.setOa(oa);
+                    dto.setOa((Lops2019SortableOppiaineDto) oa);
                 } else {
                     Lops2019PerustePaikallinenOppiaineDto dto = new Lops2019PerustePaikallinenOppiaineDto();
-                    dto.setOa(oa);
+                    dto.setOa((Lops2019SortableOppiaineDto) oa);
                     oppiaineJarjestyksetMap.put(koodi, dto);
                 }
             });
@@ -87,19 +69,16 @@ public class Lops2019Utils {
         // Paikalliset ja perusteen oppiaineet
         oppiaineJarjestyksetMap.values().stream()
                 // Toissijainen
-                .sorted(comparing(dto -> dto.getOaKevyt() != null
-                        ? dto.getOaKevyt().getKoodi().getUri()
+                .sorted(comparing(dto -> dto.getOa() != null
+                        ? dto.getOa().getKoodi().getUri()
                         : (dto.getPoa() != null ? dto.getPoa().getKoodi() : "")))
                 // Ensisisijainen
                 .sorted(comparing((Lops2019PerustePaikallinenOppiaineDto dto) -> Optional
                         .ofNullable(dto.getJarjestys()).orElse(0)))
                 .forEach(dto -> {
-                    Lops2019OppiaineKevytDto oaKevyt = dto.getOaKevyt();
-                    Lops2019OppiaineKaikkiDto oa = dto.getOa();
+                    Lops2019SortableOppiaineDto oa = dto.getOa();
                     Lops2019PaikallinenOppiaineDto poa = dto.getPoa();
-                    if (oaKevyt != null) {
-                        oaKevytFunction.apply(oaKevyt);
-                    } else if (oa != null) {
+                    if (oa != null) {
                         oaFunction.apply(oa);
                     } else if (poa != null) {
                         poaFunction.apply(poa);
