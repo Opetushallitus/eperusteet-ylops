@@ -13,7 +13,7 @@ import static java.util.Comparator.comparing;
 public class Lops2019Utils {
     public static void sortOppiaineet(
             Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset,
-            List<?> oppiaineet,
+            List<? extends Lops2019SortableOppiaineDto> oppiaineet,
             List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet,
             Function<Lops2019SortableOppiaineDto, Boolean> oaFunction,
             Function<Lops2019PaikallinenOppiaineDto, Boolean> poaFunction
@@ -39,13 +39,13 @@ public class Lops2019Utils {
         // Perusteen oppiaineet
         if (oppiaineet != null) {
             oppiaineet.forEach(oa -> {
-                String koodi = ((Lops2019SortableOppiaineDto) oa).getKoodi().getUri();
+                String koodi = (oa).getKoodi().getUri();
                 if (oppiaineJarjestyksetMap.containsKey(koodi)) {
                     Lops2019PerustePaikallinenOppiaineDto dto = oppiaineJarjestyksetMap.get(koodi);
-                    dto.setOa((Lops2019SortableOppiaineDto) oa);
+                    dto.setOa(oa);
                 } else {
                     Lops2019PerustePaikallinenOppiaineDto dto = new Lops2019PerustePaikallinenOppiaineDto();
-                    dto.setOa((Lops2019SortableOppiaineDto) oa);
+                    dto.setOa(oa);
                     oppiaineJarjestyksetMap.put(koodi, dto);
                 }
             });
