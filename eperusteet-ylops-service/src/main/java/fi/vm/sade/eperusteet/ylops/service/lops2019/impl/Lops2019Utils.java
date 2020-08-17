@@ -1,9 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OppiaineJarjestys;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PerustePaikallinenOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019SortableOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 
 import java.util.*;
 import java.util.function.Function;

@@ -8,6 +8,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
@@ -97,7 +98,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 oppiaineJarjestykset,
                 oppiaineet,
                 paikallisetOppiaineet,
-                oa -> navigationOppiaineet.add(mapOppiaine((Lops2019OppiaineKevytDto) oa, opintojaksotMap)),
+                oa -> navigationOppiaineet.add(mapOppiaine((Lops2019OppiaineKevytDto) oa, opintojaksotMap, opsId)),
                 poa -> navigationOppiaineet.add(mapPaikallinenOppiaine(poa, opintojaksotMap))
         );
 
@@ -115,16 +116,39 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
 
     private NavigationNodeDto mapOppiaine(
             Lops2019OppiaineKevytDto oa,
-            Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap
+            Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap,
+            Long opsId
     ) {
         NavigationNodeDto result = NavigationNodeDto
                 .of(NavigationType.oppiaine, mapper.map(oa.getNimi(), LokalisoituTekstiDto.class), oa.getId())
                 .meta("koodi", mapper.map(oa.getKoodi(), KoodiDto.class));
 
-        if (!ObjectUtils.isEmpty(oa.getOppimaarat())) {
+        List<Lops2019PaikallinenOppiaineDto> paikallisetOppimaarat = oppiaineService.getAll(opsId).stream()
+                .filter(poa -> {
+                    String parentKoodi = poa.getPerusteenOppiaineUri();
+                    Optional<Lops2019OppiaineKaikkiDto> orgOaOpt = lopsService.getPerusteOppiaineet(opsId).stream()
+                            .filter(oaOrg -> oaOrg.getId().equals(oa.getId()))
+                            .findAny();
+                    if (parentKoodi != null) {
+                        return (oa.getKoodi() != null
+                                && oa.getKoodi().getUri() != null
+                                && oa.getKoodi().getUri().equals(parentKoodi))
+                                || (orgOaOpt.isPresent() && orgOaOpt.get().getOppimaarat().stream()
+                                .filter(om -> om.getKoodi() != null)
+                                .filter(om -> om.getKoodi().getUri() != null)
+                                .anyMatch(om -> om.getKoodi().getUri().equals(parentKoodi)));
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+
+        if (!ObjectUtils.isEmpty(oa.getOppimaarat()) || !ObjectUtils.isEmpty(paikallisetOppimaarat)) {
             result.add(NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-subtype", true)
                     .meta("navigation-subtype", true)
-                    .addAll(oa.getOppimaarat().stream().map(om -> mapOppiaine(om, opintojaksotMap))));
+                    .addAll(oa.getOppimaarat().stream().map(om -> mapOppiaine(om, opintojaksotMap, opsId)))
+                    .addAll(!ObjectUtils.isEmpty(paikallisetOppimaarat)
+                            ? paikallisetOppimaarat.stream().map(pom -> mapPaikallinenOppiaine(pom, opintojaksotMap))
+                            : null));
         }
 
         if (oa.getKoodi() != null && oa.getKoodi().getUri() != null

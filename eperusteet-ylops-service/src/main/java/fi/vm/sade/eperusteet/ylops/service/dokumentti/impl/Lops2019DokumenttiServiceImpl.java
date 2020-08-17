@@ -2,7 +2,6 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
@@ -27,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -95,12 +95,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             );
         }
 
-        List<Lops2019OppiaineKaikkiDto> perusteOppiaineet = perusteenSisalto.getOppiaineet().stream()
-                .filter(oppiaine -> opintojaksotMap.containsKey(oppiaine.getKoodi().getUri())
-                        || !CollectionUtils.isEmpty(oppiaine.getOppimaarat().stream()
-                        .filter(oppimaara -> opintojaksotMap.containsKey(oppimaara.getKoodi().getUri()))
-                        .collect(Collectors.toList())))
-                .collect(Collectors.toList());
+        List<Lops2019OppiaineKaikkiDto> perusteOppiaineet = getOppiaineet(ops.getId(), opintojaksotMap);
 
         Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset = ops.getLops2019().getOppiaineJarjestykset();
 
@@ -109,7 +104,9 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 .collect(Collectors.toList());
 
         List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = oppiaineService.getAll(ops.getId()).stream()
-                .filter(oppiaine -> opintojaksotMap.containsKey(oppiaine.getKoodi())).collect(Collectors.toList());
+                .filter(oppiaine -> opintojaksotMap.containsKey(oppiaine.getKoodi()))
+                .filter(poa -> StringUtils.isEmpty(poa.getPerusteenOppiaineUri()))
+                .collect(Collectors.toList());
 
         Lops2019Utils.sortOppiaineet(
                 oppiaineJarjestykset,
@@ -131,6 +128,55 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         docBase.getGenerator().decreaseDepth();
         docBase.getGenerator().increaseNumber();
+    }
+
+    private List<Lops2019OppiaineKaikkiDto> getOppiaineet(
+            Long opsId,
+            Map<String, List<Lops2019OpintojaksoDto>> opintojaksotMap
+    ) {
+        List<Lops2019OppiaineKaikkiDto> copyList = mapper.mapAsList(lops2019Service
+                .getPerusteOppiaineet(opsId), Lops2019OppiaineKaikkiDto.class);
+        return copyList.stream()
+                .peek(oppiaine -> {
+                    if (!CollectionUtils.isEmpty(oppiaine.getOppimaarat())) {
+                        // Piilotetaan oppimäärät, joilla ei ole opintojaksoja
+                        oppiaine.setOppimaarat(oppiaine.getOppimaarat().stream()
+                                .filter(oppimaara -> opintojaksotMap.containsKey(oppimaara.getKoodi().getUri()))
+                                .collect(Collectors.toList()));
+                    }
+                })
+                .filter(oa -> {
+                    if (opintojaksotMap.containsKey(oa.getKoodi().getUri())
+                            || !CollectionUtils.isEmpty(oa.getOppimaarat())) {
+                        return true;
+                    } else if (!CollectionUtils.isEmpty(oa.getOppimaarat())) {
+                        return oa.getOppimaarat().stream()
+                                .filter(om -> om.getKoodi() != null)
+                                .filter(om -> om.getKoodi().getUri() != null)
+                                .anyMatch(om -> opintojaksotMap.containsKey(om.getKoodi().getUri()));
+                    }
+
+                    return oppiaineService.getAll(opsId).stream()
+                            .anyMatch(poa -> {
+                                String parentKoodi = poa.getPerusteenOppiaineUri();
+                                Optional<Lops2019OppiaineKaikkiDto> orgOaOpt = lops2019Service
+                                        .getPerusteOppiaineet(opsId).stream()
+                                        .filter(oaOrg -> oaOrg.getId().equals(oa.getId()))
+                                        .findAny();
+                                if (parentKoodi != null) {
+                                    return (oa.getKoodi() != null
+                                            && oa.getKoodi().getUri() != null
+                                            && oa.getKoodi().getUri().equals(parentKoodi))
+                                            || (orgOaOpt.isPresent() && orgOaOpt.get().getOppimaarat().stream()
+                                            .filter(om -> om.getKoodi() != null)
+                                            .filter(om -> om.getKoodi().getUri() != null)
+                                            .anyMatch(om -> om.getKoodi().getUri().equals(parentKoodi)));
+                                }
+                                return false;
+                            });
+
+                })
+                .collect(Collectors.toList());
     }
 
     private boolean addOppiaine(
@@ -227,14 +273,42 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             docBase.getGenerator().decreaseDepth();
         }
 
+        Long opsId = docBase.getOps().getId();
+        List<Lops2019PaikallinenOppiaineDto> paikallisetOppimaarat = oppiaineService
+                .getAll(opsId).stream()
+                .filter(poa -> {
+                    String parentKoodi = poa.getPerusteenOppiaineUri();
+                    Optional<Lops2019OppiaineKaikkiDto> orgOaOpt = lops2019Service.getPerusteOppiaineet(opsId).stream()
+                            .filter(oaOrg -> oaOrg.getId().equals(oa.getId()))
+                            .findAny();
+                    if (parentKoodi != null) {
+                        return (oa.getKoodi() != null
+                                && oa.getKoodi().getUri() != null
+                                && oa.getKoodi().getUri().equals(parentKoodi))
+                                || (orgOaOpt.isPresent() && orgOaOpt.get().getOppimaarat().stream()
+                                .filter(om -> om.getKoodi() != null)
+                                .filter(om -> om.getKoodi().getUri() != null)
+                                .anyMatch(om -> om.getKoodi().getUri().equals(parentKoodi)));
+                    }
+                    return false;
+                })
+                .collect(Collectors.toList());
+
         // Oppimäärät
         docBase.getGenerator().increaseDepth();
+
         oa.getOppimaarat().stream()
                 .filter(om -> om.getKoodi() != null && opintojaksotMap.containsKey(om.getKoodi().getUri()))
                 .forEach(om -> {
                     KoodiDto omKoodi = om.getKoodi();
                     addOppiaine(docBase, om, omKoodi != null ? opintojaksotMap.get(omKoodi.getUri()) : null, opintojaksotMap);
                 });
+
+        if (!ObjectUtils.isEmpty(paikallisetOppimaarat)) {
+            paikallisetOppimaarat.forEach(pom -> addPaikallinenOppiaine(docBase, pom,
+                    opintojaksotMap.get(pom.getKoodi()), oa));
+        }
+
         docBase.getGenerator().decreaseDepth();
         docBase.getGenerator().increaseNumber();
 
