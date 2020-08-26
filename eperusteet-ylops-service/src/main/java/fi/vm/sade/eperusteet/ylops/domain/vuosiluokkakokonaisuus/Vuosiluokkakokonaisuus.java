@@ -16,12 +16,14 @@
 package fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 
 import java.util.HashSet;
@@ -47,7 +49,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
 @Entity
 @Table(name = "vlkokonaisuus")
 @Audited
-public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
+public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity implements HistoriaTapahtuma {
 
     @Getter
     @Setter
@@ -157,4 +159,8 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity {
 //        LokalisoituTeksti.validoi(validointi, kielet, seuraavaTeksti);
     }
 
+    @Override
+    public NavigationType getNavigationType() {
+        return NavigationType.vuosiluokkakokonaisuus;
+    }
 }

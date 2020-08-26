@@ -16,13 +16,16 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.codepoetics.protonpack.StreamUtils;
+import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
@@ -30,6 +33,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
@@ -42,6 +46,7 @@ import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.locking.AbstractLockService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
@@ -109,6 +114,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Autowired
     private OpetuksenkohdealueRepository opetuksenkohdealueRepository;
+
+    @Autowired
+    private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     public OppiaineServiceImpl() {
     }
@@ -716,6 +724,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OpsOppiaineDto update(Long opsId, OppiaineDto oppiaineDto) {
+        return update(opsId, null, oppiaineDto);
+    }
+
+    @Override
+    public OpsOppiaineDto update(Long opsId, Long vuosiluokkakokonaisuusId, OppiaineDto oppiaineDto) {
         Boolean isOma = oppiaineet.isOma(opsId, oppiaineDto.getId());
         if (isOma == null) {
             throw new BusinessRuleViolationException("Päivitettävää oppiainetta ei ole olemassa");
@@ -732,6 +745,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         oppiaine.muokattu();
         oppiaine = oppiaineet.save(oppiaine);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.PAIVITYS, oppiaine.getNavigationType(), null,
+                Sets.newHashSet(new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.vuosiluokkakokonaisuus, vuosiluokkakokonaisuusId)));
+
         return mapper.map(new OpsOppiaine(oppiaine, true), OpsOppiaineDto.class);
     }
 
@@ -763,6 +780,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         } else {
             ops.removeOppiaine(oppiaine);
         }
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
         return tallennaPoistettu(id, ops, oppiaine);
     }
 
@@ -824,7 +843,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(Long opsId, Long oppiaineId, OppiaineenVuosiluokkaDto dto) {
+    public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(Long opsId, Long oppiaineId, Long kokonaisuusId, OppiaineenVuosiluokkaDto dto) {
         if (!oppiaineet.isOma(opsId, oppiaineId)) {
             throw new BusinessRuleViolationException("vain-omaa-oppiainetta-saa-muokata");
         }
@@ -859,6 +878,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 })
         );
 
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaineenVuosiluokka, MuokkausTapahtuma.PAIVITYS, oppiaineenVuosiluokka.getNavigationType(),
+                oppiaineenVuosiluokka.getVuosiluokka().toString(),
+                Sets.newHashSet(
+                        new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.perusopetusoppiaine, oppiaineId),
+                        new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.vuosiluokkakokonaisuus, kokonaisuusId)));
+
         return mapper.map(oppiaineenVuosiluokka, OppiaineenVuosiluokkaDto.class);
     }
 
@@ -875,6 +900,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         oavl = asetaOppiaineenVuosiluokanSisalto(oavl, tavoitteetDto);
         oavl = oppiaineenvuosiluokkaRepository.save(oavl);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oavl, MuokkausTapahtuma.PAIVITYS);
         return mapper.map(oavl, OppiaineenVuosiluokkaDto.class);
     }
 

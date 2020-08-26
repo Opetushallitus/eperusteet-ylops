@@ -3207,6 +3207,46 @@
         }
       }
     },
+    "/opetussuunnitelmat/{opsId}/oppiaineet/{id}/vlk/{vlkId}" : {
+      "post" : {
+        "tags" : [ "Oppiaineet" ],
+        "operationId" : "updateOppiaineWithVlk",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "vlkId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/OppiaineDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UnwrappedOpsOppiaineDto"
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/{opsId}/oppiaineet/{id}/yksinkertainen" : {
       "post" : {
         "tags" : [ "Oppiaineet" ],
@@ -6794,7 +6834,7 @@
         },
         "kohde" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
         },
         "luotu" : {
           "type" : "string",
@@ -6808,6 +6848,13 @@
         },
         "poistettu" : {
           "type" : "boolean"
+        },
+        "lisaparametrit" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/OpetussuunnitelmanMuokkaustietoLisaparametritDto"
+          }
         },
         "kayttajanTieto" : {
           "$ref" : "#/definitions/KayttajanTietoDto"
@@ -6829,7 +6876,7 @@
         },
         "type" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
         },
         "meta" : {
           "type" : "object",
@@ -7904,6 +7951,19 @@
         },
         "luoja" : {
           "type" : "string"
+        }
+      }
+    },
+    "OpetussuunnitelmanMuokkaustietoLisaparametritDto" : {
+      "type" : "object",
+      "properties" : {
+        "kohde" : {
+          "type" : "string",
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
+        },
+        "kohdeId" : {
+          "type" : "integer",
+          "format" : "int64"
         }
       }
     },

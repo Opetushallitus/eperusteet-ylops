@@ -4,6 +4,7 @@ import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import java.util.Date;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,4 +26,5 @@ public class OpetussuunnitelmanMuokkaustietoDto {
     private String muokkaaja;
     private String lisatieto;
     private boolean poistettu;
+    private Set<OpetussuunnitelmanMuokkaustietoLisaparametritDto> lisaparametrit;
 }

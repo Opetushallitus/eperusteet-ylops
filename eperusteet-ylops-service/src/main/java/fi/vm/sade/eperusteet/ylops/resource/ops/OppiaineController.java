@@ -172,9 +172,16 @@ public class OppiaineController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public UnwrappedOpsOppiaineDto updateOppiaine(@PathVariable final Long opsId, @PathVariable final Long id,
-                                          @RequestBody OppiaineDto dto) {
+                                                  @RequestBody OppiaineDto dto) {
         dto.setId(id);
         return new UnwrappedOpsOppiaineDto(oppiaineService.update(opsId, dto));
+    }
+
+    @RequestMapping(value = "/{id}/vlk/{vlkId}", method = RequestMethod.POST)
+    public UnwrappedOpsOppiaineDto updateOppiaineWithVlk(@PathVariable final Long opsId, @PathVariable final Long vlkId, @PathVariable final Long id,
+                                                  @RequestBody OppiaineDto dto) {
+        dto.setId(id);
+        return new UnwrappedOpsOppiaineDto(oppiaineService.update(opsId, vlkId, dto));
     }
 
     @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)

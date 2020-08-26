@@ -60,7 +60,7 @@ public class OppiaineenVuosiluokkaController {
             @PathVariable("id") final Long id,
             @RequestBody OppiaineenVuosiluokkaDto dto) {
         dto.setId(id);
-        return oppiaineService.updateVuosiluokanSisalto(opsId, oppiaineId, dto);
+        return oppiaineService.updateVuosiluokanSisalto(opsId, oppiaineId, kokonaisuusId, dto);
     }
 
     @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)

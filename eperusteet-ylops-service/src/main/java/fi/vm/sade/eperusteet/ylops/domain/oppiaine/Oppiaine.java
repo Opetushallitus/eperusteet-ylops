@@ -15,14 +15,18 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
+import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
@@ -50,7 +54,7 @@ import static java.util.stream.Collectors.toMap;
 @Entity
 @Audited
 @Table(name = "oppiaine")
-public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copyable<Oppiaine> {
+public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copyable<Oppiaine>, HistoriaTapahtuma {
 
     @Getter
     @NotNull
@@ -366,6 +370,11 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
         return System.identityHashCode(this);
     }
 
+    @Override
+    public NavigationType getNavigationType() {
+        return NavigationType.perusopetusoppiaine;
+    }
+
     public interface Strict {
     }
 
@@ -466,4 +475,5 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     public OppiaineOpsTunniste getOpsUniikkiTunniste() {
         return new OppiaineOpsTunniste(this.tunniste, this.kieliKoodiArvo, this.kieli);
     }
+
 }

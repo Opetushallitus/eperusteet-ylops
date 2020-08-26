@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustieto;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
@@ -15,11 +16,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
@@ -67,6 +71,11 @@ public class OpetussuunnitelmanMuokkaustietoServiceImpl implements Opetussuunnit
 
     @Override
     public void addOpsMuokkausTieto(Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma, NavigationType navigationType, String lisatieto) {
+        addOpsMuokkausTieto(opsId, historiaTapahtuma, muokkausTapahtuma, navigationType, lisatieto, null);
+    }
+
+    @Override
+    public void addOpsMuokkausTieto(Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma, NavigationType navigationType, String lisatieto, Set<OpetussuunnitelmanMuokkaustietoLisaparametrit> lisaparametrit) {
         try {
             // Merkataan aiemmat tapahtumat poistetuksi
             if (Objects.equals(muokkausTapahtuma.getTapahtuma(), MuokkausTapahtuma.POISTO.toString())) {
@@ -85,10 +94,15 @@ public class OpetussuunnitelmanMuokkaustietoServiceImpl implements Opetussuunnit
                     .muokkaaja(SecurityUtil.getAuthenticatedPrincipal().getName())
                     .kohde(navigationType)
                     .kohdeId(historiaTapahtuma.getId())
-                    .luotu(historiaTapahtuma.getMuokattu())
+                    .lisaparametrit(historiaTapahtuma.getLisaparametrit())
+                    .luotu(new Date())
                     .lisatieto(lisatieto)
                     .poistettu(Objects.equals(muokkausTapahtuma.getTapahtuma(), MuokkausTapahtuma.POISTO.toString()))
                     .build();
+
+            if (!CollectionUtils.isEmpty(lisaparametrit)) {
+                muokkaustieto.setLisaparametrit(Stream.of(muokkaustieto.getLisaparametrit(), lisaparametrit).flatMap(x -> x.stream()).collect(Collectors.toSet()));
+            }
 
             muokkausTietoRepository.save(muokkaustieto);
         } catch(RuntimeException e) {

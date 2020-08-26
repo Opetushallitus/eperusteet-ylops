@@ -6,14 +6,15 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -27,6 +28,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Immutable;
 
 @Getter
 @Setter
@@ -70,4 +72,9 @@ public class OpetussuunnitelmanMuokkaustieto implements Serializable {
 
     @NotNull
     private boolean poistettu = false;
+
+    @Immutable
+    @CollectionTable(name = "opetussuunnitelman_muokkaustieto_lisaparametrit")
+    @ElementCollection(fetch = FetchType.EAGER)
+    private Set<OpetussuunnitelmanMuokkaustietoLisaparametrit> lisaparametrit;
 }

@@ -16,14 +16,14 @@
 package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
-
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +43,6 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -58,7 +57,7 @@ import org.hibernate.envers.RelationTargetAuditMode;
 @Audited
 @Table(name = "oppiaineenvuosiluokka", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"kokonaisuus_id", "vuosiluokka"})})
-public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity implements Serializable {
+public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity implements Serializable, HistoriaTapahtuma {
 
     @Getter
     @Setter(AccessLevel.PACKAGE)
@@ -154,6 +153,16 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity im
         }
 
         return ovl;
+    }
+
+    @Override
+    public LokalisoituTeksti getNimi() {
+        return LokalisoituTeksti.of(Kieli.FI, vuosiluokka.toString());
+    }
+
+    @Override
+    public NavigationType getNavigationType() {
+        return NavigationType.oppiaineenvuosiluokka;
     }
 
 }

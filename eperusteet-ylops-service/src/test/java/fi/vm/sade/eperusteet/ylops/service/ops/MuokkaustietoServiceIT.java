@@ -1,8 +1,10 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
@@ -13,6 +15,8 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -49,16 +53,18 @@ public class MuokkaustietoServiceIT extends AbstractIntegrationTest {
     @Test
     public void addOpsMuokkausTietoTest() {
 
-        Date hakuaika = new Date();
+        Date hakuaika = Timestamp.valueOf(LocalDateTime.now().plusDays(1));
 
         assertThat(service.getOpsMuokkausTietos(this.dto.getId(), hakuaika, 10)).hasSize(0);
         service.addOpsMuokkausTieto(this.dto.getId(), createHistoriaTapahtuma(), MuokkausTapahtuma.LUONTI);
         service.addOpsMuokkausTieto(this.dto.getId(), createHistoriaTapahtuma(), MuokkausTapahtuma.LUONTI, "lisatieto1");
         service.addOpsMuokkausTieto(this.dto.getId(), createHistoriaTapahtuma(), MuokkausTapahtuma.LUONTI, NavigationType.liite);
         service.addOpsMuokkausTieto(this.dto.getId(), createHistoriaTapahtuma(), MuokkausTapahtuma.LUONTI, NavigationType.liite, "lisatieto2");
+        service.addOpsMuokkausTieto(this.dto.getId(), createHistoriaTapahtuma(), MuokkausTapahtuma.LUONTI, NavigationType.liite, "lisatieto3",
+                Sets.newHashSet(new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.perusopetusoppiaine, 1l)));
 
         List<MuokkaustietoKayttajallaDto> dtos = service.getOpsMuokkausTietos(this.dto.getId(), hakuaika, 10);
-        assertThat(dtos).hasSize(4);
+        assertThat(dtos).hasSize(5);
 
         dtos = dtos.stream()
                 .sorted(Comparator.comparing(MuokkaustietoKayttajallaDto::getId))
@@ -73,7 +79,6 @@ public class MuokkaustietoServiceIT extends AbstractIntegrationTest {
                         "kohdeId",
                         "kohde",
                         "muokkaaja",
-                        "luotu",
                         "kayttajanTieto.etunimet",
                         "kayttajanTieto.sukunimi",
                         "kayttajanTieto.oidHenkilo")
@@ -84,7 +89,6 @@ public class MuokkaustietoServiceIT extends AbstractIntegrationTest {
                         1l,
                         NavigationType.viite,
                         "test",
-                        MUOKKAUS_AIKA,
                         "Teppo",
                         "Testaaja",
                         "test"
@@ -116,6 +120,15 @@ public class MuokkaustietoServiceIT extends AbstractIntegrationTest {
                         NavigationType.liite,
                         "lisatieto2"
                 );
+
+        assertThat(dtos.get(4))
+                .extracting(
+                        "lisaparametrit")
+                .hasSize(1);
+        assertThat(dtos.get(4).getLisaparametrit())
+                .extracting("kohde", "kohdeId")
+                .containsExactly(tuple(NavigationType.perusopetusoppiaine, 1l));
+
     }
 
     private HistoriaTapahtuma createHistoriaTapahtuma() {

@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
@@ -26,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.method.P;
@@ -53,6 +55,9 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
 
     @Autowired
     private OpetuksenkeskeinenSisaltoalueRepository opetuksenkeskeinenSisaltoalueRepository;
+
+    @Autowired
+    private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     @Override
     public VuosiluokkakokonaisuusDto add(Long opsId, VuosiluokkakokonaisuusDto dto) {
@@ -95,6 +100,8 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
             if (!kokonaisuudet.isInUse(kokonaisuusId)) {
                 kokonaisuudet.delete(vk);
             }
+
+            muokkaustietoService.addOpsMuokkausTieto(opsId, vk, MuokkausTapahtuma.POISTO);
         }
     }
 
@@ -128,6 +135,8 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
         final Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, dto.getId());
         mapper.map(dto, vk);
         OpsVuosiluokkakokonaisuus ovk = new OpsVuosiluokkakokonaisuus(vk, isOma);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, vk, MuokkausTapahtuma.PAIVITYS);
         return mapper.map(ovk, OpsVuosiluokkakokonaisuusDto.class);
     }
 
