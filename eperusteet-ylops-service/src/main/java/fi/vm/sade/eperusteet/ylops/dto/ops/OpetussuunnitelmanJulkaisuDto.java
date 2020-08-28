@@ -15,7 +15,7 @@ public class OpetussuunnitelmanJulkaisuDto {
     private Long id;
     private OpetussuunnitelmaInfoDto opetussuunnitelma;
     private LokalisoituTekstiDto tiedote;
-    private Set<Reference> dokumentit = new HashSet<>();
+    private Set<Long> dokumentit = new HashSet<>();
     private int revision;
     private Date luotu;
     private String luoja;

@@ -148,6 +148,12 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.getJulkaisut(opsId);
     }
 
+    @RequestMapping(value = "/{opsId}/julkaisut/kevyt", method = RequestMethod.GET)
+    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(
+            @PathVariable final Long opsId) {
+        return opetussuunnitelmaService.getJulkaisutKevyt(opsId);
+    }
+
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     @Timed

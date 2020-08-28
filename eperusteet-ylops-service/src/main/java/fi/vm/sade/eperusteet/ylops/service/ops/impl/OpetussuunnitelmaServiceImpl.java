@@ -424,6 +424,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(Long opsId) {
+        Opetussuunnitelma ops = repository.findOne(opsId);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        List<OpetussuunnitelmaJulkaisuKevyt> julkaisut = julkaisuRepository.findKevytdataByOpetussuunnitelma(ops);
+        return mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuDto.class);
+    }
+
+    @Override
     public PerusteInfoDto getPerusteBase(Long id) {
         Opetussuunnitelma ops = repository.findOne(id);
         PerusteDto perusteDto = eperusteetService.getPerusteById(ops.getCachedPeruste().getPerusteId());
@@ -479,7 +487,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         Set<Long> dokumentit = ops.getJulkaisukielet().stream()
-                .map(kieli -> dokumenttiService.createDtoFor(opsId, kieli))
+                .map(kieli -> dokumenttiService.getDto(opsId, kieli))
                 .map(DokumenttiDto::getId)
                 .collect(toSet());
 
