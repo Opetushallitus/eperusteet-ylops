@@ -162,6 +162,35 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     }
 
+    // Relates EP-2396
+    @Test
+    public void testOpintojaksollisenOppiaineenPoisto() {
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+
+        // Oppiaineen lisäys
+        Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
+                .nimi(LokalisoituTekstiDto.of("A"))
+                .kuvaus(LokalisoituTekstiDto.of("A"))
+                .koodi("poa1")
+                .build();
+        oppiaineDto = oppiaineService.addOppiaine(ops.getId(), oppiaineDto);
+
+        // Paikalliselle opintojakso
+        Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                .kuvaus(LokalisoituTekstiDto.of("X"))
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("poa1").build()))
+                .build();
+
+        opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Oj nimi"));
+        opintojaksoDto.setKoodi("oj1");
+        opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
+        Long oppiaineId = oppiaineDto.getId();
+
+        assertThatThrownBy(() -> {
+            oppiaineService.removeOne(ops.getId(), oppiaineId);
+        }).hasMessage("oppaine-sisaltaa-opintojaksoja");
+    }
+
     @Test
     public void testOpintojaksojenHallinta() {
         OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
@@ -187,7 +216,6 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThat(opintojaksot.size()).isEqualTo(1);
         assertThat(opintojaksot.get(0).getId()).isEqualTo(opintojaksoDto.getId());
     }
-
 
     @Test
     @Rollback

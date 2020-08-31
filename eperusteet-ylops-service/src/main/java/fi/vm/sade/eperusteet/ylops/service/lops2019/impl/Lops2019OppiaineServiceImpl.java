@@ -176,9 +176,25 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         }
     }
 
+    private Set<Lops2019Opintojakso> getOpintojaksot(Lops2019Oppiaine oa) {
+        return oa.getSisalto().getOpintojaksot().stream()
+                .filter(oj -> oj.getOppiaineet().stream()
+                            .map(Lops2019OpintojaksonOppiaine::getKoodi)
+                            .anyMatch(koodi -> Objects.equals(koodi, oa.getKoodi())))
+                .collect(Collectors.toSet());
+    }
+
+    private boolean omistaaOpintojaksoja(Lops2019Oppiaine oa) {
+        return !getOpintojaksot(oa).isEmpty();
+    }
+
     @Override
     public void removeOne(Long opsId, Long oppiaineId) {
         Lops2019Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
+        if (omistaaOpintojaksoja(oppiaine)) {
+            throw new BusinessRuleViolationException("oppaine-sisaltaa-opintojaksoja");
+        }
+
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         Lops2019Poistettu poistettu = new Lops2019Poistettu();
         poistettu.setNimi(oppiaine.getNimi());
@@ -189,7 +205,6 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         oppiaine.updateMuokkaustiedot();
         poistetutRepository.save(poistettu);
         oppiaineRepository.delete(oppiaine);
-
         muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
     }
 
