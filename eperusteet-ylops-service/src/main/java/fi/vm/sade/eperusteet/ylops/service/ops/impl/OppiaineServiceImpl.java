@@ -875,6 +875,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                     } else {
                         opetuksenKeskeinensisaltoalue.setOmaKuvaus(null);
                     }
+
+                    oppiaineenVuosiluokka.getSisaltoalue(opetuksenKeskeinensisaltoalueDto.getSisaltoalueet().getTunniste()).ifPresent(sa -> {
+                        opetuksenKeskeinensisaltoalue.getSisaltoalueet().setKuvaus(sa.getKuvaus());
+                    });
                 })
         );
 
