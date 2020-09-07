@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleDto;
@@ -94,12 +95,14 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     private OpetussuunnitelmaDto createLukioOpetussuunnitelma() {
         OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
+        pohjaLuontiDto.setTuoPohjanOpintojaksot(false);
         pohjaLuontiDto.setTyyppi(Tyyppi.POHJA);
         pohjaLuontiDto.setPerusteenDiaarinumero("1/2/3");
         OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
         opetussuunnitelmaService.updateTila(pohjaDto.getId(), Tila.VALMIS);
 
         OpetussuunnitelmaLuontiDto opsLuontiDto = new OpetussuunnitelmaLuontiDto();
+        opsLuontiDto.setTuoPohjanOpintojaksot(true);
         opsLuontiDto.setTyyppi(Tyyppi.OPS);
         opsLuontiDto.setOrganisaatiot(Stream.of("1.2.246.562.10.83037752777")
                 .map(oid -> {
@@ -661,7 +664,8 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
         Set<Long> ids = new HashSet<>();
 
-        OpetussuunnitelmaDto ops1 = createLukioOpetussuunnitelma();
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+        OpetussuunnitelmaNimiDto pohja = ops.getPohja();
         {
             Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
                     .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
@@ -670,27 +674,25 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                     .build();
             opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
             opintojaksoDto.setKoodi("1234");
-            ids.add(opintojaksoService.addOpintojakso(ops1.getId(), opintojaksoDto).getId());
+            ids.add(opintojaksoService.addOpintojakso(pohja.getId(), opintojaksoDto).getId());
         }
 
-        OpetussuunnitelmaDto ops2 = createLukioOpetussuunnitelma();
         {
             Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
                     .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder()
-                            .koodi("oppiaineet_maa")
+                            .koodi("oppiaineet_mab")
                             .build()))
                     .build();
             opintojaksoDto.setNimi(LokalisoituTekstiDto.of("Geometriat"));
-            opintojaksoDto.setKoodi("1234");
-            ids.add(opintojaksoService.addOpintojakso(ops2.getId(), opintojaksoDto).getId());
+            opintojaksoDto.setKoodi("12345");
+            ids.add(opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto).getId());
         }
 
-        List<Lops2019OpintojaksoDto> ops1Opintojaksot = opintojaksoService.getAll(ops1.getId());
-        opintojaksoService.addTuodutOpintojaksot(ops2.getId(), ops1Opintojaksot);
+        List<Lops2019OpintojaksoDto> ops1Opintojaksot = opintojaksoService.getAll(pohja.getId());
 
-        assertThat(opintojaksoService.getAll(ops2.getId())).hasSize(1);
-        assertThat(opintojaksoService.getTuodut(ops2.getId())).hasSize(1);
-        assertThat(opintojaksoService.getAllTuodut(ops2.getId())).hasSize(2);
-        assertThat(opintojaksoService.getAllTuodut(ops2.getId())).extracting("id").containsExactlyInAnyOrderElementsOf(ids);
+        assertThat(opintojaksoService.getAll(ops.getId())).hasSize(1);
+        assertThat(opintojaksoService.getTuodut(ops.getId())).hasSize(1);
+        assertThat(opintojaksoService.getAllTuodut(ops.getId())).hasSize(2);
+        assertThat(opintojaksoService.getAllTuodut(ops.getId())).extracting("id").containsExactlyInAnyOrderElementsOf(ids);
     }
 }

@@ -63,4 +63,5 @@ public abstract class OpetussuunnitelmaBaseDto
     private boolean ainepainoitteinen;
     private Date perusteenVoimassaoloAlkaa;
     private Date perusteenVoimassaoloLoppuu;
+    private boolean tuoPohjanOpintojaksot;
 }

@@ -169,8 +169,9 @@ public class EperusteetServiceImpl implements EperusteetService {
     private List<PerusteInfoDto> findPerusteetFromEperusteService(Set<KoulutusTyyppi> tyypit) {
         List<PerusteInfoDto> infot = new ArrayList<>();
         for (KoulutusTyyppi tyyppi : tyypit) {
-            PerusteInfoWrapperDto wrapperDto
-                    = client.exchange(eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}",
+            String url = eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}";
+            PerusteInfoWrapperDto wrapperDto = client.exchange(
+                    url,
                     HttpMethod.GET, httpEntity, PerusteInfoWrapperDto.class, tyyppi.toString(), 100).getBody();
 
             for (PerusteInfoDto peruste : wrapperDto.getData()) {

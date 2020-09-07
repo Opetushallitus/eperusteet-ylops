@@ -35,10 +35,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
@@ -153,8 +150,14 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     @Override
     public List<Lops2019OpintojaksoDto> getTuodut(Long opsId) {
-        Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
-        return mapLaajuudet(opetussuunnitelma.getLops2019().getTuodutOpintojaksot(), opsId);
+        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        Set<Lops2019Opintojakso> opintojaksot = new HashSet<>();
+        while (ops.getPohja() != null && ops.isTuoPohjanOpintojaksot()) {
+            Set<Lops2019Opintojakso> pohjanOpintojaksot = ops.getPohja().getLops2019().getOpintojaksot();
+            opintojaksot.addAll(pohjanOpintojaksot);
+            ops = ops.getPohja();
+        }
+        return mapLaajuudet(opintojaksot, opsId);
     }
 
     @Override
@@ -303,19 +306,6 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                 opintojakso,
                 tapahtuma != null ? tapahtuma : MuokkausTapahtuma.LUONTI);
         return result;
-    }
-
-    @Override
-    public void addTuodutOpintojaksot(
-            Long opsId,
-            List<Lops2019OpintojaksoDto> opintojaksoDtos
-    ) {
-        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
-
-        opintojaksoDtos.forEach(opintojaksoDto -> {
-            Lops2019Opintojakso opintojakso = mapper.map(opintojaksoDto, Lops2019Opintojakso.class);
-            ops.getLops2019().addTuotuOpintojakso(opintojakso);
-        });
     }
 
     @Override

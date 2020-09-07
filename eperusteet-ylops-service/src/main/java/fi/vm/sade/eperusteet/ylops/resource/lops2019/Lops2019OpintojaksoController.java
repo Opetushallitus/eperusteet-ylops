@@ -72,13 +72,6 @@ public class Lops2019OpintojaksoController {
         return opintojaksoService.addOpintojakso(opsId, opintojaksoDto);
     }
 
-    @RequestMapping(value = "/tuodut", method = RequestMethod.POST)
-    public void addTuodutOpintojaksot(
-            @PathVariable final Long opsId,
-            @RequestBody final List<Lops2019OpintojaksoDto> opintojaksoDto) {
-        opintojaksoService.addTuodutOpintojaksot(opsId, opintojaksoDto);
-    }
-
     @RequestMapping(value = "/{opintojaksoId}", method = RequestMethod.POST)
     public Lops2019OpintojaksoDto updateOpintojakso(
             @PathVariable final Long opsId,

@@ -30,9 +30,6 @@ public interface Lops2019OpintojaksoService {
     Lops2019OpintojaksoDto addOpintojakso(@P("opsId") Long opsId, Lops2019OpintojaksoDto opintojaksoDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void addTuodutOpintojaksot(@P("opsId") Long opsId, List<Lops2019OpintojaksoDto> opintojaksoDtos);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     Lops2019OpintojaksoDto addOpintojakso(@P("opsId") Long opsId,
                                           Lops2019OpintojaksoDto opintojaksoDto,
                                           MuokkausTapahtuma tapahtuma);
