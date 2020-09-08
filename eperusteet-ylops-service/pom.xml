@@ -12,12 +12,12 @@
     <name>eperusteet-ylops-service</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hibernate.version>4.3.9.Final</hibernate.version>
+        <hibernate.version>5.2.0.Final</hibernate.version>
         <spring.version>4.3.23.RELEASE</spring.version>
         <logback.version>1.2.3</logback.version>
-        <spring.security.version>4.2.13.RELEASE</spring.security.version>
+        <spring.security.version>4.2.16.RELEASE</spring.security.version>
         <spring.data.jpa.version>1.11.22.RELEASE</spring.data.jpa.version>
-        <postgresql.version>9.4.1211</postgresql.version>
+        <postgresql.version>42.2.13</postgresql.version>
         <jackson.version>2.10.2</jackson.version>
         <eperusteet-ylops.devdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.devdb.user}</eperusteet-ylops.devdb.jdbcurl>
         <eperusteet-ylops.ittestdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.ittestdb.user}</eperusteet-ylops.ittestdb.jdbcurl>
@@ -28,7 +28,7 @@
         <fop.version>2.5</fop.version>
         <pdfbox.version>2.0.17</pdfbox.version>
         <flyway.version>5.2.4</flyway.version>
-        <springfox.version>2.7.0</springfox.version>
+        <springfox.version>2.10.0</springfox.version>
         <schema.file>${project.basedir}/target/schema.ddl</schema.file>
         <hibernate.export.type>CREATE</hibernate.export.type>
         <eperusteet.resources>fi.vm.sade.eperusteet.ylops.resource</eperusteet.resources>
@@ -209,7 +209,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.2.5.Final</version>
+            <version>6.0.19.Final</version>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
