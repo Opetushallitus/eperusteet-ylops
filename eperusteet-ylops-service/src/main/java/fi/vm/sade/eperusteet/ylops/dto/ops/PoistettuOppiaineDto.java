@@ -12,6 +12,7 @@ import java.util.Date;
  */
 @Getter
 @Setter
+@Deprecated
 public class PoistettuOppiaineDto extends PoistettuDto {
     private Long oppiaine;
 }

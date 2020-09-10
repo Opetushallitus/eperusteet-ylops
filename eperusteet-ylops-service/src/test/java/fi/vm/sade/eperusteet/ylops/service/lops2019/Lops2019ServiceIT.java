@@ -93,29 +93,6 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
     @Autowired
     private Lops2019SisaltoRepository lops2019SisaltoRepository;
 
-    private OpetussuunnitelmaDto createLukioOpetussuunnitelma() {
-        OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
-        pohjaLuontiDto.setTuoPohjanOpintojaksot(false);
-        pohjaLuontiDto.setTyyppi(Tyyppi.POHJA);
-        pohjaLuontiDto.setPerusteenDiaarinumero("1/2/3");
-        OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
-        opetussuunnitelmaService.updateTila(pohjaDto.getId(), Tila.VALMIS);
-
-        OpetussuunnitelmaLuontiDto opsLuontiDto = new OpetussuunnitelmaLuontiDto();
-        opsLuontiDto.setTuoPohjanOpintojaksot(true);
-        opsLuontiDto.setTyyppi(Tyyppi.OPS);
-        opsLuontiDto.setOrganisaatiot(Stream.of("1.2.246.562.10.83037752777")
-                .map(oid -> {
-                    OrganisaatioDto result = new OrganisaatioDto();
-                    result.setOid(oid);
-                    return result;
-                })
-                .collect(Collectors.toSet()));
-        opsLuontiDto.setPohja(Reference.of(pohjaDto.getId()));
-
-        return opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
-    }
-
     @Test
     public void convertTestJsonToDto() {
         List<PerusteInfoDto> perusteet = eperusteetService.findPerusteet();

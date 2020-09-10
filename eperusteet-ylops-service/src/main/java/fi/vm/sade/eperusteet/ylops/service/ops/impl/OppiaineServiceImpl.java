@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
@@ -33,6 +34,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
@@ -40,6 +42,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.*;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
@@ -49,6 +52,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
+import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
@@ -110,13 +114,16 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     private OpetuksenkeskeinenSisaltoalueRepository opetuksenkeskeinenSisaltoalueRepository;
 
     @Autowired
-    private PoistettuOppiaineRepository poistettuOppiaineRepository;
-
-    @Autowired
     private OpetuksenkohdealueRepository opetuksenkohdealueRepository;
 
     @Autowired
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
+
+    @Autowired
+    private Lops2019PoistetutRepository lops2019PoistetutRepository;
+
+    @Autowired
+    private PoistoService poistoService;
 
     public OppiaineServiceImpl() {
     }
@@ -390,7 +397,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             oldJnro = optOldJnro.get();
         }
         PoistettuOppiaineDto deleted = delete(opsId, oppiaineDto.getId());
-        poistettuOppiaineRepository.delete(deleted.getId());
+        lops2019PoistetutRepository.delete(deleted.getId());
 
         return addValinnainen(opsId, oppiaineDto, vlkId, vuosiluokat, null, oldJnro, oldOavlk, true);
     }
@@ -525,14 +532,14 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OppiainePalautettuDto restore(Long opsId, Long oppiaineId, Long oppimaaraId) {
-        PoistettuOppiaine poistettu = poistettuOppiaineRepository.findOne(oppiaineId);
+        Lops2019PoistettuDto poistettu = poistoService.getRemoved(opsId, oppiaineId, PoistetunTyyppi.OPPIAINE);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
-        if (oppiaineet.findOne(poistettu.getOppiaine()) != null) {
+        if (oppiaineet.findOne(poistettu.getPoistettuId()) != null) {
             throw new BusinessRuleViolationException("Oppiaine olemassa, ei tarvitse palauttaa.");
         }
 
-        Oppiaine latest = latestNotNull(poistettu.getOppiaine(), poistettu.getMuokattu());
+        Oppiaine latest = latestNotNull(poistettu.getPoistettuId(), poistettu.getMuokattu());
         if (latest != null) {
             Optional.ofNullable(latest.getTavoitteet()).ifPresent(Object::toString);
             Optional.ofNullable(latest.getArviointi()).ifPresent(Object::toString);
@@ -545,8 +552,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         pelastettu.setTyyppi(oppiaine.getTyyppi());
         pelastettu.setLaajuus(oppiaine.getLaajuus());
 
-        if (oppimaaraId != null) {
-            Oppiaine parent = oppiaineet.findOne(oppimaaraId);
+        if (latest.getOppiaine() != null) {
+            Oppiaine parent = oppiaineet.findOne(latest.getOppiaine().getId());
             parent.addOppimaara(pelastettu);
         } else {
             ops.addOppiaine(pelastettu);
@@ -554,12 +561,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         pelastettu = oppiaineet.save(pelastettu);
         restoreContentIfLukioOppiaine(ops, latest, pelastettu);
-        poistettu.setPalautettu(true);
 
         Optional<Vuosiluokkakokonaisuus> firstVlk = findFirstVlk(ops, pelastettu);
 
         OppiainePalautettuDto palautettuDto = mapper.map(pelastettu, OppiainePalautettuDto.class);
         firstVlk.ifPresent(vuosiluokkakokonaisuus -> palautettuDto.setVlkId(vuosiluokkakokonaisuus.getId()));
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, pelastettu, MuokkausTapahtuma.PALAUTUS);
 
         return palautettuDto;
     }
@@ -775,21 +783,20 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
         oppiaineLukiokurssiRepository.delete(oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, id));
 
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
+        PoistettuOppiaineDto poistettu = tallennaPoistettu(id, ops, oppiaine);
+
         if (oppiaine.getOppiaine() != null) {
             oppiaine.getOppiaine().removeOppimaara(oppiaine);
         } else {
             ops.removeOppiaine(oppiaine);
         }
 
-        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
-        return tallennaPoistettu(id, ops, oppiaine);
+        return poistettu;
     }
 
     private PoistettuOppiaineDto tallennaPoistettu(Long id, Opetussuunnitelma ops, Oppiaine oppiaine) {
-        PoistettuOppiaine poistettu = new PoistettuOppiaine();
-        poistettu.setOpetussuunnitelma(ops);
-        poistettu.setOppiaine(id);
-        poistettu = poistettuOppiaineRepository.save(poistettu);
+        Lops2019PoistettuDto poistettu = poistoService.remove(ops, oppiaine);
         oppiaineet.delete(oppiaine);
         return mapper.map(poistettu, PoistettuOppiaineDto.class);
     }
@@ -969,14 +976,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public List<PoistettuOppiaineDto> getRemoved(Long opsId) {
-        List<PoistettuOppiaineDto> poistetut = mapper.mapAsList(poistettuOppiaineRepository.findPoistetutByOpsId(opsId), PoistettuOppiaineDto.class);
-        poistetut.forEach(poistettuOppiaine -> {
-            Oppiaine latest = latestNotNull(poistettuOppiaine.getOppiaine());
-            if (latest != null) {
-                poistettuOppiaine.setNimi(mapper.map(latest.getNimi(), LokalisoituTekstiDto.class));
-                poistettuOppiaine.setOppiaine(latest.getId());
-            }
-        });
+        List<Lops2019PoistettuDto> poistetut = poistoService.getRemoved(opsId, PoistetunTyyppi.OPPIAINE);
+//        poistetut.forEach(poistettuOppiaine -> {
+//            Oppiaine latest = latestNotNull(poistettuOppiaine.getPoistettuId());
+//            if (latest != null) {
+//                poistettuOppiaine.setNimi(mapper.map(latest.getNimi(), LokalisoituTekstiDto.class));
+//                poistettuOppiaine.setId(latest.getId());
+//            }
+//        });
+
         return mapper.mapAsList(poistetut, PoistettuOppiaineDto.class);
     }
 

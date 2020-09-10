@@ -19,7 +19,9 @@ import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.Poistettava;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -54,7 +56,7 @@ import static java.util.stream.Collectors.toMap;
 @Entity
 @Audited
 @Table(name = "oppiaine")
-public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copyable<Oppiaine>, HistoriaTapahtuma {
+public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copyable<Oppiaine>, HistoriaTapahtuma, Poistettava {
 
     @Getter
     @NotNull
@@ -373,6 +375,11 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Override
     public NavigationType getNavigationType() {
         return NavigationType.perusopetusoppiaine;
+    }
+
+    @Override
+    public PoistetunTyyppi getPoistetunTyyppi() {
+        return PoistetunTyyppi.OPPIAINE;
     }
 
     public interface Strict {

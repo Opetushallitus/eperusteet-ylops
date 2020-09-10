@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale_;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
@@ -138,6 +139,12 @@ public class DtoMapperConfig {
 //        factory.classMap(KommenttiKahvaDto.class, KommenttiKahva.class)
 //                .byDefault()
 //                .register();
+
+        factory.classMap(PoistettuOppiaineDto.class, Lops2019PoistettuDto.class)
+                .fieldAToB("oppiaine", "poistettuId")
+                .fieldBToA("poistettuId", "oppiaine")
+                .byDefault()
+                .register();
 
         factory.classMap(Dokumentti.class, DokumenttiDto.class)
                 .exclude(Dokumentti_.kansikuva.getName())

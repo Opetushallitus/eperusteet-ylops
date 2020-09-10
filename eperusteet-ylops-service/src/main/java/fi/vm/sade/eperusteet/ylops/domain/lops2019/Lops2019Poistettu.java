@@ -29,7 +29,7 @@ public class Lops2019Poistettu extends AbstractAuditedEntity implements Serializ
     private Opetussuunnitelma opetussuunnitelma;
 
     @Column(name = "poistettu_id")
-    private Long poistettu_id;
+    private Long poistettuId;
 
     @NotNull
     @Enumerated(EnumType.STRING)

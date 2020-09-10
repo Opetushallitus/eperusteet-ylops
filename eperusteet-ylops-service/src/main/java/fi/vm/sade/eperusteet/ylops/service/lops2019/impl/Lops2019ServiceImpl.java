@@ -1,24 +1,22 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
-import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Oppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Poistettu;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019LaajaAlainenDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019LaajaAlainenOsaaminenDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
-import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
@@ -30,23 +28,24 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 @Service
 @Transactional
 @Slf4j
 public class Lops2019ServiceImpl implements Lops2019Service {
-
-    @Autowired
-    private Lops2019PoistetutRepository poistetutRepository;
 
     @Autowired
     private EperusteetService eperusteetService;
@@ -90,48 +89,6 @@ public class Lops2019ServiceImpl implements Lops2019Service {
             throw new BusinessRuleViolationException("peruste-cache-puuttuu");
         }
         return eperusteetService.getPerusteById(perusteCached.getPerusteId());
-    }
-
-    @Override
-    public void restore(Long opsId, Long poistettuId) {
-        Lops2019Poistettu poistettuInfo = poistetutRepository.getOne(poistettuId);
-        Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
-        if (poistettuInfo.getOpetussuunnitelma() != opetussuunnitelma) {
-            throw new BusinessRuleViolationException("vain-oman-voi-palauttaa");
-        }
-
-        switch (poistettuInfo.getTyyppi()) {
-            case LOPS2019OPPIAINE:
-                palautaOppiaine(opsId, poistettuInfo);
-                return;
-            case OPINTOJAKSO:
-                palautaOpintojakso(opsId, poistettuInfo);
-                return;
-        }
-        throw new BusinessRuleViolationException("tunnistamaton-poistotyyppi");
-    }
-
-    private void palautaOppiaine(Long opsId, Lops2019Poistettu poistettuInfo) {
-        Lops2019Oppiaine latest = oppiaineRepository.getLatestNotNull(poistettuInfo.getPoistettu_id());
-        Lops2019Oppiaine oppiaine = Lops2019Oppiaine.copy(latest);
-        Lops2019PaikallinenOppiaineDto uusi = mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
-        oppiaineService.addOppiaine(opsId, uusi, MuokkausTapahtuma.PALAUTUS);
-        poistetutRepository.delete(poistettuInfo);
-    }
-
-    private void palautaOpintojakso(Long opsId, Lops2019Poistettu poistettuInfo) {
-        Lops2019Opintojakso latest = opintojaksoRepository.getLatestNotNull(poistettuInfo.getPoistettu_id());
-        Lops2019Opintojakso opintojakso = Lops2019Opintojakso.copy(latest);
-        Lops2019OpintojaksoDto opintojaksoDto = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
-        opintojaksoService.addOpintojakso(opsId, opintojaksoDto, MuokkausTapahtuma.PALAUTUS);
-        poistetutRepository.delete(poistettuInfo);
-    }
-
-    @Override
-    public List<Lops2019PoistettuDto> getRemoved(Long opsId) {
-        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
-        List<Lops2019Poistettu> poistetut = poistetutRepository.findAllByOpetussuunnitelma(ops);
-        return mapper.mapAsList(poistetut, Lops2019PoistettuDto.class);
     }
 
     @Override

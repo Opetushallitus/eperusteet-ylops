@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.domain.lops2019;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.Poistettava;
 import fi.vm.sade.eperusteet.ylops.domain.Validable;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
@@ -27,7 +28,7 @@ import java.util.List;
 @Audited
 @Table(name = "lops2019_oppiaine",
        uniqueConstraints = @UniqueConstraint(columnNames = { "koodi", "sisalto_id" }))
-public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity implements Validable, HistoriaTapahtuma {
+public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity implements Validable, HistoriaTapahtuma, Poistettava {
 
     @ManyToOne
     @Getter
@@ -137,5 +138,10 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
     @Override
     public NavigationType getNavigationType() {
         return NavigationType.poppiaine;
+    }
+
+    @Override
+    public PoistetunTyyppi getPoistetunTyyppi() {
+        return PoistetunTyyppi.LOPS2019OPPIAINE;
     }
 }

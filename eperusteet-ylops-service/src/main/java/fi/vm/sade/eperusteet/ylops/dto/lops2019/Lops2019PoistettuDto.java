@@ -13,7 +13,7 @@ import java.util.Date;
 public class Lops2019PoistettuDto {
     private Long id;
     private Reference opetussuunnitelma;
-    private Long poistettu_id;
+    private Long poistettuId;
     private PoistetunTyyppi tyyppi;
     private LokalisoituTekstiDto nimi;
     private LokalisoituTekstiDto parent;

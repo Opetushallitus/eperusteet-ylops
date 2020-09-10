@@ -4,7 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum PoistetunTyyppi {
     LOPS2019OPPIAINE("lops2019oppiaine"),
-    OPINTOJAKSO("opintojakso");
+    OPINTOJAKSO("opintojakso"),
+    OPPIAINE("oppiaine");
 
     private final String tyyppi;
 

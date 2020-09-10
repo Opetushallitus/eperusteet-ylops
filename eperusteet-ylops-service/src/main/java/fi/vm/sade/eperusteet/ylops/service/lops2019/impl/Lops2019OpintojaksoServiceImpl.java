@@ -33,6 +33,7 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import java.math.BigDecimal;
 import java.util.*;
@@ -53,7 +54,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     private Lops2019OppiaineRepository oppiaineRepository;
 
     @Autowired
-    private Lops2019PoistetutRepository poistetutRepository;
+    private PoistoService poistoService;
 
     @Autowired
     private Lops2019OpintojaksoRepository opintojaksoRepository;
@@ -345,14 +346,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     public void removeOne(Long opsId, Long opintojaksoId) {
         Lops2019Opintojakso opintojakso = getOpintojakso(opsId, opintojaksoId);
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
-        Lops2019Poistettu poistettu = new Lops2019Poistettu();
-        poistettu.setNimi(opintojakso.getNimi());
-        poistettu.setOpetussuunnitelma(ops);
-        poistettu.setPoistettu_id(opintojaksoId);
-        poistettu.setPalautettu(false);
-        poistettu.setTyyppi(PoistetunTyyppi.OPINTOJAKSO);
+        poistoService.remove(ops, opintojakso);
         opintojakso.updateMuokkaustiedot();
-        poistetutRepository.save(poistettu);
         ops.getLops2019().getOpintojaksot().remove(opintojakso);
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, opintojakso, MuokkausTapahtuma.POISTO);

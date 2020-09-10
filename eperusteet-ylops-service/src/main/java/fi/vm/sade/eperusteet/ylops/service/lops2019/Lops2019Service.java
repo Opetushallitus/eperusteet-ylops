@@ -65,12 +65,6 @@ public interface Lops2019Service {
 
     Map<String, List<Lops2019OpintojaksoDto>> getModuuliToOpintojaksoMap(List<Lops2019OpintojaksoDto> opintojaksot);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void restore(@P("opsId") Long opsId, Long poistettu);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    List<Lops2019PoistettuDto> getRemoved(@P("opsId") Long opsId);
-
     @PreAuthorize("permitAll()")
     Lops2019LaajaAlainenOsaaminenDto getLaajaAlaisetOsaamiset(Kieli kieli);
 }

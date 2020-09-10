@@ -16,12 +16,14 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.*;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineValinnainenTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -31,12 +33,14 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.*;
+import org.springframework.test.annotation.Rollback;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
@@ -64,6 +68,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private VuosiluokkakokonaisuusviiteRepository vlkViitteet;
+
+    @Autowired
+    private PoistoService poistoService;
 
     private Long opsId;
     private Reference vlkViiteRef;
@@ -354,11 +361,88 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineService.delete(opsId, oppiaineDto.getId());
     }
 
+    @Test
+    @Rollback
+    public void testOppiaineDeleteRestore() {
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+
+        OppiaineDto oppiaineDto = new OppiaineDto();
+        oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
+        oppiaineDto.setNimi(lt("Äidinkieli"));
+        oppiaineDto.setKoodiUri("koodi_123");
+        oppiaineDto.setTunniste(UUID.randomUUID());
+
+        oppiaineDto = oppiaineService.add(ops.getId(), oppiaineDto);
+        assertNotNull(oppiaineDto);
+
+        Assertions.assertThat(poistoService.getRemoved(ops.getId(), PoistetunTyyppi.OPPIAINE)).isEmpty();
+        PoistettuOppiaineDto poistettuDto = oppiaineService.delete(ops.getId(), oppiaineDto.getId());
+        Assertions.assertThat(poistettuDto.getOppiaine()).isEqualTo(oppiaineDto.getId());
+        List<OppiaineDto> oppiaineet = oppiaineService.getAll(ops.getId());
+        Assertions.assertThat(oppiaineet).isEmpty();
+
+        List<Lops2019PoistettuDto> poistetut = poistoService.getRemoved(ops.getId(), PoistetunTyyppi.OPPIAINE);
+        Assertions.assertThat(poistetut).isNotEmpty();
+        Assertions.assertThat(poistetut.get(0).getPoistettuId()).isEqualTo(oppiaineDto.getId());
+
+        poistoService.restoreOppiaine(ops.getId(), poistetut.get(0).getPoistettuId());
+        Assertions.assertThat(oppiaineService.getAll(ops.getId())).isNotEmpty();
+        Assertions.assertThat(poistoService.getRemoved(ops.getId(), PoistetunTyyppi.OPPIAINE)).isEmpty();
+    }
+
+    @Test
+    @Rollback
+    public void testOppimaaraDeleteRestore() {
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+
+        OppiaineDto oppiaineDto = new OppiaineDto();
+        oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
+        oppiaineDto.setNimi(lt("Äidinkieli"));
+        oppiaineDto.setKoodiUri("koodi_123");
+        oppiaineDto.setTunniste(UUID.randomUUID());
+
+        UUID oppimaaraTunniste = UUID.randomUUID();
+        OppiaineSuppeaDto oppimaaraDto = new OppiaineSuppeaDto();
+        oppimaaraDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
+        oppimaaraDto.setNimi(lt("Suomen kieli ja kirjallisuus"));
+        oppimaaraDto.setKoosteinen(false);
+        oppimaaraDto.setTunniste(oppimaaraTunniste);
+
+        oppiaineDto.setOppimaarat(Collections.singleton(oppimaaraDto));
+        oppiaineDto.setKoosteinen(true);
+
+        oppiaineDto = oppiaineService.add(ops.getId(), oppiaineDto);
+        oppimaaraDto = oppiaineDto.getOppimaarat().iterator().next();
+        assertNotNull(oppiaineDto);
+        assertNotNull(oppiaineDto.getOppimaarat());
+        assertEquals(1, oppiaineDto.getOppimaarat().size());
+
+        Assertions.assertThat(poistoService.getRemoved(ops.getId(), PoistetunTyyppi.OPPIAINE)).isEmpty();
+        oppiaineService.delete(ops.getId(), oppimaaraDto.getId());
+        List<OppiaineDto> oppiaineet = oppiaineService.getAll(ops.getId());
+        Assertions.assertThat(oppiaineet).hasSize(1);
+        Assertions.assertThat(oppiaineet.get(0).getId()).isEqualTo(oppiaineDto.getId());
+        Assertions.assertThat(oppiaineet.get(0).getOppimaarat()).isEmpty();
+
+        List<Lops2019PoistettuDto> poistetut = poistoService.getRemoved(ops.getId(), PoistetunTyyppi.OPPIAINE);
+        Assertions.assertThat(poistetut).hasSize(1);
+        Assertions.assertThat(poistetut.get(0).getPoistettuId()).isEqualTo(oppimaaraDto.getId());
+
+        poistoService.restoreOppiaine(ops.getId(), poistetut.get(0).getPoistettuId());
+        oppiaineet = oppiaineService.getAll(ops.getId());
+        Assertions.assertThat(oppiaineet).hasSize(1);
+        Assertions.assertThat(oppiaineet.get(0).getId()).isEqualTo(oppiaineDto.getId());
+        Assertions.assertThat(oppiaineet.get(0).getOppimaarat()).isNotEmpty();
+        Assertions.assertThat(oppiaineet.get(0).getOppimaarat().iterator().next().getTunniste()).isEqualTo(oppimaaraTunniste);
+        Assertions.assertThat(poistoService.getRemoved(ops.getId(), PoistetunTyyppi.OPPIAINE)).isEmpty();
+    }
+
     private static TekstiosaDto getTekstiosa(String suffiksi) {
         TekstiosaDto dto = new TekstiosaDto();
         dto.setOtsikko(Optional.of(lt("otsikko_" + suffiksi)));
         dto.setTeksti(Optional.of(lt("teksti_" + suffiksi)));
         return dto;
     }
+
 }
 

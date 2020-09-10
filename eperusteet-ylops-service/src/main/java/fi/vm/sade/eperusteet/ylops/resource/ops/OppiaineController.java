@@ -28,6 +28,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
 import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.Optional;
@@ -55,6 +56,9 @@ public class OppiaineController {
 
     @Autowired
     private OpetussuunnitelmaService ops;
+
+    @Autowired
+    private PoistoService poistoService;
 
     @RequestMapping(method = RequestMethod.POST)
     public OppiaineDto addOppiaine(@PathVariable final Long opsId, @RequestBody OppiaineDto dto) {
@@ -115,7 +119,7 @@ public class OppiaineController {
     public OppiainePalautettuDto restoreOppiaine(
             @PathVariable final Long opsId,
             @PathVariable final Long id) {
-        return oppiaineService.restore(opsId, id, null);
+        return poistoService.restoreOppiaine(opsId, id);
     }
 
     @RequestMapping(value = "/{id}/palauta/{oppimaaraId}", method = RequestMethod.POST)
@@ -123,7 +127,7 @@ public class OppiaineController {
             @PathVariable final Long opsId,
             @PathVariable final Long id,
             @PathVariable final Long oppimaaraId) {
-        return oppiaineService.restore(opsId, id, oppimaaraId);
+        return poistoService.restoreOppiaine(opsId, id);
     }
 
     @RequestMapping(value = "/{id}/palauta/{oppimaaraId}/{versio}", method = RequestMethod.POST)

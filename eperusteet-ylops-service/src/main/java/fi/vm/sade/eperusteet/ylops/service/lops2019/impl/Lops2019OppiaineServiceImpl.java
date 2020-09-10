@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 
 import java.util.*;
@@ -39,7 +40,7 @@ import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
 
     @Autowired
-    private Lops2019PoistetutRepository poistetutRepository;
+    private PoistoService poistoService;
 
     @Autowired
     private Lops2019OpintojaksoRepository opintojaksoRepository;
@@ -196,14 +197,8 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
         }
 
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
-        Lops2019Poistettu poistettu = new Lops2019Poistettu();
-        poistettu.setNimi(oppiaine.getNimi());
-        poistettu.setOpetussuunnitelma(ops);
-        poistettu.setPoistettu_id(oppiaineId);
-        poistettu.setPalautettu(false);
-        poistettu.setTyyppi(PoistetunTyyppi.LOPS2019OPPIAINE);
         oppiaine.updateMuokkaustiedot();
-        poistetutRepository.save(poistettu);
+        poistoService.remove(ops, oppiaine);
         oppiaineRepository.delete(oppiaine);
         muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
     }
