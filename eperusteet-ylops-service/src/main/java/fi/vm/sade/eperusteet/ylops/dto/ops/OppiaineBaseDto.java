@@ -45,4 +45,8 @@ public abstract class OppiaineBaseDto {
     private boolean koosteinen;
     private LokalisoituTekstiDto nimi;
     private Boolean abstrakti;
+
+    public OppiaineValinnainenTyyppi getValinnainenTyyppi() {
+        return valinnainenTyyppi != null ? valinnainenTyyppi : OppiaineValinnainenTyyppi.EI_MAARITETTY;
+    }
 }

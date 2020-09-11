@@ -83,8 +83,8 @@ public class PoistoServiceImpl implements PoistoService {
     }
 
     @Override
-    public OppiainePalautettuDto restoreOppiaine(Long opsId, Long oppiaineId) {
-        Lops2019Poistettu poistettuInfo = poistetutRepository.findByPoistettuId(oppiaineId);
+    public OppiainePalautettuDto restoreOppiaine(Long opsId, Long id) {
+        Lops2019Poistettu poistettuInfo = poistetutRepository.findOne(id);
         return palautaOppiaine(opsId, poistettuInfo);
     }
 

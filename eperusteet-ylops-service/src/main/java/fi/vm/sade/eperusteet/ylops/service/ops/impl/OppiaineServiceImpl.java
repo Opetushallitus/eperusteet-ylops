@@ -551,6 +551,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Oppiaine pelastettu = Oppiaine.copyOf(opsDtoMapper.fromDto(oppiaine), false);
         pelastettu.setTyyppi(oppiaine.getTyyppi());
         pelastettu.setLaajuus(oppiaine.getLaajuus());
+        pelastettu.setValinnainenTyyppi(oppiaine.getValinnainenTyyppi());
 
         if (latest.getOppiaine() != null) {
             Oppiaine parent = oppiaineet.findOne(latest.getOppiaine().getId());
@@ -977,18 +978,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     @Override
     public List<PoistettuOppiaineDto> getRemoved(Long opsId) {
         List<Lops2019PoistettuDto> poistetut = poistoService.getRemoved(opsId, PoistetunTyyppi.OPPIAINE);
-//        poistetut.forEach(poistettuOppiaine -> {
-//            Oppiaine latest = latestNotNull(poistettuOppiaine.getPoistettuId());
-//            if (latest != null) {
-//                poistettuOppiaine.setNimi(mapper.map(latest.getNimi(), LokalisoituTekstiDto.class));
-//                poistettuOppiaine.setId(latest.getId());
-//            }
-//        });
-
         return mapper.mapAsList(poistetut, PoistettuOppiaineDto.class);
     }
-
-
+    
     private Boolean canCopyOppiaine(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         if (ops == null) {

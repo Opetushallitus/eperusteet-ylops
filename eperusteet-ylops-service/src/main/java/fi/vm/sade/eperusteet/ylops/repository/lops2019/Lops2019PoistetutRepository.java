@@ -16,5 +16,4 @@ public interface Lops2019PoistetutRepository extends JpaWithVersioningRepository
 
     Lops2019Poistettu findByOpetussuunnitelmaIdAndPoistettuIdAndTyyppi(Long opsId, Long poistettuId, PoistetunTyyppi tyyppi);
 
-    Lops2019Poistettu findByPoistettuId(Long poistettuId);
 }

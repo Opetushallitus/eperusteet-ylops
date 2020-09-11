@@ -3,22 +3,7 @@
 </div>
 
 <div class="modal-body">
-  <div>
-    <label>
-      <input type="radio" ng-model="palauta.type" value="oppiaine">
-      <span kaanna="'palauta-oppiaineena'"></span>
-    </label>
-    <br/>
-    <label>
-      <input type="radio" ng-model="palauta.type" value="oppimaara">
-      <span kaanna="'palauta-oppimaarana'"></span>
-    </label>
-  </div>
-
-  <div ng-if="palauta.type === 'oppimaara'">
-    <strong kaanna="'oppiaine'"></strong>
-    <select ng-options="(item.oppiaine.nimi | kaanna) for item in koosteiset" ng-model="palauta.oppimaara" class="form-control"></select>
-  </div>
+  <span kaanna="'oppiaine-palautus-varmistus'"></span>
 
   <div class="modal-footer">
     <button class="btn btn-danger" ng-click="peruuta()" kaanna="'peruuta'"></button>

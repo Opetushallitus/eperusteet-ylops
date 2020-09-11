@@ -385,7 +385,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         Assertions.assertThat(poistetut).isNotEmpty();
         Assertions.assertThat(poistetut.get(0).getPoistettuId()).isEqualTo(oppiaineDto.getId());
 
-        poistoService.restoreOppiaine(ops.getId(), poistetut.get(0).getPoistettuId());
+        poistoService.restoreOppiaine(ops.getId(), poistetut.get(0).getId());
         Assertions.assertThat(oppiaineService.getAll(ops.getId())).isNotEmpty();
         Assertions.assertThat(poistoService.getRemoved(ops.getId(), PoistetunTyyppi.OPPIAINE)).isEmpty();
     }
@@ -428,7 +428,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         Assertions.assertThat(poistetut).hasSize(1);
         Assertions.assertThat(poistetut.get(0).getPoistettuId()).isEqualTo(oppimaaraDto.getId());
 
-        poistoService.restoreOppiaine(ops.getId(), poistetut.get(0).getPoistettuId());
+        poistoService.restoreOppiaine(ops.getId(), poistetut.get(0).getId());
         oppiaineet = oppiaineService.getAll(ops.getId());
         Assertions.assertThat(oppiaineet).hasSize(1);
         Assertions.assertThat(oppiaineet.get(0).getId()).isEqualTo(oppiaineDto.getId());
