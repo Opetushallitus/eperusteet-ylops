@@ -20,6 +20,11 @@ public class TiedoteQueryDto {
     private Boolean perusteeton;
     private Boolean julkinen; // Jos null, haetaan julkiset ja sisäiset
     private Boolean yleinen; // Jos halutaan esittää mm. etusivulla
+    private List<String> tiedoteJulkaisuPaikka;
+    private List<String> koulutusTyyppi;
+    private List<Long> perusteIds;
+    private String jarjestys;
+    private Boolean jarjestysNouseva;
 
     public String toRequestParams() {
         UriComponentsBuilder builder = UriComponentsBuilder.newInstance();

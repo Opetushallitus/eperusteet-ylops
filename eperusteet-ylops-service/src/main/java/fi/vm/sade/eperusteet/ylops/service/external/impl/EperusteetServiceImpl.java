@@ -16,6 +16,8 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
@@ -31,12 +33,17 @@ import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPe
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import static fi.vm.sade.eperusteet.ylops.service.util.ExceptionUtil.wrapRuntime;
 import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
+import fi.vm.sade.eperusteet.ylops.service.util.ObjectMapperJsonMapperAdapter;
+import fi.vm.sade.javautils.http.OphHttpClient;
+import fi.vm.sade.javautils.http.OphHttpRequest;
 import java.io.IOException;
 import java.util.*;
 import static java.util.Collections.singletonList;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
+import static javax.servlet.http.HttpServletResponse.SC_OK;
+
 import javax.annotation.PostConstruct;
 
 import lombok.Getter;
@@ -89,6 +96,9 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Autowired
     private HttpEntity httpEntity;
+
+    @Autowired
+    private RestClientFactory restClientFactory;
 
     @PostConstruct
     protected void init() {
@@ -311,9 +321,22 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto) {
-        String uri = eperusteetServiceUrl.concat("/api/tiedotteet/haku").concat(queryDto.toRequestParams());
-        JsonNode result = client.exchange(uri, HttpMethod.GET, httpEntity, JsonNode.class).getBody();
-        return result;
+        String url = eperusteetServiceUrl.concat("/api/tiedotteet/haku").concat(queryDto.toRequestParams());
+        OphHttpClient client = restClientFactory.get(eperusteetServiceUrl, true);
+        OphHttpRequest request = OphHttpRequest.Builder
+                .get(url)
+                .build();
+
+        return client.<JsonNode>execute(request)
+                .expectedStatus(SC_OK)
+                .mapWith(text -> {
+                    try {
+                        return new ObjectMapper().readTree(text);
+                    } catch (IOException ex) {
+                        throw new BusinessRuleViolationException("Tiedotteiden tietojen hakeminen epäonnistui", ex);
+                    }
+                })
+                .orElse(null);
     }
 
     @Override
