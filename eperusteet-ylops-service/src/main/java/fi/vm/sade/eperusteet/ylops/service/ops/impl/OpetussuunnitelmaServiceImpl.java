@@ -33,18 +33,13 @@ import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakoko
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
-import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
-import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
-import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
-import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.*;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
@@ -65,6 +60,7 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
@@ -88,6 +84,7 @@ import java.util.*;
 import static java.util.Collections.emptyList;
 import static java.util.Optional.ofNullable;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import static java.util.stream.Collectors.*;
 import java.util.stream.Stream;
@@ -118,7 +115,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private DtoMapper mapper;
 
     @Autowired
-    private OpetussuunnitelmaRepository repository;
+    private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Autowired
     private TekstikappaleviiteRepository viiteRepository;
@@ -198,6 +195,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Autowired
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
+    @Autowired
+    private KayttajanTietoService kayttajanTietoService;
+
     @PersistenceContext
     private EntityManager em;
 
@@ -258,7 +258,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     .filter(ops -> ops.getTila() == Tila.JULKAISTU)
                     .collect(Collectors.toList());
         } else {
-            opetussuunnitelmat = repository.findAllByTyyppiAndTilaIsJulkaistu(Tyyppi.OPS);
+            opetussuunnitelmat = opetussuunnitelmaRepository.findAllByTyyppiAndTilaIsJulkaistu(Tyyppi.OPS);
         }
 
         final List<OpetussuunnitelmaJulkinenDto> dtot = mapper.mapAsList(opetussuunnitelmat,
@@ -308,7 +308,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         if (ops.getTila() != Tila.JULKAISTU) {
             throw new NotExistsException("Pyydettyä opetussuunnitelmaa ei ole olemassa");
@@ -322,9 +322,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
         final List<Opetussuunnitelma> opetussuunnitelmat;
         if (tyyppi == Tyyppi.POHJA) {
-            opetussuunnitelmat = repository.findPohja(organisaatiot);
+            opetussuunnitelmat = opetussuunnitelmaRepository.findPohja(organisaatiot);
         } else {
-            opetussuunnitelmat = repository.findAllByTyyppi(tyyppi, organisaatiot);
+            opetussuunnitelmat = opetussuunnitelmaRepository.findAllByTyyppi(tyyppi, organisaatiot);
         }
 
         return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class).stream()
@@ -342,9 +342,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public Long getAmount(Tyyppi tyyppi, Set<Tila> tilat) {
         Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
         if (tyyppi == Tyyppi.POHJA) {
-            return repository.countByTyyppi(tyyppi, tilat, organisaatiot);
+            return opetussuunnitelmaRepository.countByTyyppi(tyyppi, tilat, organisaatiot);
         } else {
-            return repository.countByTyyppi(tyyppi, tilat, organisaatiot);
+            return opetussuunnitelmaRepository.countByTyyppi(tyyppi, tilat, organisaatiot);
         }
     }
 
@@ -358,7 +358,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Cacheable("tilastot")
     @Transactional(readOnly = true)
     public OpetussuunnitelmaStatistiikkaDto getStatistiikka() {
-        List<OpetussuunnitelmaInfoDto> opsit = mapper.mapAsList(repository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class).stream()
+        List<OpetussuunnitelmaInfoDto> opsit = mapper.mapAsList(opetussuunnitelmaRepository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class).stream()
                 .map(ops -> {
                     try {
                         fetchOrganisaatioNimet(ops);
@@ -404,20 +404,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public List<OpetussuunnitelmaInfoDto> getAdminList() {
-        return mapper.mapAsList(repository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class);
+        return mapper.mapAsList(opetussuunnitelmaRepository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class);
     }
 
     @Override
     @Transactional(readOnly = true)
     public PerusteDto getPeruste(Long opsId) {
-        Opetussuunnitelma ops = repository.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         return eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
     }
 
     @Override
     public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(Long opsId) {
-        Opetussuunnitelma ops = repository.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         List<OpetussuunnitelmanJulkaisu> julkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
         return mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuDto.class);
@@ -425,7 +425,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(Long opsId) {
-        Opetussuunnitelma ops = repository.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         List<OpetussuunnitelmaJulkaisuKevyt> julkaisut = julkaisuRepository.findKevytdataByOpetussuunnitelma(ops);
         return mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuDto.class);
@@ -433,14 +433,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public PerusteInfoDto getPerusteBase(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         PerusteDto perusteDto = eperusteetService.getPerusteById(ops.getCachedPeruste().getPerusteId());
         return mapper.map(perusteDto, PerusteInfoDto.class);
     }
 
     @Override
     public JsonNode queryOpetussuunnitelmaJulkaisu(Long opsId, String query) {
-        Opetussuunnitelma ops = repository.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmanJulkaisu julkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(ops);
         assertExists(julkaisu, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
@@ -470,7 +470,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public OpetussuunnitelmanJulkaisuDto addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
-        Opetussuunnitelma ops = repository.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
         if (!Tyyppi.OPS.equals(ops.getTyyppi())) {
@@ -522,7 +522,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public OpetussuunnitelmaKevytDto getOpetussuunnitelma(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
         fetchKuntaNimet(dto);
@@ -531,13 +531,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void fetchLapsiOpetussuunnitelmat(Long id, Set<Opetussuunnitelma> opsit) {
-        opsit.addAll(repository.findAllByPohjaId(id));
+        opsit.addAll(opetussuunnitelmaRepository.findAllByPohjaId(id));
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getLapsiOpetussuunnitelmat(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         Set<Opetussuunnitelma> result = new HashSet<>();
         fetchLapsiOpetussuunnitelmat(id, result);
@@ -547,7 +547,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public OpetussuunnitelmaLaajaDto getOpetussuunnitelmaEnempi(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaLaajaDto dto = mapper.map(ops, OpetussuunnitelmaLaajaDto.class);
         fetchKuntaNimet(dto);
@@ -558,7 +558,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public OpetussuunnitelmaDto getOpetussuunnitelmaKaikki(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaDto dto = mapper.map(ops, OpetussuunnitelmaDto.class);
         fetchKuntaNimet(dto);
@@ -568,8 +568,26 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<OpetussuunnitelmaInfoDto> getOpetussuunnitelmaOpsPohjat() {
+        Map<String, OrganisaatioLaajaDto> kayttajanOrganisaatiot = kayttajanTietoService.haeOrganisaatioOikeudet().stream()
+                .filter(Objects::nonNull)
+                .map(oid -> organisaatioService.getOrganisaatio(oid, OrganisaatioLaajaDto.class))
+                .collect(toMap(OrganisaatioLaajaDto::getOid, Function.identity()));
+        Set<String> kaikki = kayttajanOrganisaatiot.values().stream()
+                .map(OrganisaatioLaajaDto::getParentPath)
+                .flatMap(Collection::stream)
+                .collect(toSet());
+        kaikki.remove(SecurityUtil.OPH_OID);
+        kaikki.addAll(kayttajanOrganisaatiot.keySet());
+        return opetussuunnitelmaRepository.findOpsPohja(kaikki).stream()
+            .map(p -> mapper.map(p, OpetussuunnitelmaInfoDto.class))
+            .collect(toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Set<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         return eperusteetService.getPeruste(ops.getPerusteenDiaarinumero()).getPerusopetus()
                 .getLaajaalaisetosaamiset();
@@ -577,7 +595,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public void updateOppiainejarjestys(Long opsId, List<JarjestysDto> oppiainejarjestys) {
-        Opetussuunnitelma ops = repository.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
         Map<Long, OpsOppiaine> oppiaineet = new HashMap<>();
@@ -662,7 +680,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             Long opsId,
             List<OppiaineOpintojaksoDto> oppiaineopintojaksojarjestys
     ) {
-        Opetussuunnitelma ops = repository.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
         HashMap<Long, String> oaKoodiMap = new HashMap<>();
@@ -794,7 +812,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma pohja = ops.getPohja();
 
         if (pohja == null) {
-            Set<Opetussuunnitelma> pohjat = repository.findOneByTyyppiAndTilaAndKoulutustyyppi(
+            Set<Opetussuunnitelma> pohjat = opetussuunnitelmaRepository.findOneByTyyppiAndTilaAndKoulutustyyppi(
                     Tyyppi.POHJA,
                     Tila.VALMIS,
                     opetussuunnitelmaDto.getKoulutustyyppi());
@@ -835,12 +853,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 Lops2019Sisalto sisalto = new Lops2019Sisalto();
                 sisalto.setOpetussuunnitelma(ops);
                 ops.setLops2019(sisalto);
-                ops = repository.save(ops);
+                ops = opetussuunnitelmaRepository.save(ops);
                 kopioiPohjanSisallotOpetussuunnitelmaan(pohja, ops);
             }
             else {
                 luoOpsPohjasta(pohja, ops);
-                ops = repository.save(ops);
+                ops = opetussuunnitelmaRepository.save(ops);
                 if (isPohjastaTehtyPohja(pohja)
                         && !KoulutustyyppiToteutus.LOPS2019.equals(pohja.getToteutus())
                         && pohja.getKoulutustyyppi().isLukio()) {
@@ -1162,7 +1180,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public void syncPohja(Long pohjaId) {
-        Opetussuunnitelma pohja = repository.findOne(pohjaId);
+        Opetussuunnitelma pohja = opetussuunnitelmaRepository.findOne(pohjaId);
         if (pohja.getPohja() != null) {
             throw new BusinessRuleViolationException("OPS ei ollut pohja");
         }
@@ -1204,7 +1222,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private Opetussuunnitelma addPohjaLops2019(Opetussuunnitelma ops, PerusteDto peruste) {
         lisaaTekstipuuPerusteesta(peruste.getLops2019().getSisalto(), ops);
-        ops = repository.save(ops);
+        ops = opetussuunnitelmaRepository.save(ops);
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
         ops.setToteutus(KoulutustyyppiToteutus.LOPS2019);
         ops.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
@@ -1256,7 +1274,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         pohja.setToteutus(peruste.getToteutus());
         pohja.setKoulutustyyppi(peruste.getKoulutustyyppi());
         lisaaTekstipuunJuuri(pohja);
-        pohja = repository.save(pohja);
+        pohja = opetussuunnitelmaRepository.save(pohja);
 
         if (!KoulutustyyppiToteutus.LOPS2019.equals(peruste.getToteutus()) && !pohjaDto.isRakennePohjasta()) {
             lisaaTekstipuunLapset(pohja);
@@ -1368,9 +1386,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public void updateLapsiOpetussuunnitelmat(Long opsId) {
-        Opetussuunnitelma ops = repository.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
-        Set<Opetussuunnitelma> aliopsit = repository.findAllByPohjaId(opsId);
+        Set<Opetussuunnitelma> aliopsit = opetussuunnitelmaRepository.findAllByPohjaId(opsId);
 
         for (Opetussuunnitelma aliops : aliopsit) {
             Map<UUID, TekstiKappaleViite> aliopsTekstit = new HashMap<>();
@@ -1385,7 +1403,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public OpetussuunnitelmaDto updateOpetussuunnitelma(OpetussuunnitelmaDto opetussuunnitelmaDto) {
-        Opetussuunnitelma ops = repository.findOne(opetussuunnitelmaDto.getId());
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opetussuunnitelmaDto.getId());
         assertExists(ops, "Päivitettävää tietoa ei ole olemassa");
 
         poistaKielletytMuutokset(ops, opetussuunnitelmaDto);
@@ -1393,7 +1411,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         validoiMuutokset(ops, opetussuunnitelmaDto);
 
         mapper.map(opetussuunnitelmaDto, ops);
-        ops = repository.save(ops);
+        ops = opetussuunnitelmaRepository.save(ops);
 
         muokkaustietoService.addOpsMuokkausTieto(ops.getId(), ops, MuokkausTapahtuma.PAIVITYS);
 
@@ -1600,7 +1618,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public OpetussuunnitelmaDto updateTila(Long id, Tila tila) {
-        Opetussuunnitelma ops = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
         if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.JULKAISTU) {
@@ -1609,7 +1627,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         if (ops.getTyyppi() == Tyyppi.OPS && ops.getTila() == Tila.JULKAISTU && tila == Tila.VALMIS) {
             ops.setTila(tila);
-            ops = repository.save(ops);
+            ops = opetussuunnitelmaRepository.save(ops);
         }
 
         if (tila != ops.getTila() && ops.getTila().mahdollisetSiirtymat(ops.getTyyppi()
@@ -1631,7 +1649,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
             if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA && ops.getKoulutustyyppi() != KoulutusTyyppi.TPO) {
                 // Arkistoidaan vanhat valmiit pohjat
-                List<Opetussuunnitelma> pohjat = repository.findAllByTyyppiAndTilaAndKoulutustyyppi(
+                List<Opetussuunnitelma> pohjat = opetussuunnitelmaRepository.findAllByTyyppiAndTilaAndKoulutustyyppi(
                         Tyyppi.POHJA, Tila.VALMIS, ops.getKoulutustyyppi());
                 for (Opetussuunnitelma pohja : pohjat) {
                     pohja.setTila(Tila.POISTETTU);
@@ -1644,7 +1662,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 validointi.tuomitse();
             }
             ops.setTila(tila);
-            ops = repository.save(ops);
+            ops = opetussuunnitelmaRepository.save(ops);
 
             muokkaustietoService.addOpsMuokkausTieto(id, ops, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-tila-" + tila);
         }
@@ -1654,7 +1672,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public List<Validointi> validoiOpetussuunnitelma(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
         List<Validointi> result = new ArrayList<>();
@@ -1724,25 +1742,25 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public OpetussuunnitelmaDto restore(Long id) {
-        Opetussuunnitelma ops = repository.findOne(id);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
         ops.setTila(Tila.LUONNOS);
-        ops = repository.save(ops);
+        ops = opetussuunnitelmaRepository.save(ops);
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
     @Override
     @Transactional(readOnly = true)
     public <T> T getTekstit(Long opsId, Class<T> t) {
-        Opetussuunnitelma ops = repository.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
         return mapper.map(ops.getTekstit(), t);
     }
 
     @Override
     public TekstiKappaleViiteDto.Matala addTekstiKappale(Long opsId, TekstiKappaleViiteDto.Matala viite) {
-        Opetussuunnitelma ops = repository.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
         // Lisätään viite juurinoden alle
         return tekstiKappaleViiteService.addTekstiKappaleViite(opsId, ops.getTekstit().getId(), viite);

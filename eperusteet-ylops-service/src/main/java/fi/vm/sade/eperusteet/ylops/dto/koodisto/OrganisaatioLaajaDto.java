@@ -19,11 +19,15 @@ package fi.vm.sade.eperusteet.ylops.dto.koodisto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.StringUtils;
 
 /**
  * @author nkala
@@ -32,7 +36,6 @@ import lombok.Setter;
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class OrganisaatioLaajaDto extends OrganisaatioDto {
-    private String oid;
     private List<String> tyypit;
     private LokalisoituTekstiDto nimi;
     private String kotipaikkaUri;
@@ -40,6 +43,18 @@ public class OrganisaatioLaajaDto extends OrganisaatioDto {
     private String oppilaitostyyppi;
     private Set<String> organisaatiotyypit;
     private String parentOid;
+    private String parentOidPath;
     private List<OrganisaatioLaajaDto> children;
 
+    public List<String> getParentPath() {
+        if (StringUtils.isEmpty(this.parentOidPath)) {
+            return new ArrayList<>();
+        }
+        else {
+            String[] split = this.parentOidPath.split("\\|");
+            return Arrays.stream(split)
+                    .filter(x -> !x.isEmpty())
+                    .collect(Collectors.toList());
+        }
+    }
 }

@@ -72,6 +72,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaDto getOpetussuunnitelmaKaikki(@P("opsId") Long opsId);
 
+    @PreAuthorize("isAuthenticated()")
+    List<OpetussuunnitelmaInfoDto> getOpetussuunnitelmaOpsPohjat();
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaLaajaDto getOpetussuunnitelmaEnempi(@P("opsId") Long opsId);
 

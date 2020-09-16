@@ -1228,6 +1228,23 @@
         }
       }
     },
+    "/opetussuunnitelmat/pohjat" : {
+      "get" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "getOpetussuunnitelmienOpsPohjat",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/OpetussuunnitelmaInfoDto"
+              }
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/tilastot" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
@@ -1964,32 +1981,6 @@
                 "$ref" : "#/definitions/Lops2019OpintojaksoDto"
               }
             }
-          }
-        }
-      },
-      "post" : {
-        "tags" : [ "Lops2019Opintojaksot" ],
-        "operationId" : "addTuodutOpintojaksot",
-        "parameters" : [ {
-          "name" : "opsId",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        }, {
-          "in" : "body",
-          "name" : "body",
-          "required" : false,
-          "schema" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/Lops2019OpintojaksoDto"
-            }
-          }
-        } ],
-        "responses" : {
-          "default" : {
-            "description" : "successful operation"
           }
         }
       }
@@ -7190,6 +7181,9 @@
         "perusteenVoimassaoloLoppuu" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
         }
       }
     },
@@ -7297,6 +7291,9 @@
         "perusteenVoimassaoloLoppuu" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
         },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaNimiDto"
@@ -7424,6 +7421,9 @@
         "perusteenVoimassaoloLoppuu" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
         }
       }
     },
@@ -7588,6 +7588,9 @@
           "type" : "string",
           "format" : "date-time"
         },
+        "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
+        },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaBaseDto"
         },
@@ -7711,6 +7714,9 @@
         "perusteenVoimassaoloLoppuu" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
         },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaNimiDto"
@@ -7838,6 +7844,9 @@
         "perusteenVoimassaoloLoppuu" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
         },
         "pohja" : {
           "$ref" : "#/definitions/Reference"
@@ -8579,10 +8588,19 @@
         "parentOid" : {
           "type" : "string"
         },
+        "parentOidPath" : {
+          "type" : "string"
+        },
         "children" : {
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/OrganisaatioLaajaDto"
+          }
+        },
+        "parentPath" : {
+          "type" : "array",
+          "items" : {
+            "type" : "string"
           }
         }
       }

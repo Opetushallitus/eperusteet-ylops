@@ -68,6 +68,9 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     @Autowired
     private Client client;
 
+    @Autowired
+    private DtoMapper dtoMapper;
+
     @Component
     public static class Client {
         @Autowired
@@ -120,6 +123,17 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
                         }
                     })
                     .orElse(null);
+        }
+
+        public <T> T getOrganisaatio(String oid, Class<T> clz) {
+            JsonNode org = getOrganisaatio(oid);
+            OrganisaatioLaajaDto result = null;
+            try {
+                return mapper.treeToValue(org, clz);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         private ArrayNode flattenTree(JsonNode tree, String childTreeName, Predicate<JsonNode> filter) {
@@ -285,6 +299,11 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
             return result;
         }
+    }
+
+    @Override
+    public <T> T getOrganisaatio(String oid, Class<T> clz) {
+        return client.getOrganisaatio(oid, clz);
     }
 
     @Override

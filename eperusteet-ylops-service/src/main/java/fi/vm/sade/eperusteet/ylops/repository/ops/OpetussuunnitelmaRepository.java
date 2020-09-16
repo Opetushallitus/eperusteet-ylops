@@ -76,6 +76,10 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
             "WHERE o.tyyppi = fi.vm.sade.eperusteet.ylops.domain.Tyyppi.POHJA AND (o.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.VALMIS OR org IN (:organisaatiot))")
     List<Opetussuunnitelma> findPohja(@Param("organisaatiot") Collection<String> organisaatiot);
 
+    @Query(value = "SELECT DISTINCT o FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
+            "WHERE o.tyyppi = fi.vm.sade.eperusteet.ylops.domain.Tyyppi.OPS AND org IN (:organisaatiot)")
+    Set<Opetussuunnitelma> findOpsPohja(@Param("organisaatiot") Collection<String> organisaatiot);
+
     @Query(value = "SELECT o FROM Opetussuunnitelma o WHERE o.tekstit.id in ?1")
     Set<Opetussuunnitelma> findByTekstiRoot(Iterable<Long> ids);
 

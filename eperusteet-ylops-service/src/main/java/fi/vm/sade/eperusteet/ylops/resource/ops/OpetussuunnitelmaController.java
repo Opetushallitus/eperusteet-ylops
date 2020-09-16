@@ -69,6 +69,12 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi, tila);
     }
 
+    @RequestMapping(value = "/pohjat", method = RequestMethod.GET)
+    @Timed
+    public List<OpetussuunnitelmaInfoDto> getOpetussuunnitelmienOpsPohjat() {
+        return opetussuunnitelmaService.getOpetussuunnitelmaOpsPohjat();
+    }
+
     @RequestMapping(value = "/peruste", method = GET)
     @ResponseBody
     public PerusteInfoDto getOpetussuunnitelmanPeruste(
