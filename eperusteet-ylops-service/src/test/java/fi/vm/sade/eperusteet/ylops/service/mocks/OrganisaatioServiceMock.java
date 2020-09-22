@@ -80,4 +80,8 @@ public class OrganisaatioServiceMock implements OrganisaatioService {
         return new ArrayList<>();
     }
 
+    @Override
+    public <T> T getOrganisaatio(String oid, Class<T> clz) {
+        return null;
+    }
 }
