@@ -157,6 +157,9 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity im
 
     @Override
     public LokalisoituTeksti getNimi() {
+        if (vuosiluokka == null) {
+            return null;
+        }
         return LokalisoituTeksti.of(Kieli.FI, vuosiluokka.toString());
     }
 

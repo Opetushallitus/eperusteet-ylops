@@ -1007,7 +1007,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         tkv.setNaytaPerusteenTeksti(vanhaTkv.isNaytaPerusteenTeksti());
                         tkv.setPerusteTekstikappaleId(vanhaTkv.getPerusteTekstikappaleId());
                         tkv.setLiite(vanhaTkv.isLiite());
-                        tkv.setTekstiKappale(teeKopio ? tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy()) : vanhaTkv.getTekstiKappale());
+                        // EP-2405 Tämä tekee vielä comebackin
+//                        tkv.setTekstiKappale(teeKopio ? tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy()) : vanhaTkv.getTekstiKappale());
+                        TekstiKappale copy = vanhaTkv.getTekstiKappale().copy();
+                        copy.setTeksti(null);
+                        copy = tekstiKappaleRepository.save(copy);
+                        tkv.setTekstiKappale(copy);
                         parent.getLapset().add(tkv);
                         kasitteleTekstit(vanhaTkv, tkv, teeKopio);
                     });
