@@ -5289,6 +5289,49 @@
           "description" : "hae yleiset tiedotteet",
           "required" : false,
           "type" : "boolean"
+        }, {
+          "name" : "tiedoteJulkaisuPaikka",
+          "in" : "query",
+          "description" : "tiedotteen julkaisupaikat",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "perusteIds",
+          "in" : "query",
+          "description" : "tiedotteen perusteiden",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "koulutusTyyppi",
+          "in" : "query",
+          "description" : "tiedotteen koulutustyypit",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
+          "name" : "jarjestys",
+          "in" : "query",
+          "description" : "tiedotteen jarjestys",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "jarjestysNouseva",
+          "in" : "query",
+          "description" : "tiedotteen jarjestyksen suunta",
+          "required" : false,
+          "type" : "boolean"
         } ],
         "responses" : {
           "200" : {
@@ -6365,13 +6408,13 @@
         "opetussuunnitelma" : {
           "$ref" : "#/definitions/Reference"
         },
-        "poistettu_id" : {
+        "poistettuId" : {
           "type" : "integer",
           "format" : "int64"
         },
         "tyyppi" : {
           "type" : "string",
-          "enum" : [ "LOPS2019OPPIAINE", "OPINTOJAKSO" ]
+          "enum" : [ "LOPS2019OPPIAINE", "OPINTOJAKSO", "OPPIAINE" ]
         },
         "nimi" : {
           "type" : "object",
