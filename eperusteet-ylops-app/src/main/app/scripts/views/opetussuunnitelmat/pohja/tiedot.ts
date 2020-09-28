@@ -113,9 +113,14 @@ ylopsApp.controller("PohjaTiedotController", function(
                           opsId: $stateParams.pohjaId
                       };
 
+                const peruste = _.find($scope.perustelista, peruste => peruste.diaarinumero === $scope.model.perusteenDiaarinumero);
+
                 OpetussuunnitelmaCRUD.save(
                     params,
-                    $scope.model,
+                    {
+                        ...$scope.model,
+                        rakennePohjasta: peruste.toteutus === 'perusopetus',
+                    },
                     res => {
                         successCb(res).then(resolve);
                     },
