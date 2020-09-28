@@ -103,6 +103,7 @@ ylopsApp
                     item.$arvioinninKuvaus = perusteTavoite.arvioinninKuvaus;
                     item.$vapaaTeksti = perusteTavoite.vapaaTeksti;
                     item.$tavoitteistaJohdetutOppimisenTavoitteet = perusteTavoite.tavoitteistaJohdetutOppimisenTavoitteet;
+                    item.$osaamisenKuvauksetTyhjia = _.size(_.filter(item.$arvioinninkohteet, kohde => kohde.arvosana !== null)) === 0;
                 }
             });
 

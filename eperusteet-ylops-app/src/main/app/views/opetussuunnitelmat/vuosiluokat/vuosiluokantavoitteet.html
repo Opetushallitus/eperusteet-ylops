@@ -93,11 +93,12 @@
         <h4 kaanna="'arviointi-vuosiluokan-paatteeksi'"></h4>
         <table class="table table-bordered kriteerit">
           <tr>
-            <th width="30%" kaanna="'osaamisen-kuvaus'"></th>
+            <th width="30%" kaanna="'osaamisen-kuvaus'" ng-hide="tavoiteMap[tunniste].$osaamisenKuvauksetTyhjia"></th>
             <th kaanna="'arvion-kuvaus'"></th>
           </tr>
           <tr ng-repeat="kohde in tavoiteMap[tunniste].$arvioinninkohteet | orderBy:'-arvosana'">
-            <td>{{'osaamisen-kuvaus-arvosanalle_' + kohde.arvosana | kaanna}}</td>
+            <td ng-if="kohde.arvosana !== null" ng-hide="tavoiteMap[tunniste].$osaamisenKuvauksetTyhjia">{{'osaamisen-kuvaus-arvosanalle_' + kohde.arvosana | kaanna}}</td>
+            <td ng-if="kohde.arvosana === null" ng-hide="tavoiteMap[tunniste].$osaamisenKuvauksetTyhjia"></td>
             <td ng-bind="kohde.osaamisenKuvaus | kaanna"></td>
           </tr>
         </table>
