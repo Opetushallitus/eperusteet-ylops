@@ -82,7 +82,6 @@ public class ValidointiServiceImpl implements ValidointiService {
         return eperusteetService.getPerusteById(perusteCached.getId());
     }
 
-
     @Override
     public Lops2019ValidointiDto getValidointi(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
@@ -95,30 +94,9 @@ public class ValidointiServiceImpl implements ValidointiService {
         ctx.setKielet(ops.getJulkaisukielet());
 
         List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(opsId);
-//        Map<String, Lops2019OpintojaksoDto> opintojaksotMap = opintojaksot.stream()
-//                .collect(Collectors.toMap(
-//                        Lops2019OpintojaksoBaseDto::getKoodi,
-//                        Function.identity()));
-//        List<Lops2019OppiaineDto> oppiaineetAndOppimaarat = lops2019Service.getPerusteOppiaineetAndOppimaarat(opsId);
         List<Lops2019ModuuliDto> moduulit = haeValidoitavatModuulit(opsId);
         Map<String, Lops2019ModuuliDto> moduulitMap = moduulit.stream().collect(Collectors.toMap(m -> m.getKoodi().getUri(), Function.identity()));
         Map<String, List<Lops2019OpintojaksoDto>> liitokset = lops2019Service.getModuuliToOpintojaksoMap(opintojaksot);
-
-//        { // Validoi kiinnitetyt opintojaksot ja käytetyt moduulit
-//            { // Liitetyt moduulit
-//                validointi.setLiitetytModuulit(liitokset.entrySet().stream()
-//                        .map(x -> new ModuuliLiitosDto(x.getKey(), mapper.mapAsList(x.getValue(), Lops2019OpintojaksoBaseDto.class)))
-//                        .collect(Collectors.toSet()));
-//            }
-//
-//            { // Kaikki moduulit
-//                validointi.setKaikkiModuulit(oppiaineetAndOppimaarat.stream()
-//                        .map(x -> x.getModuulit().stream())
-//                        .flatMap(x -> x)
-//                        .map(Lops2019ModuuliDto::getKoodi)
-//                        .collect(Collectors.toSet()));
-//            }
-//        }
 
         ops.validate(validointi, ctx);
 
@@ -141,7 +119,7 @@ public class ValidointiServiceImpl implements ValidointiService {
                 // - Valinnainen moduuli vähintään yhdessä opintojaksossa suoritettavissa kahden opintopisteen kokonaisuutena
                 validointi.virhe(ValidationCategory.MODUULI, "valinnainen-moduuli-suoritettavissa-kahden-opintopisteen-kokonaisuutena", moduuli.getId(), moduuli.getNimi(),
                         !moduuli.isPakollinen() && moduulinOpintojaksot.stream()
-                                .anyMatch(oj -> oj.getModuulit().stream().allMatch(ojm -> oj.getLaajuus() == 2L)));
+                                .noneMatch(oj -> oj.getLaajuus() == 2L));
             });
         }
 
@@ -150,8 +128,8 @@ public class ValidointiServiceImpl implements ValidointiService {
 
             // Opintojaksojen laajuus
             opintojaksot.forEach(oj -> {
-                validointi.virhe(ValidationCategory.OPINTOJAKSO, "opintojakson-laajuus-1-4", oj.getId(), oj.getNimi(),
-                        oj.getLaajuus() < 1L || oj.getLaajuus() > 4L);
+                validointi.virhe(ValidationCategory.OPINTOJAKSO, "opintojakson-laajuus-vahintaan-1", oj.getId(), oj.getNimi(),
+                        oj.getLaajuus() < 1L);
             });
         }
 
