@@ -1120,7 +1120,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                             .map(k -> ov.getKokonaisuus().getOppiaine().addKohdealue(new Opetuksenkohdealue(fromDto(k.getNimi()))))
                             .collect(Collectors.toSet()));
                     opst.setArvioinninkohteet(t.getArvioinninkohteet().stream()
-                            .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getOsaamisenKuvaus()), fromDto(a.getArvosana())))
+                            .map(a -> new Tavoitteenarviointi(fromDto(a.getArvioinninKohde()), fromDto(a.getOsaamisenKuvaus()), a.getArvosana()))
                             .collect(Collectors.toSet()));
 
                     if(t.getArvioinninKuvaus() != null) {
@@ -1149,14 +1149,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             return null;
         }
         return LokalisoituTeksti.of(dto.getTekstit());
-    }
-
-    private Integer fromDto(Integer numero) {
-        if (numero == null) {
-            return null;
-        }
-
-        return new Integer(numero);
     }
 
     @Override
