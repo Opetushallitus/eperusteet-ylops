@@ -79,12 +79,11 @@ public class PoistoServiceImpl implements PoistoService {
                 palautaOppiaine(opsId, poistettuInfo);
                 break;
             case TUOTU_OPINTOJAKSO:
-                // NOOP
+                poistetutRepository.delete(poistettuInfo);
                 break;
             default:
                 throw new BusinessRuleViolationException("tunnistamaton-poistotyyppi");
         }
-        poistetutRepository.delete(poistettuInfo);
     }
 
     @Override
@@ -132,6 +131,7 @@ public class PoistoServiceImpl implements PoistoService {
         Lops2019Oppiaine oppiaine = Lops2019Oppiaine.copy(latest);
         Lops2019PaikallinenOppiaineDto uusi = mapper.map(oppiaine, Lops2019PaikallinenOppiaineDto.class);
         lops2019OppiaineService.addOppiaine(opsId, uusi, MuokkausTapahtuma.PALAUTUS);
+        poistetutRepository.delete(poistettuInfo);
     }
 
     private void palautaOpintojakso(Long opsId, Poistettu poistettuInfo) {
@@ -139,10 +139,12 @@ public class PoistoServiceImpl implements PoistoService {
         Lops2019Opintojakso opintojakso = Lops2019Opintojakso.copy(latest);
         Lops2019OpintojaksoDto opintojaksoDto = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);
         opintojaksoService.addOpintojakso(opsId, opintojaksoDto, MuokkausTapahtuma.PALAUTUS);
+        poistetutRepository.delete(poistettuInfo);
     }
 
     private OppiainePalautettuDto palautaOppiaine(Long opsId, Poistettu poistettuInfo) {
         OppiainePalautettuDto palautettuDto = oppiaineService.restore(opsId, poistettuInfo.getPoistettuId(), null);
+        poistetutRepository.delete(poistettuInfo);
         return palautettuDto;
     }
 

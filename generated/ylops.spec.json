@@ -6061,6 +6061,9 @@
             "type" : "string"
           }
         },
+        "tuotu" : {
+          "type" : "boolean"
+        },
         "kuvaus" : {
           "type" : "object",
           "additionalProperties" : {
@@ -6414,7 +6417,7 @@
         },
         "tyyppi" : {
           "type" : "string",
-          "enum" : [ "LOPS2019OPPIAINE", "OPINTOJAKSO", "OPPIAINE" ]
+          "enum" : [ "TUOTU_OPINTOJAKSO", "LOPS2019OPPIAINE", "OPINTOJAKSO", "OPPIAINE" ]
         },
         "nimi" : {
           "type" : "object",
@@ -9867,6 +9870,9 @@
           "additionalProperties" : {
             "type" : "string"
           }
+        },
+        "tuotu" : {
+          "type" : "boolean"
         },
         "kuvaus" : {
           "type" : "object",
