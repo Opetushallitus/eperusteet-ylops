@@ -1,18 +1,11 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
 import com.google.common.collect.Sets;
-import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
-import fi.vm.sade.eperusteet.ylops.domain.Tila;
-import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonOppiaine;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
+import fi.vm.sade.eperusteet.ylops.domain.*;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
-import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
@@ -31,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksonOppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -41,8 +35,6 @@ import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +60,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private Lops2019OpintojaksoService opintojaksoService;
+
+    @Autowired
+    private PoistetutRepository poistetutRepository;
 
     @Autowired
     private Lops2019Service lopsService;
@@ -671,5 +666,14 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThat(opintojaksoService.getTuodut(ops.getId())).hasSize(1);
         assertThat(opintojaksoService.getAllTuodut(ops.getId())).hasSize(2);
         assertThat(opintojaksoService.getAllTuodut(ops.getId())).extracting("id").containsExactlyInAnyOrderElementsOf(ids);
+
+        {
+            Poistettu poistettu = new Poistettu();
+            poistettu.setOpetussuunnitelma(opetussuunnitelmaRepository.getOne(ops.getId()));
+            poistettu.setPoistettuId(opintojaksoService.getTuodut(ops.getId()).get(0).getId());
+            poistettu.setTyyppi(PoistetunTyyppi.TUOTU_OPINTOJAKSO);
+            poistetutRepository.save(poistettu);
+        }
+        assertThat(opintojaksoService.getTuodut(ops.getId())).hasSize(0);
     }
 }

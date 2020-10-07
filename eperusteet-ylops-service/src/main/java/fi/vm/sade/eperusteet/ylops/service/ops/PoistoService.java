@@ -26,6 +26,9 @@ public interface PoistoService {
     Lops2019PoistettuDto getRemoved(Long opsId, Long poistettuId, PoistetunTyyppi tyyppi);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    Lops2019PoistettuDto remove(Opetussuunnitelma ops, Poistettava poistettava, PoistetunTyyppi tyyppi);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     Lops2019PoistettuDto remove(Opetussuunnitelma ops, Poistettava poistettava);
 
 }

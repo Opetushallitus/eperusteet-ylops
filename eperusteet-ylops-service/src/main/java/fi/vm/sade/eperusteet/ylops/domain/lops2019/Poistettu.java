@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Table(name = "lops2019_poistettu_sisalto")
 @Getter
 @Setter
-public class Lops2019Poistettu extends AbstractAuditedEntity implements Serializable {
+public class Poistettu extends AbstractAuditedEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)

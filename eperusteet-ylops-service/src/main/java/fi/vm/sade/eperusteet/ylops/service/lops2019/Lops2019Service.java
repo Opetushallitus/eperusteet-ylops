@@ -67,4 +67,8 @@ public interface Lops2019Service {
 
     @PreAuthorize("permitAll()")
     Lops2019LaajaAlainenOsaaminenDto getLaajaAlaisetOsaamiset(Kieli kieli);
+
+    // Hierarkiasta tuotuja opintojaksoja varten
+    @PreAuthorize("permitAll()")
+    Set<Lops2019ModuuliDto> getPerusteModuulitImpl(Long opsId, Set<String> koodiUrit);
 }

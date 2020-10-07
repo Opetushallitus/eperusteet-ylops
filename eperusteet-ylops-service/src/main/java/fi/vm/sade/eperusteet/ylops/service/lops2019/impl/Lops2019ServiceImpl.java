@@ -28,12 +28,8 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -123,8 +119,7 @@ public class Lops2019ServiceImpl implements Lops2019Service {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<Lops2019ModuuliDto> getPerusteModuulit(Long opsId) {
+    private List<Lops2019ModuuliDto> getPerusteModuulitImpl(Long opsId) {
         PerusteDto peruste = getPerusteImpl(opsId);
         return peruste.getLops2019().getOppiaineet().stream()
                 .map(oa -> Stream.concat(
@@ -134,6 +129,11 @@ public class Lops2019ServiceImpl implements Lops2019Service {
                                 .flatMap(Function.identity())))
                 .flatMap(Function.identity())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Lops2019ModuuliDto> getPerusteModuulit(Long opsId) {
+        return getPerusteModuulitImpl(opsId);
     }
 
     @Override
@@ -164,18 +164,22 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     }
 
     @Override
+    public Set<Lops2019ModuuliDto> getPerusteModuulitImpl(Long opsId, Set<String> koodiUrit) {
+        return getPerusteModuulitImpl(opsId).stream()
+                .filter(moduuli -> koodiUrit.contains(moduuli.getKoodi().getUri()))
+                .collect(Collectors.toSet());
+    }
+
+    @Override
     public Lops2019ModuuliDto getPerusteModuuli(Long opsId, String koodiUri) {
-        return getPerusteModuulit(opsId).stream()
-                .filter(moduuli -> koodiUri.equals(moduuli.getKoodi().getUri()))
+        return getPerusteModuulitImpl(opsId, Collections.singleton(koodiUri)).stream()
                 .findFirst()
                 .orElseThrow(() -> new BusinessRuleViolationException("moduulia-ei-loytynyt"));
     }
 
     @Override
     public Set<Lops2019ModuuliDto> getPerusteModuulit(Long opsId, Set<String> koodiUrit) {
-        return getPerusteModuulit(opsId).stream()
-                .filter(moduuli -> koodiUrit.contains(moduuli.getKoodi().getUri()))
-                .collect(Collectors.toSet());
+        return getPerusteModuulitImpl(opsId, koodiUrit);
     }
 
     @Override

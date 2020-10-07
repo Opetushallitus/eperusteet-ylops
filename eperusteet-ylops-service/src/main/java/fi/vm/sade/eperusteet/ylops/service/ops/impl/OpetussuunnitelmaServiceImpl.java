@@ -569,9 +569,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getOpetussuunnitelmaOpsPohjat() {
-        Map<String, OrganisaatioLaajaDto> kayttajanOrganisaatiot = kayttajanTietoService.haeOrganisaatioOikeudet().stream()
+        Map<String, OrganisaatioLaajaDto> kayttajanOrganisaatiot = kayttajanTietoService.haeOrganisaatioOikeudet()
+                .stream()
                 .filter(Objects::nonNull)
                 .map(oid -> organisaatioService.getOrganisaatio(oid, OrganisaatioLaajaDto.class))
+                .filter(Objects::nonNull)
                 .collect(toMap(OrganisaatioLaajaDto::getOid, Function.identity()));
         Set<String> kaikki = kayttajanOrganisaatiot.values().stream()
                 .map(OrganisaatioLaajaDto::getParentPath)

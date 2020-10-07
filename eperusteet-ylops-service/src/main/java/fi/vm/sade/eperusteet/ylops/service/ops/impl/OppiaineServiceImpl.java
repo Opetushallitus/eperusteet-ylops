@@ -42,7 +42,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
-import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019PoistetutRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.*;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
@@ -66,7 +66,6 @@ import java.util.stream.Collectors;
 import static java.util.stream.Collectors.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -120,7 +119,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     @Autowired
-    private Lops2019PoistetutRepository lops2019PoistetutRepository;
+    private PoistetutRepository lops2019PoistetutRepository;
 
     @Autowired
     private PoistoService poistoService;

@@ -14,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class Lops2019OpintojaksoDto extends Lops2019OpintojaksoBaseDto {
+    private boolean tuotu = false;
     private LokalisoituTekstiDto kuvaus;
     private LokalisoituTekstiDto arviointi;
 

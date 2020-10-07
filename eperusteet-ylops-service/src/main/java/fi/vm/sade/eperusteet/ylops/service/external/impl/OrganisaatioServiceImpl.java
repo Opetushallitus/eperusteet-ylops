@@ -127,7 +127,10 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
         public <T> T getOrganisaatio(String oid, Class<T> clz) {
             JsonNode org = getOrganisaatio(oid);
-            OrganisaatioLaajaDto result = null;
+            if (org == null) {
+                return null;
+            }
+
             try {
                 return mapper.treeToValue(org, clz);
             } catch (JsonProcessingException e) {
