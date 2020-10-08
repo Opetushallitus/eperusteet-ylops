@@ -521,13 +521,13 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                         String kohde = "";
                         if (perusteenTavoitteenArviointi.getArvioinninKohde() != null
                                 && perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()) != null) {
-                            kohde = unescapeHtml5(perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()));
+                            kohde = cleanHtml(perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()));
                         }
                         rivi.addSarake(kohde);
                         String kuvaus = "";
                         if (perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus() != null
                                 && perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()) != null) {
-                            kuvaus = unescapeHtml5(perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()));
+                            kuvaus = cleanHtml(perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()));
                         }
                         rivi.addSarake(kuvaus);
                         taulukko.addRivi(rivi);

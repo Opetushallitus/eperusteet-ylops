@@ -4,6 +4,7 @@ import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonTavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.pdfbox.preflight.PreflightDocument;
@@ -13,6 +14,8 @@ import org.apache.pdfbox.preflight.parser.PreflightParser;
 import org.apache.pdfbox.preflight.utils.ByteArrayDataSource;
 import org.jsoup.Jsoup;
 import org.jsoup.helper.W3CDom;
+import org.jsoup.parser.Parser;
+import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -20,7 +23,11 @@ import org.w3c.dom.Node;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author isaul
@@ -37,7 +44,7 @@ public class DokumenttiUtils {
     public static void addLokalisoituteksti(DokumenttiBase docBase, LokalisoituTeksti lTeksti, String tagi) {
         if (lTeksti != null && lTeksti.getTeksti() != null && lTeksti.getTeksti().get(docBase.getKieli()) != null) {
             String teksti = lTeksti.getTeksti().get(docBase.getKieli());
-            teksti = "<" + tagi + ">" + unescapeHtml5(teksti) + "</" + tagi + ">";
+            teksti = "<" + tagi + ">" + cleanHtml(teksti) + "</" + tagi + ">";
 
             Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teksti));
             Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
@@ -46,9 +53,15 @@ public class DokumenttiUtils {
         }
     }
 
+    public static String unescapeHtml(String str) {
+        String unescaped = Parser.unescapeEntities(str, true);
+        String cleaned = cleanHtml(unescaped);
+        return cleaned;
+    }
+
     public static void addTeksti(DokumenttiBase docBase, String teksti, String tagi) {
         if (teksti != null) {
-            teksti = "<" + tagi + ">" + unescapeHtml5(teksti) + "</" + tagi + ">";
+            teksti = "<" + tagi + ">" + cleanHtml(teksti) + "</" + tagi + ">";
 
             Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teksti));
             Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
@@ -70,6 +83,27 @@ public class DokumenttiUtils {
         }
     }
 
+    public static void addList(DokumenttiBase docBase, Collection<LokalisoituTekstiDto> tekstit) {
+        addStringList(docBase, tekstit.stream()
+                .filter(Objects::nonNull)
+                .map(kuvaus -> getTextString(docBase, kuvaus))
+                .collect(Collectors.toList()));
+    }
+
+    public static void addStringList(DokumenttiBase docBase, Collection<String> tekstit) {
+        Element ul = docBase.getDocument().createElement("ul");
+        tekstit.stream()
+                .filter(str -> !StringUtils.isEmpty(str))
+                .forEach(str -> {
+                    Element li = docBase.getDocument().createElement("li");
+                    Document doc = new W3CDom().fromJsoup(Jsoup.parse(str));
+                    Node node = doc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+                    li.appendChild(docBase.getDocument().importNode(node, true));
+                    ul.appendChild(li);
+                });
+        docBase.getBodyElement().appendChild(ul);
+    }
+
     public static void addHeader(DokumenttiBase docBase, String text) {
         addHeader(docBase, text, null);
     }
@@ -78,7 +112,7 @@ public class DokumenttiUtils {
         if (text != null) {
             Element header = docBase.getDocument().createElement("h" + docBase.getGenerator().getDepth());
             header.setAttribute("number", docBase.getGenerator().generateNumber());
-            header.appendChild(docBase.getDocument().createTextNode(unescapeHtml5(text)));
+            header.appendChild(docBase.getDocument().createTextNode(cleanHtml(text)));
             if (id != null) {
                 header.setAttribute("id", id);
             }
@@ -96,11 +130,14 @@ public class DokumenttiUtils {
                 || lokalisoituTeksti.getTeksti().get(docBase.getKieli()) == null) {
             return "";
         } else {
-            return unescapeHtml5(lokalisoituTeksti.getTeksti().get(docBase.getKieli()));
+            return cleanHtml(lokalisoituTeksti.getTeksti().get(docBase.getKieli()));
         }
     }
 
-    public static String unescapeHtml5(String string) {
+    public static String cleanHtml(String string) {
+        if (string == null) {
+            return "";
+        }
         return Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL.getWhitelist());
     }
 
