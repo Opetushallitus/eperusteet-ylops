@@ -45,7 +45,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
     }
 
     async function getKoulutustoimijat(kunnat: Array<string>) {
-        const oppilaitostyyppi = [19, 64];
+        const oppilaitostyyppi = [12, 19, 64];
         if (hasLukio()) {
             oppilaitostyyppi.push(15);
         } else if ($scope.editableModel.koulutustyyppi === "koulutustyyppi_999907") {
