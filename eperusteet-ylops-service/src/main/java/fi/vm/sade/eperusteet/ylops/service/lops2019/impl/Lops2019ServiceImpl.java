@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoReposi
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -202,6 +203,7 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     }
 
     @Override
+    @Transactional(noRollbackFor = {NotExistsException.class})
     public PerusteTekstiKappaleViiteMatalaDto getPerusteTekstikappale(Long opsId, Long tekstikappaleId) {
         PerusteDto perusteDto = getPerusteImpl(opsId);
         if (perusteDto.getLops2019() != null) {
