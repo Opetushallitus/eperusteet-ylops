@@ -28,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.Jsoup;
+import org.jsoup.parser.Parser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
@@ -388,16 +389,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                         if (kohde != null && !ObjectUtils.isEmpty(ta.getTavoitteet())) {
 
                             addLokalisoituteksti(docBase, kohde, "p");
-
-                            Element ul = docBase.getDocument().createElement("ul");
-                            ta.getTavoitteet().stream()
-                                    .filter(Objects::nonNull)
-                                    .forEach(tavoite -> {
-                                Element li = docBase.getDocument().createElement("li");
-                                li.setTextContent(getTextString(docBase, tavoite));
-                                ul.appendChild(li);
-                            });
-                            docBase.getBodyElement().appendChild(ul);
+                            addList(docBase, ta.getTavoitteet());
                         }
                     });
                 }
@@ -421,16 +413,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                         if (kohde != null && !ObjectUtils.isEmpty(ta.getTavoitteet())) {
 
                             addLokalisoituteksti(docBase, kohde, "p");
-
-                            Element ul = docBase.getDocument().createElement("ul");
-                            ta.getTavoitteet().stream()
+                            addList(docBase, ta.getTavoitteet().stream()
                                     .filter(Objects::nonNull)
-                                    .map(Lops2019TavoitealueenTavoite::getTavoite).forEach(tavoite -> {
-                                Element li = docBase.getDocument().createElement("li");
-                                li.setTextContent(getTextString(docBase, tavoite));
-                                ul.appendChild(li);
-                            });
-                            docBase.getBodyElement().appendChild(ul);
+                                    .map(Lops2019TavoitealueenTavoite::getTavoite)
+                                    .collect(Collectors.toList()));
                         }
                     });
                 }
@@ -703,6 +689,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                     .collect(Collectors.toList());
             oppiaineet.addAll(oppiaineetFiltered);
         });
+
         // Haetaan opintojakson paikalliset oppiaineet
         List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = new ArrayList<>();
         oppiaineetSorted.forEach(oaList -> {
@@ -859,13 +846,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                                 cite.appendChild(kohdeEl);
 
                                 // Tavoitteet
-                                Element ul = docBase.getDocument().createElement("ul");
-                                tavoitteet.getTavoitteet().forEach(t -> {
-                                    Element li = docBase.getDocument().createElement("li");
-                                    li.setTextContent(getTextString(docBase, t));
-                                    ul.appendChild(li);
-                                });
-                                cite.appendChild(ul);
+                                addList(docBase, tavoitteet.getTavoitteet());
                             }
 
                         }
@@ -881,17 +862,11 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         List<Lops2019OpintojaksonTavoiteDto> tavoitteet = oj.getTavoitteet();
         if (!ObjectUtils.isEmpty(tavoitteet)) {
             addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
-            Element ul = docBase.getDocument().createElement("ul");
-            tavoitteet.stream()
+            addList(docBase, tavoitteet.stream()
                     .filter(Objects::nonNull)
                     .map(Lops2019OpintojaksonTavoiteDto::getKuvaus)
                     .filter(Objects::nonNull)
-                    .forEach(kuvaus -> {
-                        Element li = docBase.getDocument().createElement("li");
-                        li.setTextContent(getTextString(docBase, kuvaus));
-                        ul.appendChild(li);
-                    });
-            docBase.getBodyElement().appendChild(ul);
+                    .collect(Collectors.toList()));
         }
 
         if (!ObjectUtils.isEmpty(oj.getPaikallisetOpintojaksot())) {
@@ -902,17 +877,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                     addTeksti(docBase, StringUtils.isEmpty(nimi)
                             ? messages.translate("nimeton-opintojakso", docBase.getKieli())
                             : nimi, "p");
-                    Element ul = docBase.getDocument().createElement("ul");
-                    paikallinenOpintojakso.getTavoitteet().stream()
+                    addList(docBase, paikallinenOpintojakso.getTavoitteet().stream()
                             .filter(Objects::nonNull)
                             .map(Lops2019OpintojaksonTavoiteDto::getKuvaus)
-                            .filter(Objects::nonNull)
-                            .forEach(kuvaus -> {
-                                Element li = docBase.getDocument().createElement("li");
-                                li.setTextContent(getTextString(docBase, kuvaus));
-                                ul.appendChild(li);
-                            });
-                    docBase.getBodyElement().appendChild(ul);
+                            .collect(Collectors.toList()));
                 }
 
             });
@@ -954,13 +922,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
                                         if (!ObjectUtils.isEmpty(sisalto.getSisallot())) {
                                             // Sisallöt
-                                            Element ul = docBase.getDocument().createElement("ul");
-                                            sisalto.getSisallot().forEach(s -> {
-                                                Element li = docBase.getDocument().createElement("li");
-                                                li.setTextContent(getTextString(docBase, s));
-                                                ul.appendChild(li);
-                                            });
-                                            cite.appendChild(ul);
+                                            addList(docBase, sisalto.getSisallot());
                                         }
                                     });
                         }
@@ -976,17 +938,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         List<Lops2019OpintojaksonKeskeinenSisaltoDto> sisallot = oj.getKeskeisetSisallot();
         if (!ObjectUtils.isEmpty(sisallot)) {
             addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
-            Element ul = docBase.getDocument().createElement("ul");
-            sisallot.stream()
+            addList(docBase, sisallot.stream()
                     .filter(Objects::nonNull)
                     .map(Lops2019OpintojaksonKeskeinenSisaltoDto::getKuvaus)
-                    .filter(Objects::nonNull)
-                    .forEach(kuvaus -> {
-                        Element li = docBase.getDocument().createElement("li");
-                        li.setTextContent(getTextString(docBase, kuvaus));
-                        ul.appendChild(li);
-                    });
-            docBase.getBodyElement().appendChild(ul);
+                    .collect(Collectors.toList()));
         }
 
         if (!ObjectUtils.isEmpty(oj.getPaikallisetOpintojaksot())) {
@@ -997,17 +952,10 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                     addTeksti(docBase, StringUtils.isEmpty(nimi)
                             ? messages.translate("nimeton-moduuli", docBase.getKieli())
                             : nimi, "p");
-                    Element ul = docBase.getDocument().createElement("ul");
-                    paikallinenOpintojakso.getKeskeisetSisallot().stream()
+                    addList(docBase, paikallinenOpintojakso.getKeskeisetSisallot().stream()
                             .filter(Objects::nonNull)
                             .map(Lops2019OpintojaksonKeskeinenSisaltoDto::getKuvaus)
-                            .filter(Objects::nonNull)
-                            .forEach(kuvaus -> {
-                                Element li = docBase.getDocument().createElement("li");
-                                li.setTextContent(getTextString(docBase, kuvaus));
-                                ul.appendChild(li);
-                            });
-                    docBase.getBodyElement().appendChild(ul);
+                            .collect(Collectors.toList()));
                 }
 
             });
@@ -1206,7 +1154,6 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         Element li = docBase.getDocument().createElement("li");
         li.setTextContent(stringBuilder.toString());
-
         ul.appendChild(li);
     }
 
