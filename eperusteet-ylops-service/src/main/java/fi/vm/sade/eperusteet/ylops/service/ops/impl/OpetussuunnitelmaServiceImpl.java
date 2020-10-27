@@ -477,13 +477,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("pohjaa-ei-voi-julkaista");
         }
 
-        if (!KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
-            throw new BusinessRuleViolationException("vain-lops2019-tuettu");
-        }
-
-        Lops2019ValidointiDto validointi = validointiService.getValidointi(opsId);
-        if (!validointi.isValid()) {
-            throw new BusinessRuleViolationException("julkaisu-ei-mahdollinen-keskeneraiselle");
+        if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
+            Lops2019ValidointiDto validointi = validointiService.getValidointi(opsId);
+            if (!validointi.isValid()) {
+                throw new BusinessRuleViolationException("julkaisu-ei-mahdollinen-keskeneraiselle");
+            }
         }
 
         Set<Long> dokumentit = ops.getJulkaisukielet().stream()

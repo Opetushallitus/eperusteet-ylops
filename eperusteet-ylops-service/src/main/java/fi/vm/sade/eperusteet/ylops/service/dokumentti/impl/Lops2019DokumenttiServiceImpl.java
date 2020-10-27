@@ -24,6 +24,8 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.impl.Lops2019Utils;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -269,7 +271,21 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                     })
                     // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
                     // Toissijaisesti opintojakson koodin mukaan.
-                    .sorted(comparing(p -> p.getFirst().getKoodi()))
+                    .sorted(
+                            comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p) -> {
+                                Matcher matcher = Pattern.compile("([^0-9]*?)(\\d+$)").matcher(p.getFirst().getKoodi());
+                                if(matcher.matches()) {
+                                    return matcher.group(1);
+                                }
+                                return p.getFirst().getKoodi();
+                            })
+                            .thenComparingInt((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p) -> {
+                                Matcher matcher = Pattern.compile("([^0-9]*?)(\\d+$)").matcher(p.getFirst().getKoodi());
+                                if(matcher.matches()) {
+                                    return Integer.parseInt(matcher.group(2));
+                                }
+                                return 0;
+                            }))
                     .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
                             -> Optional.ofNullable(p.getSecond().isPresent()
                             ? p.getSecond().get().getJarjestys()
