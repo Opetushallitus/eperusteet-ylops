@@ -690,10 +690,11 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Haetaan perusteen oppiaineet
         Lops2019SisaltoDto sisaltoDto = docBase.getPerusteDto().getLops2019();
-        List<Lops2019OppiaineKaikkiDto> oppiaineetKaikki = sisaltoDto.getOppiaineet();
+        List<Lops2019OppiaineKaikkiDto> oppiaineetKaikki = Stream.concat(
+                sisaltoDto.getOppiaineet().stream(),
+                sisaltoDto.getOppiaineet().stream().map(Lops2019OppiaineKaikkiDto::getOppimaarat).flatMap(Collection::stream))
+            .collect(Collectors.toList());
         List<Lops2019PaikallinenOppiaineDto> poppiaineetKaikki = oppiaineService.getAll(docBase.getOps().getId());
-
-        oppiaineetKaikki.addAll(oppiaineetKaikki.stream().map(Lops2019OppiaineKaikkiDto::getOppimaarat).flatMap(Collection::stream).collect(Collectors.toList()));
 
         // Haetaan opintojakson perusteen oppiaineet
         List<Lops2019OppiaineKaikkiDto> oppiaineet = new ArrayList<>();
