@@ -204,11 +204,10 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
 
     @Override
     public Lops2019OpintojaksoDto getTuotu(Long opsId, Long opintojaksoId) {
-        Lops2019Opintojakso opintojakso = opintojaksoRepository.getOne(opintojaksoId);
-        if (opintojakso == null) {
+        if (getOpetussuunnitelma(opsId).getLops2019().getOpintojakso(opintojaksoId) != null) { // tarkistetaan onko opintojakso oma vai tuotu (opsId ei opintojakson oikean opsin id)
             return null;
         }
-
+        Lops2019Opintojakso opintojakso = opintojaksoRepository.getOne(opintojaksoId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findByLops2019OpintojaksotIdIn(Collections.singletonList(opintojakso.getId()));
 
         Lops2019OpintojaksoDto result = mapper.map(opintojakso, Lops2019OpintojaksoDto.class);

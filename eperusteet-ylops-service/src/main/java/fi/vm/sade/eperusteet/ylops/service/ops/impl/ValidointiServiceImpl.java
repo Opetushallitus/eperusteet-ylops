@@ -137,7 +137,7 @@ public class ValidointiServiceImpl implements ValidointiService {
         oppiaineRepository.findAllBySisalto(ops.getLops2019()).forEach(oa -> {
             oa.validate(validointi, ctx);
             validointi.virhe("oppiaineesta-opintojakso", oa,
-                    opintojaksot.stream().anyMatch(oj -> !oj.getOppiaineet().stream()
+                    !opintojaksot.stream().anyMatch(oj -> oj.getOppiaineet().stream()
                             .map(Lops2019OpintojaksonOppiaineDto::getKoodi)
                             .collect(Collectors.toSet())
                             .contains(oa.getKoodi())));
