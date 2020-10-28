@@ -121,8 +121,10 @@ public class ValidointiServiceImpl implements ValidointiService {
                 // - Pakollinen moduuli vähintään yhdessä opintojaksossa missä on vain muita saman oppiaineen pakollisia
                 validointi.virhe(ValidationCategory.MODUULI, "pakollinen-moduuli-mahdollista-suorittaa-erillaan", moduuli.getId(), moduuli.getNimi(),
                         moduulinOpintojaksot.stream()
-                                .anyMatch(oj -> oj.getOppiaineet().size() == 1 && oj.getModuulit().stream()
-                                        .allMatch(ojm -> moduulitMap.get(ojm.getKoodiUri()).isPakollinen()))
+                                .anyMatch(oj -> oj.getOppiaineet().size() == 1
+                                        && oj.getModuulit().stream().anyMatch(ojm -> !moduulitMap.get(ojm.getKoodiUri()).isPakollinen())
+                                        && oj.getModuulit().stream().anyMatch(ojm -> moduulitMap.get(ojm.getKoodiUri()).isPakollinen())
+                                )
                         , ImmutableMap.of("route", moduuliNavigationNode(moduuli)));
 
                 // - Valinnainen moduuli vähintään yhdessä opintojaksossa suoritettavissa kahden opintopisteen kokonaisuutena
