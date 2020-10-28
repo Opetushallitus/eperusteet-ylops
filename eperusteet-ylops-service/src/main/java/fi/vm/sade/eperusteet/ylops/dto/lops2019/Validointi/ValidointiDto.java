@@ -53,7 +53,7 @@ public class ValidointiDto<T extends ValidointiDto> {
         this.mapper = mapper;
     }
 
-    private T entry(boolean failed, Long id, ValidationCategory kategoria, LokalisoituTekstiDto nimi, String kuvaus, boolean isFatal) {
+    private T entry(boolean failed, Long id, ValidationCategory kategoria, LokalisoituTekstiDto nimi, String kuvaus, boolean isFatal, Map<String, Object> meta) {
         if (failed && isFatal) {
             this.valid = false;
         }
@@ -69,11 +69,12 @@ public class ValidointiDto<T extends ValidointiDto> {
             kuvaus,
             kategoria,
             failed,
-            isFatal));
+            isFatal,
+            meta));
         return (T)this;
     }
 
-    private T entry(boolean failed, Validable validable, String kuvaus, boolean isFatal) {
+    private T entry(boolean failed, Validable validable, String kuvaus, boolean isFatal, Map<String, Object> meta) {
         if (failed && isFatal) {
             this.valid = false;
         }
@@ -93,24 +94,33 @@ public class ValidointiDto<T extends ValidointiDto> {
             kuvaus,
             validable.category(),
             failed,
-            isFatal));
+            isFatal,
+            meta));
         return (T)this;
     }
 
+    public T virhe(ValidationCategory kategoria, String kuvaus, Long id, LokalisoituTekstiDto nimi, boolean failed, Map<String, Object> meta) {
+        return entry(failed, id, kategoria, nimi, kuvaus, true, meta);
+    }
+
+    public T varoitus(ValidationCategory kategoria, String kuvaus, Long id, LokalisoituTekstiDto nimi, boolean failed, Map<String, Object> meta) {
+        return entry(failed, id, kategoria, nimi, kuvaus, false, meta);
+    }
+
     public T virhe(ValidationCategory kategoria, String kuvaus, Long id, LokalisoituTekstiDto nimi, boolean failed) {
-        return entry(failed, id, kategoria, nimi, kuvaus, true);
+        return entry(failed, id, kategoria, nimi, kuvaus, true, null);
     }
 
     public T varoitus(ValidationCategory kategoria, String kuvaus, Long id, LokalisoituTekstiDto nimi, boolean failed) {
-        return entry(failed, id, kategoria, nimi, kuvaus, false);
+        return entry(failed, id, kategoria, nimi, kuvaus, false, null);
     }
 
     public T virhe(String kuvaus, Validable validable, boolean failed) {
-        return entry(failed, validable, kuvaus, true);
+        return entry(failed, validable, kuvaus, true, null);
     }
 
     public T varoitus(String kuvaus, Validable validable, boolean failed) {
-        return entry(failed, validable, kuvaus, false);
+        return entry(failed, validable, kuvaus, false, null);
     }
 
     public Map<String, List<ValidoinninKohdeDto>> getValidoinnit() {

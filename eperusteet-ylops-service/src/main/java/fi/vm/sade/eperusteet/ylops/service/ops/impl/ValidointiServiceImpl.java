@@ -1,5 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
@@ -9,6 +11,8 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
@@ -24,8 +28,10 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import java.util.Collection;
+import java.util.Collections;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -107,19 +113,23 @@ public class ValidointiServiceImpl implements ValidointiService {
                         new ArrayList<>());
 
                 // - Moduuli vähintään yhdessä opintojaksossa
-                validointi.virhe(ValidationCategory.MODUULI, "moduuli-kuuluttava-vahintaan-yhteen-opintojaksoon", moduuli.getId(), moduuli.getNimi(),
-                        moduulinOpintojaksot.isEmpty());
+                validointi.varoitus(ValidationCategory.MODUULI, "moduuli-kuuluttava-vahintaan-yhteen-opintojaksoon", moduuli.getId(), moduuli.getNimi(),
+                        moduulinOpintojaksot.isEmpty()
+                        , ImmutableMap.of("route", moduuliNavigationNode(moduuli)));
+
 
                 // - Pakollinen moduuli vähintään yhdessä opintojaksossa missä on vain muita saman oppiaineen pakollisia
                 validointi.virhe(ValidationCategory.MODUULI, "pakollinen-moduuli-mahdollista-suorittaa-erillaan", moduuli.getId(), moduuli.getNimi(),
                         moduulinOpintojaksot.stream()
                                 .anyMatch(oj -> oj.getOppiaineet().size() == 1 && oj.getModuulit().stream()
-                                        .allMatch(ojm -> moduulitMap.get(ojm.getKoodiUri()).isPakollinen())));
+                                        .allMatch(ojm -> moduulitMap.get(ojm.getKoodiUri()).isPakollinen()))
+                        , ImmutableMap.of("route", moduuliNavigationNode(moduuli)));
 
                 // - Valinnainen moduuli vähintään yhdessä opintojaksossa suoritettavissa kahden opintopisteen kokonaisuutena
                 validointi.virhe(ValidationCategory.MODUULI, "valinnainen-moduuli-suoritettavissa-kahden-opintopisteen-kokonaisuutena", moduuli.getId(), moduuli.getNimi(),
-                        !moduuli.isPakollinen() && moduulinOpintojaksot.stream()
-                                .noneMatch(oj -> oj.getLaajuus() == 2L));
+                        !moduuli.isPakollinen() && !moduulinOpintojaksot.isEmpty() && moduulinOpintojaksot.stream()
+                                .noneMatch(oj -> oj.getLaajuus() == 2L)
+                        , ImmutableMap.of("route", moduuliNavigationNode(moduuli)));
             });
         }
 
@@ -148,6 +158,11 @@ public class ValidointiServiceImpl implements ValidointiService {
         }
 
         return validointi;
+    }
+
+    private NavigationNodeDto moduuliNavigationNode(Lops2019ModuuliDto moduuli) {
+        return NavigationNodeDto.of(NavigationType.oppiaine, null, null)
+                .meta("oppiaineId", Long.valueOf(moduuli.getOppiaine().getId()));
     }
 
     private List<Lops2019ModuuliDto> haeValidoitavatModuulit(Long opsId) {
