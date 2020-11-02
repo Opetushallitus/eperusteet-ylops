@@ -1306,6 +1306,27 @@
         }
       }
     },
+    "/opetussuunnitelmat/{id}/importperustetekstit" : {
+      "post" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "importPerusteTekstit",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OpetussuunnitelmaDto"
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/{id}/kaikki" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
@@ -5469,6 +5490,14 @@
         }
       }
     },
+    "EsiopetuksenPerusteenSisaltoDto" : {
+      "type" : "object",
+      "properties" : {
+        "sisalto" : {
+          "$ref" : "#/definitions/TekstiKappaleViiteDto"
+        }
+      }
+    },
     "EtusivuDto" : {
       "type" : "object",
       "properties" : {
@@ -7230,6 +7259,10 @@
         },
         "tuoPohjanOpintojaksot" : {
           "type" : "boolean"
+        },
+        "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },
@@ -7340,6 +7373,10 @@
         },
         "tuoPohjanOpintojaksot" : {
           "type" : "boolean"
+        },
+        "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
         },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaNimiDto"
@@ -7470,6 +7507,10 @@
         },
         "tuoPohjanOpintojaksot" : {
           "type" : "boolean"
+        },
+        "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },
@@ -7637,6 +7678,10 @@
         "tuoPohjanOpintojaksot" : {
           "type" : "boolean"
         },
+        "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaBaseDto"
         },
@@ -7763,6 +7808,10 @@
         },
         "tuoPohjanOpintojaksot" : {
           "type" : "boolean"
+        },
+        "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
         },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaNimiDto"
@@ -7893,6 +7942,10 @@
         },
         "tuoPohjanOpintojaksot" : {
           "type" : "boolean"
+        },
+        "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
         },
         "pohja" : {
           "$ref" : "#/definitions/Reference"
@@ -8765,6 +8818,12 @@
         },
         "lops2019" : {
           "$ref" : "#/definitions/Lops2019SisaltoDto"
+        },
+        "esiopetus" : {
+          "$ref" : "#/definitions/EsiopetuksenPerusteenSisaltoDto"
+        },
+        "tpo" : {
+          "$ref" : "#/definitions/TPOOpetuksenSisaltoDto"
         }
       }
     },
@@ -9489,6 +9548,14 @@
         }
       }
     },
+    "TPOOpetuksenSisaltoDto" : {
+      "type" : "object",
+      "properties" : {
+        "sisalto" : {
+          "$ref" : "#/definitions/TekstiKappaleViiteDto"
+        }
+      }
+    },
     "TavoitteenArviointiDto" : {
       "type" : "object",
       "properties" : {
@@ -10003,6 +10070,12 @@
         },
         "failed" : {
           "type" : "boolean"
+        },
+        "meta" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object"
+          }
         },
         "fatal" : {
           "type" : "boolean"

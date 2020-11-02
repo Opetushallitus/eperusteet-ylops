@@ -93,6 +93,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.*;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1321,6 +1322,29 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         pohja.setTekstit(viite);
     }
 
+    private TekstiKappaleViite tekstikappaleViiteRootSisallosta(fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto sisalto) {
+        return CollectionUtil.mapRecursive(sisalto,
+                fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset,
+                TekstiKappaleViite::getLapset,
+                viiteDto -> {
+                    TekstiKappale kpl = new TekstiKappale();
+                    TekstiKappaleViite result = new TekstiKappaleViite();
+                    if (viiteDto.getTesktiKappale() != null) {
+                        TekstiKappale tk = mapper.map(viiteDto.getTesktiKappale(), TekstiKappale.class);
+                        kpl.setNimi(tk.getNimi());
+                        kpl.setTeksti(tk.getTeksti());
+                    }
+                    kpl.setId(null);
+                    kpl.setTila(Tila.LUONNOS);
+                    kpl.setValmis(false);
+                    result.setTekstiKappale(tekstiKappaleRepository.save(kpl));
+                    result.setPakollinen(true);
+                    result.setOmistussuhde(Omistussuhde.OMA);
+                    result.setLapset(new ArrayList<>());
+                    return result;
+                });
+    }
+
     private void lisaaTekstipuuPerusteesta(PerusteTekstiKappaleViiteDto sisalto, Opetussuunnitelma pohja) {
         TekstiKappaleViite tekstiKappaleViite = CollectionUtil.mapRecursive(sisalto,
                 PerusteTekstiKappaleViiteDto::getLapset,
@@ -1423,6 +1447,60 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
+    @Override
+    public OpetussuunnitelmaDto importPerusteTekstit(Long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
+        assertExists(ops, "opetussuunnitelmaa ei lyödy");
+
+        PerusteDto peruste = getPeruste(id);
+        if (!KoulutusTyyppi.PERUSOPETUS.equals(peruste.getKoulutustyyppi())
+                && !KoulutusTyyppi.TPO.equals(peruste.getKoulutustyyppi())
+                && !KoulutusTyyppi.VARHAISKASVATUS.equals(peruste.getKoulutustyyppi())
+                && !KoulutusTyyppi.ESIOPETUS.equals(peruste.getKoulutustyyppi())){
+            throw new BusinessRuleViolationException("koulutustyyppi-ei-tuettu");
+        }
+
+        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto viiteDto = null;
+        if (KoulutusTyyppi.PERUSOPETUS.equals(peruste.getKoulutustyyppi())) {
+            viiteDto = peruste.getPerusopetus().getSisalto();
+        } else if(KoulutusTyyppi.TPO.equals(peruste.getKoulutustyyppi())) {
+            viiteDto = peruste.getTpo().getSisalto();
+        } else if (KoulutusTyyppi.VARHAISKASVATUS.equals(peruste.getKoulutustyyppi()) || KoulutusTyyppi.ESIOPETUS.equals(peruste.getKoulutustyyppi())) {
+            viiteDto = peruste.getEsiopetus().getSisalto();
+        }
+
+        List<Long> vanhatIdt = new ArrayList<>();
+        ops.getTekstit().getLapset().forEach(tekstikappaleViite -> {
+            TekstiKappaleViiteDto.Matala tekstikappale = tekstiKappaleViiteService.getTekstiKappaleViite(id, tekstikappaleViite.getId());
+            Map<Kieli, String> nimet = tekstikappale.getTekstiKappale().getNimi().getTekstit();
+            nimet.replaceAll((kieli, teksti) -> teksti + " (vanha)");
+            tekstikappale.getTekstiKappale().setNimi(new LokalisoituTekstiDto(null, nimet));
+            tekstiKappaleViiteService.updateTekstiKappaleViite(id, tekstikappale.getId(), tekstikappale);
+            vanhatIdt.add(tekstikappaleViite.getId());
+        });
+
+        tekstikappaleViiteRootSisallosta(viiteDto).getLapset().forEach(perusteTekstikappale -> {
+            addTekstikappaleViiteRec(id, ops.getTekstit().getId(), perusteTekstikappale);
+        });
+
+        TekstiKappaleViiteDto.Puu tekstikappale = getTekstit(id, TekstiKappaleViiteDto.Puu.class);
+        tekstikappale.getLapset().sort(Comparator.comparing(tkLapsi -> vanhatIdt.contains(tkLapsi.getId())));
+        tekstiKappaleViiteService.reorderSubTree(id, tekstikappale.getId(), tekstikappale);
+
+        ops.setPerusteDataTuontiPvm(new Date());
+
+        return updateOpetussuunnitelma(mapper.map(ops, OpetussuunnitelmaDto.class));
+    }
+
+    private void addTekstikappaleViiteRec(Long opsId, Long parentId, TekstiKappaleViite viite) {
+        TekstiKappaleViiteDto.Matala lisatty = tekstiKappaleViiteService.addTekstiKappaleViite(opsId, parentId, mapper.map(viite, TekstiKappaleViiteDto.Matala.class));
+        if (CollectionUtils.isNotEmpty(viite.getLapset())) {
+            viite.getLapset().forEach(lapsiviite -> {
+                addTekstikappaleViiteRec(opsId, lisatty.getId(), lapsiviite);
+            });
+        }
+    }
+
     private void poistaKielletytMuutokset(Opetussuunnitelma ops, OpetussuunnitelmaDto opetussuunnitelmaDto) {
         // Ei sallita kunnan muuttamista
         opetussuunnitelmaDto.setKunnat(ops.getKunnat().stream()
@@ -1487,8 +1565,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void validoiMuutokset(Opetussuunnitelma ops, OpetussuunnitelmaDto opetussuunnitelmaDto) {
-
-
         // Käyttäjällä ei oikeutta tulevassa organisaatiossa
         Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD,
                 RolePermission.ADMIN));

@@ -219,6 +219,15 @@ public class OpetussuunnitelmaController {
                 HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{id}/importperustetekstit", method = RequestMethod.POST)
+    @ResponseBody
+    @Timed
+    public ResponseEntity<OpetussuunnitelmaDto> importPerusteTekstit(
+            @PathVariable("id") final Long id) {
+        return new ResponseEntity<>(opetussuunnitelmaService.importPerusteTekstit(id),
+                HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{id}/opetussuunnitelmat", method = RequestMethod.POST)
     @Timed
     public ResponseEntity updateLapsiOpetussuunnitelmat(

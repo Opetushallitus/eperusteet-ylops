@@ -50,7 +50,7 @@ public class ReferenceableEntityConverter extends BidirectionalConverter<Referen
 
     @Override
     public Reference convertTo(ReferenceableEntity s, Type<Reference> type) {
-        return new Reference(s.getId().toString());
+        return Reference.of(s);
     }
 
     @Override

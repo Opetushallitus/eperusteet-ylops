@@ -40,6 +40,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -366,5 +369,97 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertEquals(KoodistoUtils.getVieraskielikoodi("lukiokielitarjonta_ea", Kieli.SV), "SP");
         assertEquals(KoodistoUtils.getVieraskielikoodi("lukiokielitarjonta_ve", Kieli.FI), "VE");
         assertEquals(KoodistoUtils.getVieraskielikoodi("abc", Kieli.FI), "KX");
+    }
+
+    @Test
+    public void testImportPerusteTekstit() {
+        {
+            OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.PERUSOPETUS, "perusopetus-diaarinumero"), KoulutusTyyppi.PERUSOPETUS);
+            assertThat(ops.getTekstit()).isPresent();
+            assertThat(ops.getTekstit().get().getLapset()).hasSize(2);
+            assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(0);
+            assertThat(ops.getPerusteDataTuontiPvm()).isNull();
+
+            ops = opetussuunnitelmaService.importPerusteTekstit(ops.getId());
+            assertThat(ops.getPerusteDataTuontiPvm()).isNotNull();
+            assertThat(ops.getTekstit().get().getLapset()).hasSize(3);
+            assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(2);
+            assertThat(ops.getTekstit().get().getLapset().get(0).getTekstiKappale().getNimi().get(Kieli.FI)).doesNotContain("(vanha)");
+            assertThat(ops.getTekstit().get().getLapset().get(2).getTekstiKappale().getNimi().get(Kieli.FI)).contains("(vanha)");
+        }
+
+        {
+            OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.VARHAISKASVATUS, "OPH-2791-2018"), KoulutusTyyppi.VARHAISKASVATUS);
+            assertThat(ops.getTekstit()).isPresent();
+            assertThat(ops.getTekstit().get().getLapset()).hasSize(2);
+            assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(0);
+
+            ops = opetussuunnitelmaService.importPerusteTekstit(ops.getId());
+            assertThat(ops.getTekstit().get().getLapset()).hasSize(9);
+            assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(2);
+        }
+
+        {
+            OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.ESIOPETUS, "OPH-2791-2018"), KoulutusTyyppi.ESIOPETUS);
+            assertThat(ops.getTekstit()).isPresent();
+            assertThat(ops.getTekstit().get().getLapset()).hasSize(2);
+            assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(0);
+
+            ops = opetussuunnitelmaService.importPerusteTekstit(ops.getId());
+            assertThat(ops.getTekstit().get().getLapset()).hasSize(9);
+            assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(2);
+        }
+
+        {
+            OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.TPO, "tpo-diaarinumero"), KoulutusTyyppi.TPO);
+            assertThat(ops.getTekstit()).isPresent();
+            assertThat(ops.getTekstit().get().getLapset()).hasSize(2);
+            assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(0);
+
+            ops = opetussuunnitelmaService.importPerusteTekstit(ops.getId());
+            assertThat(ops.getTekstit().get().getLapset()).hasSize(3);
+            assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(2);
+        }
+    }
+
+    private OpetussuunnitelmaDto createOpetussuunnitelma(KoulutusTyyppi koulutustyyppi, String diaarinumero) {
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.POHJA);
+        ops.setKoulutustyyppi(koulutustyyppi);
+        ops.setPerusteenDiaarinumero(diaarinumero);
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.246.562.10.00000000001");
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+
+        OpetussuunnitelmaDto luotu = opetussuunnitelmaService.addPohja(ops);
+        return opetussuunnitelmaService.updateTila(luotu.getId(), Tila.VALMIS);
+    }
+
+    private OpetussuunnitelmaDto createOpetussuunnitelmaLuonti(OpetussuunnitelmaDto pohjaOps, KoulutusTyyppi koulutustyyppi) {
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.OPS);
+        ops.setKoulutustyyppi(koulutustyyppi);
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.246.562.10.00000000001");
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+
+        ops.setPohja(Reference.of(pohjaOps.getId()));
+        return opetussuunnitelmaService.addOpetussuunnitelma(ops);
     }
 }

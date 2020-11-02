@@ -1,0 +1,50 @@
+{
+  "id" : 5002,
+  "globalVersion": {
+    "aikaleima": 1234
+  },
+  "nimi" : {
+    "fi" : "TESTIDATA",
+    "_id" : "5265"
+  },
+  "koulutustyyppi" : "koulutustyyppi_999907",
+  "koulutukset" : [ ],
+  "kielet" : [ "fi" ],
+  "kuvaus" : null,
+  "diaarinumero" : "tpo-diaarinumero",
+  "voimassaoloAlkaa" : 1422741600000,
+  "siirtymaPaattyy" : null,
+  "voimassaoloLoppuu" : null,
+  "muokattu" : 1423731441288,
+  "tila" : "valmis",
+  "tyyppi" : "normaali",
+  "korvattavatDiaarinumerot" : [ ],
+  "osaamisalat" : [ ],
+  "tpo" : {
+    "sisalto" : {
+      "id" : 4570,
+      "lapset" : [ {
+        "id" : 4571,
+        "perusteenOsa" : {
+          "osanTyyppi" : "tekstikappale",
+          "id" : 5280,
+          "luotu" : 1423731373885,
+          "muokattu" : 1423731384691,
+          "muokkaaja" : "test",
+          "nimi" : {
+            "fi" : "Teksti",
+            "_id" : "5263"
+          },
+          "tila" : "valmis",
+          "teksti" : {
+            "fi" : "<p>Kuvaus</p>",
+            "_id" : "5264"
+          },
+          "osaamisala" : null
+        },
+        "lapset" : [ ],
+        "_perusteenOsa" : "5280"
+      } ]
+    }
+  }
+}

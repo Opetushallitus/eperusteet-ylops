@@ -31,4 +31,6 @@ public class PerusteDto extends PerusteBaseDto {
     private PerusopetuksenPerusteenSisaltoDto perusopetus;
     private LukiokoulutuksenPerusteenSisaltoDto lukiokoulutus;
     private Lops2019SisaltoDto lops2019;
+    private EsiopetuksenPerusteenSisaltoDto esiopetus;
+    private TPOOpetuksenSisaltoDto tpo;
 }
