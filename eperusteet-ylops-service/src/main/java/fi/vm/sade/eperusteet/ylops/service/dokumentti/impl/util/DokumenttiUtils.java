@@ -83,6 +83,27 @@ public class DokumenttiUtils {
         }
     }
 
+    public static Element getList(DokumenttiBase docBase, Collection<LokalisoituTekstiDto> tekstit) {
+        return getStringList(docBase, tekstit.stream()
+                .filter(Objects::nonNull)
+                .map(kuvaus -> getTextString(docBase, kuvaus))
+                .collect(Collectors.toList()));
+    }
+
+    public static Element getStringList(DokumenttiBase docBase, Collection<String> tekstit) {
+        Element ul = docBase.getDocument().createElement("ul");
+        tekstit.stream()
+                .filter(str -> !StringUtils.isEmpty(str))
+                .forEach(str -> {
+                    Element li = docBase.getDocument().createElement("li");
+                    Document doc = new W3CDom().fromJsoup(Jsoup.parse(str));
+                    Node node = doc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+                    li.appendChild(docBase.getDocument().importNode(node, true));
+                    ul.appendChild(li);
+                });
+        return ul;
+    }
+
     public static void addList(DokumenttiBase docBase, Collection<LokalisoituTekstiDto> tekstit) {
         addStringList(docBase, tekstit.stream()
                 .filter(Objects::nonNull)

@@ -854,16 +854,18 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                         if (!ObjectUtils.isEmpty(tavoitteet)) {
 
                             // Moduulit tavoitteet
-                            LokalisoituTekstiDto kohde = tavoitteet.getKohde();
-                            if (kohde != null && !ObjectUtils.isEmpty(tavoitteet.getTavoitteet())) {
+                            if (!ObjectUtils.isEmpty(tavoitteet.getTavoitteet())) {
 
                                 // Kohde
-                                Element kohdeEl = docBase.getDocument().createElement("p");
-                                kohdeEl.setTextContent(getTextString(docBase, kohde));
-                                cite.appendChild(kohdeEl);
+                                LokalisoituTekstiDto kohde = tavoitteet.getKohde();
+                                if (kohde != null) {
+                                    Element kohdeEl = docBase.getDocument().createElement("p");
+                                    kohdeEl.setTextContent(getTextString(docBase, kohde));
+                                    cite.appendChild(kohdeEl);
+                                }
 
                                 // Tavoitteet
-                                addList(docBase, tavoitteet.getTavoitteet());
+                                cite.appendChild(getList(docBase, tavoitteet.getTavoitteet()));
                             }
 
                         }
@@ -929,17 +931,18 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                             sisallot.stream()
                                     .filter(Objects::nonNull)
                                     .forEach(sisalto -> {
-                                        LokalisoituTekstiDto kohde = sisalto.getKohde();
-                                        if (kohde != null) {
-                                            // Kohde
-                                            Element kohdeEl = docBase.getDocument().createElement("p");
-                                            kohdeEl.setTextContent(getTextString(docBase, kohde));
-                                            cite.appendChild(kohdeEl);
-                                        }
-
                                         if (!ObjectUtils.isEmpty(sisalto.getSisallot())) {
+
+                                            LokalisoituTekstiDto kohde = sisalto.getKohde();
+                                            if (kohde != null) {
+                                                // Kohde
+                                                Element kohdeEl = docBase.getDocument().createElement("p");
+                                                kohdeEl.setTextContent(getTextString(docBase, kohde));
+                                                cite.appendChild(kohdeEl);
+                                            }
+
                                             // Sisallöt
-                                            addList(docBase, sisalto.getSisallot());
+                                            cite.appendChild(getList(docBase, sisalto.getSisallot()));
                                         }
                                     });
                         }
