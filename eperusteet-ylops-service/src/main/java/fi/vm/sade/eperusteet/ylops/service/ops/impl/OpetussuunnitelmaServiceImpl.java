@@ -1475,6 +1475,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             Map<Kieli, String> nimet = tekstikappale.getTekstiKappale().getNimi().getTekstit();
             nimet.replaceAll((kieli, teksti) -> teksti + " (vanha)");
             tekstikappale.getTekstiKappale().setNimi(new LokalisoituTekstiDto(null, nimet));
+            tekstikappale.setPakollinen(false);
             tekstiKappaleViiteService.updateTekstiKappaleViite(id, tekstikappale.getId(), tekstikappale);
             vanhatIdt.add(tekstikappaleViite.getId());
         });

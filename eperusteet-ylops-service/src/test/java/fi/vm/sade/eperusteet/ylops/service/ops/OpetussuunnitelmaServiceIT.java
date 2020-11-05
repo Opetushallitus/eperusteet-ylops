@@ -375,10 +375,18 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
     public void testImportPerusteTekstit() {
         {
             OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.PERUSOPETUS, "perusopetus-diaarinumero"), KoulutusTyyppi.PERUSOPETUS);
+
+            TekstiKappaleViiteDto.Matala tk = tekstiKappaleViiteService.getTekstiKappaleViite(ops.getId(), ops.getTekstit().get().getLapset().get(1).getId());
+            tk.setPakollinen(true);
+            tekstiKappaleViiteService.updateTekstiKappaleViite(ops.getId(), tk.getId(), tk);
+
+            ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(ops.getId());
+
             Date paivitetty = ops.getPerusteDataTuontiPvm();
             assertThat(ops.getTekstit()).isPresent();
             assertThat(ops.getTekstit().get().getLapset()).hasSize(2);
             assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(0);
+            assertThat(ops.getTekstit().get().getLapset().get(1).isPakollinen()).isTrue();
             assertThat(ops.getPerusteDataTuontiPvm()).isNotNull();
 
             ops = opetussuunnitelmaService.importPerusteTekstit(ops.getId());
@@ -387,6 +395,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
             assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(2);
             assertThat(ops.getTekstit().get().getLapset().get(0).getTekstiKappale().getNimi().get(Kieli.FI)).doesNotContain("(vanha)");
             assertThat(ops.getTekstit().get().getLapset().get(2).getTekstiKappale().getNimi().get(Kieli.FI)).contains("(vanha)");
+            assertThat(ops.getTekstit().get().getLapset().get(2).isPakollinen()).isFalse();
         }
 
         {
