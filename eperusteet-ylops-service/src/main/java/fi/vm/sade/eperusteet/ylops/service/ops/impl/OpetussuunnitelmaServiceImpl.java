@@ -32,6 +32,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.*;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.*;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
@@ -1476,6 +1477,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             nimet.replaceAll((kieli, teksti) -> teksti + " (vanha)");
             tekstikappale.getTekstiKappale().setNimi(new LokalisoituTekstiDto(null, nimet));
             tekstikappale.setPakollinen(false);
+            paivitaTekstikappaleViiteLapsetPakollisuusRec(id,tekstikappale.getLapset(), false);
             tekstiKappaleViiteService.updateTekstiKappaleViite(id, tekstikappale.getId(), tekstikappale);
             vanhatIdt.add(tekstikappaleViite.getId());
         });
@@ -1498,6 +1500,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (CollectionUtils.isNotEmpty(viite.getLapset())) {
             viite.getLapset().forEach(lapsiviite -> {
                 addTekstikappaleViiteRec(opsId, lisatty.getId(), lapsiviite);
+            });
+        }
+    }
+
+    private void paivitaTekstikappaleViiteLapsetPakollisuusRec(Long opsId, List<Reference> lapset, boolean pakollisuus) {
+        if (CollectionUtils.isNotEmpty(lapset)) {
+            lapset.forEach(lapsi -> {
+                TekstiKappaleViiteDto.Matala tekstikappale = tekstiKappaleViiteService.getTekstiKappaleViite(opsId, Long.valueOf(lapsi.getId()));
+                tekstikappale.setPakollinen(pakollisuus);
+                tekstiKappaleViiteService.updateTekstiKappaleViite(opsId, tekstikappale.getId(), tekstikappale);
+                paivitaTekstikappaleViiteLapsetPakollisuusRec(opsId, tekstikappale.getLapset(), pakollisuus);
             });
         }
     }
