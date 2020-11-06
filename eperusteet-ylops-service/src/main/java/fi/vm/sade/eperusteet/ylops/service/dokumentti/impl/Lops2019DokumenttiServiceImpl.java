@@ -622,15 +622,12 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         addOpintojaksonSisallotPaikallinenLisays(docBase, oj);
 
         // Laaja-alainen osaaminen ja paikallinen lisäys
-        addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
-
         // NOTE: mahdollisesti palautetaan tulevaisuudessa
         //addOpintojaksonOppiaineenLaajaAlainenOsaaminen(docBase, oppiaineet);
         //addOpintojaksonOppiaineenPaikallinenLaajaAlainenOsaaminen(docBase, paikallisetOppiaineet);
         addOpintojaksonLaajaAlainenOsaaminenPaikallinenLisays(docBase, oj);
 
         // Arviointi
-        addTeksti(docBase, messages.translate("opintojakson-arviointi", docBase.getKieli()), "h6");
         //addOpintojaksonArviointi(docBase, oppiaineet);
         addOpintojaksonArviointiPaikallinenLisays(docBase, oj);
 
@@ -739,15 +736,12 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         addOpintojaksonSisallotPaikallinenLisays(docBase, oj);
 
         // Laaja-alainen osaaminen ja paikallinen lisäys
-        addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
-
         // NOTE: mahdollisesti palautetaan tulevaisuudessa
         //addOpintojaksonOppiaineenLaajaAlainenOsaaminen(docBase, oppiaineet);
         //addOpintojaksonOppiaineenPaikallinenLaajaAlainenOsaaminen(docBase, paikallisetOppiaineet);
         addOpintojaksonLaajaAlainenOsaaminenPaikallinenLisays(docBase, oj);
 
         // Arviointi
-        addTeksti(docBase, messages.translate("opintojakson-arviointi", docBase.getKieli()), "h6");
         //addOpintojaksonArviointi(docBase, oppiaineet);
         addOpintojaksonArviointiPaikallinenLisays(docBase, oj);
 
@@ -1029,6 +1023,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             DokumenttiBase docBase,
             Lops2019OpintojaksoDto oj
     ) {
+        boolean[] otsikkoLisatty = {false};
+
         List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = oj.getLaajaAlainenOsaaminen();
         if (!ObjectUtils.isEmpty(laajaAlainenOsaaminen)) {
             addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
@@ -1039,6 +1035,11 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                             && Objects.equals(lao.getKoodi().getUri(), laajaAlainenDto.getKoodi()))
                     .findAny()
                     .ifPresent(l -> {
+                        if (!otsikkoLisatty[0]) {
+                            addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
+                            otsikkoLisatty[0] = true;
+                        }
+
                         // Laaja-alaisen osaaminen nimi
                         addLokalisoituteksti(docBase, l.getNimi(), "h6");
 
@@ -1063,6 +1064,11 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                                     && Objects.equals(lao.getKoodi().getUri(), laajaAlainenDto.getKoodi()))
                             .findAny()
                             .ifPresent(l -> {
+                                if (!otsikkoLisatty[0]) {
+                                    addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
+                                    otsikkoLisatty[0] = true;
+                                }
+
                                 // Laaja-alaisen osaaminen nimi
                                 addLokalisoituteksti(docBase, l.getNimi(), "h6");
 
@@ -1102,6 +1108,12 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             Lops2019OpintojaksoDto oj
     ) {
         LokalisoituTekstiDto arviointi = oj.getArviointi();
+
+        if (arviointi != null || (!ObjectUtils.isEmpty(oj.getPaikallisetOpintojaksot())
+                && oj.getPaikallisetOpintojaksot().stream().anyMatch(paikallinenOpintojakso -> paikallinenOpintojakso.getArviointi() != null))) {
+            addTeksti(docBase, messages.translate("opintojakson-arviointi", docBase.getKieli()), "h6");
+        }
+
         if (arviointi != null) {
             addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
             addLokalisoituteksti(docBase, arviointi, "div");
