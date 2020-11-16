@@ -9,4 +9,5 @@ public class Lops2019PerustePaikallinenOppiaineDto {
     private Integer jarjestys;
     private Lops2019SortableOppiaineDto oa;
     private Lops2019PaikallinenOppiaineDto poa;
+    private boolean paikallinen;
 }

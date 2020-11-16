@@ -8,6 +8,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -74,5 +75,10 @@ public class NavigationBuilderLops2019PublicImpl extends NavigationBuilderLops20
                 .filter(poa -> opintojaksotMap.containsKey(poa.getKoodi()))
                 .filter(poa -> StringUtils.isEmpty(poa.getPerusteenOppiaineUri()))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    protected Predicate<Lops2019PaikallinenOppiaineDto> getPaikallinenFilter(Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
+        return poa -> opintojaksotMap.get(poa.getKoodi()) != null;
     }
 }

@@ -59,6 +59,7 @@ public class Lops2019Utils {
                 } else {
                     Lops2019PerustePaikallinenOppiaineDto dto = new Lops2019PerustePaikallinenOppiaineDto();
                     dto.setPoa(poa);
+                    dto.setPaikallinen(true);
                     oppiaineJarjestyksetMap.put(koodi, dto);
                 }
             });
@@ -66,20 +67,17 @@ public class Lops2019Utils {
 
         // Paikalliset ja perusteen oppiaineet
         oppiaineJarjestyksetMap.values().stream()
-                // Toissijainen
                 .sorted(comparing(dto -> dto.getOa() != null
                         ? dto.getOa().getKoodi().getUri()
                         : (dto.getPoa() != null ? dto.getPoa().getKoodi() : "")))
-                // Ensisisijainen
+                .sorted(comparing(Lops2019PerustePaikallinenOppiaineDto::isPaikallinen))
                 .sorted(comparing((Lops2019PerustePaikallinenOppiaineDto dto) -> Optional
                         .ofNullable(dto.getJarjestys()).orElse(Integer.MAX_VALUE)))
                 .forEach(dto -> {
-                    Lops2019SortableOppiaineDto oa = dto.getOa();
-                    Lops2019PaikallinenOppiaineDto poa = dto.getPoa();
-                    if (oa != null) {
-                        oaFunction.apply(oa);
-                    } else if (poa != null) {
-                        poaFunction.apply(poa);
+                    if (dto.getOa() != null) {
+                        oaFunction.apply(dto.getOa());
+                    } else if (dto.getPoa() != null) {
+                        poaFunction.apply(dto.getPoa());
                     }
                 });
     }

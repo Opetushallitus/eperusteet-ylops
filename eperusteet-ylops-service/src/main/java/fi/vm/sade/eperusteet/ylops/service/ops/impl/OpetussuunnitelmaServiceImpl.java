@@ -701,7 +701,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         mapper.mapAsList(lops2019OpintojaksoService.getAll(opsId),
                 Lops2019Opintojakso.class).forEach(oj -> ojMap.put(oj.getId(), oj));
 
-        jarjestaOppiaineet(ops, oaKoodiMap, oppiaineopintojaksojarjestys);
+        jarjestaOppiaineet(ops, oaKoodiMap, oppiaineopintojaksojarjestys.stream()
+                .flatMap(oa -> Stream.concat(Stream.of(oa), (oa.getLapset() != null ? oa.getLapset() : Collections.<OppiaineOpintojaksoDto>emptyList()).stream()))
+                .collect(Collectors.toList()));
         jarjestaOpintojaksot(oppiaineopintojaksojarjestys, oaKoodiMap, ojMap, null);
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.PAIVITYS);

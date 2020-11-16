@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
+import java.util.function.Predicate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,7 +101,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 oppiaineJarjestykset,
                 oppiaineet,
                 paikallisetOppiaineet,
-                oa -> navigationOppiaineet.add(mapOppiaine((Lops2019OppiaineKevytDto) oa, opintojaksotMap, opsId)),
+                oa -> navigationOppiaineet.add(mapOppiaine((Lops2019OppiaineKevytDto) oa, opintojaksotMap, opsId, oppiaineJarjestykset)),
                 poa -> navigationOppiaineet.add(mapPaikallinenOppiaine(poa, opintojaksotMap))
         );
 
@@ -116,10 +117,15 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
         return oppiaineService.getAll(opsId);
     }
 
+    protected Predicate<Lops2019PaikallinenOppiaineDto> getPaikallinenFilter(Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
+        return pao -> true;
+    }
+
     private NavigationNodeDto mapOppiaine(
             Lops2019OppiaineKevytDto oa,
             Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap,
-            Long opsId
+            Long opsId,
+            Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset
     ) {
         NavigationNodeDto result = NavigationNodeDto
                 .of(NavigationType.oppiaine, mapper.map(oa.getNimi(), LokalisoituTekstiDto.class), oa.getId())
@@ -145,12 +151,18 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 .collect(Collectors.toList());
 
         if (!ObjectUtils.isEmpty(oa.getOppimaarat()) || !ObjectUtils.isEmpty(paikallisetOppimaarat)) {
-            result.add(NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-subtype", true)
-                    .meta("navigation-subtype", true)
-                    .addAll(oa.getOppimaarat().stream().map(om -> mapOppiaine(om, opintojaksotMap, opsId)))
-                    .addAll(!ObjectUtils.isEmpty(paikallisetOppimaarat)
-                            ? paikallisetOppimaarat.stream().map(pom -> mapPaikallinenOppiaine(pom, opintojaksotMap))
-                            : null));
+            NavigationNodeDto oppimaaratNode = NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-subtype", true)
+                    .meta("navigation-subtype", true);
+
+            Lops2019Utils.sortOppiaineet(
+                    oppiaineJarjestykset,
+                    oa.getOppimaarat(),
+                    paikallisetOppimaarat.stream().filter(getPaikallinenFilter(opintojaksotMap)).collect(Collectors.toList()),
+                    om -> oppimaaratNode.add(mapOppiaine((Lops2019OppiaineKevytDto) om, opintojaksotMap, opsId, oppiaineJarjestykset)) != null,
+                    pom -> oppimaaratNode.add(mapPaikallinenOppiaine(pom, opintojaksotMap)) != null
+            );
+
+            result.add(oppimaaratNode);
         }
 
         if (oa.getKoodi() != null && oa.getKoodi().getUri() != null
