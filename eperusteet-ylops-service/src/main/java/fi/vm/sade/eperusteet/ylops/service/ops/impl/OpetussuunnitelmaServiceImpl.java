@@ -1196,6 +1196,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         pohja.setVuosiluokkakokonaisuudet(null);
         pohja.getLukiokurssit().clear();
         pohja.getOppiaineJarjestykset().clear();
+        pohja.setViimeisinSyncPvm(new Date());
 
         PerusteDto peruste = eperusteetService.getPerusteUpdateCache(pohja.getPerusteenDiaarinumero());
         pohja.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));

@@ -239,6 +239,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Column(name = "peruste_data_tuonti_pvm")
     private Date perusteDataTuontiPvm;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Getter
+    @Setter
+    @Column(name = "viimeisin_sync_pvm")
+    private Date viimeisinSyncPvm;
+
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
         vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));
     }
