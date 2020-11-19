@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -18,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019Oppia
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -73,6 +75,9 @@ public class ValidointiServiceImpl implements ValidointiService {
 
     @Autowired
     private KoodistoService koodistoService;
+
+    @Autowired
+    private JulkaisuRepository julkaisuRepository;
 
     private Opetussuunnitelma getOpetussuunnitelma(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
@@ -155,7 +160,9 @@ public class ValidointiServiceImpl implements ValidointiService {
                             .contains(oa.getKoodi())));
         });
 
-        if (ops.getPohja() != null && !ops.getPohja().getTila().equals(Tila.JULKAISTU)) {
+        if (ops.getPohja() != null &&
+                ((ops.getPohja().getTyyppi().equals(Tyyppi.POHJA) && !ops.getPohja().getTila().equals(Tila.VALMIS))
+                    || (ops.getPohja().getTyyppi().equals(Tyyppi.OPS) && julkaisuRepository.findAllByOpetussuunnitelma(ops.getPohja()).isEmpty()))) {
             validointi.virhe("opetussuunnitelma-pohja-julkaisematon", ops.getPohja(), true);
         }
 
