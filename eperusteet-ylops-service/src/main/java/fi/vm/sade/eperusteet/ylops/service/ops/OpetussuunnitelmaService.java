@@ -90,6 +90,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'MUOKKAUS')")
     OpetussuunnitelmaDto importPerusteTekstit(@P("id") Long id);
 
+    @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'MUOKKAUS')")
+    OpetussuunnitelmaDto importPerusteTekstit(@P("id") Long id, boolean skip);
+
     @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'TILANVAIHTO')")
     OpetussuunnitelmaDto updateTila(@P("id") Long id, Tila tila);
 

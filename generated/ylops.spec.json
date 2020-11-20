@@ -1316,6 +1316,11 @@
           "required" : true,
           "type" : "integer",
           "format" : "int64"
+        }, {
+          "name" : "skip",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
         } ],
         "responses" : {
           "200" : {
@@ -7263,6 +7268,10 @@
         "perusteDataTuontiPvm" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "viimeisinSyncPvm" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },
@@ -7375,6 +7384,10 @@
           "type" : "boolean"
         },
         "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "viimeisinSyncPvm" : {
           "type" : "string",
           "format" : "date-time"
         },
@@ -7509,6 +7522,10 @@
           "type" : "boolean"
         },
         "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "viimeisinSyncPvm" : {
           "type" : "string",
           "format" : "date-time"
         }
@@ -7682,6 +7699,10 @@
           "type" : "string",
           "format" : "date-time"
         },
+        "viimeisinSyncPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaBaseDto"
         },
@@ -7810,6 +7831,10 @@
           "type" : "boolean"
         },
         "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "viimeisinSyncPvm" : {
           "type" : "string",
           "format" : "date-time"
         },
@@ -7944,6 +7969,10 @@
           "type" : "boolean"
         },
         "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "viimeisinSyncPvm" : {
           "type" : "string",
           "format" : "date-time"
         },

@@ -1451,46 +1451,53 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public OpetussuunnitelmaDto importPerusteTekstit(Long id) {
+        return importPerusteTekstit(id, false);
+    }
+
+    @Override
+    public OpetussuunnitelmaDto importPerusteTekstit(Long id, boolean skip) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "opetussuunnitelmaa ei lyödy");
 
-        PerusteDto peruste = getPeruste(id);
-        if (!KoulutusTyyppi.PERUSOPETUS.equals(peruste.getKoulutustyyppi())
-                && !KoulutusTyyppi.TPO.equals(peruste.getKoulutustyyppi())
-                && !KoulutusTyyppi.VARHAISKASVATUS.equals(peruste.getKoulutustyyppi())
-                && !KoulutusTyyppi.ESIOPETUS.equals(peruste.getKoulutustyyppi())){
-            throw new BusinessRuleViolationException("koulutustyyppi-ei-tuettu");
+        if (!skip) {
+            PerusteDto peruste = getPeruste(id);
+            if (!KoulutusTyyppi.PERUSOPETUS.equals(peruste.getKoulutustyyppi())
+                    && !KoulutusTyyppi.TPO.equals(peruste.getKoulutustyyppi())
+                    && !KoulutusTyyppi.VARHAISKASVATUS.equals(peruste.getKoulutustyyppi())
+                    && !KoulutusTyyppi.ESIOPETUS.equals(peruste.getKoulutustyyppi())) {
+                throw new BusinessRuleViolationException("koulutustyyppi-ei-tuettu");
+            }
+
+            fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto viiteDto = null;
+            if (KoulutusTyyppi.PERUSOPETUS.equals(peruste.getKoulutustyyppi())) {
+                viiteDto = peruste.getPerusopetus().getSisalto();
+            } else if (KoulutusTyyppi.TPO.equals(peruste.getKoulutustyyppi())) {
+                viiteDto = peruste.getTpo().getSisalto();
+            } else if (KoulutusTyyppi.VARHAISKASVATUS.equals(peruste.getKoulutustyyppi()) || KoulutusTyyppi.ESIOPETUS.equals(peruste.getKoulutustyyppi())) {
+                viiteDto = peruste.getEsiopetus().getSisalto();
+            }
+
+            List<Long> vanhatIdt = new ArrayList<>();
+            ops.getTekstit().getLapset().forEach(tekstikappaleViite -> {
+                TekstiKappaleViiteDto.Matala tekstikappale = tekstiKappaleViiteService.getTekstiKappaleViite(id, tekstikappaleViite.getId());
+                Map<Kieli, String> nimet = tekstikappale.getTekstiKappale().getNimi().getTekstit();
+                nimet.replaceAll((kieli, teksti) -> teksti + " (vanha)");
+                tekstikappale.getTekstiKappale().setNimi(new LokalisoituTekstiDto(null, nimet));
+                tekstikappale.setPakollinen(false);
+                paivitaTekstikappaleViiteLapsetPakollisuusRec(id, tekstikappale.getLapset(), false);
+                tekstiKappaleViiteService.updateTekstiKappaleViite(id, tekstikappale.getId(), tekstikappale);
+                vanhatIdt.add(tekstikappaleViite.getId());
+            });
+
+            tekstikappaleViiteRootSisallosta(viiteDto).getLapset().forEach(perusteTekstikappale -> {
+                addTekstikappaleViiteRec(id, ops.getTekstit().getId(), perusteTekstikappale);
+            });
+
+            TekstiKappaleViiteDto.Puu tekstikappale = getTekstit(id, TekstiKappaleViiteDto.Puu.class);
+            tekstikappale.getLapset().sort(Comparator.comparing(tkLapsi -> vanhatIdt.contains(tkLapsi.getId())));
+            tekstiKappaleViiteService.reorderSubTree(id, tekstikappale.getId(), tekstikappale);
+
         }
-
-        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto viiteDto = null;
-        if (KoulutusTyyppi.PERUSOPETUS.equals(peruste.getKoulutustyyppi())) {
-            viiteDto = peruste.getPerusopetus().getSisalto();
-        } else if(KoulutusTyyppi.TPO.equals(peruste.getKoulutustyyppi())) {
-            viiteDto = peruste.getTpo().getSisalto();
-        } else if (KoulutusTyyppi.VARHAISKASVATUS.equals(peruste.getKoulutustyyppi()) || KoulutusTyyppi.ESIOPETUS.equals(peruste.getKoulutustyyppi())) {
-            viiteDto = peruste.getEsiopetus().getSisalto();
-        }
-
-        List<Long> vanhatIdt = new ArrayList<>();
-        ops.getTekstit().getLapset().forEach(tekstikappaleViite -> {
-            TekstiKappaleViiteDto.Matala tekstikappale = tekstiKappaleViiteService.getTekstiKappaleViite(id, tekstikappaleViite.getId());
-            Map<Kieli, String> nimet = tekstikappale.getTekstiKappale().getNimi().getTekstit();
-            nimet.replaceAll((kieli, teksti) -> teksti + " (vanha)");
-            tekstikappale.getTekstiKappale().setNimi(new LokalisoituTekstiDto(null, nimet));
-            tekstikappale.setPakollinen(false);
-            paivitaTekstikappaleViiteLapsetPakollisuusRec(id,tekstikappale.getLapset(), false);
-            tekstiKappaleViiteService.updateTekstiKappaleViite(id, tekstikappale.getId(), tekstikappale);
-            vanhatIdt.add(tekstikappaleViite.getId());
-        });
-
-        tekstikappaleViiteRootSisallosta(viiteDto).getLapset().forEach(perusteTekstikappale -> {
-            addTekstikappaleViiteRec(id, ops.getTekstit().getId(), perusteTekstikappale);
-        });
-
-        TekstiKappaleViiteDto.Puu tekstikappale = getTekstit(id, TekstiKappaleViiteDto.Puu.class);
-        tekstikappale.getLapset().sort(Comparator.comparing(tkLapsi -> vanhatIdt.contains(tkLapsi.getId())));
-        tekstiKappaleViiteService.reorderSubTree(id, tekstikappale.getId(), tekstikappale);
-
         ops.setPerusteDataTuontiPvm(new Date());
 
         return updateOpetussuunnitelma(mapper.map(ops, OpetussuunnitelmaDto.class));

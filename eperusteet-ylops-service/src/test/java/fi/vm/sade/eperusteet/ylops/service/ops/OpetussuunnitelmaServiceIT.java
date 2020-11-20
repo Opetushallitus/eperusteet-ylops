@@ -433,6 +433,14 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
             assertThat(ops.getTekstit().get().getLapset()).hasSize(3);
             assertThat(ops.getTekstit().get().getLapset().stream().filter(t -> t.getTekstiKappale().getNimi().get(Kieli.FI).contains("(vanha)")).count()).isEqualTo(2);
         }
+
+        {
+            OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.TPO, "tpo-diaarinumero"), KoulutusTyyppi.TPO);
+            assertThat(ops.getTekstit().get().getLapset()).hasSize(2);
+
+            ops = opetussuunnitelmaService.importPerusteTekstit(ops.getId(), true);
+            assertThat(ops.getTekstit().get().getLapset()).hasSize(2);
+        }
     }
 
     private OpetussuunnitelmaDto createOpetussuunnitelma(KoulutusTyyppi koulutustyyppi, String diaarinumero) {

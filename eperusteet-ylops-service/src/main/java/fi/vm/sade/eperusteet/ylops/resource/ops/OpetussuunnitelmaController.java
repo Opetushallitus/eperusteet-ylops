@@ -223,8 +223,9 @@ public class OpetussuunnitelmaController {
     @ResponseBody
     @Timed
     public ResponseEntity<OpetussuunnitelmaDto> importPerusteTekstit(
-            @PathVariable("id") final Long id) {
-        return new ResponseEntity<>(opetussuunnitelmaService.importPerusteTekstit(id),
+            @PathVariable("id") final Long id,
+            @RequestParam(value = "skip", required = false) boolean skip) {
+        return new ResponseEntity<>(opetussuunnitelmaService.importPerusteTekstit(id, skip),
                 HttpStatus.OK);
     }
 
