@@ -396,6 +396,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 String id = element.getAttribute("data-uid");
                 String src = element.getAttribute("src");
 
+                if ("".equals(id) && "".equals(src)) {
+                    continue;
+                }
+
                 // Todo: Jokin parempi tapa tunnistaa peruste olisi hyvä olla
                 boolean isPerusteesta = false;
                 PerusteDto perusteDto = docBase.getPerusteDto();
@@ -417,6 +421,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 }
 
                 if (uuid == null) {
+                    LOG.error("src {}, id {} ", src, id);
                     throw new BusinessRuleViolationException("kuva-uuid-ei-loytynyt");
                 }
 
