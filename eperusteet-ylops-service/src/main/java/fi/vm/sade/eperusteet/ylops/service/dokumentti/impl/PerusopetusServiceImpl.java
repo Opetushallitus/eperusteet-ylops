@@ -104,7 +104,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                                     PerusteTekstiOsaDto perusteTekstiOsaDto,
                                     Tekstiosa tekstiosa) {
         // Otsikko
-        if (perusteTekstiOsaDto.getOtsikko() != null) {
+        if (perusteTekstiOsaDto != null && perusteTekstiOsaDto.getOtsikko() != null) {
             addHeader(docBase,
                     getTextString(docBase, perusteTekstiOsaDto.getOtsikko()));
 
@@ -488,7 +488,11 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                                           PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
         if (oaVuosiluokka.getTavoitteet() != null && !oaVuosiluokka.getTavoitteet().isEmpty()) {
 
-            addTeksti(docBase, messages.translate("vuosiluokan-tavoitteet", docBase.getKieli()), "tavoitteet-otsikko");
+            if (perusteOaVlkDto.getOpetuksenTavoitteetOtsikko() != null) {
+                addLokalisoituteksti(docBase, perusteOaVlkDto.getOpetuksenTavoitteetOtsikko(), "tavoitteet-otsikko");
+            } else {
+                addTeksti(docBase, messages.translate("vuosiluokan-tavoitteet", docBase.getKieli()), "tavoitteet-otsikko");
+            }
 
             for (Opetuksentavoite opetuksentavoite : oaVuosiluokka.getTavoitteet()) {
 
