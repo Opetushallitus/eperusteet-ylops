@@ -1632,7 +1632,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Perusteen diaarinumeroa ei voi vaihtaa");
         }
 
-        if (!Objects.equals(opetussuunnitelmaDto.getPerusteenId(), ops.getCachedPeruste().getPerusteId())) {
+        if (!Objects.equals(opetussuunnitelmaDto.getPerusteenId(), ops.getCachedPeruste() != null ? ops.getCachedPeruste().getPerusteId() : null)) {
             throw new BusinessRuleViolationException("Opetussuunnitelman perustetta ei voi vaihtaa");
         }
 
