@@ -124,6 +124,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     private boolean tuoPohjanOpintojaksot = false;
 
+    @Getter
+    @Setter
+    private boolean tuoPohjanOppimaarat = false;
+
     @Enumerated(value = EnumType.STRING)
     @Getter
     @Setter

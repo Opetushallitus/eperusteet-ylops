@@ -2446,6 +2446,33 @@
         }
       }
     },
+    "/opetussuunnitelmat/{opsId}/lops2019/oppiaineet/{oppiaineId}/tuotu" : {
+      "get" : {
+        "tags" : [ "Lops2019Oppiaineet" ],
+        "operationId" : "getLops2019PaikallinenOppiaineTuotu",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "oppiaineId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/Lops2019PaikallinenOppiaineDto"
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/{opsId}/lops2019/oppiaineet/{oppiaineId}/versiot" : {
       "get" : {
         "tags" : [ "Lops2019Oppiaineet" ],
@@ -6451,7 +6478,7 @@
         },
         "tyyppi" : {
           "type" : "string",
-          "enum" : [ "TUOTU_OPINTOJAKSO", "LOPS2019OPPIAINE", "OPINTOJAKSO", "OPPIAINE" ]
+          "enum" : [ "TUOTU_OPINTOJAKSO", "TUOTU_OPPIMAARA", "LOPS2019OPPIAINE", "OPINTOJAKSO", "OPPIAINE" ]
         },
         "nimi" : {
           "type" : "object",
@@ -7265,6 +7292,9 @@
         "tuoPohjanOpintojaksot" : {
           "type" : "boolean"
         },
+        "tuoPohjanOppimaarat" : {
+          "type" : "boolean"
+        },
         "perusteDataTuontiPvm" : {
           "type" : "string",
           "format" : "date-time"
@@ -7381,6 +7411,9 @@
           "format" : "date-time"
         },
         "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
+        },
+        "tuoPohjanOppimaarat" : {
           "type" : "boolean"
         },
         "perusteDataTuontiPvm" : {
@@ -7519,6 +7552,9 @@
           "format" : "date-time"
         },
         "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
+        },
+        "tuoPohjanOppimaarat" : {
           "type" : "boolean"
         },
         "perusteDataTuontiPvm" : {
@@ -7695,6 +7731,9 @@
         "tuoPohjanOpintojaksot" : {
           "type" : "boolean"
         },
+        "tuoPohjanOppimaarat" : {
+          "type" : "boolean"
+        },
         "perusteDataTuontiPvm" : {
           "type" : "string",
           "format" : "date-time"
@@ -7828,6 +7867,9 @@
           "format" : "date-time"
         },
         "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
+        },
+        "tuoPohjanOppimaarat" : {
           "type" : "boolean"
         },
         "perusteDataTuontiPvm" : {
@@ -7966,6 +8008,9 @@
           "format" : "date-time"
         },
         "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
+        },
+        "tuoPohjanOppimaarat" : {
           "type" : "boolean"
         },
         "perusteDataTuontiPvm" : {
@@ -9134,6 +9179,12 @@
         },
         "sisaltoalueinfo" : {
           "$ref" : "#/definitions/PerusteTekstiOsaDto"
+        },
+        "opetuksenTavoitteetOtsikko" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         },
         "vapaaTeksti" : {
           "type" : "object",

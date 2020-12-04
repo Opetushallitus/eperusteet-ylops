@@ -79,6 +79,7 @@ public class PoistoServiceImpl implements PoistoService {
                 palautaOppiaine(opsId, poistettuInfo);
                 break;
             case TUOTU_OPINTOJAKSO:
+            case TUOTU_OPPIMAARA:
                 poistetutRepository.delete(poistettuInfo);
                 break;
             default:

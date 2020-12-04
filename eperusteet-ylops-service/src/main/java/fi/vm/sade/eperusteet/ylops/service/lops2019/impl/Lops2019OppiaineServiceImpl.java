@@ -12,6 +12,7 @@ import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoReposi
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksonOppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
+import fi.vm.sade.eperusteet.ylops.repository.lops2019.PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
@@ -74,6 +75,9 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     @Autowired
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
+    @Autowired
+    private PoistetutRepository poistetutRepository;
+
     private Opetussuunnitelma getOpetussuunnitelma(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         if (ops == null) {
@@ -90,7 +94,28 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     @Override
     public List<Lops2019PaikallinenOppiaineDto> getAll(Long opsId) {
         List<Lops2019Oppiaine> oppiaineet = oppiaineRepository.findAllBySisalto(getOpetussuunnitelma(opsId).getLops2019());
+        Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
+        oppiaineet.addAll(getTuodut(opetussuunnitelma));
         return mapper.mapAsList(oppiaineet, Lops2019PaikallinenOppiaineDto.class);
+    }
+
+    @Override
+    public List<Lops2019Oppiaine> getTuodut(Opetussuunnitelma opetussuunnitelma) {
+        List<Lops2019Oppiaine> oppiaineet = new ArrayList<>();
+
+        Set<Long> poistetut = poistetutRepository.findAllByOpetussuunnitelmaAndTyyppi(opetussuunnitelma, PoistetunTyyppi.TUOTU_OPPIMAARA).stream()
+                .map(Poistettu::getPoistettuId)
+                .collect(Collectors.toSet());
+
+        while (opetussuunnitelma.getPohja() != null && opetussuunnitelma.isTuoPohjanOppimaarat()) {
+            List<Lops2019Oppiaine> pohjanOppiaineet = oppiaineRepository.findAllBySisalto(opetussuunnitelma.getPohja().getLops2019()).stream()
+                    .filter(oj -> !poistetut.contains(oj.getId()))
+                    .collect(Collectors.toList());
+            oppiaineet.addAll(pohjanOppiaineet);
+            opetussuunnitelma = opetussuunnitelma.getPohja();
+        }
+
+        return oppiaineet;
     }
 
     private Lops2019Oppiaine getOppiaine(Long opsId, Long oppiaineId) {
@@ -101,6 +126,17 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     @Override
     public Lops2019PaikallinenOppiaineDto getOne(Long opsId, Long oppiaineId) {
         return mapper.map(getOppiaine(opsId, oppiaineId), Lops2019PaikallinenOppiaineDto.class);
+    }
+
+    @Override
+    public Lops2019PaikallinenOppiaineDto getTuotu(Long opsId, Long oppiaineId) {
+        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        Optional<Lops2019Oppiaine> tuotuOppiaine = getTuodut(ops).stream().filter(tuotu -> tuotu.getId().equals(oppiaineId)).findFirst();
+        if (tuotuOppiaine.isPresent()) {
+            return mapper.map(tuotuOppiaine.get(), Lops2019PaikallinenOppiaineDto.class);
+        }
+
+        return null;
     }
 
     @Override
@@ -190,16 +226,23 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
 
     @Override
     public void removeOne(Long opsId, Long oppiaineId) {
-        Lops2019Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
-        if (omistaaOpintojaksoja(oppiaine)) {
-            throw new BusinessRuleViolationException("oppaine-sisaltaa-opintojaksoja");
-        }
-
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
-        oppiaine.updateMuokkaustiedot();
-        poistoService.remove(ops, oppiaine);
-        oppiaineRepository.delete(oppiaine);
-        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
+
+        Optional<Lops2019Oppiaine> tuotuOppiaine = getTuodut(ops).stream().filter(tuotu -> tuotu.getId().equals(oppiaineId)).findFirst();
+        if (tuotuOppiaine.isPresent()) {
+            poistoService.remove(ops, tuotuOppiaine.get(), PoistetunTyyppi.TUOTU_OPPIMAARA);
+            muokkaustietoService.addOpsMuokkausTieto(opsId, tuotuOppiaine.get(), MuokkausTapahtuma.POISTO);
+        } else {
+            Lops2019Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
+            if (omistaaOpintojaksoja(oppiaine)) {
+                throw new BusinessRuleViolationException("oppaine-sisaltaa-opintojaksoja");
+            }
+
+            oppiaine.updateMuokkaustiedot();
+            poistoService.remove(ops, oppiaine);
+            oppiaineRepository.delete(oppiaine);
+            muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
+        }
     }
 
     @Override

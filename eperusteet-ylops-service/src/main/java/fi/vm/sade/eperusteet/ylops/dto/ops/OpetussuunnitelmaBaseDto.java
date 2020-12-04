@@ -64,6 +64,7 @@ public abstract class OpetussuunnitelmaBaseDto
     private Date perusteenVoimassaoloAlkaa;
     private Date perusteenVoimassaoloLoppuu;
     private boolean tuoPohjanOpintojaksot;
+    private boolean tuoPohjanOppimaarat;
     private Date perusteDataTuontiPvm = new Date();
     private Date viimeisinSyncPvm;
 }
