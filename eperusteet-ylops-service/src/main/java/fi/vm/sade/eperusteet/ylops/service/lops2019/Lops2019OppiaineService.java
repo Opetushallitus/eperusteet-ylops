@@ -1,6 +1,8 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineJarjestysDto;
@@ -16,7 +18,13 @@ public interface Lops2019OppiaineService {
     List<Lops2019PaikallinenOppiaineDto> getAll(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    List<Lops2019Oppiaine> getTuodut(Opetussuunnitelma opetussuunnitelma);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Lops2019PaikallinenOppiaineDto getOne(@P("opsId") Long opsId, Long oppiaineId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    Lops2019PaikallinenOppiaineDto getTuotu(@P("opsId") Long opsId, Long oppiaineId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     Lops2019PaikallinenOppiaineDto addOppiaine(@P("opsId") Long opsId, Lops2019PaikallinenOppiaineDto oppiaineDto);

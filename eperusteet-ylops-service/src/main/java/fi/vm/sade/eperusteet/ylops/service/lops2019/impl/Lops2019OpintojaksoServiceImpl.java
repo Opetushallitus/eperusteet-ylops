@@ -271,12 +271,12 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                 = lopsService.getPerusteenOppiaineet(opsId, opintojaksonOppiaineKoodit);
 
         Set<String> oppiaineKoodit = Stream.concat(
-                oppiaineRepository.findAllBySisalto(ops.getLops2019()).stream()
-                    .map(Lops2019Oppiaine::getKoodi),
+                lops2019OppiaineService.getAll(ops.getId()).stream()
+                    .map(Lops2019PaikallinenOppiaineDto::getKoodi),
                 perusteenOppiaineet.stream()
                         .flatMap(x -> Stream.concat(Stream.of(x), x.getOppimaarat().stream()))
-                        .map(oa -> oa.getKoodi().getUri()))
-                .collect(Collectors.toSet());
+                        .map(oa -> oa.getKoodi().getUri())
+        ).collect(Collectors.toSet());
 
         if (!oppiaineKoodit.containsAll(opintojaksoDto.getOppiaineet().stream()
                 .map(Lops2019OpintojaksonOppiaineDto::getKoodi)

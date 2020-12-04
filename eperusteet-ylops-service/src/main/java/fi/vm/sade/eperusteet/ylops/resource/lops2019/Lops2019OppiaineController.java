@@ -36,6 +36,13 @@ public class Lops2019OppiaineController {
         return oppiaineService.getOne(opsId, oppiaineId);
     }
 
+    @RequestMapping(value = "/{oppiaineId}/tuotu", method = RequestMethod.GET)
+    public Lops2019PaikallinenOppiaineDto getLops2019PaikallinenOppiaineTuotu(
+            @PathVariable final Long opsId,
+            @PathVariable final Long oppiaineId) {
+        return oppiaineService.getTuotu(opsId, oppiaineId);
+    }
+
     @RequestMapping(value = "/jarjestys", method = RequestMethod.GET)
     public List<Lops2019OppiaineJarjestysDto> getLops2019OppiaineJarjestys(
             @PathVariable final Long opsId) {

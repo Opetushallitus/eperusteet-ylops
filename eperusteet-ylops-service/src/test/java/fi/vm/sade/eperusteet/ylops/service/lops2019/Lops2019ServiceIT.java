@@ -10,6 +10,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
@@ -27,10 +28,12 @@ import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 
@@ -87,6 +90,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private Lops2019SisaltoRepository lops2019SisaltoRepository;
+
+    @Autowired
+    private PoistoService poistoService;
 
     @Test
     public void convertTestJsonToDto() {
@@ -675,5 +681,62 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
             poistetutRepository.save(poistettu);
         }
         assertThat(opintojaksoService.getTuodut(ops.getId())).hasSize(0);
+    }
+
+    @Test
+    public void testOpetussuunitelma_tuodutOppimaarat() {
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+        ops.setTuoPohjanOppimaarat(true);
+        opetussuunnitelmaService.updateOpetussuunnitelma(ops);
+
+        OpetussuunnitelmaNimiDto pohja = ops.getPohja();
+        Lops2019PaikallinenOppiaineDto pohjanOppiaineDto1 = oppiaineService.addOppiaine(pohja.getId(), Lops2019PaikallinenOppiaineDto.builder()
+                .nimi(LokalisoituTekstiDto.of("A1"))
+                .kuvaus(LokalisoituTekstiDto.of("A1"))
+                .koodi("poa1")
+                .build());
+        Lops2019PaikallinenOppiaineDto pohjanOppiaineDto2 = oppiaineService.addOppiaine(pohja.getId(), Lops2019PaikallinenOppiaineDto.builder()
+                .nimi(LokalisoituTekstiDto.of("A2"))
+                .kuvaus(LokalisoituTekstiDto.of("A2"))
+                .koodi("poa2")
+                .build());
+
+        Lops2019PaikallinenOppiaineDto oppiaineDto1 = oppiaineService.addOppiaine(ops.getId(), Lops2019PaikallinenOppiaineDto.builder()
+                .nimi(LokalisoituTekstiDto.of("B1"))
+                .kuvaus(LokalisoituTekstiDto.of("B1"))
+                .koodi("pob1")
+                .build());
+        Lops2019PaikallinenOppiaineDto oppiaineDto2 = oppiaineService.addOppiaine(ops.getId(), Lops2019PaikallinenOppiaineDto.builder()
+                .nimi(LokalisoituTekstiDto.of("B2"))
+                .kuvaus(LokalisoituTekstiDto.of("B2"))
+                .koodi("pob2")
+                .build());
+
+        assertThat(oppiaineService.getAll(ops.getId())).hasSize(4);
+        assertThat(oppiaineService.getAll(ops.getId())).extracting("id").containsExactlyInAnyOrder(pohjanOppiaineDto1.getId(), pohjanOppiaineDto2.getId(), oppiaineDto1.getId(), oppiaineDto2.getId());
+
+        oppiaineService.removeOne(ops.getId(), pohjanOppiaineDto1.getId());
+        assertThat(oppiaineService.getAll(ops.getId())).hasSize(3);
+        assertThat(oppiaineService.getAll(ops.getId())).extracting("id").containsExactlyInAnyOrder(pohjanOppiaineDto2.getId(), oppiaineDto1.getId(), oppiaineDto2.getId());
+
+        oppiaineService.removeOne(ops.getId(), pohjanOppiaineDto2.getId());
+        assertThat(oppiaineService.getAll(ops.getId())).hasSize(2);
+        assertThat(oppiaineService.getAll(ops.getId())).extracting("id").containsExactlyInAnyOrder(oppiaineDto1.getId(), oppiaineDto2.getId());
+
+        oppiaineService.removeOne(ops.getId(), oppiaineDto1.getId());
+        assertThat(oppiaineService.getAll(ops.getId())).hasSize(1);
+        assertThat(oppiaineService.getAll(ops.getId())).extracting("id").containsExactlyInAnyOrder(oppiaineDto2.getId());
+
+        oppiaineService.removeOne(ops.getId(), oppiaineDto2.getId());
+        assertThat(oppiaineService.getAll(ops.getId())).hasSize(0);
+
+        assertThat(oppiaineService.getAll(ops.getPohja().getId())).hasSize(2);
+        assertThat(oppiaineService.getAll(ops.getPohja().getId())).extracting("id").containsExactlyInAnyOrder(pohjanOppiaineDto1.getId(), pohjanOppiaineDto2.getId());
+
+        List<Lops2019PoistettuDto> poistetut = poistoService.getRemoved(ops.getId());
+
+        poistetut.stream().forEach(poistettu -> poistoService.restore(ops.getId(), poistettu.getId()));
+        assertThat(oppiaineService.getAll(ops.getId())).hasSize(4);
+        assertThat(oppiaineService.getAll(ops.getId())).extracting("id").contains(pohjanOppiaineDto1.getId(), pohjanOppiaineDto2.getId());
     }
 }
