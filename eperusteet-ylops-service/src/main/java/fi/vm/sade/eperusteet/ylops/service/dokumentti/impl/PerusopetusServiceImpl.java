@@ -380,10 +380,13 @@ public class PerusopetusServiceImpl implements PerusopetusService {
 
                         if (perusteOpetuksentavoiteDto.getTavoite() != null
                                 && perusteOpetuksentavoiteDto.getTavoite().get(docBase.getKieli()) != null) {
-                            String tavoite = perusteOpetuksentavoiteDto.getTavoite().get(docBase.getKieli());
-                            rivi.addSarake(tavoite.substring(0, tavoite.indexOf(" ")));
+                            String tavoite = cleanHtml(perusteOpetuksentavoiteDto.getTavoite().get(docBase.getKieli()));
+                            if (tavoite.indexOf(" ") != -1) {
+                                rivi.addSarake(tavoite.substring(0, tavoite.indexOf(" ")));
+                            } else {
+                                rivi.addSarake(tavoite);
+                            }
                         }
-
 
                         // Tavoitteisiin liittyvät sisltöalueet
                         Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = opetuksentavoite.getSisaltoalueet();
@@ -517,25 +520,50 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                     // Tavoitteen arviointi
                     DokumenttiTaulukko taulukko = new DokumenttiTaulukko();
                     taulukko.addOtsikko(messages.translate("arviointi-vuosiluokan-paatteeksi", docBase.getKieli()));
-                    taulukko.addOtsikkoSarake(messages.translate("arvioinnin-kohde", docBase.getKieli()));
-                    taulukko.addOtsikkoSarake(messages.translate("arvion-hyva-osaaminen", docBase.getKieli()));
 
-                    perusteOpetuksentavoiteDto.getArvioinninkohteet().forEach(perusteenTavoitteenArviointi -> {
-                        DokumenttiRivi rivi = new DokumenttiRivi();
-                        String kohde = "";
-                        if (perusteenTavoitteenArviointi.getArvioinninKohde() != null
-                                && perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()) != null) {
-                            kohde = cleanHtml(perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()));
-                        }
-                        rivi.addSarake(kohde);
-                        String kuvaus = "";
-                        if (perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus() != null
-                                && perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()) != null) {
-                            kuvaus = cleanHtml(perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()));
-                        }
-                        rivi.addSarake(kuvaus);
-                        taulukko.addRivi(rivi);
-                    });
+                    if (perusteOpetuksentavoiteDto.getArvioinninkohteet().size() == 1
+                            && perusteOpetuksentavoiteDto.getArvioinninkohteet().stream().findFirst().get().getHyvanOsaamisenKuvaus() != null) {
+
+                        taulukko.addOtsikkoSarake(messages.translate("arvioinnin-kohde", docBase.getKieli()));
+                        taulukko.addOtsikkoSarake(messages.translate("arvion-hyva-osaaminen", docBase.getKieli()));
+
+                        perusteOpetuksentavoiteDto.getArvioinninkohteet().forEach(perusteenTavoitteenArviointi -> {
+                            DokumenttiRivi rivi = new DokumenttiRivi();
+                            String kohde = "";
+                            if (perusteenTavoitteenArviointi.getArvioinninKohde() != null
+                                    && perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()) != null) {
+                                kohde = cleanHtml(perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()));
+                            }
+                            rivi.addSarake(kohde);
+                            String kuvaus = "";
+                            if (perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus() != null
+                                    && perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()) != null) {
+                                kuvaus = cleanHtml(perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()));
+                            }
+                            rivi.addSarake(kuvaus);
+                            taulukko.addRivi(rivi);
+                        });
+                    } else {
+                        taulukko.addOtsikkoSarake(messages.translate("osaamisen-kuvaus", docBase.getKieli()));
+                        taulukko.addOtsikkoSarake(messages.translate("arvion-kuvaus", docBase.getKieli()));
+
+                        perusteOpetuksentavoiteDto.getArvioinninkohteet().forEach(perusteenTavoitteenArviointi -> {
+                            DokumenttiRivi rivi = new DokumenttiRivi();
+                            String kohde = "";
+                            if (perusteenTavoitteenArviointi.getArvosana() != null) {
+                                kohde = messages.translate("osaamisen-kuvaus-arvosanalle-" + perusteenTavoitteenArviointi.getArvosana(), docBase.getKieli());
+                            }
+                            rivi.addSarake(kohde);
+
+                            String kuvaus = "";
+                            if (perusteenTavoitteenArviointi.getOsaamisenKuvaus() != null
+                                    && perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()) != null) {
+                                kuvaus = cleanHtml(perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()));
+                            }
+                            rivi.addSarake(kuvaus);
+                            taulukko.addRivi(rivi);
+                        });
+                    }
 
                     taulukko.addToDokumentti(docBase);
                 } else {
