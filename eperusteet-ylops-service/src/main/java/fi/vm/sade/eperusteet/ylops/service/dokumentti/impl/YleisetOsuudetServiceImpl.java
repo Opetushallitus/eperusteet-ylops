@@ -66,13 +66,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
             if (lapsi != null && lapsi.getTekstiKappale() != null) {
 
-                if ((liite != (lapsi.isLiite() ||  (lapsi.getTekstiKappale() != null
-                        && lapsi.getTekstiKappale().getNimi() != null
-                        && lapsi.getTekstiKappale().getNimi().getTeksti() != null
-                        && lapsi.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli()) != null
-                        && lapsi.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli())
-                        .equals(messages.translate("liitteet", docBase.getKieli())))))) {
-                    // Jos on liitteet päätasolla niin siirrytään seuraavaan tekstiin
+                if (liite != isLiite(lapsi, docBase)) {
                     continue;
                 }
 
@@ -129,5 +123,16 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
         if (docBase.getOps().getTekstit() != null) {
             addTekstiKappale(docBase, docBase.getOps().getTekstit(), false, true);
         }
+    }
+
+    private boolean isLiite(TekstiKappaleViite viite, DokumenttiBase docBase) {
+        return viite.isLiite()
+                || (viite.getTekstiKappale() != null
+                    && viite.getTekstiKappale().getNimi() != null
+                    && viite.getTekstiKappale().getNimi().getTeksti() != null
+                    && viite.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli()) != null
+                    && viite.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli())
+                    .equals(messages.translate("liitteet", docBase.getKieli())))
+                || (viite.getVanhempi() != null && isLiite(viite.getVanhempi(), docBase));
     }
 }
