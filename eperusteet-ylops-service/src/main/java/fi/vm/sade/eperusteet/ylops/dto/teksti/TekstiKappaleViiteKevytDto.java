@@ -38,4 +38,5 @@ public class TekstiKappaleViiteKevytDto {
     private boolean pakollinen;
     private boolean valmis;
     private List<TekstiKappaleViiteKevytDto> lapset;
+    private boolean liite;
 }

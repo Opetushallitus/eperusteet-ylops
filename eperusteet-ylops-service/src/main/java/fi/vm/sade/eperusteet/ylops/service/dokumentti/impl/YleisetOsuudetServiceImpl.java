@@ -24,14 +24,15 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-import java.util.Optional;
-
-import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.*;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addHeader;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addLokalisoituteksti;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.getTextString;
 
 /**
  * @author isaul
@@ -58,15 +59,19 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
     }
 
     private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite, boolean paataso) {
+        addTekstiKappale(docBase, viite, paataso, false);
+    }
+
+    private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite, boolean paataso, boolean liite) {
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
             if (lapsi != null && lapsi.getTekstiKappale() != null) {
 
-                if (paataso && lapsi.getTekstiKappale() != null
+                if ((liite != (lapsi.isLiite() ||  (lapsi.getTekstiKappale() != null
                         && lapsi.getTekstiKappale().getNimi() != null
                         && lapsi.getTekstiKappale().getNimi().getTeksti() != null
                         && lapsi.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli()) != null
                         && lapsi.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli())
-                        .equals(messages.translate("liitteet", docBase.getKieli()))) {
+                        .equals(messages.translate("liitteet", docBase.getKieli())))))) {
                     // Jos on liitteet päätasolla niin siirrytään seuraavaan tekstiin
                     continue;
                 }
@@ -74,7 +79,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                 // Ei näytetä yhteisen osien Pääkappaleiden otsikoita
                 // Opetuksen järjestäminen ja Opetuksen toteuttamisen lähtökohdat
                 if (paataso) {
-                    addTekstiKappale(docBase, lapsi, false);
+                    addTekstiKappale(docBase, lapsi, false, liite);
                 } else {
 
                     if (lapsi.getTekstiKappale().getNimi() != null) {
@@ -109,7 +114,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                     }
 
                     // Rekursiivisesti
-                    addTekstiKappale(docBase, lapsi, false);
+                    addTekstiKappale(docBase, lapsi, false, liite);
 
                     if (lapsi.getTekstiKappale().getNimi() != null) {
                         docBase.getGenerator().decreaseDepth();
@@ -122,17 +127,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
     public void addLiitteet(DokumenttiBase docBase) {
         if (docBase.getOps().getTekstit() != null) {
-            for (TekstiKappaleViite liiteViite : docBase.getOps().getTekstit().getLapset()) {
-                if (liiteViite != null
-                        && liiteViite.getTekstiKappale() != null
-                        && liiteViite.getTekstiKappale().getNimi() != null
-                        && liiteViite.getTekstiKappale().getNimi().getTeksti() != null
-                        && liiteViite.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli()) != null
-                        && liiteViite.getTekstiKappale().getNimi().getTeksti().get(docBase.getKieli())
-                        .equals(messages.translate("liitteet", docBase.getKieli()))) {
-                    addTekstiKappale(docBase, liiteViite, false);
-                }
-            }
+            addTekstiKappale(docBase, docBase.getOps().getTekstit(), false, true);
         }
     }
 }

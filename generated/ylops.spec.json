@@ -9803,6 +9803,9 @@
             "$ref" : "#/definitions/TekstiKappaleViiteKevytDto"
           }
         },
+        "liite" : {
+          "type" : "boolean"
+        },
         "_tekstiKappale" : {
           "$ref" : "#/definitions/Reference"
         }
