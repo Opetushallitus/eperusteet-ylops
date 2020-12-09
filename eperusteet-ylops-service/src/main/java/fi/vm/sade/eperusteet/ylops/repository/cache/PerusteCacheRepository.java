@@ -51,7 +51,7 @@ public interface PerusteCacheRepository extends JpaRepository<PerusteCache, Long
     List<PerusteCache> findNewestEntrieByKoulutustyyppisExceptDiaarit(Set<KoulutusTyyppi> tyypit,
                                                                       Set<String> diaariNotIn);
 
-    @Query("select c from PerusteCache c where c.diaarinumero = ?1 and " + NEWEST_BY_AIKALEIMA)
+    @Query(value = "select * from peruste_cache c where c.diaarinumero = ?1 and c.aikaleima = (select max(c2.aikaleima) from peruste_cache c2 where c2.peruste_id = c.peruste_id) ORDER BY c.aikaleima DESC LIMIT 1", nativeQuery = true)
     PerusteCache findNewestEntryForPerusteByDiaarinumero(String diaarinumero);
 
     @Query("select c from PerusteCache c where c.perusteId = ?1 and " + NEWEST_BY_AIKALEIMA)
