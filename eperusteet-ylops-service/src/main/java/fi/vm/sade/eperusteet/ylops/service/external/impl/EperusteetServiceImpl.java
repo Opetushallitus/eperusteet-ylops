@@ -291,7 +291,12 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Cacheable("perusteet")
     @Transactional
     public PerusteDto getPeruste(String diaarinumero) throws NotExistsException {
-        return getPerusteByDiaari(diaarinumero, false);
+        try {
+            return getPerusteByDiaari(diaarinumero, false);
+        } catch(NotExistsException e) {
+            PerusteCache perusteCache = perusteCacheRepository.findNewestEntryForPerusteByDiaarinumero(diaarinumero);
+            return getPerusteById(perusteCache.getPerusteId());
+        }
     }
 
     @Override
