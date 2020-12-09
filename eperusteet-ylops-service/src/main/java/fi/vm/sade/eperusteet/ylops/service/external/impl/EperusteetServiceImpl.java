@@ -237,6 +237,21 @@ public class EperusteetServiceImpl implements EperusteetService {
         return mapper.map(peruste, PerusteDto.class);
     }
 
+    private PerusteDto getEPerusteFromCache(final Long id) {
+        PerusteCache peruste = perusteCacheRepository.findNewestEntryForPeruste(id);
+        if (peruste == null) {
+            log.warn("No cache entry for Peruste id=" + id);
+            throw new NotExistsException("Perustetta ei löytynyt");
+        }
+        try {
+            return mapper.map(peruste, PerusteDto.class);
+        } catch (Exception e1) {
+            log.error("Failed to fallback-unserialize PerusteCache entry: " + peruste.getId()
+                    + " for peruste id=" + id, e1);
+            throw new NotExistsException("Perustetta ei löytynyt");
+        }
+    }
+
     private EperusteetPerusteDto getNewestPeruste(final long id, boolean forceRefresh) {
         try {
             EperusteetPerusteDto peruste = client.exchange(eperusteetServiceUrl
@@ -295,7 +310,7 @@ public class EperusteetServiceImpl implements EperusteetService {
             return getPerusteByDiaari(diaarinumero, false);
         } catch(NotExistsException e) {
             PerusteCache perusteCache = perusteCacheRepository.findNewestEntryForPerusteByDiaarinumero(diaarinumero);
-            return getPerusteById(perusteCache.getPerusteId());
+            return getEPerusteFromCache(perusteCache.getPerusteId());
         }
     }
 
