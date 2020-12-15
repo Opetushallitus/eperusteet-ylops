@@ -106,6 +106,11 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 .flatMap(oa -> Stream.concat(Stream.of(oa), oa.getOppimaarat().stream()))
                 .collect(Collectors.toList());
 
+        List<Lops2019ModuuliDto> moduulit = oppiaineetJaOppimaarat.stream()
+                .map(Lops2019OppiaineKaikkiDto::getModuulit)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
         List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = oppiaineService.getAll(ops.getId()).stream()
                 .filter(oppiaine -> opintojaksotMap.containsKey(oppiaine.getKoodi()))
                 .filter(poa -> StringUtils.isEmpty(poa.getPerusteenOppiaineUri()))
@@ -115,19 +120,19 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 oppiaineJarjestykset,
                 perusteOppiaineet,
                 paikallisetOppiaineet,
-                oa -> addOppiaine(docBase, (Lops2019OppiaineKaikkiDto) oa, opintojaksotMap.get(oa.getKoodi().getUri()), opintojaksotMap, oppiaineJarjestykset),
+                oa -> addOppiaine(docBase, (Lops2019OppiaineKaikkiDto) oa, opintojaksotMap.get(oa.getKoodi().getUri()), opintojaksotMap, oppiaineJarjestykset, moduulit),
                 poa -> {
                     Lops2019OppiaineKaikkiDto oppimaaranOppiaine = oppiaineetJaOppimaarat.stream()
                             .filter(oppiaineTaiOppimaara -> oppiaineTaiOppimaara
                                     .getKoodi().getUri().equals(poa.getPerusteenOppiaineUri()))
                             .findFirst()
                             .orElse(null);
-                    return addPaikallinenOppiaine(docBase, poa, opintojaksotMap.get(poa.getKoodi()), oppimaaranOppiaine);
+                    return addPaikallinenOppiaine(docBase, poa, opintojaksotMap.get(poa.getKoodi()), oppimaaranOppiaine, moduulit);
                 }
         );
 
         // Integraatio opintojaksot
-        addIntegraatioOpintojaksot(docBase);
+        addIntegraatioOpintojaksot(docBase, moduulit);
 
         docBase.getGenerator().decreaseDepth();
         docBase.getGenerator().increaseNumber();
@@ -187,7 +192,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             Lops2019OppiaineKaikkiDto oa,
             List<Lops2019OpintojaksoDto> opintojaksot,
             Map<String, List<Lops2019OpintojaksoDto>> opintojaksotMap,
-            Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset
+            Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset,
+            List<Lops2019ModuuliDto> moduulit
     ) {
         StringBuilder nimiBuilder = new StringBuilder();
         String nimi = getTextString(docBase, oa.getNimi());
@@ -291,7 +297,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                             -> Optional.ofNullable(p.getSecond().isPresent()
                             ? p.getSecond().get().getJarjestys()
                             : null).orElse(Integer.MAX_VALUE)))
-                    .forEach(p -> addOpintojakso(docBase, p.getFirst(), oa, null));
+                    .forEach(p -> addOpintojakso(docBase, p.getFirst(), oa, null, moduulit));
             docBase.getGenerator().decreaseDepth();
         }
 
@@ -325,7 +331,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 paikallisetOppimaarat.stream().filter(poa -> opintojaksotMap.get(poa.getKoodi()) != null).collect(Collectors.toList()),
                 om -> {
                     KoodiDto omKoodi = om.getKoodi();
-                    return addOppiaine(docBase, (Lops2019OppiaineKaikkiDto) om, omKoodi != null ? opintojaksotMap.get(omKoodi.getUri()) : null, opintojaksotMap, oppiaineJarjestykset);
+                    return addOppiaine(docBase, (Lops2019OppiaineKaikkiDto) om, omKoodi != null ? opintojaksotMap.get(omKoodi.getUri()) : null, opintojaksotMap, oppiaineJarjestykset, moduulit);
                 },
                 pom -> {
                     Lops2019OppiaineKaikkiDto perusteOa = lops2019Service.getPerusteOppiaine(docBase.getOps().getId(), oa.getId());
@@ -337,7 +343,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                                     .getKoodi().getUri().equals(pom.getPerusteenOppiaineUri()))
                             .findFirst()
                             .orElse(null);
-                    return addPaikallinenOppiaine(docBase, pom, opintojaksotMap.get(pom.getKoodi()), oppimaaranOppiaine);
+                    return addPaikallinenOppiaine(docBase, pom, opintojaksotMap.get(pom.getKoodi()), oppimaaranOppiaine, moduulit);
                 }
         );
 
@@ -351,7 +357,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             DokumenttiBase docBase,
             Lops2019PaikallinenOppiaineDto poa,
             List<Lops2019OpintojaksoDto> opintojaksot,
-            Lops2019OppiaineKaikkiDto oa
+            Lops2019OppiaineKaikkiDto oa,
+            List<Lops2019ModuuliDto> moduulit
     ) {
         // Nimi
         StringBuilder nimiBuilder = new StringBuilder();
@@ -499,7 +506,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                             -> Optional.ofNullable(p.getSecond().isPresent()
                             ? p.getSecond().get().getJarjestys()
                             : null).orElse(Integer.MAX_VALUE)))
-                    .forEach(p -> addOpintojakso(docBase, p.getFirst(), null, poa));
+                    .forEach(p -> addOpintojakso(docBase, p.getFirst(), null, poa, moduulit));
             docBase.getGenerator().decreaseDepth();
         }
 
@@ -518,7 +525,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             DokumenttiBase docBase,
             Lops2019OpintojaksoDto oj,
             Lops2019OppiaineKaikkiDto oa,
-            Lops2019PaikallinenOppiaineDto poa
+            Lops2019PaikallinenOppiaineDto poa,
+            List<Lops2019ModuuliDto> moduulit
     ) {
         // Ohitetaan jos opintojakso ei kuulu mihinkään oppiaineeseen. Ei mahdollista nykyisellä toteutuksella.
         Set<Lops2019OpintojaksonOppiaineDto> oppiaineet = oj.getOppiaineet();
@@ -531,27 +539,14 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         addOpintojaksonOtsikko(docBase, oj, isIntegraatioOpintojakso);
 
         if (isIntegraatioOpintojakso) {
-            addIntegraatioOpintojakso(docBase, oj);
+            addIntegraatioOpintojakso(docBase, oj, moduulit);
         } else {
             if (oppiaineet.size() > 1) {
                 // Integraatio opintojakso
                 addIntegraatioOpintojaksoLinkki(docBase, oj);
             } else {
                 // Yhden oppiaineen opintojakso
-
-                // Oppiaine
-                List<Lops2019OppiaineKaikkiDto> oaList = new ArrayList<>();
-                if (oa != null) {
-                    oaList.add(oa);
-                }
-
-                // Paikallinen oppiaine
-                List<Lops2019PaikallinenOppiaineDto> poaList = new ArrayList<>();
-                if (poa != null) {
-                    poaList.add(poa);
-                }
-
-                addYhdenOppiaineenOpintojakso(docBase, oj, oaList, poaList);
+                addYhdenOppiaineenOpintojakso(docBase, oj, moduulit);
             }
         }
 
@@ -602,12 +597,11 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
     private void addYhdenOppiaineenOpintojakso(
             DokumenttiBase docBase,
             Lops2019OpintojaksoDto oj,
-            List<Lops2019OppiaineKaikkiDto> oppiaineet,
-            List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet
+            List<Lops2019ModuuliDto> moduulit
     ) {
         // Opintojakson moduulit
         List<Lops2019ModuuliDto> moduulitSorted = new ArrayList<>();
-        addOpintojaksonModuulit(docBase, oj, oppiaineet, moduulitSorted);
+        addOpintojaksonModuulit(docBase, oj, moduulit, moduulitSorted);
 
         // Opintojakson paikalliset opintojaksot
         addOpintojaksonPaikallisetOpintojaksot(docBase, oj);
@@ -656,7 +650,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
     }
 
     private void addIntegraatioOpintojaksot(
-            DokumenttiBase docBase
+            DokumenttiBase docBase,
+            List<Lops2019ModuuliDto> moduulit
     ) {
         Long id = docBase.getOps().getId();
         List<Lops2019OpintojaksoDto> integrattioOpintojaksot = opintojaksoService.getAll(id).stream()
@@ -673,14 +668,15 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         docBase.getGenerator().increaseDepth();
         integrattioOpintojaksot.stream()
                 .sorted(Comparator.comparing(Lops2019OpintojaksoDto::getKoodi))
-                .forEach(oj -> addOpintojakso(docBase, oj, null, null));
+                .forEach(oj -> addOpintojakso(docBase, oj, null, null, moduulit));
         docBase.getGenerator().decreaseDepth();
         docBase.getGenerator().increaseNumber();
     }
 
     private void addIntegraatioOpintojakso(
             DokumenttiBase docBase,
-            Lops2019OpintojaksoDto oj
+            Lops2019OpintojaksoDto oj,
+            List<Lops2019ModuuliDto> moduulit
     ) {
         List<Lops2019OpintojaksonOppiaineDto> oppiaineetSorted = oj.getOppiaineet().stream()
                 .sorted(Comparator.comparing(Lops2019OpintojaksonOppiaineDto::getKoodi))
@@ -721,7 +717,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         // Opintojakson moduulit
         List<Lops2019ModuuliDto> moduulitSorted = new ArrayList<>();
-        addOpintojaksonModuulit(docBase, oj, oppiaineet, moduulitSorted);
+        addOpintojaksonModuulit(docBase, oj, moduulit, moduulitSorted);
 
         // Opintojakson paikalliset opintojaksot
         addOpintojaksonPaikallisetOpintojaksot(docBase, oj);
@@ -787,25 +783,25 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
     private void addOpintojaksonModuulit(
             DokumenttiBase docBase,
             Lops2019OpintojaksoDto oj,
-            List<Lops2019OppiaineKaikkiDto> oaList,
+            List<Lops2019ModuuliDto> moduulit,
             List<Lops2019ModuuliDto> moduulitSorted
     ) {
-        List<Lops2019OpintojaksonModuuliDto> moduulit = oj.getModuulit();
-        if (!ObjectUtils.isEmpty(moduulit)) {
+        List<Lops2019OpintojaksonModuuliDto> opintojaksonModuulit = oj.getModuulit();
+        if (!ObjectUtils.isEmpty(opintojaksonModuulit)) {
             Element ul = docBase.getDocument().createElement("ul");
             addTeksti(docBase, messages.translate("opintojakson-moduulit", docBase.getKieli()), "h6");
-            moduulit.stream()
+            opintojaksonModuulit.stream()
                     .sorted(Comparator.comparing(Lops2019OpintojaksonModuuliDto::getKoodiUri))
                     .forEach(ojm -> {
                         String koodiUri = ojm.getKoodiUri();
-                        if (koodiUri != null && !ObjectUtils.isEmpty(oaList)) {
-                            oaList.forEach(oa -> oa.getModuulit().stream()
-                                    .filter(m -> koodiUri.equals(m.getKoodi() != null ? m.getKoodi().getUri() : null))
+                        if (koodiUri != null && !ObjectUtils.isEmpty(moduulit)) {
+                            moduulit.stream()
+                                    .filter(moduuli -> koodiUri.equals(moduuli.getKoodi() != null ? moduuli.getKoodi().getUri() : null))
                                     .findAny()
                                     .ifPresent(m -> {
                                         moduulitSorted.add(m);
                                         addModuuli(docBase, m, ul);
-                                    }));
+                                    });
                         }
                     });
             docBase.getBodyElement().appendChild(ul);
