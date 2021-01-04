@@ -109,25 +109,22 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                     .sum();
         }
 
-        if (opintojakso.getModuulit().isEmpty()) {
-            laajuudet +=  opintojakso.getOppiaineet().stream()
-                .filter(Objects::nonNull)
-                .map(Lops2019OpintojaksonOppiaineDto::getLaajuus)
-                .filter(Objects::nonNull)
-                .mapToLong(Long::longValue)
+        laajuudet +=  opintojakso.getOppiaineet().stream()
+            .filter(Objects::nonNull)
+            .map(Lops2019OpintojaksonOppiaineDto::getLaajuus)
+            .filter(Objects::nonNull)
+            .mapToLong(Long::longValue)
+            .sum();
+
+        Set<String> moduulikoodit = opintojakso.getModuulit().stream()
+                .map(Lops2019OpintojaksonModuuliDto::getKoodiUri)
+                .collect(Collectors.toSet());
+        Set<fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto> perusteModuulit
+                = lopsService.getPerusteModuulitImpl(opsId, moduulikoodit);
+        laajuudet +=  perusteModuulit.stream()
+                .map(fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto::getLaajuus)
+                .mapToLong(BigDecimal::longValue)
                 .sum();
-        }
-        else {
-            Set<String> moduulikoodit = opintojakso.getModuulit().stream()
-                    .map(Lops2019OpintojaksonModuuliDto::getKoodiUri)
-                    .collect(Collectors.toSet());
-            Set<fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto> perusteModuulit
-                    = lopsService.getPerusteModuulitImpl(opsId, moduulikoodit);
-            laajuudet +=  perusteModuulit.stream()
-                    .map(fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto::getLaajuus)
-                    .mapToLong(BigDecimal::longValue)
-                    .sum();
-        }
 
         return laajuudet;
     }
