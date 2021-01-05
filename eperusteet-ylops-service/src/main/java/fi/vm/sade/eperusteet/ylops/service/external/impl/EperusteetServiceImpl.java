@@ -238,34 +238,30 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     private EperusteetPerusteDto getNewestPeruste(final long id, boolean forceRefresh) {
-        try {
-            EperusteetPerusteDto peruste = client.exchange(eperusteetServiceUrl
-                    + "/api/perusteet/{id}/kaikki", HttpMethod.GET, httpEntity, EperusteetPerusteDto.class, id).getBody();
-
-            Date newest = perusteCacheRepository.findNewestEntryAikaleimaForPeruste(id);
-            if (peruste.getGlobalVersion() != null // not all backend environments may return this info yet
-                    && (newest == null || newest.compareTo(peruste.getGlobalVersion().getAikaleima()) < 0)) {
-                savePerusteCahceEntry(peruste);
-            }
-            return peruste;
-        } catch (Exception e) {
-            if (forceRefresh) {
-                throw e;
-            }
-            log.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
-                    + " Trying from DB-cache.");
-            PerusteCache found = perusteCacheRepository.findNewestEntryForPeruste(id);
-            if (found == null) {
-                log.warn("No cache entry for Peruste id=" + id);
-                throw e;
-            }
+        PerusteCache found = perusteCacheRepository.findNewestEntryForPeruste(id);
+        if (found == null || forceRefresh) {
             try {
-                return found.getPerusteJson(jsonMapper);
-            } catch (IOException e1) {
-                log.error("Failed to fallback-unserialize PerusteCache entry: " + found.getId()
-                        + " for peruste id=" + id, e1);
-                throw e;
+                EperusteetPerusteDto peruste = client.exchange(eperusteetServiceUrl
+                        + "/api/perusteet/{id}/kaikki", HttpMethod.GET, httpEntity, EperusteetPerusteDto.class, id).getBody();
+
+                Date newest = perusteCacheRepository.findNewestEntryAikaleimaForPeruste(id);
+                if (peruste.getGlobalVersion() != null // not all backend environments may return this info yet
+                        && (newest == null || newest.compareTo(peruste.getGlobalVersion().getAikaleima()) < 0)) {
+                    savePerusteCahceEntry(peruste);
+                }
+                return peruste;
+            } catch (Exception e) {
+                log.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
+                        + " Trying from DB-cache.");
             }
+        }
+
+        try {
+            return found.getPerusteJson(jsonMapper);
+        } catch (IOException e) {
+            log.error("Failed to fallback-unserialize PerusteCache entry: " + found.getId()
+                    + " for peruste id=" + id, e);
+            return null;
         }
     }
 
