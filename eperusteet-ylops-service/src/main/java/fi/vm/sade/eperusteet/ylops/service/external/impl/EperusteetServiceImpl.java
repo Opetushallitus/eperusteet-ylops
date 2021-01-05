@@ -303,12 +303,25 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     private PerusteDto getPerusteByDiaari(String diaarinumero, boolean forceRefresh) throws NotExistsException {
-        PerusteInfoDto perusteInfoDto = findPerusteet(forceRefresh).stream()
+        Optional<PerusteInfoDto> perusteInfoDto = findPerusteet(forceRefresh).stream()
                 .filter(p -> diaarinumero.equals(p.getDiaarinumero()))
-                .findAny()
-                .orElseThrow(() -> new NotExistsException("Perustetta ei löytynyt"));
+                .findAny();
 
-        return getEperusteetPeruste(perusteInfoDto.getId(), forceRefresh);
+        Long perusteId = null;
+        if (perusteInfoDto.isPresent()) {
+            perusteId = perusteInfoDto.get().getId();
+        } else if (forceRefresh) {
+            PerusteCache perusteCache = perusteCacheRepository.findNewestEntryForPerusteByDiaarinumero(diaarinumero);
+            if (perusteCache != null) {
+                perusteId = perusteCache.getPerusteId();
+            }
+        }
+
+        if (perusteId == null) {
+            throw new NotExistsException("Perustetta ei löytynyt");
+        }
+
+        return getEperusteetPeruste(perusteId, forceRefresh);
     }
 
     @Override

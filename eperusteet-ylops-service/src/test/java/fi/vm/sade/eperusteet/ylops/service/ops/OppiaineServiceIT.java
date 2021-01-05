@@ -168,15 +168,11 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
 
         OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
-        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
-        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 2"));
-        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 3"));
-
+        OppiaineDto oppiaine = oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
 
         OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
         OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
 
-        OppiaineDto oppiaine = oppiaineService.getAll(ylaOps.getId()).get(0);
         OpsOppiaineDto opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId());
         assertNotEquals("Oppiaineet ovat samat", opsOppiaine.getOppiaine().getId(), oppiaine.getId());
     }
