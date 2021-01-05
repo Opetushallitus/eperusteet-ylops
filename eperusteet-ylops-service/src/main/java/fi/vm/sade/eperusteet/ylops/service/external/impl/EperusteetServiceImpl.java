@@ -245,8 +245,8 @@ public class EperusteetServiceImpl implements EperusteetService {
                         + "/api/perusteet/{id}/kaikki", HttpMethod.GET, httpEntity, EperusteetPerusteDto.class, id).getBody();
 
                 Date newest = perusteCacheRepository.findNewestEntryAikaleimaForPeruste(id);
-                if (peruste.getGlobalVersion() != null // not all backend environments may return this info yet
-                        && (newest == null || newest.compareTo(peruste.getGlobalVersion().getAikaleima()) < 0)) {
+                if (forceRefresh
+                        || (peruste.getGlobalVersion() != null && (newest == null || newest.compareTo(peruste.getGlobalVersion().getAikaleima()) < 0))) {
                     savePerusteCahceEntry(peruste);
                 }
                 return peruste;
