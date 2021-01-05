@@ -267,7 +267,7 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     private void savePerusteCahceEntry(EperusteetPerusteDto peruste) {
         PerusteCache cache = new PerusteCache();
-        cache.setAikaleima(peruste.getGlobalVersion().getAikaleima());
+        cache.setAikaleima(new Date());
         cache.setPerusteId(peruste.getId());
         cache.setKoulutustyyppi(peruste.getKoulutustyyppi());
         cache.setDiaarinumero(peruste.getDiaarinumero());
