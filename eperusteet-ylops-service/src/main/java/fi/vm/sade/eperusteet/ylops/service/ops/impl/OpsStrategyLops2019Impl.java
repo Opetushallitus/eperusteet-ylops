@@ -7,7 +7,7 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategy;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategyQualifier;
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,18 +23,19 @@ public class OpsStrategyLops2019Impl implements OpsStrategy {
     public void reorder(TekstiKappaleViiteDto.Puu tree, Opetussuunnitelma ops) {
         Opetussuunnitelma pohja = ops.getPohja();
         if (pohja != null) {
-            Set<UUID> pohjaTekstit = pohja.getTekstit().getLapset().stream()
+            List<UUID> pohjaTekstit = pohja.getTekstit().getLapset().stream()
                     .map(x -> x.getTekstiKappale().getTunniste())
-                    .collect(Collectors.toSet());
+                    .collect(Collectors.toList());
 
-            Set<UUID> tekstit = tree.getLapset().stream()
+            List<UUID> tekstit = tree.getLapset().stream()
                     .map(x -> x.getTekstiKappale().getTunniste())
-                    .collect(Collectors.toSet());
+                    .filter(tunniste -> pohjaTekstit.contains(tunniste))
+                    .collect(Collectors.toList());
 
             Collection disjunction = CollectionUtils.disjunction(pohjaTekstit, tekstit);
 
             // Päätasolle ei sallita muutoksia
-            if (!disjunction.isEmpty()) {
+            if (!pohjaTekstit.equals(tekstit) ) {
                 throw new BusinessRuleViolationException("paatasolle-ei-sallita-muutoksia");
             }
 
