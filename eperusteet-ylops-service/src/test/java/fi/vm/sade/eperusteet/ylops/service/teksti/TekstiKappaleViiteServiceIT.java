@@ -10,6 +10,10 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,7 +88,13 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
             viiteDto.setTekstiKappale(tekstiKappaleDto);
 
             tekstit.getLapset().add(viiteDto);
+            tekstiKappaleViiteService.reorderSubTree(opsDto.getId(), tekstit.getId(), tekstit);
 
+            tekstit.setLapset(
+                    Stream.concat(
+                        tekstit.getLapset().subList(5, 7).stream(),
+                        tekstit.getLapset().subList(0, 5).stream()
+                    ).collect(Collectors.toList()));
             assertThatThrownBy(() -> tekstiKappaleViiteService.reorderSubTree(opsDto.getId(), tekstit.getId(), tekstit))
                     .isInstanceOf(BusinessRuleViolationException.class)
                     .hasMessage("paatasolle-ei-sallita-muutoksia");
@@ -92,7 +102,7 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
 
         {
             final TekstiKappaleViiteDto.Puu tekstit = opetussuunnitelmaService.getTekstit(opsDto.getId(), TekstiKappaleViiteDto.Puu.class);
-            assertThat(tekstit.getLapset()).hasSize(6);
+            assertThat(tekstit.getLapset()).hasSize(7);
             tekstiKappaleViiteService.reorderSubTree(opsDto.getId(), tekstit.getId(), tekstit);
 
             tekstit.getLapset().remove(0);
