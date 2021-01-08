@@ -141,6 +141,15 @@ public class OpetussuunnitelmaController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{id}/vaihda/{pohjaId}", method = RequestMethod.POST)
+    @Timed
+    public ResponseEntity vaihdaPohja(
+            @PathVariable("id") final Long id,
+            @PathVariable("pohjaId") final Long pohjaId) {
+        opetussuunnitelmaService.vaihdaPohja(id, pohjaId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{opsId}/julkaise", method = RequestMethod.POST)
     public OpetussuunnitelmanJulkaisuDto julkaise(
             @PathVariable final Long opsId,

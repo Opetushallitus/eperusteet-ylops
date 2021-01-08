@@ -130,6 +130,22 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable, Hi
         this.omistussuhde = omistussuhde;
     }
 
+    public static TekstiKappaleViite copy(TekstiKappaleViite original) {
+        TekstiKappaleViite tkv = new TekstiKappaleViite();
+        tkv.setOmistussuhde(Omistussuhde.OMA);
+        tkv.setLapset(new ArrayList<>());
+        tkv.updateOriginal(original);
+        tkv.setVanhempi(null);
+        tkv.setPakollinen(original.isPakollinen());
+        tkv.setNaytaPerusteenTeksti(original.isNaytaPerusteenTeksti());
+        tkv.setPerusteTekstikappaleId(original.getPerusteTekstikappaleId());
+        tkv.setLiite(original.isLiite());
+        TekstiKappale copy = original.getTekstiKappale().copy();
+        copy.setTeksti(null);
+        tkv.setTekstiKappale(copy);
+        return tkv;
+    }
+
     public void kiinnitaHierarkia(TekstiKappaleViite parent) {
         this.setVanhempi(parent);
         if (lapset != null) {

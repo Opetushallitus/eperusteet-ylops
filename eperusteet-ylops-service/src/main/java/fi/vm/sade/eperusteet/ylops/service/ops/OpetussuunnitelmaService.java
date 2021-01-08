@@ -163,4 +163,7 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     NavigationNodeDto buildNavigationPublic(@P("opsId") Long opsId, String kieli);
+
+    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
+    void vaihdaPohja(Long id, Long pohjaId);
 }
