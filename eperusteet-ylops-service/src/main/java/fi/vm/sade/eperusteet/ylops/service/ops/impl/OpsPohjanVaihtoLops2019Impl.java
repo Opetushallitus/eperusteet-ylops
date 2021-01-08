@@ -122,11 +122,9 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
         ops.setTekstit(tekstikappaleviiteRepository.save(new TekstiKappaleViite()));
         kopioiHierarkia(uusiHierarkia, ops.getTekstit(), omat, perusteen);
         for (TekstiKappaleViite oma : omat.values()) {
-            if (uusiHierarkia.getLapset().size() > 0) {
-                oma.setVanhempi(uusiHierarkia.getLapset().get(0));
+                oma.setVanhempi(uusiHierarkia);
                 oma.setLapset(new ArrayList<>());
                 uusiHierarkia.getLapset().add(oma);
-            }
         }
         ops.setPohja(uusi);
     }
