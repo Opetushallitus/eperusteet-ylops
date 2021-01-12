@@ -1881,4 +1881,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public void vaihdaPohja(Long id, Long pohjaId) {
         dispatcher.get(KoulutustyyppiToteutus.LOPS2019, OpsPohjanVaihto.class).vaihdaPohja(id, pohjaId);
     }
+
+    @Override
+    public Set<OpetussuunnitelmaInfoDto> vaihdettavatPohjat(Long id) {
+        return dispatcher.get(KoulutustyyppiToteutus.LOPS2019, OpsPohjanVaihto.class).haeVaihtoehdot(id);
+    }
+
+
 }

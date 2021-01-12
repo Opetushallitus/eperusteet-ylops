@@ -1576,6 +1576,31 @@
         }
       }
     },
+    "/opetussuunnitelmat/{id}/pohjavaihtoehdot" : {
+      "get" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "haePohjavaihtoehdot",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "uniqueItems" : true,
+              "items" : {
+                "$ref" : "#/definitions/OpetussuunnitelmaInfoDto"
+              }
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/{id}/sisalto" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
@@ -1643,6 +1668,30 @@
             "schema" : {
               "$ref" : "#/definitions/OpetussuunnitelmaDto"
             }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{id}/vaihda/{pohjaId}" : {
+      "post" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "vaihdaPohja",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "pohjaId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
           }
         }
       }

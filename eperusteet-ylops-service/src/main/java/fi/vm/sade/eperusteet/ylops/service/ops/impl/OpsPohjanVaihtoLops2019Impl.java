@@ -4,12 +4,14 @@ import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjanVaihto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -29,6 +32,9 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
 
     @Autowired
     private TekstiKappaleRepository tekstiKappaleRepository;
+
+    @Autowired
+    private DtoMapper mapper;
 
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
@@ -44,10 +50,10 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
                 .forEach(original -> {
                     TekstiKappaleViite tkv = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(original));
                     tkv.setVanhempi(parent);
+                    tkv.setOmistussuhde(original.getOmistussuhde());
                     tkv.setTekstiKappale(tekstiKappaleRepository.save(tkv.getTekstiKappale()));
                     parent.getLapset().add(tkv);
                     kopioiHierarkia(original, tkv, omat, perusteen);
-
 
                     if (tkv.getPerusteTekstikappaleId() != null) {
                         // Perusteen tekstin paikallinen tarkennus
@@ -60,10 +66,13 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
 
                         // Omat alikappaleet
                         if (omat.containsKey(tkv.getPerusteTekstikappaleId())) {
-                            TekstiKappaleViite oma = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(original));
-                            oma.setVanhempi(tkv);
+                            TekstiKappaleViite vanhaOma = omat.get(tkv.getPerusteTekstikappaleId());
+                            TekstiKappaleViite oma = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(vanhaOma));
+                            oma.setOmistussuhde(Omistussuhde.OMA);
                             oma.setLapset(new ArrayList<>());
-                            oma.setTekstiKappale(tekstiKappaleRepository.save(oma.getTekstiKappale()));
+                            oma.updateOriginal(null);
+                            oma.setTekstiKappale(tekstiKappaleRepository.save(vanhaOma.getTekstiKappale()));
+                            oma.setVanhempi(tkv);
                             tkv.getLapset().add(oma);
                             omat.remove(tkv.getPerusteTekstikappaleId());
                         }
@@ -87,7 +96,7 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
                                 Map<Long, TekstiKappaleViite> omat,
                                 Map<Long, TekstiKappaleViite> perusteen) {
         if (viite.getTekstiKappale() != null) {
-            if (viite.getPerusteTekstikappaleId() == null) {
+            if (viite.getPerusteTekstikappaleId() == null && viite.getOriginal() == null) {
                 Long perusteenTekstiId = findPerusteenTekstiId(viite);
                 omat.put(perusteenTekstiId, viite);
             }
@@ -113,6 +122,14 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
             throw new BusinessRuleViolationException("pohja-vaihdettavissa-vain-samaan-perusteeseen");
         }
 
+        boolean oikea = haeVaihtoehdot(opsId).stream()
+                .map(OpetussuunnitelmaBaseDto::getId)
+                .anyMatch(id -> Objects.equals(id, pohjaId));
+
+        if (!oikea) {
+            throw new BusinessRuleViolationException("virheellinen-pohja");
+        }
+
         TekstiKappaleViite tekstit = ops.getTekstit();
         Map<Long, TekstiKappaleViite> omat = new HashMap<>();
         Map<Long, TekstiKappaleViite> perusteen = new HashMap<>();
@@ -132,5 +149,17 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
     @Override
     public Set<KoulutustyyppiToteutus> getTyypit() {
         return Sets.newHashSet(KoulutustyyppiToteutus.LOPS2019);
+    }
+
+    @Override
+    public Set<OpetussuunnitelmaInfoDto> haeVaihtoehdot(Long opsId) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.getOne(opsId);
+        Long perusteId = ops.getCachedPeruste().getPerusteId();
+        Set<OpetussuunnitelmaInfoDto> pohjat = opetussuunnitelmaService.getOpetussuunnitelmaOpsPohjat().stream()
+                .filter(pohja -> Objects.equals(pohja.getPerusteenId(), perusteId))
+                .filter(pohja -> !Objects.equals(pohja.getId(), ops.getPohja().getId()))
+                .filter(pohja -> !Objects.equals(pohja.getId(), opsId))
+                .collect(Collectors.toSet());
+        return pohjat;
     }
 }

@@ -165,5 +165,8 @@ public interface OpetussuunnitelmaService {
     NavigationNodeDto buildNavigationPublic(@P("opsId") Long opsId, String kieli);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
-    void vaihdaPohja(Long id, Long pohjaId);
+    void vaihdaPohja(@P("opsId") Long id, Long pohjaId);
+
+    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
+    Set<OpetussuunnitelmaInfoDto> vaihdettavatPohjat(@P("opsId") Long id);
 }
