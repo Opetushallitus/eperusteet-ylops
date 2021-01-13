@@ -779,7 +779,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    private void kopioiPohjanSisallotOpetussuunnitelmaan(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
+    public void kopioiPohjanSisallotOpetussuunnitelmaan(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
         if (pohja == null) {
             throw new BusinessRuleViolationException("pohjaa-ei-loytynyt");
         }
@@ -1498,7 +1498,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             TekstiKappaleViiteDto.Puu tekstikappale = getTekstit(id, TekstiKappaleViiteDto.Puu.class);
             tekstikappale.getLapset().sort(Comparator.comparing(tkLapsi -> vanhatIdt.contains(tkLapsi.getId())));
             tekstiKappaleViiteService.reorderSubTree(id, tekstikappale.getId(), tekstikappale);
-
         }
         ops.setPerusteDataTuontiPvm(new Date());
 
@@ -1877,5 +1876,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         // Lisätään viite parent-noden alle
         return tekstiKappaleViiteService.addTekstiKappaleViite(opsId, parentId, viite);
     }
+
+    @Override
+    public void vaihdaPohja(Long id, Long pohjaId) {
+        dispatcher.get(KoulutustyyppiToteutus.LOPS2019, OpsPohjanVaihto.class).vaihdaPohja(id, pohjaId);
+    }
+
+    @Override
+    public Set<OpetussuunnitelmaInfoDto> vaihdettavatPohjat(Long id) {
+        return dispatcher.get(KoulutustyyppiToteutus.LOPS2019, OpsPohjanVaihto.class).haeVaihtoehdot(id);
+    }
+
 
 }
