@@ -128,18 +128,21 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
             throw new BusinessRuleViolationException("uuden-pohjan-organisaatiot-vaarat");
         }
 
-        TekstiKappaleViite tekstit = ops.getTekstit();
         Map<Long, TekstiKappaleViite> omat = new HashMap<>();
         Map<Long, TekstiKappaleViite> perusteen = new HashMap<>();
-        collectTekstit(tekstit, omat, perusteen);
+        collectTekstit(ops.getTekstit(), omat, perusteen);
 
-        TekstiKappaleViite uusiHierarkia = uusi.getTekstit();
         ops.setTekstit(tekstikappaleviiteRepository.save(new TekstiKappaleViite()));
-        kopioiHierarkia(uusiHierarkia, ops.getTekstit(), omat, perusteen);
-        for (TekstiKappaleViite oma : omat.values()) {
-                oma.setVanhempi(uusiHierarkia);
-                oma.setLapset(new ArrayList<>());
-                uusiHierarkia.getLapset().add(oma);
+        kopioiHierarkia(uusi.getTekstit(), ops.getTekstit(), omat, perusteen);
+
+        for (TekstiKappaleViite vanhaOma : omat.values()) {
+            TekstiKappaleViite oma = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(vanhaOma));
+            oma.setOmistussuhde(Omistussuhde.OMA);
+            oma.setLapset(new ArrayList<>());
+            oma.updateOriginal(null);
+            oma.setTekstiKappale(tekstiKappaleRepository.save(vanhaOma.getTekstiKappale()));
+            oma.setVanhempi(ops.getTekstit());
+            ops.getTekstit().getLapset().add(oma);
         }
         ops.setPohja(uusi);
     }
