@@ -122,12 +122,10 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
             throw new BusinessRuleViolationException("pohja-vaihdettavissa-vain-samaan-perusteeseen");
         }
 
-        boolean oikea = haeVaihtoehdot(opsId).stream()
-                .map(OpetussuunnitelmaBaseDto::getId)
-                .anyMatch(id -> Objects.equals(id, pohjaId));
-
-        if (!oikea) {
-            throw new BusinessRuleViolationException("virheellinen-pohja");
+        Set<String> a = ops.getOrganisaatiot();
+        Set<String> b = uusi.getOrganisaatiot();
+        if (!a.containsAll(b)) {
+            throw new BusinessRuleViolationException("uuden-pohjan-organisaatiot-vaarat");
         }
 
         TekstiKappaleViite tekstit = ops.getTekstit();
