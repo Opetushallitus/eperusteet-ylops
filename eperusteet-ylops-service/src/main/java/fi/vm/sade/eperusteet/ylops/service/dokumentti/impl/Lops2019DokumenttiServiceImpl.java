@@ -603,6 +603,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         List<Lops2019ModuuliDto> moduulitSorted = new ArrayList<>();
         addOpintojaksonModuulit(docBase, oj, moduulit, moduulitSorted);
 
+        addOpintojaksonLisalaajuus(docBase, oj);
+
         // Opintojakson paikalliset opintojaksot
         addOpintojaksonPaikallisetOpintojaksot(docBase, oj);
 
@@ -719,6 +721,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         List<Lops2019ModuuliDto> moduulitSorted = new ArrayList<>();
         addOpintojaksonModuulit(docBase, oj, moduulit, moduulitSorted);
 
+        addOpintojaksonLisalaajuus(docBase, oj);
+
         // Opintojakson paikalliset opintojaksot
         addOpintojaksonPaikallisetOpintojaksot(docBase, oj);
 
@@ -805,6 +809,17 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                         }
                     });
             docBase.getBodyElement().appendChild(ul);
+        }
+    }
+
+    private void addOpintojaksonLisalaajuus(DokumenttiBase docBase, Lops2019OpintojaksoDto oj) {
+        Long oppiainelaajuus = oj.getOppiaineet().stream()
+                .filter(oppiaine -> oppiaine.getLaajuus() != null)
+                .map(Lops2019OpintojaksonOppiaineDto::getLaajuus)
+                .collect(Collectors.summingLong(Long::longValue));
+        if (!ObjectUtils.isEmpty(oj.getModuulit()) && oppiainelaajuus > 0l) {
+            addTeksti(docBase, messages.translate("lisalaajuus", docBase.getKieli()), "h6");
+            addTeksti(docBase, oppiainelaajuus + " " + messages.translate("op", docBase.getKieli()), "p");
         }
     }
 
