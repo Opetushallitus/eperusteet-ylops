@@ -32,6 +32,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -42,6 +43,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -102,9 +104,16 @@ public class PermissionManager {
     @Autowired
     private KysymysRepository kysymysRepository;
 
+    @Autowired
+    private Environment env;
+
     @Transactional(readOnly = true)
     public boolean hasPermission(Authentication authentication, Serializable targetId, TargetType target,
                                  Permission perm) {
+
+        if (Arrays.stream(env.getActiveProfiles()).anyMatch(profile -> profile.equals("local"))) {
+            return true;
+        }
 
         if (perm == Permission.HALLINTA && targetId == null && target == TargetType.TARKASTELU &&
                 hasRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS, RolePermission.CRUD, Organization.OPH)) {
