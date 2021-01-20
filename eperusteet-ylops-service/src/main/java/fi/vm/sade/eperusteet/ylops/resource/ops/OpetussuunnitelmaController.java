@@ -23,23 +23,38 @@ import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.security.Permission;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
+import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import io.swagger.annotations.Api;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -281,12 +296,12 @@ public class OpetussuunnitelmaController {
     }
 
     @RequestMapping(value = "/oikeudet", method = RequestMethod.GET)
-    public ResponseEntity<Map<PermissionManager.TargetType, Set<PermissionManager.Permission>>> getOikeudet() {
+    public ResponseEntity<Map<TargetType, Set<Permission>>> getOikeudet() {
         return new ResponseEntity<>(permissionManager.getOpsPermissions(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/oikeudet", method = RequestMethod.GET)
-    public ResponseEntity<Map<PermissionManager.TargetType, Set<PermissionManager.Permission>>> getOikeudetById(
+    public ResponseEntity<Map<TargetType, Set<Permission>>> getOikeudetById(
             @PathVariable("id") final Long id) {
         return new ResponseEntity<>(permissionManager.getOpsPermissions(id), HttpStatus.OK);
     }

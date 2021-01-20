@@ -13,7 +13,18 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
+import fi.vm.sade.eperusteet.ylops.service.security.Permission;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
+import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import javax.persistence.EntityManager;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Whitelist;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +33,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
-import javax.persistence.EntityManager;
-import java.util.*;
-import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -193,7 +198,7 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
 
     private void hasOpsPermissions(Long opsId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!permissionManager.hasPermission(authentication, opsId, PermissionManager.TargetType.OPETUSSUUNNITELMA, PermissionManager.Permission.LUKU)) {
+        if (!permissionManager.hasPermission(authentication, opsId, TargetType.OPETUSSUUNNITELMA, Permission.LUKU)) {
             throw new BusinessRuleViolationException("ei-oikeutta");
         }
     }
