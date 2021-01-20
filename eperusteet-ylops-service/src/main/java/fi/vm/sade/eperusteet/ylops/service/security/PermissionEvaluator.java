@@ -15,17 +15,13 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.security;
 
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import java.io.Serializable;
 import java.util.Optional;
-
-import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-
-import static fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.Permission;
-import static fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.TargetType;
 
 /**
  * Oikeuksien tarkistelu.

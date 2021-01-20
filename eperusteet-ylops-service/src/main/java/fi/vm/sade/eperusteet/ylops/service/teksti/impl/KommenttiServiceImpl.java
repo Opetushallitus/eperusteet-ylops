@@ -22,22 +22,18 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.KommenttiRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.security.Permission;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
-import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.Permission;
-import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager.TargetType;
+import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
-
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * @author mikkom
