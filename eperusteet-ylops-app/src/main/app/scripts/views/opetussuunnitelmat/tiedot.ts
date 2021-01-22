@@ -138,8 +138,9 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
     $scope.hasRequiredFields = function() {
         var model = $scope.editableModel;
         var nimiOk = Utils.hasLocalizedText(model.nimi);
-        var organisaatiotOk =
-            model.kunnat && model.kunnat.length > 0 && model.koulutoimijat && model.koulutoimijat.length > 0;
+        var organisaatiotOk = !$scope.luonnissa
+            || (model.kunnat && model.kunnat.length > 0
+            && model.koulutoimijat && model.koulutoimijat.length > 0);
         var julkaisukieletOk = _.any(_.values($scope.julkaisukielet));
         var vlkOk =
             (!$scope.luonnissa && !$scope.editVuosiluokkakokonaisuudet) ||
@@ -147,6 +148,7 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
             _(model.vuosiluokkakokonaisuudet)
                 .filter({ valittu: true })
                 .size() > 0;
+
         if (model.koulutustyyppi === "koulutustyyppi_999907") {
             return nimiOk;
         }
@@ -254,6 +256,8 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
                     $scope.editableModel._pohja = "" + pohja.id;
                     asetaKieletJaVlk(pohja);
                 });
+            } else {
+                asetaKieletJaVlk($scope.editableModel);
             }
         });
     }
@@ -301,9 +305,10 @@ ylopsApp.controller("OpetussuunnitelmaTiedotController", function(
                         .concat($scope.opsvuosiluokkakokonaisuudet)
                         .value();
 
-                    vuosiluokkakokonaisuudet = _.uniq(vuosiluokkakokonaisuudet, function(c) {
-                        return c.vuosiluokkakokonaisuus._tunniste;
-                    });
+                    vuosiluokkakokonaisuudet = _.chain(vuosiluokkakokonaisuudet)
+                        .filter('vuosiluokkakokonaisuus')
+                        .uniq('vuosiluokkakokonaisuus._tunniste')
+                        .value();
 
                     $scope.editableModel.vuosiluokkakokonaisuudet = vuosiluokkakokonaisuudet;
                 }
