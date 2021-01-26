@@ -120,6 +120,10 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable, Hi
 
     @Getter
     @Setter
+    private boolean piilotettu = false;
+
+    @Getter
+    @Setter
     @NotNull
     private boolean liite = false;
 

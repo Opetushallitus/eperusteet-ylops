@@ -221,6 +221,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.setPerusteTekstikappaleId(uusi.getPerusteTekstikappaleId());
         viite.setNaytaPerusteenTeksti(uusi.isNaytaPerusteenTeksti());
         viite.setNaytaPohjanTeksti(uusi.isNaytaPohjanTeksti());
+        viite.setPiilotettu(uusi.isPiilotettu());
         viite.setLiite(uusi.isLiite());
         viite = tekstikappaleviiteRepository.save(viite);
         muokkaustietoService.addOpsMuokkausTieto(opsId, viite, MuokkausTapahtuma.PAIVITYS);

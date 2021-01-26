@@ -6625,12 +6625,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -6948,6 +6948,9 @@
           "type" : "boolean"
         },
         "naytaPohjanTeksti" : {
+          "type" : "boolean"
+        },
+        "piilotettu" : {
           "type" : "boolean"
         },
         "liite" : {
@@ -9636,6 +9639,9 @@
           "type" : "boolean"
         },
         "naytaPohjanTeksti" : {
+          "type" : "boolean"
+        },
+        "piilotettu" : {
           "type" : "boolean"
         },
         "liite" : {

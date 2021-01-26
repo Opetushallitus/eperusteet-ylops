@@ -47,6 +47,7 @@ public class TekstiKappaleViiteDto {
     private Long perusteTekstikappaleId;
     private boolean naytaPerusteenTeksti = true;
     private boolean naytaPohjanTeksti = false;
+    private boolean piilotettu = false;
     private boolean liite = false;
 
     public TekstiKappaleViiteDto() {
