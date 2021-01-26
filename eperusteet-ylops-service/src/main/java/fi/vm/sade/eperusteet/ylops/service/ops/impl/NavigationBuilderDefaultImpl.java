@@ -10,12 +10,14 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -43,10 +45,11 @@ public class NavigationBuilderDefaultImpl implements NavigationBuilder {
         return NavigationNodeDto
                 .of(root.isLiite() ? NavigationType.liite : NavigationType.viite, nimi, root.getId())
                 .addAll(Optional.ofNullable(root.getLapset())
-                    .map(lapset -> lapset.stream()
-                            .map(this::buildTekstinavi)
-                            .collect(Collectors.toList()))
-                    .orElse(new ArrayList<>()));
+                        .map(lapset -> lapset.stream()
+                                .filter(tkv -> tekstikappaleFilter().test(tkv))
+                                .map(this::buildTekstinavi)
+                                .collect(Collectors.toList()))
+                        .orElse(new ArrayList<>()));
     }
 
     @Override
@@ -55,4 +58,5 @@ public class NavigationBuilderDefaultImpl implements NavigationBuilder {
         return NavigationNodeDto.of(NavigationType.root)
                 .addAll(buildTekstinavi(ops.getTekstit()).getChildren());
     }
+
 }

@@ -5,7 +5,10 @@ import fi.vm.sade.eperusteet.utils.dto.peruste.lops2019.tutkinnonrakenne.KoodiDt
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineKevytDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
@@ -22,14 +25,18 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
+import java.util.AbstractMap;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static java.util.Comparator.comparing;
@@ -40,7 +47,7 @@ import static java.util.stream.Collectors.toSet;
 public class NavigationBuilderLops2019Impl implements NavigationBuilder {
 
     @Autowired
-    private OpsDispatcher dispatcher;
+    protected OpsDispatcher dispatcher;
 
     @Autowired
     private EperusteetService eperusteetService;
@@ -64,7 +71,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
     private OpetussuunnitelmaRepository opsRepository;
 
     @Autowired
-    private DtoMapper mapper;
+    protected DtoMapper mapper;
 
     @Override
     public Set<KoulutustyyppiToteutus> getTyypit() {
@@ -74,11 +81,15 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
     @Override
     public NavigationNodeDto buildNavigation(Long opsId) {
         return NavigationNodeDto.of(NavigationType.root)
-                .addAll(dispatcher.get(NavigationBuilder.class).buildNavigation(opsId).getChildren())
+                .addAll(dispatcher.get(getNavigationBuilderClass()).buildNavigation(opsId).getChildren())
                 .add(oppiaineet(opsId));
     }
 
-    private NavigationNodeDto oppiaineet(Long opsId) {
+    protected Class<? extends NavigationBuilder> getNavigationBuilderClass() {
+        return NavigationBuilder.class;
+    }
+
+    protected NavigationNodeDto oppiaineet(Long opsId) {
         // Järjestetään oppiaineen koodilla opintojaksot
         Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap = opintojaksoService.getAllTuodut(opsId).stream()
                 .flatMap(oj -> oj.getOppiaineet().stream()
@@ -246,4 +257,5 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
 
         return result;
     }
+
 }

@@ -64,7 +64,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
     private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite, boolean paataso, boolean liite) {
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
-            if (lapsi != null && lapsi.getTekstiKappale() != null) {
+            if (lapsi != null && lapsi.getTekstiKappale() != null && !lapsi.isPiilotettu()) {
 
                 if (liite != isLiite(lapsi, docBase)) {
                     continue;

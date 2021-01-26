@@ -1,8 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
-import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
-import org.springframework.security.access.method.P;
-import org.springframework.security.access.prepost.PreAuthorize;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import java.util.function.Predicate;
 
 public interface NavigationBuilderPublic extends NavigationBuilder {
     @Override
@@ -10,4 +9,7 @@ public interface NavigationBuilderPublic extends NavigationBuilder {
         return NavigationBuilderPublic.class;
     }
 
+    default Predicate<TekstiKappaleViite> tekstikappaleFilter() {
+        return tkv -> !tkv.isPiilotettu();
+    }
 }

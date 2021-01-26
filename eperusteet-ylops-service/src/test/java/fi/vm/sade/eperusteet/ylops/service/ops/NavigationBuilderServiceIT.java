@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
-import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
@@ -14,18 +13,18 @@ import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,11 +48,11 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
-    private OpetussuunnitelmaDto createOpetussuunnitelma() {
+    private OpetussuunnitelmaDto createOpetussuunnitelma(KoulutustyyppiToteutus koulutustyyppiToteutus) {
         OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
         pohjaLuontiDto.setTyyppi(Tyyppi.POHJA);
         pohjaLuontiDto.setPerusteenDiaarinumero("1/2/3");
-        pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.LOPS2019);
+        pohjaLuontiDto.setToteutus(koulutustyyppiToteutus);
         OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
         opetussuunnitelmaService.updateTila(pohjaDto.getId(), Tila.VALMIS);
 
@@ -67,12 +66,18 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
                 })
                 .collect(Collectors.toSet()));
         opsLuontiDto.setPohja(Reference.of(pohjaDto.getId()));
-        return opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
+
+        TekstiKappaleViiteDto.Matala tk = tekstiKappaleViiteService.getTekstiKappaleViite(ops.getId(), ops.getTekstit().get().getLapset().get(1).getId());
+        tk.setPiilotettu(true);
+        tekstiKappaleViiteService.updateTekstiKappaleViite(ops.getId(), tk.getId(), tk);
+        
+        return ops;
     }
 
     @Test
     public void testNavigationBuilder() {
-        OpetussuunnitelmaDto ops = createOpetussuunnitelma();
+        OpetussuunnitelmaDto ops = createOpetussuunnitelma(KoulutustyyppiToteutus.LOPS2019);
         NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilder.class).buildNavigation(ops.getId());
         assertThat(navi.getType()).isEqualTo(NavigationType.root);
         assertThat(navi.getChildren()).hasSize(7);
@@ -81,7 +86,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testNavigationBuilderPublic() {
-        OpetussuunnitelmaDto ops = createOpetussuunnitelma();
+        OpetussuunnitelmaDto ops = createOpetussuunnitelma(KoulutustyyppiToteutus.LOPS2019);
 
         Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
                 .nimi(LokalisoituTekstiDto.of("Biologia"))
@@ -108,7 +113,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
 
         NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilderPublic.class).buildNavigation(ops.getId());
         assertThat(navi.getType()).isEqualTo(NavigationType.root);
-        assertThat(navi.getChildren()).hasSize(7);
+        assertThat(navi.getChildren()).hasSize(6);
 
         List<NavigationNodeDto> oppiaineet = navi.getChildren().stream()
                 .filter(child -> child.getType().equals(NavigationType.oppiaineet))
@@ -121,5 +126,20 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         assertThat(oppiaineet.get(0).getChildren().get(0).getChildren()).hasSize(3);
         assertThat(oppiaineet.get(0).getChildren().get(0).getChildren()).extracting("type")
                 .containsExactly(NavigationType.oppimaarat, NavigationType.opintojaksot, NavigationType.moduulit);
+    }
+
+    @Test
+    public void testNavigationBuilder_yksinkertainen() {
+        OpetussuunnitelmaDto ops = createOpetussuunnitelma(KoulutustyyppiToteutus.YKSINKERTAINEN);
+
+        {
+            NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilder.class).buildNavigation(ops.getId());
+            assertThat(navi.getChildren()).hasSize(6);
+        }
+
+        {
+            NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilderPublic.class).buildNavigation(ops.getId());
+            assertThat(navi.getChildren()).hasSize(5);
+        }
     }
 }

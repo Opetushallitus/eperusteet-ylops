@@ -7,4 +7,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Transactional
 public class NavigationBuilderDefaultPublicImpl extends NavigationBuilderDefaultImpl implements NavigationBuilderPublic {
+    
 }
