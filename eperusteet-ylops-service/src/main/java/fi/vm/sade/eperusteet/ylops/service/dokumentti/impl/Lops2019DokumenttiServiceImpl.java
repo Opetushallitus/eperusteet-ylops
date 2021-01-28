@@ -382,13 +382,18 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         { // Tehtävä
             Lops2019TehtavaDto oppiaineenTehtava = oa != null ? oa.getTehtava() : null;
+            fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019TehtavaDto tehtava = poa.getTehtava();
 
-            addTeksti(docBase, messages.translate("oppiaineen-tehtava", docBase.getKieli()), "h6");
+            if (hasLokalisoituTeksti(oppiaineenTehtava, Lops2019TehtavaDto::getKuvaus, docBase)
+                    || hasLokalisoituTeksti(tehtava, fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019TehtavaDto::getKuvaus, docBase)) {
+                addTeksti(docBase, messages.translate("oppiaineen-tehtava", docBase.getKieli()), "h6");
+
+            }
+
             if (hasLokalisoituTeksti(oppiaineenTehtava, Lops2019TehtavaDto::getKuvaus, docBase)) {
                 addLokalisoituteksti(docBase, oppiaineenTehtava.getKuvaus(), "div");
             }
 
-            fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019TehtavaDto tehtava = poa.getTehtava();
             if (hasLokalisoituTeksti(tehtava, fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019TehtavaDto::getKuvaus, docBase)) {
                 if (hasLokalisoituTeksti(oppiaineenTehtava, Lops2019TehtavaDto::getKuvaus, docBase)) {
                     addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
@@ -400,8 +405,13 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         { // Tavoitteet
 
             Lops2019OppiaineTavoitteetDto oppiaineenTavoitteet = oa != null ? oa.getTavoitteet() : null;
-            addTeksti(docBase, messages.translate("tavoitteet", docBase.getKieli()), "h6");
-            if (oppiaineenTavoitteet != null) {
+            Lops2019OppiaineenTavoitteetDto tavoitteet = poa.getTavoitteet();
+            if ((oppiaineenTavoitteet != null && (oppiaineenTavoitteet.getKuvaus() != null || !ObjectUtils.isEmpty(oppiaineenTavoitteet.getTavoitealueet())))
+                    || (tavoitteet != null && (tavoitteet.getKuvaus() != null || !ObjectUtils.isEmpty(tavoitteet.getTavoitealueet())))) {
+                addTeksti(docBase, messages.translate("tavoitteet", docBase.getKieli()), "h6");
+            }
+
+            if (oppiaineenTavoitteet != null && (oppiaineenTavoitteet.getKuvaus() != null || !ObjectUtils.isEmpty(oppiaineenTavoitteet.getTavoitealueet()))) {
                 addLokalisoituteksti(docBase, oppiaineenTavoitteet.getKuvaus(), "div");
 
                 List<Lops2019OppiaineTavoitealueDto> tavoitealueet = oppiaineenTavoitteet.getTavoitealueet();
@@ -420,7 +430,6 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
             }
 
-            Lops2019OppiaineenTavoitteetDto tavoitteet = poa.getTavoitteet();
             if (tavoitteet != null && (tavoitteet.getKuvaus() != null || !ObjectUtils.isEmpty(tavoitteet.getTavoitealueet()))) {
                 if (hasLokalisoituTeksti(oppiaineenTavoitteet, Lops2019OppiaineTavoitteetDto::getKuvaus, docBase)
                         || (oppiaineenTavoitteet != null && !ObjectUtils.isEmpty(oppiaineenTavoitteet.getTavoitealueet()))) {
@@ -450,12 +459,18 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         { // Arviointi
 
             Lops2019ArviointiDto oppianeenArviointi = oa != null ? oa.getArviointi() : null;
-            addTeksti(docBase, messages.translate("arviointi", docBase.getKieli()), "h6");
+            fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ArviointiDto arviointi = poa.getArviointi();
+
+            if (hasLokalisoituTeksti(oppianeenArviointi, Lops2019ArviointiDto::getKuvaus, docBase)
+                    || hasLokalisoituTeksti(arviointi, fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ArviointiDto::getKuvaus, docBase)) {
+                addTeksti(docBase, messages.translate("arviointi", docBase.getKieli()), "h6");
+            }
+
+
             if (hasLokalisoituTeksti(oppianeenArviointi, Lops2019ArviointiDto::getKuvaus, docBase)) {
                 addLokalisoituteksti(docBase, oppianeenArviointi.getKuvaus(), "div");
             }
 
-            fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ArviointiDto arviointi = poa.getArviointi();
             if (hasLokalisoituTeksti(arviointi, fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019ArviointiDto::getKuvaus, docBase)) {
                 if (hasLokalisoituTeksti(oppianeenArviointi, Lops2019ArviointiDto::getKuvaus, docBase)) {
                     addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
@@ -467,12 +482,17 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         { // Laaja-alainen osaaminen
 
             Lops2019OppiaineLaajaAlainenOsaaminenDto oppiaineenLaajaAlainenOsaaminen = oa != null ? oa.getLaajaAlaisetOsaamiset() : null;
-            addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
+            List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
+
+            if (hasLokalisoituTeksti(oppiaineenLaajaAlainenOsaaminen, Lops2019OppiaineLaajaAlainenOsaaminenDto::getKuvaus, docBase)
+                    || !ObjectUtils.isEmpty(laajaAlainenOsaaminen)) {
+                addTeksti(docBase, messages.translate("laaja-alaiset-osaamiset", docBase.getKieli()), "h6");
+            }
+
             if (hasLokalisoituTeksti(oppiaineenLaajaAlainenOsaaminen, Lops2019OppiaineLaajaAlainenOsaaminenDto::getKuvaus, docBase)) {
                 addLokalisoituteksti(docBase, oppiaineenLaajaAlainenOsaaminen.getKuvaus(), "div");
             }
 
-            List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
             if (!ObjectUtils.isEmpty(laajaAlainenOsaaminen)) {
                 if (hasLokalisoituTeksti(oppiaineenLaajaAlainenOsaaminen, Lops2019OppiaineLaajaAlainenOsaaminenDto::getKuvaus, docBase)) {
                     addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
