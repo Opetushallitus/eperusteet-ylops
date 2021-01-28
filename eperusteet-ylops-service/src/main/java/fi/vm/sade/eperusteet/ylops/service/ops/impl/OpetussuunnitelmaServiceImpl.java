@@ -203,12 +203,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @PersistenceContext
     private EntityManager em;
 
-    private List<Opetussuunnitelma> findByQuery(OpetussuunnitelmaQuery pquery) {
-        CriteriaQuery<Opetussuunnitelma> query = getQuery(pquery);
+    private List<Opetussuunnitelma> findJulkaistutByQuery(OpetussuunnitelmaQuery pquery) {
+        CriteriaQuery<Opetussuunnitelma> query = getJulkaistutQuery(pquery);
         return em.createQuery(query).getResultList();
     }
 
-    private CriteriaQuery<Opetussuunnitelma> getQuery(OpetussuunnitelmaQuery pquery) {
+    private CriteriaQuery<Opetussuunnitelma> getJulkaistutQuery(OpetussuunnitelmaQuery pquery) {
         CriteriaBuilder builder = em.getCriteriaBuilder();
         CriteriaQuery<Opetussuunnitelma> query = builder.createQuery(Opetussuunnitelma.class);
         Root<Opetussuunnitelma> ops = query.from(Opetussuunnitelma.class);
@@ -216,7 +216,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         List<Predicate> ehdot = new ArrayList<>();
 
         // VAIN JULKAISTUT
-        ehdot.add(builder.equal(ops.get(Opetussuunnitelma_.tila), Tila.JULKAISTU));
+        ehdot.add(builder.or(
+                builder.equal(ops.get(Opetussuunnitelma_.tila), Tila.JULKAISTU),
+                builder.greaterThan(opsJulkaistuSubQuery(ops, builder), 0l)));
 
         // Haettu organisaatio löytyy opsilta
         if (pquery.getOrganisaatio() != null) {
@@ -250,14 +252,22 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return query.select(ops);
     }
 
+    private Subquery opsJulkaistuSubQuery(Root<Opetussuunnitelma> root, CriteriaBuilder cb) {
+        Subquery sub = cb.createQuery(Opetussuunnitelma.class).subquery(Long.class);
+        Root subRoot = sub.from(OpetussuunnitelmanJulkaisu.class);
+        Join<OpetussuunnitelmanJulkaisu, Opetussuunnitelma> subAuthors = subRoot.join(OpetussuunnitelmanJulkaisu_.opetussuunnitelma);
+        sub.select(cb.count(subRoot.get(OpetussuunnitelmanJulkaisu_.id)));
+        sub.where(cb.equal(root.get(Opetussuunnitelma_.id), subAuthors.get(Opetussuunnitelma_.id)));
+        return sub;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query) {
         List<Opetussuunnitelma> opetussuunnitelmat;
         if (query != null) {
             query.setTyyppi(Tyyppi.OPS);
-            opetussuunnitelmat = findByQuery(query).stream()
-                    .filter(ops -> ops.getTila() == Tila.JULKAISTU)
+            opetussuunnitelmat = findJulkaistutByQuery(query).stream()
                     .collect(Collectors.toList());
         } else {
             opetussuunnitelmat = opetussuunnitelmaRepository.findAllByTyyppiAndTilaIsJulkaistu(Tyyppi.OPS);
