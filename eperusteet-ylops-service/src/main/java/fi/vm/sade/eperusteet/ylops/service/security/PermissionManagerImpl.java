@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ukk.Kysymys;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ukk.KysymysDto;
+import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ukk.KysymysRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
@@ -57,6 +58,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class PermissionManagerImpl extends AbstractPermissionManager {
 
+    @Autowired
+    private JulkaisuRepository julkaisuRepository;
+
     @Transactional(readOnly = true)
     public boolean hasPermission(Authentication authentication, Serializable targetId, TargetType target,
                                  Permission perm) {
@@ -71,7 +75,7 @@ public class PermissionManagerImpl extends AbstractPermissionManager {
                 : null;
 
         if (perm == Permission.LUKU && tyyppiJaTila != null) {
-            if (tyyppiJaTila.getSecond() == Tila.JULKAISTU) {
+            if (tyyppiJaTila.getSecond() == Tila.JULKAISTU || julkaisuRepository.countByOpetussuunnitelmaId((long) targetId) > 0) {
                 return true;
             } else if (opetussuunnitelmaRepository.isEsikatseltavissa((long) targetId)) {
                 return true;

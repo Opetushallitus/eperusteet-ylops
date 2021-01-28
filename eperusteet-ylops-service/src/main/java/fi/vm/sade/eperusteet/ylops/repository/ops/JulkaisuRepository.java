@@ -14,6 +14,8 @@ import java.util.List;
 public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulkaisu, Long> {
     List<OpetussuunnitelmanJulkaisu> findAllByOpetussuunnitelma(Opetussuunnitelma ops);
 
+    long countByOpetussuunnitelmaId(Long id);
+
     OpetussuunnitelmanJulkaisu findFirstByOpetussuunnitelmaOrderByRevisionDesc(Opetussuunnitelma opetussuunnitelma);
 
     @Query("SELECT julkaisu FROM OpetussuunnitelmanJulkaisu julkaisu WHERE julkaisu.opetussuunnitelma = :ops")
