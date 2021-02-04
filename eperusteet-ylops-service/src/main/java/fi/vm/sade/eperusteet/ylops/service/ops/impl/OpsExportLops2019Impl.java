@@ -8,7 +8,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.Lops2019OpintojaksoExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.Lops2019OppiaineExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.Lops2019PaikallinenOppiaineExportDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.OpetussuunnitelmaExportLops2019;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.OpetussuunnitelmaExportLops2019Dto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsSisaltoViite;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
@@ -80,6 +80,7 @@ public class OpsExportLops2019Impl implements OpsExport {
             if (opintojaksot.containsKey(oppiaine.getKoodi().getUri())) {
                 oppiaine.getOpintojaksot().addAll(opintojaksot.get(oppiaine.getKoodi().getUri()));
             }
+            lisaaValtakunnallisenOpintojaksot(oppiaine.getOppimaarat(), opintojaksot);
         }
     }
 
@@ -87,7 +88,7 @@ public class OpsExportLops2019Impl implements OpsExport {
     public OpetussuunnitelmaExportDto export(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        OpetussuunnitelmaExportLops2019 result = mapper.map(ops, OpetussuunnitelmaExportLops2019.class);
+        OpetussuunnitelmaExportLops2019Dto result = mapper.map(ops, OpetussuunnitelmaExportLops2019Dto.class);
         List<Lops2019OpintojaksoExportDto> opintojaksot = lops2019OpintojaksoService.getAll(ops.getId(), Lops2019OpintojaksoExportDto.class);
         List<Lops2019PaikallinenOppiaineExportDto> paikallisetOppiaineet = lops2019OppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineExportDto.class);
         PerusteInfoDto peruste = lops2019Service.getPeruste(opsId);

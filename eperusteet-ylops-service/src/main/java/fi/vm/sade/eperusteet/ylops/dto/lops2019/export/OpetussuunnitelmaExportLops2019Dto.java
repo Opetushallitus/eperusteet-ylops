@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OpetussuunnitelmaExportLops2019 extends OpetussuunnitelmaExportDto {
+public class OpetussuunnitelmaExportLops2019Dto extends OpetussuunnitelmaExportDto {
     private List<Lops2019LaajaAlainenOsaaminenDto> laajaAlaisetOsaamiset = new ArrayList<>();
     private List<Lops2019OpintojaksoExportDto> opintojaksot = new ArrayList<>();
     private List<Lops2019OppiaineExportDto> valtakunnallisetOppiaineet = new ArrayList<>();

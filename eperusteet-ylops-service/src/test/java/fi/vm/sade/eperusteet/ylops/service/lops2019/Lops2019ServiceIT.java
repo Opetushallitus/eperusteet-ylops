@@ -5,12 +5,14 @@ import fi.vm.sade.eperusteet.ylops.domain.*;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.OpetussuunnitelmaExportLops2019Dto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
@@ -28,7 +30,6 @@ import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
-import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
@@ -739,4 +740,50 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThat(oppiaineService.getAll(ops.getId(), Lops2019PaikallinenOppiaineDto.class)).hasSize(4);
         assertThat(oppiaineService.getAll(ops.getId(), Lops2019PaikallinenOppiaineDto.class)).extracting("id").contains(pohjanOppiaineDto1.getId(), pohjanOppiaineDto2.getId());
     }
+
+    @Test
+    public void testExport() {
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+
+        Lops2019PaikallinenOppiaineDto oppiaineDto = oppiaineService.addOppiaine(ops.getId(), Lops2019PaikallinenOppiaineDto.builder()
+                .nimi(LokalisoituTekstiDto.of("A"))
+                .kuvaus(LokalisoituTekstiDto.of("A"))
+                .koodi("pao")
+                .build());
+
+        Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                .kuvaus(LokalisoituTekstiDto.of(""))
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("pao").build()))
+                .build();
+        opintojaksoDto.setNimi(LokalisoituTekstiDto.of("oj1"));
+        opintojaksoDto.setKoodi("oj1");
+        opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
+
+        Lops2019OpintojaksoDto opintojakso2Dto = Lops2019OpintojaksoDto.builder()
+                .kuvaus(LokalisoituTekstiDto.of(""))
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_bi").build()))
+                .moduuli(Lops2019OpintojaksonModuuliDto.builder()
+                        .koodiUri("moduulit_bi1")
+                        .kuvaus(LokalisoituTekstiDto.of("X"))
+                        .build())
+                .build();
+        opintojakso2Dto.setNimi(LokalisoituTekstiDto.of("oj1"));
+        opintojakso2Dto.setKoodi("bi1");
+        opintojakso2Dto = opintojaksoService.addOpintojakso(ops.getId(), opintojakso2Dto);
+
+        OpetussuunnitelmaExportLops2019Dto exported = (OpetussuunnitelmaExportLops2019Dto) opetussuunnitelmaService.getExportedOpetussuunnitelma(ops.getId());
+        assertThat(exported.getPeruste()).isNotNull();
+        assertThat(exported.getPohja()).isNotNull();
+        assertThat(exported.getTekstit()).isNotNull();
+        assertThat(exported.getValtakunnallisetOppiaineet()).hasSize(2);
+        assertThat(exported.getPaikallisetOppiaineet()).hasSize(1);
+        assertThat(exported.getOpintojaksot()).hasSize(2);
+        assertThat(exported.getPaikallisetOppiaineet().get(0).getOpintojaksot()).hasSize(1);
+        assertThat(exported.getValtakunnallisetOppiaineet().get(0).getOpintojaksot()).hasSize(1);
+        assertThat(exported.getPaikallisetOppiaineet().get(0).getOpintojaksot().get(0).getOpintojaksoId())
+                .isEqualTo(opintojaksoDto.getId());
+        assertThat(exported.getValtakunnallisetOppiaineet().get(0).getOpintojaksot().get(0).getOpintojaksoId())
+                .isEqualTo(opintojakso2Dto.getId());
+    }
+
 }

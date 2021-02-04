@@ -13,6 +13,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliBaseDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
@@ -249,10 +250,13 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     ) {
         opintojaksoDto.setId(null);
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        Lops2019SisaltoDto peruste = lopsService.getPerusteSisalto(opsId);
         Set<fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto> loydetytModuulit
                 = lopsService.getPerusteModuulit(opsId, opintojaksoDto.getModuulit().stream()
                 .map(Lops2019OpintojaksonModuuliDto::getKoodiUri)
                 .collect(Collectors.toSet()));
+
+        List<Lops2019OppiaineKaikkiDto> oppiaineet = peruste.getOppiaineet();
 
         if (opintojaksoDto.getModuulit() != null && opintojaksoDto.getModuulit().size() != loydetytModuulit.size()) {
             throw new BusinessRuleViolationException("perusteen-moduulia-ei-olemassa");

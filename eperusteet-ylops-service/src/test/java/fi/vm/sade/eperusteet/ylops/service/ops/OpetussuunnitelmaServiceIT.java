@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -23,10 +24,13 @@ import fi.vm.sade.eperusteet.ylops.domain.utils.KoodistoUtils;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.OpetussuunnitelmaExportLops2019Dto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
@@ -41,6 +45,8 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -483,4 +489,66 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops.setPohja(Reference.of(pohjaOps.getId()));
         return opetussuunnitelmaService.addOpetussuunnitelma(ops);
     }
+
+    @Test
+    public void testExportYksinkertainen() {
+        OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
+        pohjaLuontiDto.setTuoPohjanOpintojaksot(false);
+        pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.YKSINKERTAINEN);
+        pohjaLuontiDto.setTyyppi(Tyyppi.POHJA);
+        pohjaLuontiDto.setPerusteenDiaarinumero("OPH-2791-2018");
+        OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
+        opetussuunnitelmaService.updateTila(pohjaDto.getId(), Tila.VALMIS);
+
+        OpetussuunnitelmaLuontiDto opsLuontiDto = new OpetussuunnitelmaLuontiDto();
+        opsLuontiDto.setTuoPohjanOpintojaksot(true);
+        pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.YKSINKERTAINEN);
+        opsLuontiDto.setTyyppi(Tyyppi.OPS);
+        opsLuontiDto.setOrganisaatiot(Stream.of("1.2.246.562.10.83037752777")
+                .map(oid -> {
+                    OrganisaatioDto result = new OrganisaatioDto();
+                    result.setOid(oid);
+                    return result;
+                })
+                .collect(Collectors.toSet()));
+        opsLuontiDto.setPohja(Reference.of(pohjaDto.getId()));
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
+
+        OpetussuunnitelmaLaajaDto exported = (OpetussuunnitelmaLaajaDto) opetussuunnitelmaService.getExportedOpetussuunnitelma(ops.getId());
+        assertThat(exported.getPeruste()).isNotNull();
+        assertThat(exported.getPohja()).isNotNull();
+        assertThat(exported.getTekstit()).isNotNull();
+    }
+
+    @Test
+    public void testExportPerusopetus() {
+        OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
+        pohjaLuontiDto.setTuoPohjanOpintojaksot(false);
+        pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.PERUSOPETUS);
+        pohjaLuontiDto.setTyyppi(Tyyppi.POHJA);
+        pohjaLuontiDto.setPerusteenDiaarinumero("perusopetus-diaarinumero");
+        OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
+        opetussuunnitelmaService.updateTila(pohjaDto.getId(), Tila.VALMIS);
+
+        OpetussuunnitelmaLuontiDto opsLuontiDto = new OpetussuunnitelmaLuontiDto();
+        opsLuontiDto.setTuoPohjanOpintojaksot(true);
+        pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.PERUSOPETUS);
+        opsLuontiDto.setTyyppi(Tyyppi.OPS);
+        opsLuontiDto.setOrganisaatiot(Stream.of("1.2.246.562.10.83037752777")
+                .map(oid -> {
+                    OrganisaatioDto result = new OrganisaatioDto();
+                    result.setOid(oid);
+                    return result;
+                })
+                .collect(Collectors.toSet()));
+        opsLuontiDto.setPohja(Reference.of(pohjaDto.getId()));
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
+
+        OpetussuunnitelmaLaajaDto exported = (OpetussuunnitelmaLaajaDto) opetussuunnitelmaService.getExportedOpetussuunnitelma(ops.getId());
+        assertThat(exported.getPeruste()).isNotNull();
+        assertThat(exported.getPohja()).isNotNull();
+        assertThat(exported.getTekstit()).isNotNull();;
+        assertThat(exported.getOppiaineet()).isNotNull();
+    }
+
 }
