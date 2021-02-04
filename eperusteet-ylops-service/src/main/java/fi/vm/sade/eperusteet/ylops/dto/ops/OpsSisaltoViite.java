@@ -4,17 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.Set;
-
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrganisaationKoodi {
+public class OpsSisaltoViite {
     Long opsId;
     String koodi;
 
     @Getter
-    public static class Opintojakso extends OrganisaationKoodi {
+    public static class Opintojakso extends OpsSisaltoViite {
         Long opintojaksoId;
 
         public Opintojakso(Long opsId, String koodi, Long opintojaksoId) {

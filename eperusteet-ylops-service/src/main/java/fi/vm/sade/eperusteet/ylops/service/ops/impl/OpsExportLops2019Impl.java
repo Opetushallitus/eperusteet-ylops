@@ -8,9 +8,8 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.Lops2019OpintojaksoExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.Lops2019OppiaineExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.Lops2019PaikallinenOppiaineExportDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.OpetussuunnitelmaExportLops2019;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OrganisaationKoodi;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsSisaltoViite;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -54,10 +53,10 @@ public class OpsExportLops2019Impl implements OpsExport {
     @Autowired
     private Lops2019OpintojaksoService lops2019OpintojaksoService;
 
-    private <T extends Lops2019OpintojaksoDto> Map<String, LinkedHashSet<OrganisaationKoodi.Opintojakso>> getOppiaineenOpintojaksot(Opetussuunnitelma ops, List<T> opintojaksot) {
-        Map<String, LinkedHashSet<OrganisaationKoodi.Opintojakso>> oppiaineenOpintojaksot = new HashMap<>();
+    private <T extends Lops2019OpintojaksoDto> Map<String, LinkedHashSet<OpsSisaltoViite.Opintojakso>> getOppiaineenOpintojaksot(Opetussuunnitelma ops, List<T> opintojaksot) {
+        Map<String, LinkedHashSet<OpsSisaltoViite.Opintojakso>> oppiaineenOpintojaksot = new HashMap<>();
         for (T oj : opintojaksot) {
-            OrganisaationKoodi.Opintojakso koodi = new OrganisaationKoodi.Opintojakso(ops.getId(), oj.getKoodi(), oj.getId());
+            OpsSisaltoViite.Opintojakso koodi = new OpsSisaltoViite.Opintojakso(ops.getId(), oj.getKoodi(), oj.getId());
             for (Lops2019OpintojaksonOppiaineDto ojoppiaine : oj.getOppiaineet()) {
                 if (!oppiaineenOpintojaksot.containsKey(ojoppiaine.getKoodi())) {
                     oppiaineenOpintojaksot.put(ojoppiaine.getKoodi(), new LinkedHashSet<>());
@@ -68,7 +67,7 @@ public class OpsExportLops2019Impl implements OpsExport {
         return oppiaineenOpintojaksot;
     }
 
-    private void lisaaPaikallisenOpintojaksot(List<Lops2019PaikallinenOppiaineExportDto> oppiaineet, Map<String, LinkedHashSet<OrganisaationKoodi.Opintojakso>> opintojaksot) {
+    private void lisaaPaikallisenOpintojaksot(List<Lops2019PaikallinenOppiaineExportDto> oppiaineet, Map<String, LinkedHashSet<OpsSisaltoViite.Opintojakso>> opintojaksot) {
         for (Lops2019PaikallinenOppiaineExportDto oppiaine : oppiaineet) {
             if (opintojaksot.containsKey(oppiaine.getKoodi())) {
                 oppiaine.getOpintojaksot().addAll(opintojaksot.get(oppiaine.getKoodi()));
@@ -76,7 +75,7 @@ public class OpsExportLops2019Impl implements OpsExport {
         }
     }
 
-    private void lisaaValtakunnallisenOpintojaksot(List<Lops2019OppiaineExportDto> oppiaineet, Map<String, LinkedHashSet<OrganisaationKoodi.Opintojakso>> opintojaksot) {
+    private void lisaaValtakunnallisenOpintojaksot(List<Lops2019OppiaineExportDto> oppiaineet, Map<String, LinkedHashSet<OpsSisaltoViite.Opintojakso>> opintojaksot) {
         for (Lops2019OppiaineExportDto oppiaine : oppiaineet) {
             if (opintojaksot.containsKey(oppiaine.getKoodi().getUri())) {
                 oppiaine.getOpintojaksot().addAll(opintojaksot.get(oppiaine.getKoodi().getUri()));
@@ -95,7 +94,7 @@ public class OpsExportLops2019Impl implements OpsExport {
         Lops2019SisaltoDto perusteSisalto = lops2019Service.getPerusteSisalto(opsId);
         List<Lops2019OppiaineExportDto> oppiaineet = mapper.mapAsList(perusteSisalto.getOppiaineet(), Lops2019OppiaineExportDto.class);
 
-        Map<String, LinkedHashSet<OrganisaationKoodi.Opintojakso>> oppiaineenOpintojaksot = getOppiaineenOpintojaksot(ops, opintojaksot);
+        Map<String, LinkedHashSet<OpsSisaltoViite.Opintojakso>> oppiaineenOpintojaksot = getOppiaineenOpintojaksot(ops, opintojaksot);
         lisaaPaikallisenOpintojaksot(paikallisetOppiaineet, oppiaineenOpintojaksot);
         lisaaValtakunnallisenOpintojaksot(oppiaineet, oppiaineenOpintojaksot);
 
