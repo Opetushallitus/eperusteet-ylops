@@ -10,7 +10,6 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrganisaationKoodi {
-    Set<String> organisaatiot;
     Long opsId;
     String koodi;
 
@@ -18,8 +17,8 @@ public class OrganisaationKoodi {
     public static class Opintojakso extends OrganisaationKoodi {
         Long opintojaksoId;
 
-        public Opintojakso(Set<String> organisaatiot, Long opsId, String koodi, Long opintojaksoId) {
-            super(organisaatiot, opsId, koodi);
+        public Opintojakso(Long opsId, String koodi, Long opintojaksoId) {
+            super(opsId, koodi);
             this.opintojaksoId = opintojaksoId;
         }
     }

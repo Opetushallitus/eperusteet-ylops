@@ -22,7 +22,7 @@ public interface Lops2019Service {
     List<Lops2019OpintojaksoDto> getOpintojaksot(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    Lops2019OppiaineKaikkiDto getPerusteOppiaineet(@P("opsId") Long opsId);
+    List<Lops2019OppiaineKaikkiDto> getPerusteOppiaineet(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     PerusteInfoDto getPeruste(@P("opsId") Long opsId);

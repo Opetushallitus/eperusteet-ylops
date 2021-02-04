@@ -57,7 +57,7 @@ public class OpsExportLops2019Impl implements OpsExport {
     private <T extends Lops2019OpintojaksoDto> Map<String, LinkedHashSet<OrganisaationKoodi.Opintojakso>> getOppiaineenOpintojaksot(Opetussuunnitelma ops, List<T> opintojaksot) {
         Map<String, LinkedHashSet<OrganisaationKoodi.Opintojakso>> oppiaineenOpintojaksot = new HashMap<>();
         for (T oj : opintojaksot) {
-            OrganisaationKoodi.Opintojakso koodi = new OrganisaationKoodi.Opintojakso(ops.getOrganisaatiot(), ops.getId(), oj.getKoodi(), oj.getId());
+            OrganisaationKoodi.Opintojakso koodi = new OrganisaationKoodi.Opintojakso(ops.getId(), oj.getKoodi(), oj.getId());
             for (Lops2019OpintojaksonOppiaineDto ojoppiaine : oj.getOppiaineet()) {
                 if (!oppiaineenOpintojaksot.containsKey(ojoppiaine.getKoodi())) {
                     oppiaineenOpintojaksot.put(ojoppiaine.getKoodi(), new LinkedHashSet<>());
