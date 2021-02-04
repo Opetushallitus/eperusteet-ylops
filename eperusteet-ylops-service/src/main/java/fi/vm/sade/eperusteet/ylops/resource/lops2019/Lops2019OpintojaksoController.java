@@ -28,13 +28,13 @@ public class Lops2019OpintojaksoController {
     public List<Lops2019OpintojaksoDto> getAllOpintojaksot(
             @PathVariable final Long opsId,
             @RequestParam(required = false) final String moduuliUri) {
-        return opintojaksoService.getAll(opsId);
+        return opintojaksoService.getAll(opsId, Lops2019OpintojaksoDto.class);
     }
 
     @RequestMapping(value = "/tuodut", method = RequestMethod.GET)
     public List<Lops2019OpintojaksoDto> getTuodutOpintojaksot(
             @PathVariable final Long opsId) {
-        return opintojaksoService.getTuodut(opsId);
+        return opintojaksoService.getTuodut(opsId, Lops2019OpintojaksoDto.class);
     }
 
     @RequestMapping(value = "/tuodut/{opintojaksoId}", method = RequestMethod.GET)

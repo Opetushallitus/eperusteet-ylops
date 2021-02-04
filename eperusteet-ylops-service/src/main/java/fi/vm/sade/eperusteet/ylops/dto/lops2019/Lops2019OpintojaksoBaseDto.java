@@ -7,6 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Lops2019OpintojaksoBaseDto {
+    private boolean tuotu = false;
     private Long id;
     private String koodi;
     private Long laajuus;

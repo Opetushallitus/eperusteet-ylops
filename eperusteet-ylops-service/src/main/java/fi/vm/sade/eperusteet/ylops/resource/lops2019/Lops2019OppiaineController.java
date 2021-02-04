@@ -26,7 +26,7 @@ public class Lops2019OppiaineController {
     @RequestMapping(method = RequestMethod.GET)
     public List<Lops2019PaikallinenOppiaineDto> getAllLops2019PaikallisetOppiainet(
             @PathVariable final Long opsId) {
-        return oppiaineService.getAll(opsId);
+        return oppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineDto.class);
     }
 
     @RequestMapping(value = "/{oppiaineId}", method = RequestMethod.GET)

@@ -139,13 +139,23 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     }
 
     @Override
-    public List<Lops2019OpintojaksoDto> getAll(Long opsId) {
+    public <T extends Lops2019OpintojaksoDto> List<T> getAll(Long opsId, Class<T> clz) {
         Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
-        return mapLaajuudet(opetussuunnitelma.getLops2019().getOpintojaksot(), opsId);
+        return mapLaajuudet(opetussuunnitelma.getLops2019().getOpintojaksot(), opsId, clz);
+    }
+
+    @Override
+    public List<Lops2019OpintojaksoDto> getAll(Long opsId) {
+        return getAll(opsId, Lops2019OpintojaksoDto.class);
     }
 
     @Override
     public List<Lops2019OpintojaksoDto> getTuodut(Long opsId) {
+        return getTuodut(opsId, Lops2019OpintojaksoDto.class);
+    }
+
+    @Override
+    public <T extends Lops2019OpintojaksoDto> List<T> getTuodut(Long opsId, Class<T> clz) {
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         Set<Lops2019Opintojakso> opintojaksot = new HashSet<>();
         Set<Long> poistetut = poistetutRepository.findAllByOpetussuunnitelmaAndTyyppi(ops, PoistetunTyyppi.TUOTU_OPINTOJAKSO).stream()
@@ -159,21 +169,21 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
             opintojaksot.addAll(pohjanOpintojaksot);
             ops = ops.getPohja();
         }
-        List<Lops2019OpintojaksoDto> result = mapLaajuudet(opintojaksot, opsId);
+        List<T> result = mapLaajuudet(opintojaksot, opsId, clz);
         result.forEach(oj -> oj.setTuotu(true));
         return result;
     }
 
     @Override
-    public List<Lops2019OpintojaksoDto> getAllTuodut(Long opsId) {
-        List<Lops2019OpintojaksoDto> opintojaksot = getAll(opsId);
-        opintojaksot.addAll(getTuodut(opsId));
+    public <T extends Lops2019OpintojaksoDto> List<T> getAllTuodut(Long opsId, Class<T> clz) {
+        List<T> opintojaksot = getAll(opsId, clz);
+        opintojaksot.addAll(getTuodut(opsId, clz));
         return opintojaksot;
     }
 
-    private List<Lops2019OpintojaksoDto> mapLaajuudet(Set<Lops2019Opintojakso> opintojaksot, Long opsId) {
+    private <T extends Lops2019OpintojaksoDto> List<T> mapLaajuudet(Set<Lops2019Opintojakso> opintojaksot, Long opsId, Class<T> clz) {
         return opintojaksot.stream()
-                .map(oj -> mapper.map(oj, Lops2019OpintojaksoDto.class))
+                .map(oj -> mapper.map(oj, clz))
                 .map(oj -> {
                     oj.setLaajuus(getOpintojaksonLaajuus(opsId, oj));
                     if (oj.getPaikallisetOpintojaksot() != null) {
@@ -259,7 +269,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                 .collect(Collectors.toSet());
 
         opintojaksonOppiaineKoodit.addAll(
-                lops2019OppiaineService.getAll(opsId).stream()
+                lops2019OppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineDto.class).stream()
                         .filter(paikallinen -> opintojaksonOppiaineKoodit.contains(paikallinen.getKoodi()))
                         .map(Lops2019PaikallinenOppiaineDto::getPerusteenOppiaineUri)
                         .collect(Collectors.toSet()));
@@ -268,7 +278,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                 = lopsService.getPerusteenOppiaineet(opsId, opintojaksonOppiaineKoodit);
 
         Set<String> oppiaineKoodit = Stream.concat(
-                lops2019OppiaineService.getAll(ops.getId()).stream()
+                lops2019OppiaineService.getAll(ops.getId(), Lops2019PaikallinenOppiaineDto.class).stream()
                     .map(Lops2019PaikallinenOppiaineDto::getKoodi),
                 perusteenOppiaineet.stream()
                         .flatMap(x -> Stream.concat(Stream.of(x), x.getOppimaarat().stream()))

@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
@@ -131,8 +132,8 @@ public class OpetussuunnitelmaController {
     @RequestMapping(value = "/{id}/kaikki", method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaLaajaDto> getKaikki(@PathVariable("id") final Long id) {
-        return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaEnempi(id), HttpStatus.OK);
+    public ResponseEntity<OpetussuunnitelmaExportDto> getKaikki(@PathVariable("id") final Long id) {
+        return new ResponseEntity<>(opetussuunnitelmaService.getExportedOpetussuunnitelma(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/opetussuunnitelmat", method = RequestMethod.GET)

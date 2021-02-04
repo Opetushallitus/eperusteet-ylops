@@ -104,7 +104,7 @@ public class ValidointiServiceImpl implements ValidointiService {
         ValidointiContext ctx = new ValidointiContext();
         ctx.setKielet(ops.getJulkaisukielet());
 
-        List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(opsId);
+        List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(opsId, Lops2019OpintojaksoDto.class);
         List<Lops2019ModuuliDto> moduulit = haeValidoitavatModuulit(opsId);
         Map<String, Lops2019ModuuliDto> moduulitMap = moduulit.stream().collect(Collectors.toMap(m -> m.getKoodi().getUri(), Function.identity()));
         Map<String, List<Lops2019OpintojaksoDto>> liitokset = lops2019Service.getModuuliToOpintojaksoMap(opintojaksot);
