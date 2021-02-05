@@ -491,7 +491,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                                           PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
         if (oaVuosiluokka.getTavoitteet() != null && !oaVuosiluokka.getTavoitteet().isEmpty()) {
 
-            if (perusteOaVlkDto.getOpetuksenTavoitteetOtsikko() != null) {
+            if (perusteOaVlkDto != null && perusteOaVlkDto.getOpetuksenTavoitteetOtsikko() != null) {
                 addLokalisoituteksti(docBase, perusteOaVlkDto.getOpetuksenTavoitteetOtsikko(), "tavoitteet-otsikko");
             } else {
                 addTeksti(docBase, messages.translate("vuosiluokan-tavoitteet", docBase.getKieli()), "tavoitteet-otsikko");
