@@ -31,10 +31,13 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.*;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.*;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.*;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
@@ -701,14 +704,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 oaKoodiMap.put(oa.getId(), oa.getKoodi().getUri());
             }
         });
-        lops2019OppiaineService.getAll(opsId).forEach(poa -> {
+        lops2019OppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineDto.class).forEach(poa -> {
             if (poa.getKoodi() != null) {
                 oaKoodiMap.put(poa.getId(), poa.getKoodi());
             }
         });
 
         HashMap<Long, Lops2019Opintojakso> ojMap = new HashMap<>();
-        mapper.mapAsList(lops2019OpintojaksoService.getAll(opsId),
+        mapper.mapAsList(lops2019OpintojaksoService.getAll(opsId, Lops2019OpintojaksoDto.class),
                 Lops2019Opintojakso.class).forEach(oj -> ojMap.put(oj.getId(), oj));
 
         jarjestaOppiaineet(ops, oaKoodiMap, oppiaineopintojaksojarjestys.stream()
@@ -748,7 +751,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return navigationNodeDto;
     }
 
-    private void fetchKuntaNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
+    @Override
+    public void fetchKuntaNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
         for (KoodistoDto koodistoDto : opetussuunnitelmaDto.getKunnat()) {
             Map<String, String> tekstit = new HashMap<>();
             KoodistoKoodiDto kunta = koodistoService.get("kunta", koodistoDto.getKoodiUri());
@@ -761,7 +765,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    private void fetchOrganisaatioNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
+    @Override
+    public void fetchOrganisaatioNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
         for (OrganisaatioDto organisaatioDto : opetussuunnitelmaDto.getOrganisaatiot()) {
             Map<String, String> tekstit = new HashMap<>();
             List<String> tyypit = new ArrayList<>();
@@ -1897,5 +1902,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return dispatcher.get(KoulutustyyppiToteutus.LOPS2019, OpsPohjanVaihto.class).haeVaihtoehdot(id);
     }
 
-
+    @Override
+    public OpetussuunnitelmaExportDto getExportedOpetussuunnitelma(Long id) {
+        final OpetussuunnitelmaExportDto exported = dispatcher.get(id, OpsExport.class).export(id);
+        return exported;
+    }
 }

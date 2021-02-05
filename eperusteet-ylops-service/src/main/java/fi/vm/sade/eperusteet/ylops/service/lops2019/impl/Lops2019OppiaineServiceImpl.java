@@ -92,11 +92,11 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     }
 
     @Override
-    public List<Lops2019PaikallinenOppiaineDto> getAll(Long opsId) {
+    public <T extends Lops2019PaikallinenOppiaineDto> List<T> getAll(Long opsId, Class<T> clz) {
         List<Lops2019Oppiaine> oppiaineet = oppiaineRepository.findAllBySisalto(getOpetussuunnitelma(opsId).getLops2019());
         Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
         oppiaineet.addAll(getTuodut(opetussuunnitelma));
-        return mapper.mapAsList(oppiaineet, Lops2019PaikallinenOppiaineDto.class);
+        return mapper.mapAsList(oppiaineet, clz);
     }
 
     @Override

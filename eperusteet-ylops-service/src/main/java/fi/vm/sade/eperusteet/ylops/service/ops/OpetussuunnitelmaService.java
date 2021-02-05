@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
@@ -77,6 +78,12 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaLaajaDto getOpetussuunnitelmaEnempi(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#ops.id, 'opetussuunnitelma', 'LUKU')")
+    void fetchKuntaNimet(@P("ops") OpetussuunnitelmaBaseDto opetussuunnitelmaDto);
+
+    @PreAuthorize("hasPermission(#ops.id, 'opetussuunnitelma', 'LUKU')")
+    void fetchOrganisaatioNimet(@P("ops") OpetussuunnitelmaBaseDto opetussuunnitelmaDto);
 
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUONTI')")
     OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto);
@@ -169,4 +176,7 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     Set<OpetussuunnitelmaInfoDto> vaihdettavatPohjat(@P("opsId") Long id);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OpetussuunnitelmaExportDto getExportedOpetussuunnitelma(@P("opsId") Long opsId);
 }

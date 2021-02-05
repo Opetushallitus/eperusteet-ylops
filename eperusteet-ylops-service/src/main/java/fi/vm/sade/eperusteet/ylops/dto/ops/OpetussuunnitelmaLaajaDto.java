@@ -16,6 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 
 import java.util.Optional;
@@ -30,9 +31,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OpetussuunnitelmaLaajaDto extends OpetussuunnitelmaBaseDto {
-    private OpetussuunnitelmaNimiDto pohja;
-    private Optional<TekstiKappaleViiteDto.Puu> tekstit;
+public class OpetussuunnitelmaLaajaDto extends OpetussuunnitelmaExportDto {
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineLaajaDto> oppiaineet;
 }

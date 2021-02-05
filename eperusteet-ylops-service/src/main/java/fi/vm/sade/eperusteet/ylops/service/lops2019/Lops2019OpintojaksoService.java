@@ -12,13 +12,17 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface Lops2019OpintojaksoService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    <T extends Lops2019OpintojaksoDto> List<T> getAll(@P("opsId") Long opsId, Class<T> clz);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    <T extends Lops2019OpintojaksoDto> List<T> getTuodut(@P("opsId") Long opsId, Class<T> clz);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    <T extends Lops2019OpintojaksoDto> List<T> getAllTuodut(@P("opsId") Long opsId, Class<T> clz);
+
     List<Lops2019OpintojaksoDto> getAll(@P("opsId") Long opsId);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<Lops2019OpintojaksoDto> getTuodut(@P("opsId") Long opsId);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<Lops2019OpintojaksoDto> getAllTuodut(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Lops2019OpintojaksoDto getOne(@P("opsId") Long opsId, Long opintojaksoId);

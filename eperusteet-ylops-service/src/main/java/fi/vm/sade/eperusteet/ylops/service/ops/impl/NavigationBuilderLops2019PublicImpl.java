@@ -52,7 +52,7 @@ public class NavigationBuilderLops2019PublicImpl extends NavigationBuilderLops20
                                 .anyMatch(om -> opintojaksotMap.containsKey(om.getKoodi().getUri()));
                     }
 
-                    return oppiaineService.getAll(opsId).stream()
+                    return oppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineDto.class).stream()
                             .anyMatch(poa -> {
                                 String parentKoodi = poa.getPerusteenOppiaineUri();
                                 Optional<Lops2019OppiaineKaikkiDto> orgOaOpt = lopsService.getPerusteOppiaineet(opsId).stream()
@@ -76,7 +76,7 @@ public class NavigationBuilderLops2019PublicImpl extends NavigationBuilderLops20
 
     @Override
     protected List<Lops2019PaikallinenOppiaineDto> getPaikallisetOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
-        return oppiaineService.getAll(opsId).stream()
+        return oppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineDto.class).stream()
                 .filter(poa -> opintojaksotMap.containsKey(poa.getKoodi()))
                 .filter(poa -> StringUtils.isEmpty(poa.getPerusteenOppiaineUri()))
                 .collect(Collectors.toList());

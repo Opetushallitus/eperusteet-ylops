@@ -91,7 +91,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
 
     protected NavigationNodeDto oppiaineet(Long opsId) {
         // Järjestetään oppiaineen koodilla opintojaksot
-        Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap = opintojaksoService.getAllTuodut(opsId).stream()
+        Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap = opintojaksoService.getAllTuodut(opsId, Lops2019OpintojaksoDto.class).stream()
                 .flatMap(oj -> oj.getOppiaineet().stream()
                         .map(oa -> new AbstractMap.SimpleImmutableEntry<>(oa.getKoodi(), oj)))
                 .collect(Collectors.groupingBy(
@@ -125,7 +125,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
     }
 
     protected List<Lops2019PaikallinenOppiaineDto> getPaikallisetOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
-        return oppiaineService.getAll(opsId);
+        return oppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineDto.class);
     }
 
     protected Predicate<Lops2019PaikallinenOppiaineDto> getPaikallinenFilter(Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
@@ -142,7 +142,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 .of(NavigationType.oppiaine, mapper.map(oa.getNimi(), LokalisoituTekstiDto.class), oa.getId())
                 .meta("koodi", mapper.map(oa.getKoodi(), KoodiDto.class));
 
-        List<Lops2019PaikallinenOppiaineDto> paikallisetOppimaarat = oppiaineService.getAll(opsId).stream()
+        List<Lops2019PaikallinenOppiaineDto> paikallisetOppimaarat = oppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineDto.class).stream()
                 .filter(poa -> {
                     String parentKoodi = poa.getPerusteenOppiaineUri();
                     Optional<Lops2019OppiaineKaikkiDto> orgOaOpt = lopsService.getPerusteOppiaineet(opsId).stream()

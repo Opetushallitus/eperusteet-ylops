@@ -170,10 +170,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
         OppiaineDto oppiaine = oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
 
-        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
-        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 2"));
-        oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 3"));
-
         OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
         OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
 

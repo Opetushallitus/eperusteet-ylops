@@ -85,8 +85,8 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         // Opintojaksot
         Map<String, List<Lops2019OpintojaksoDto>> opintojaksotMap = new HashMap<>();
         {
-            List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(ops.getId());
-            opintojaksot.addAll(opintojaksoService.getTuodut(ops.getId()));
+            List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(ops.getId(), Lops2019OpintojaksoDto.class);
+            opintojaksot.addAll(opintojaksoService.getTuodut(ops.getId(), Lops2019OpintojaksoDto.class));
             opintojaksot.forEach(oj -> oj.getOppiaineet().stream()
                     .map(Lops2019OpintojaksonOppiaineDto::getKoodi)
                     .forEach(koodi -> {
@@ -111,7 +111,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
 
-        List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = oppiaineService.getAll(ops.getId()).stream()
+        List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet = oppiaineService.getAll(ops.getId(), Lops2019PaikallinenOppiaineDto.class).stream()
                 .filter(oppiaine -> opintojaksotMap.containsKey(oppiaine.getKoodi()))
                 .filter(poa -> StringUtils.isEmpty(poa.getPerusteenOppiaineUri()))
                 .collect(Collectors.toList());
@@ -164,7 +164,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                                 .anyMatch(om -> opintojaksotMap.containsKey(om.getKoodi().getUri()));
                     }
 
-                    return oppiaineService.getAll(opsId).stream()
+                    return oppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineDto.class).stream()
                             .anyMatch(poa -> {
                                 String parentKoodi = poa.getPerusteenOppiaineUri();
                                 Optional<Lops2019OppiaineKaikkiDto> orgOaOpt = lops2019Service
@@ -303,7 +303,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         Long opsId = docBase.getOps().getId();
         List<Lops2019PaikallinenOppiaineDto> paikallisetOppimaarat = oppiaineService
-                .getAll(opsId).stream()
+                .getAll(opsId, Lops2019PaikallinenOppiaineDto.class).stream()
                 .filter(poa -> {
                     String parentKoodi = poa.getPerusteenOppiaineUri();
                     Optional<Lops2019OppiaineKaikkiDto> orgOaOpt = lops2019Service.getPerusteOppiaineet(opsId).stream()
@@ -676,7 +676,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             List<Lops2019ModuuliDto> moduulit
     ) {
         Long id = docBase.getOps().getId();
-        List<Lops2019OpintojaksoDto> integrattioOpintojaksot = opintojaksoService.getAll(id).stream()
+        List<Lops2019OpintojaksoDto> integrattioOpintojaksot = opintojaksoService.getAll(id, Lops2019OpintojaksoDto.class).stream()
                 .filter(oj -> oj.getOppiaineet() != null)
                 .filter(oj -> oj.getOppiaineet().size() > 1)
                 .collect(Collectors.toList());
@@ -710,7 +710,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 sisaltoDto.getOppiaineet().stream(),
                 sisaltoDto.getOppiaineet().stream().map(Lops2019OppiaineKaikkiDto::getOppimaarat).flatMap(Collection::stream))
             .collect(Collectors.toList());
-        List<Lops2019PaikallinenOppiaineDto> poppiaineetKaikki = oppiaineService.getAll(docBase.getOps().getId());
+        List<Lops2019PaikallinenOppiaineDto> poppiaineetKaikki = oppiaineService.getAll(docBase.getOps().getId(), Lops2019PaikallinenOppiaineDto.class);
 
         // Haetaan opintojakson perusteen oppiaineet
         List<Lops2019OppiaineKaikkiDto> oppiaineet = new ArrayList<>();
