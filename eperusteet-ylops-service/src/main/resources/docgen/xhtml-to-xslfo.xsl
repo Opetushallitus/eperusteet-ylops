@@ -360,7 +360,7 @@
             </xsl:attribute>
 
             <xsl:choose>
-                <xsl:when test="@number">
+                <xsl:when test="@number and @showHeaderNumber='true'">
                     <fo:table table-layout="fixed" width="100%">
                         <fo:table-column column-width="20mm"/>
                         <fo:table-column column-width="proportional-column-width(1)"/>
@@ -1041,7 +1041,7 @@
                     </xsl:attribute>
 
                     <xsl:if test="@number">
-                        <xsl:if test="name() != 'h4'">
+                        <xsl:if test="name() != 'h4' and @showHeaderNumber='true'">
                             <xsl:value-of select="@number"/>
                             <xsl:text> </xsl:text>
                         </xsl:if>

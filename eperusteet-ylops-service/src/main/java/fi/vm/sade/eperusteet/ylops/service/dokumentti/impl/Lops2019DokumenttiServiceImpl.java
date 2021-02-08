@@ -607,9 +607,9 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
 
         if (isIntegraatioOpintojakso) {
             // Lisätään ankkuri integraatio opintojaksolle
-            addHeader(docBase, nimiBuilder.toString(), "opintojakso_" + koodi);
+            addHeader(docBase, nimiBuilder.toString(), "opintojakso_" + koodi, false);
         } else {
-            addHeader(docBase, nimiBuilder.toString(), null);
+            addHeader(docBase, nimiBuilder.toString(), null, false);
         }
 
     }
