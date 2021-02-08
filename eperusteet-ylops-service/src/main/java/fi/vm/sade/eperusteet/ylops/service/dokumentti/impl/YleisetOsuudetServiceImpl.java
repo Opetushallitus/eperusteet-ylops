@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
-import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
@@ -24,7 +23,6 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
-import java.util.Objects;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +48,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
     public void addYleisetOsuudet(DokumenttiBase docBase) {
         Optional.ofNullable(docBase.getOps().getTekstit())
                 .ifPresent(tekstit -> {
-                    if (Objects.equals(docBase.getOps().getKoulutustyyppi(), KoulutusTyyppi.LUKIOKOULUTUS)) {
+                    if (docBase.getOps().getKoulutustyyppi().isLukio()) {
                         addTekstiKappale(docBase, tekstit, false);
                     } else {
                         addTekstiKappale(docBase, tekstit, true);
