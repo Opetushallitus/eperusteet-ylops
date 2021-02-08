@@ -130,9 +130,14 @@ public class DokumenttiUtils {
     }
 
     public static void addHeader(DokumenttiBase docBase, String text, String id) {
+        addHeader(docBase, text, id, true);
+    }
+
+    public static void addHeader(DokumenttiBase docBase, String text, String id, boolean showHeaderNumber) {
         if (text != null) {
             Element header = docBase.getDocument().createElement("h" + docBase.getGenerator().getDepth());
             header.setAttribute("number", docBase.getGenerator().generateNumber());
+            header.setAttribute("showHeaderNumber", showHeaderNumber + "");
             header.appendChild(docBase.getDocument().createTextNode(cleanHtml(text)));
             if (id != null) {
                 header.setAttribute("id", id);
