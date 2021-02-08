@@ -508,10 +508,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         julkaisu.setOpetussuunnitelma(ops);
         julkaisu.setTiedote(mapper.map(julkaisuDto.getJulkaisutiedote(), LokalisoituTeksti.class));
         julkaisu.setDokumentit(dokumentit);
-        OpetussuunnitelmaLaajaDto opsData = getOpetussuunnitelmaEnempi(opsId);
+        OpetussuunnitelmaExportDto opsData = getExportedOpetussuunnitelma(opsId);
 
         try {
-            ObjectNode opsDataJson = (ObjectNode)jsonMapper.toJson(opsData);
+            ObjectNode opsDataJson = (ObjectNode) jsonMapper.toJson(opsData);
             List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
             if (!vanhatJulkaisut.isEmpty()) {
                 int lastHash = vanhatJulkaisut.get(vanhatJulkaisut.size() - 1).getData().getHash();
@@ -555,17 +555,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Set<Opetussuunnitelma> result = new HashSet<>();
         fetchLapsiOpetussuunnitelmat(id, result);
         return mapper.mapAsList(result, OpetussuunnitelmaInfoDto.class);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public OpetussuunnitelmaLaajaDto getOpetussuunnitelmaEnempi(Long id) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        OpetussuunnitelmaLaajaDto dto = mapper.map(ops, OpetussuunnitelmaLaajaDto.class);
-        fetchKuntaNimet(dto);
-        fetchOrganisaatioNimet(dto);
-        return dto;
     }
 
     @Override
