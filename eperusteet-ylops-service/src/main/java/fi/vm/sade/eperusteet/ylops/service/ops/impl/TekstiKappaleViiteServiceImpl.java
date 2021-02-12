@@ -184,6 +184,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             // Viittessä on mukana tekstikappale ja/tai lapsiviitteet
             TekstiKappaleViite viiteEntity = mapper.map(viiteDto, TekstiKappaleViite.class);
             uusiViite.setLapset(viiteEntity.getLapset());
+            uusiViite.setPerusteTekstikappaleId(viiteEntity.getPerusteTekstikappaleId());
 
             if (viiteDto.getTekstiKappaleRef() != null) {
                 // TODO: Lisää tähän tekstikappaleiden lukuoikeuden tarkistelu
