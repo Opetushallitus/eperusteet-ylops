@@ -15,14 +15,17 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.YleisetOsuudetService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +47,9 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
     @Autowired
     private Lops2019Service lopsService;
+
+    @Autowired
+    private OpetussuunnitelmaService opetussuunnitelmaService;
 
     public void addYleisetOsuudet(DokumenttiBase docBase) {
         Optional.ofNullable(docBase.getOps().getTekstit())
@@ -82,12 +88,19 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                     Long pTekstikappaleId = lapsi.getPerusteTekstikappaleId();
                     if (lapsi.isNaytaPerusteenTeksti() && pTekstikappaleId != null) {
                         try {
-                            PerusteTekstiKappaleViiteMatalaDto perusteTekstikappale = lopsService
-                                    .getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
+                            if (docBase.getOps().getToteutus().equals(KoulutustyyppiToteutus.LOPS2019)) {
+                                PerusteTekstiKappaleViiteMatalaDto perusteTekstikappale = lopsService
+                                        .getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
 
-                            if (perusteTekstikappale != null && perusteTekstikappale.getPerusteenOsa() != null) {
+                                if (perusteTekstikappale != null && perusteTekstikappale.getPerusteenOsa() != null) {
+                                    addLokalisoituteksti(docBase,
+                                            perusteTekstikappale.getPerusteenOsa().getTeksti(),
+                                            "cite");
+                                }
+                            } else {
+                                TekstiKappaleDto tekstikappale = opetussuunnitelmaService.getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
                                 addLokalisoituteksti(docBase,
-                                        perusteTekstikappale.getPerusteenOsa().getTeksti(),
+                                        tekstikappale.getTeksti(),
                                         "cite");
                             }
 
