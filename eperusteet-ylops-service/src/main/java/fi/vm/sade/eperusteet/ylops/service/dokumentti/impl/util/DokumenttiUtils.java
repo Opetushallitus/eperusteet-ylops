@@ -35,6 +35,10 @@ import java.util.stream.Collectors;
 public class DokumenttiUtils {
     private static final int MAX_TIME_IN_MINUTES = 5;
 
+    public static boolean hasLokalisoituteksti(DokumenttiBase docBase, LokalisoituTeksti lTeksti) {
+        return lTeksti != null && lTeksti.getTeksti() != null && lTeksti.getTeksti().get(docBase.getKieli()) != null;
+    }
+
     public static void addLokalisoituteksti(DokumenttiBase docBase, LokalisoituTekstiDto lTekstiDto, String tagi) {
         if (lTekstiDto != null) {
             addLokalisoituteksti(docBase, docBase.getMapper().map(lTekstiDto, LokalisoituTeksti.class), tagi);

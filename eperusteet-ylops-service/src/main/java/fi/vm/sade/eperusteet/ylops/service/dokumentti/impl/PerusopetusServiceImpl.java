@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import org.w3c.dom.Element;
 
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.*;
 
@@ -314,16 +315,12 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                     .forEach(oaVuosiluokka -> {
                         // Vuosiluokka otsikko
                         addHeader(docBase, messages.translate(oaVuosiluokka.getVuosiluokka().toString(), docBase.getKieli()));
-
-                        addVuosiluokkaSisaltoalueet(docBase, oaVuosiluokka, perusteOaVlkDto);
-
-                        addVuosiluokkaTaulukko(docBase, oaVuosiluokka, perusteOaVlkDto);
-
-                        addVuosiluokkaTavoitteet(docBase, oaVuosiluokka, perusteOaVlkDto);
+                        addVuosiluokanTavoitteetJaKeskeisetsisallot(docBase, oaVuosiluokka, perusteOaVlkDto);
                     });
         }
     }
 
+    @Deprecated
     private void addVuosiluokkaSisaltoalueet(DokumenttiBase docBase,
                                              Oppiaineenvuosiluokka oaVuosiluokka,
                                              PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
@@ -343,9 +340,9 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                             Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
                                     .filter(pKsa -> pKsa.getTunniste().equals(ksa.getTunniste()))
                                     .findFirst();
+
                             optPerusteKsa.ifPresent(perusteKeskeinensisaltoalueDto -> addLokalisoituteksti(docBase,
                                     perusteKeskeinensisaltoalueDto.getKuvaus(), "cite"));
-
                             // Sisältöalue ops
                             addLokalisoituteksti(docBase, ksa.getKuvaus(), "div");
                         }
@@ -355,6 +352,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
         }
     }
 
+    @Deprecated
     private void addVuosiluokkaTaulukko(DokumenttiBase docBase,
                                         Oppiaineenvuosiluokka oaVuosiluokka,
                                         PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
@@ -486,6 +484,127 @@ public class PerusopetusServiceImpl implements PerusopetusService {
         }
     }
 
+    private void addVuosiluokanTavoitteetJaKeskeisetsisallot(DokumenttiBase docBase,
+                                                             Oppiaineenvuosiluokka oaVuosiluokka,
+                                                             PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
+        if (oaVuosiluokka.getTavoitteet() != null && !oaVuosiluokka.getTavoitteet().isEmpty()) {
+
+            addTeksti(docBase, messages.translate("docgen.vuosiluokan-tavoitteet-ja-keskeiset-sisallot", docBase.getKieli()), "tavoitteet-otsikko");
+
+            for (Opetuksentavoite opetuksentavoite : oaVuosiluokka.getTavoitteet()) {
+
+                // Opsin tavoitetta vastaava perusteen tavoite
+                PerusteOpetuksentavoiteDto perusteOpetuksentavoiteDto = null;
+                if (perusteOaVlkDto != null) {
+                    List<PerusteOpetuksentavoiteDto> perusteTavoitteet = perusteOaVlkDto.getTavoitteet();
+                    Optional<PerusteOpetuksentavoiteDto> optPerusteOpetuksentavoiteDto = perusteTavoitteet.stream()
+                            .filter((o) -> o.getTunniste().equals(opetuksentavoite.getTunniste()))
+                            .findFirst();
+                    if (optPerusteOpetuksentavoiteDto.isPresent()) {
+                        perusteOpetuksentavoiteDto = optPerusteOpetuksentavoiteDto.get();
+                    }
+                }
+
+                // Tavoitteen otsikko
+                if (perusteOpetuksentavoiteDto != null) {
+                    addLokalisoituteksti(docBase, perusteOpetuksentavoiteDto.getTavoite(), "h5");
+
+                    addLokalisoituteksti(docBase, opetuksentavoite.getTavoite(), "div");
+
+                    // Tavoitteen arviointi
+                    DokumenttiTaulukko taulukko = new DokumenttiTaulukko();
+                    taulukko.addOtsikko(messages.translate("arviointi-vuosiluokan-paatteeksi", docBase.getKieli()));
+
+                    if (perusteOpetuksentavoiteDto.getArvioinninkohteet().size() == 1
+                            && perusteOpetuksentavoiteDto.getArvioinninkohteet().stream().findFirst().get().getHyvanOsaamisenKuvaus() != null) {
+
+                        taulukko.addOtsikkoSarake(messages.translate("arvioinnin-kohde", docBase.getKieli()));
+                        taulukko.addOtsikkoSarake(messages.translate("arvion-hyva-osaaminen", docBase.getKieli()));
+
+                        perusteOpetuksentavoiteDto.getArvioinninkohteet().forEach(perusteenTavoitteenArviointi -> {
+                            DokumenttiRivi rivi = new DokumenttiRivi();
+                            String kohde = "";
+                            if (perusteenTavoitteenArviointi.getArvioinninKohde() != null
+                                    && perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()) != null) {
+                                kohde = cleanHtml(perusteenTavoitteenArviointi.getArvioinninKohde().get(docBase.getKieli()));
+                            }
+                            rivi.addSarake(kohde);
+                            String kuvaus = "";
+                            if (perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus() != null
+                                    && perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()) != null) {
+                                kuvaus = cleanHtml(perusteenTavoitteenArviointi.getHyvanOsaamisenKuvaus().get(docBase.getKieli()));
+                            }
+                            rivi.addSarake(kuvaus);
+                            taulukko.addRivi(rivi);
+                        });
+                    } else {
+                        taulukko.addOtsikkoSarake(messages.translate("osaamisen-kuvaus", docBase.getKieli()));
+                        taulukko.addOtsikkoSarake(messages.translate("arvion-kuvaus", docBase.getKieli()));
+
+                        perusteOpetuksentavoiteDto.getArvioinninkohteet().forEach(perusteenTavoitteenArviointi -> {
+                            DokumenttiRivi rivi = new DokumenttiRivi();
+                            String kohde = "";
+                            if (perusteenTavoitteenArviointi.getArvosana() != null) {
+                                kohde = messages.translate("osaamisen-kuvaus-arvosanalle-" + perusteenTavoitteenArviointi.getArvosana(), docBase.getKieli());
+                            }
+                            rivi.addSarake(kohde);
+
+                            String kuvaus = "";
+                            if (perusteenTavoitteenArviointi.getOsaamisenKuvaus() != null
+                                    && perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()) != null) {
+                                kuvaus = cleanHtml(perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()));
+                            }
+                            rivi.addSarake(kuvaus);
+                            taulukko.addRivi(rivi);
+                        });
+                    }
+
+                    taulukko.addToDokumentti(docBase);
+                } else {
+                    addLokalisoituteksti(docBase, opetuksentavoite.getTavoite(), "h5");
+                }
+
+                Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = opetuksentavoite.getSisaltoalueet();
+                List<OpetuksenKeskeinensisaltoalue> sisaltoalueetAsc = sisaltoalueet.stream()
+                        .filter(Objects::nonNull)
+                        .filter(s -> s.getSisaltoalueet() != null
+                                && (s.getSisaltoalueet().getPiilotettu() == null
+                                || !s.getSisaltoalueet().getPiilotettu()))
+                        .sorted(Comparator.comparing(s1 -> s1.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
+                        .collect(Collectors.toCollection(ArrayList::new));
+
+                if (sisaltoalueetAsc.size() > 0) {
+                    sisaltoalueetAsc.forEach(sisaltoalue -> {
+
+                        if (perusteOaVlkDto != null && perusteOaVlkDto.getSisaltoalueet() != null) {
+                            Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
+                                    .filter(pKsa -> pKsa.getTunniste().equals(sisaltoalue.getSisaltoalueet().getTunniste()))
+                                    .findFirst();
+                            optPerusteKsa.ifPresent(perusteKeskeinensisaltoalueDto -> {
+                                addLokalisoituteksti(docBase, perusteKeskeinensisaltoalueDto.getNimi(), "h6");
+                                addLokalisoituteksti(docBase, perusteKeskeinensisaltoalueDto.getKuvaus(), "cite");
+                            });
+                        } else {
+                            addLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getNimi(), "h6");
+                        }
+
+
+                        if (hasLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus()) || hasLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus())) {
+                            addTeksti(docBase, messages.translate("paikallinen-tarkennus", docBase.getKieli()), "h6");
+
+                            if (hasLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus())) {
+                                addLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus(), "div");
+                            } else if (hasLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus())) {
+                                addLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus(), "div");
+                            }
+                        }
+                    });
+                }
+            }
+        }
+    }
+
+    @Deprecated
     private void addVuosiluokkaTavoitteet(DokumenttiBase docBase,
                                           Oppiaineenvuosiluokka oaVuosiluokka,
                                           PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto) {
@@ -578,7 +697,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                         .stream()
                         .sorted(Comparator.comparing(sisaltoAlue -> sisaltoAlue.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
                         .forEach(sisaltoAlue -> addLokalisoituteksti(
-                        docBase, sisaltoAlue.getSisaltoalueet().getKuvaus(), "div"));
+                                docBase, sisaltoAlue.getSisaltoalueet().getKuvaus(), "div"));
             }
         }
     }
@@ -605,6 +724,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                         addLokalisoituteksti(docBase, s.getSisaltoalueet().getNimi(), "h6");
                         addLokalisoituteksti(docBase, s.getOmaKuvaus(), "div");
                     }
+
                 }
             });
         }
