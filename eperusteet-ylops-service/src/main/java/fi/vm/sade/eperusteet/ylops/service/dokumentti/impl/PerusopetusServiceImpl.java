@@ -564,41 +564,49 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                     addLokalisoituteksti(docBase, opetuksentavoite.getTavoite(), "h5");
                 }
 
-                Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = opetuksentavoite.getSisaltoalueet();
-                List<OpetuksenKeskeinensisaltoalue> sisaltoalueetAsc = sisaltoalueet.stream()
-                        .filter(Objects::nonNull)
-                        .filter(s -> s.getSisaltoalueet() != null
-                                && (s.getSisaltoalueet().getPiilotettu() == null
-                                || !s.getSisaltoalueet().getPiilotettu()))
-                        .sorted(Comparator.comparing(s1 -> s1.getSisaltoalueet().getNimi().getTeksti().get(docBase.getKieli())))
-                        .collect(Collectors.toCollection(ArrayList::new));
+                if (perusteOaVlkDto != null && perusteOaVlkDto.getSisaltoalueet() != null) {
+                    perusteOaVlkDto.getSisaltoalueet()
+                            .stream()
+                            .filter(perusteenKeskeinenSisaltoalue -> {
+                                Optional<OpetuksenKeskeinensisaltoalue> opetuksenKeskeinenSisaltoalue = opetuksentavoite.getSisaltoalueet()
+                                        .stream()
+                                        .filter(sisaltoalue -> sisaltoalue.getSisaltoalueet().getTunniste().equals(perusteenKeskeinenSisaltoalue.getTunniste()))
+                                        .findFirst();
+                                Optional<Keskeinensisaltoalue> keskeinenSisaltoalue = oaVuosiluokka.getSisaltoalueet()
+                                        .stream()
+                                        .filter(sisaltoalue -> sisaltoalue.getTunniste().equals(perusteenKeskeinenSisaltoalue.getTunniste()))
+                                        .sorted(Comparator.comparing(Keskeinensisaltoalue::getId))
+                                        .findFirst();
+                                return opetuksenKeskeinenSisaltoalue.isPresent()
+                                        && keskeinenSisaltoalue.isPresent()
+                                        && (keskeinenSisaltoalue.get().getPiilotettu() == null || !keskeinenSisaltoalue.get().getPiilotettu());
+                            })
+                            .sorted(Comparator.comparing(perusteenKeskeinenSisaltoalue -> perusteenKeskeinenSisaltoalue.getNimi().get(docBase.getKieli())))
+                            .forEach(perusteenKeskeinenSisaltoalue -> {
 
-                if (sisaltoalueetAsc.size() > 0) {
-                    sisaltoalueetAsc.forEach(sisaltoalue -> {
+                                addLokalisoituteksti(docBase, perusteenKeskeinenSisaltoalue.getNimi(), "h6");
+                                addLokalisoituteksti(docBase, perusteenKeskeinenSisaltoalue.getKuvaus(), "cite");
 
-                        if (perusteOaVlkDto != null && perusteOaVlkDto.getSisaltoalueet() != null) {
-                            Optional<PerusteKeskeinensisaltoalueDto> optPerusteKsa = perusteOaVlkDto.getSisaltoalueet().stream()
-                                    .filter(pKsa -> pKsa.getTunniste().equals(sisaltoalue.getSisaltoalueet().getTunniste()))
-                                    .findFirst();
-                            optPerusteKsa.ifPresent(perusteKeskeinensisaltoalueDto -> {
-                                addLokalisoituteksti(docBase, perusteKeskeinensisaltoalueDto.getNimi(), "h6");
-                                addLokalisoituteksti(docBase, perusteKeskeinensisaltoalueDto.getKuvaus(), "cite");
+                                Optional<OpetuksenKeskeinensisaltoalue> opetuksenKeskeinenSisaltoalue = opetuksentavoite.getSisaltoalueet()
+                                        .stream()
+                                        .filter(sisaltoalue -> sisaltoalue.getSisaltoalueet().getTunniste().equals(perusteenKeskeinenSisaltoalue.getTunniste()))
+                                        .sorted(Comparator.comparing(OpetuksenKeskeinensisaltoalue::getId))
+                                        .findFirst();
+
+                                if (opetuksenKeskeinenSisaltoalue.isPresent()) {
+                                    OpetuksenKeskeinensisaltoalue sisaltoalue = opetuksenKeskeinenSisaltoalue.get();
+                                    if (hasLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus()) || hasLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus())) {
+                                        addTeksti(docBase, messages.translate("paikallinen-tarkennus", docBase.getKieli()), "h6");
+
+                                        if (hasLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus())) {
+                                            addLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus(), "div");
+                                        } else if (hasLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus())) {
+                                            addLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus(), "div");
+                                        }
+                                    }
+
+                                }
                             });
-                        } else {
-                            addLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getNimi(), "h6");
-                        }
-
-
-                        if (hasLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus()) || hasLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus())) {
-                            addTeksti(docBase, messages.translate("paikallinen-tarkennus", docBase.getKieli()), "h6");
-
-                            if (hasLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus())) {
-                                addLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus(), "div");
-                            } else if (hasLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus())) {
-                                addLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus(), "div");
-                            }
-                        }
-                    });
                 }
             }
         }
