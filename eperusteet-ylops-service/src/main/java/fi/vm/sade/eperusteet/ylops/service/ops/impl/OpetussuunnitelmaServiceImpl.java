@@ -1045,8 +1045,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    private Opetussuunnitelma addPohjaLisaJaEsiopetus(Opetussuunnitelma ops, PerusteDto peruste) {
+    private Opetussuunnitelma addPohjaLisaJaEsiopetus(Opetussuunnitelma ops, PerusteDto peruste, OpetussuunnitelmaLuontiDto pohjaDto) {
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
+
+        if (pohjaDto != null && pohjaDto.isRakennePohjasta()) {
+            lisaaTekstipuuPerusteesta(peruste.getTekstiKappaleViiteSisalto(), ops);
+        }
+
         return ops;
     }
 
@@ -1222,7 +1227,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 || KoulutusTyyppi.TPO == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.PERUSOPETUSVALMISTAVA == peruste.getKoulutustyyppi()
                 || KoulutusTyyppi.VARHAISKASVATUS == peruste.getKoulutustyyppi()) {
-            return addPohjaLisaJaEsiopetus(ops, peruste);
+            return addPohjaLisaJaEsiopetus(ops, peruste, pohjaDto);
         } else if (KoulutustyyppiToteutus.LOPS2019.equals(peruste.getToteutus())) {
             return addPohjaLops2019(ops, peruste);
         } else if (KoulutustyyppiToteutus.PERUSOPETUS.equals(peruste.getToteutus())) {
@@ -1903,8 +1908,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public TekstiKappaleDto getPerusteTekstikappale(Long opsId, Long tekstikappaleId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         PerusteDto perusteDto = eperusteetService.getPerusteById(ops.getCachedPeruste().getPerusteId());
-        if (perusteDto.getPerusopetus() != null) {
-            fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto sisalto = perusteDto.getPerusopetus().getSisalto();
+        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto sisalto = perusteDto.getTekstiKappaleViiteSisalto();
+
+        if (sisalto != null) {
             fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto perusteenTekstikappaleViite = CollectionUtil.treeToStream(
                     sisalto,
                     fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)

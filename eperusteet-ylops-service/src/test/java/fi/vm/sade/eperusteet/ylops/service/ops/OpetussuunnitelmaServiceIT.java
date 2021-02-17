@@ -547,8 +547,32 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaLaajaDto exported = (OpetussuunnitelmaLaajaDto) opetussuunnitelmaService.getExportedOpetussuunnitelma(ops.getId());
         assertThat(exported.getPeruste()).isNotNull();
         assertThat(exported.getPohja()).isNotNull();
-        assertThat(exported.getTekstit()).isNotNull();;
+        assertThat(exported.getTekstit()).isNotNull();
         assertThat(exported.getOppiaineet()).isNotNull();
+    }
+
+    @Test
+    public void testYksinkertainenPohjanTekstitPerusteelta() {
+        OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
+        pohjaLuontiDto.setTuoPohjanOpintojaksot(false);
+        pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.YKSINKERTAINEN);
+        pohjaLuontiDto.setTyyppi(Tyyppi.POHJA);
+        pohjaLuontiDto.setPerusteenDiaarinumero("OPH-2791-2018");
+
+        {
+            OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
+            assertThat(pohjaDto.getTekstit().isPresent()).isTrue();
+            assertThat(pohjaDto.getTekstit().get().getLapset()).hasSize(2);
+            assertThat(pohjaDto.getTekstit().get().getLapset()).extracting("perusteTekstikappaleId").containsNull();
+        }
+
+        {
+            pohjaLuontiDto.setRakennePohjasta(true);
+            OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
+            assertThat(pohjaDto.getTekstit().isPresent()).isTrue();
+            assertThat(pohjaDto.getTekstit().get().getLapset()).hasSize(7);
+            assertThat(pohjaDto.getTekstit().get().getLapset()).extracting("perusteTekstikappaleId").doesNotContainNull();
+        }
     }
 
 }
