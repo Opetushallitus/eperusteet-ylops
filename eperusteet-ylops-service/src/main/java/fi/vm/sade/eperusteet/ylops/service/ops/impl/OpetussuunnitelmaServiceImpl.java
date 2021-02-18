@@ -1761,7 +1761,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 validointi.tuomitse();
             }
 
-            if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA && ops.getKoulutustyyppi() != KoulutusTyyppi.TPO) {
+            if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA && ops.getKoulutustyyppi() != KoulutusTyyppi.TPO && ops.getKoulutustyyppi() != KoulutusTyyppi.ESIOPETUS) {
                 // Arkistoidaan vanhat valmiit pohjat
                 List<Opetussuunnitelma> pohjat = opetussuunnitelmaRepository.findAllByTyyppiAndTilaAndKoulutustyyppi(
                         Tyyppi.POHJA, Tila.VALMIS, ops.getKoulutustyyppi());
