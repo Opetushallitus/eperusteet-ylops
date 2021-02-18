@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -96,8 +97,14 @@ public class Lops2019ServiceImpl implements Lops2019Service {
 
     @Override
     public Lops2019SisaltoDto getPerusteSisalto(Long opsId) {
-        PerusteDto perusteDto = getPerusteImpl(opsId);
-        return perusteDto.getLops2019();
+        Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
+        
+        if (ops.getToteutus().equals(KoulutustyyppiToteutus.LOPS2019)) {
+            PerusteDto perusteDto = getPerusteImpl(opsId);
+            return perusteDto.getLops2019();
+        }
+
+        return null;
     }
 
     @Override
