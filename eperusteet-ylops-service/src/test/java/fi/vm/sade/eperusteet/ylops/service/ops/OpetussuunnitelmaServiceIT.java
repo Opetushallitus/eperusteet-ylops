@@ -289,7 +289,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertEquals(Tila.VALMIS, luotu.getTila());
 
         luotu = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
-        assertEquals(Tila.POISTETTU, luotu.getTila());
+        assertEquals(Tila.VALMIS, luotu.getTila());
     }
 
     @Test
