@@ -1760,16 +1760,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 Validointi validointi = validoiPohja(ops);
                 validointi.tuomitse();
             }
-
-            if (tila == Tila.VALMIS && ops.getTyyppi() == Tyyppi.POHJA && ops.getKoulutustyyppi() != KoulutusTyyppi.TPO && ops.getKoulutustyyppi() != KoulutusTyyppi.ESIOPETUS) {
-                // Arkistoidaan vanhat valmiit pohjat
-                List<Opetussuunnitelma> pohjat = opetussuunnitelmaRepository.findAllByTyyppiAndTilaAndKoulutustyyppi(
-                        Tyyppi.POHJA, Tila.VALMIS, ops.getKoulutustyyppi());
-                for (Opetussuunnitelma pohja : pohjat) {
-                    pohja.setTila(Tila.POISTETTU);
-                }
-            }
-
+            
             if (tila == Tila.VALMIS && ops.getTila() == Tila.LUONNOS && ops.getTyyppi() != Tyyppi.POHJA &&
                     ops.getKoulutustyyppi().isLukio()) {
                 Validointi validointi = validoiLukioPohja(ops);
