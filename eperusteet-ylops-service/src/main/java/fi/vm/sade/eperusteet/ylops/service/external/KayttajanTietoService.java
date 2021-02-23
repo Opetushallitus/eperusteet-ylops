@@ -54,4 +54,7 @@ public interface KayttajanTietoService {
     @PreAuthorize("isAuthenticated()")
     EtusivuDto haeKayttajanEtusivu();
 
+    @PreAuthorize("isAuthenticated()")
+    List<KayttajanTietoDto> haeKayttajatiedot(List<String> oid);
+
 }

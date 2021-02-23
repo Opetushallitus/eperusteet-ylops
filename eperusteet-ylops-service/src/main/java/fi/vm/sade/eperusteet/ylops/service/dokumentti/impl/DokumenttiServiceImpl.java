@@ -47,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -166,8 +167,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         dokumenttiStateService.save(dto);
 
         try {
-            Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
-            mapper.map(dto, dokumentti);
+            Dokumentti dokumentti = mapper.map(dto, Dokumentti.class);
             Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
             if (ops != null) {
                 dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
