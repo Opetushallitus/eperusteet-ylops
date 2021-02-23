@@ -35,6 +35,7 @@ import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.*;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
@@ -435,7 +436,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         List<OpetussuunnitelmanJulkaisu> julkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
-        return mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuDto.class);
+        return taytaKayttajaTiedot(mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuDto.class));
     }
 
     @Override
@@ -499,15 +500,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
         }
 
-        Set<Long> dokumentit = ops.getJulkaisukielet().stream()
-                .map(kieli -> dokumenttiService.getDto(opsId, kieli))
-                .map(DokumenttiDto::getId)
-                .collect(toSet());
-
         OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
         julkaisu.setOpetussuunnitelma(ops);
         julkaisu.setTiedote(mapper.map(julkaisuDto.getJulkaisutiedote(), LokalisoituTeksti.class));
-        julkaisu.setDokumentit(dokumentit);
         OpetussuunnitelmaExportDto opsData = getExportedOpetussuunnitelma(opsId);
 
         try {
@@ -520,16 +515,41 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 }
             }
 
+            Set<DokumenttiDto> dokumentit = ops.getJulkaisukielet().stream()
+                    .map(kieli -> dokumenttiService.getDto(opsId, kieli))
+                    .collect(toSet());
+
+            for (DokumenttiDto dokumenttiDto : dokumentit) {
+                try {
+                    dokumenttiService.generateWithDto(dokumenttiDto);
+                } catch (DokumenttiException e) {
+                    logger.error(e.getLocalizedMessage(), e.getCause());
+                }
+            }
+
             JulkaistuOpetussuunnitelmaData data = new JulkaistuOpetussuunnitelmaData(opsDataJson);
             data = julkaistuOpetussuunnitelmaDataRepository.save(data);
+            julkaisu.setDokumentit(dokumentit.stream().map(DokumenttiDto::getId).collect(toSet()));
             julkaisu.setData(data);
             julkaisu.setRevision(vanhatJulkaisut.size() + 1);
             julkaisu = julkaisuRepository.save(julkaisu);
-            return mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class);
+            return taytaKayttajaTiedot(mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class));
         } catch (IOException e) {
             e.printStackTrace();
             throw new BusinessRuleViolationException("julkaisun-tallennus-epaonnistui");
         }
+    }
+
+    private List<OpetussuunnitelmanJulkaisuDto> taytaKayttajaTiedot(List<OpetussuunnitelmanJulkaisuDto> julkaisut) {
+        Map<String, KayttajanTietoDto> kayttajatiedot = kayttajanTietoService
+                .haeKayttajatiedot(julkaisut.stream().map(OpetussuunnitelmanJulkaisuDto::getLuoja).collect(Collectors.toList()))
+                .stream().collect(Collectors.toMap(kayttajanTieto -> kayttajanTieto.getOidHenkilo(), kayttajanTieto -> kayttajanTieto));
+        julkaisut.forEach(julkaisu -> julkaisu.setKayttajanTieto(kayttajatiedot.get(julkaisu.getLuoja())));
+        return julkaisut;
+    }
+
+    private OpetussuunnitelmanJulkaisuDto taytaKayttajaTiedot(OpetussuunnitelmanJulkaisuDto julkaisu) {
+        return taytaKayttajaTiedot(Arrays.asList(julkaisu)).get(0);
     }
 
     @Override
@@ -1898,23 +1918,27 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Transactional(noRollbackFor = {NotExistsException.class})
     public TekstiKappaleDto getPerusteTekstikappale(Long opsId, Long tekstikappaleId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        PerusteDto perusteDto = eperusteetService.getPerusteById(ops.getCachedPeruste().getPerusteId());
-        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto sisalto = perusteDto.getTekstiKappaleViiteSisalto();
+        if (ops.getCachedPeruste() != null) {
+            PerusteDto perusteDto = eperusteetService.getPerusteById(ops.getCachedPeruste().getPerusteId());
+            fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto sisalto = perusteDto.getTekstiKappaleViiteSisalto();
 
-        if (sisalto != null) {
-            fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto perusteenTekstikappaleViite = CollectionUtil.treeToStream(
-                    sisalto,
-                    fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
-                    .filter(viiteDto -> viiteDto.getTesktiKappale() != null
-                            && viiteDto.getTesktiKappale().getTeksti() != null
-                            && Objects.equals(tekstikappaleId, viiteDto.getTesktiKappale().getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
-            return new TekstiKappaleDto(
-                    new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTesktiKappale().getNimi().asMap()),
-                    new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTesktiKappale().getTeksti().asMap()),
-                    null);
+            if (sisalto != null) {
+                fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto perusteenTekstikappaleViite = CollectionUtil.treeToStream(
+                        sisalto,
+                        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
+                        .filter(viiteDto -> viiteDto.getTesktiKappale() != null
+                                && viiteDto.getTesktiKappale().getTeksti() != null
+                                && Objects.equals(tekstikappaleId, viiteDto.getTesktiKappale().getId()))
+                        .findFirst()
+                        .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
+                return new TekstiKappaleDto(
+                        new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTesktiKappale().getNimi().asMap()),
+                        new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTesktiKappale().getTeksti().asMap()),
+                        null);
+            }
+            throw new NotExistsException("tekstikappaletta-ei-ole");
         }
-        throw new NotExistsException("tekstikappaletta-ei-ole");
+
+        return null;
     }
 }

@@ -99,9 +99,11 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                                 }
                             } else {
                                 TekstiKappaleDto tekstikappale = opetussuunnitelmaService.getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
-                                addLokalisoituteksti(docBase,
-                                        tekstikappale.getTeksti(),
-                                        "cite");
+                                if (tekstikappale != null) {
+                                    addLokalisoituteksti(docBase,
+                                            tekstikappale.getTeksti(),
+                                            "cite");
+                                }
                             }
 
                         } catch (BusinessRuleViolationException | NotExistsException e) {

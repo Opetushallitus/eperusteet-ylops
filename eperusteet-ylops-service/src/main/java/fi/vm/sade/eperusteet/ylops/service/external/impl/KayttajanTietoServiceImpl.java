@@ -121,6 +121,11 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     }
 
     @Override
+    public List<KayttajanTietoDto> haeKayttajatiedot(List<String> oid) {
+        return client.haeKayttajatiedot(oid);
+    }
+
+    @Override
     public Set<String> haeOrganisaatioOikeudet() {
         return SecurityUtil.getOrganizations(new HashSet<>(Arrays.asList(ADMIN, CRUD)));
     }

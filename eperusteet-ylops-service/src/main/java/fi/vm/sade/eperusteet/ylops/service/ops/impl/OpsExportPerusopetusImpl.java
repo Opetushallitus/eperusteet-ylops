@@ -45,8 +45,12 @@ public class OpsExportPerusopetusImpl implements OpsExport {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaLaajaDto dto = mapper.map(ops, OpetussuunnitelmaLaajaDto.class);
-        PerusteInfoDto peruste = lops2019Service.getPeruste(opsId);
-        dto.setPeruste(peruste);
+
+        if (ops.getCachedPeruste() != null) {
+            PerusteInfoDto peruste = lops2019Service.getPeruste(opsId);
+            dto.setPeruste(peruste);
+        }
+
         opetussuunnitelmaService.fetchKuntaNimet(dto);
         opetussuunnitelmaService.fetchOrganisaatioNimet(dto);
         return dto;
