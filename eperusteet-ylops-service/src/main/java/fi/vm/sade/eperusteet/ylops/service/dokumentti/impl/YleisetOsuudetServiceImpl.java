@@ -54,11 +54,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
     public void addYleisetOsuudet(DokumenttiBase docBase) {
         Optional.ofNullable(docBase.getOps().getTekstit())
                 .ifPresent(tekstit -> {
-                    if (docBase.getOps().getKoulutustyyppi().isLukio()) {
-                        addTekstiKappale(docBase, tekstit, false);
-                    } else {
-                        addTekstiKappale(docBase, tekstit, true);
-                    }
+                    addTekstiKappale(docBase, tekstit, false);
                 });
     }
 
