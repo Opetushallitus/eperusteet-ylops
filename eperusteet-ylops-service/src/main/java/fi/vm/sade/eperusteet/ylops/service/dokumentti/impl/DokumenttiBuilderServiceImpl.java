@@ -210,7 +210,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // Kuvat
         buildImages(docBase);
-        buildKansi(docBase);
+        buildKuva(docBase, "kansikuva", dokumentti.getKansikuva());
+        buildKuva(docBase, "ylatunniste", dokumentti.getYlatunniste());
+        buildKuva(docBase, "alatunniste", dokumentti.getAlatunniste());
 
         LOG.info("Generate PDF (opsId=" + docBase.getOps().getId() + ")");
 
@@ -477,21 +479,20 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void buildKansi(DokumenttiBase docBase) {
+    private void buildKuva(DokumenttiBase docBase, String elementName, byte[] kuva) {
         Element head = docBase.getHeadElement();
-        Element kansikuva = docBase.getDocument().createElement("kansikuva");
-        Element kuva = docBase.getDocument().createElement("img");
+        Element element = docBase.getDocument().createElement(elementName);
+        Element img = docBase.getDocument().createElement("img");
 
-        byte[] image = docBase.getDokumentti().getKansikuva();
-        if (image == null) {
+        if (kuva == null) {
             return;
         }
 
-        String base64 = Base64.getEncoder().encodeToString(image);
-        kuva.setAttribute("src", "data:image/jpg;base64," + base64);
+        String base64 = Base64.getEncoder().encodeToString(kuva);
+        img.setAttribute("src", "data:image/jpg;base64," + base64);
 
-        kansikuva.appendChild(kuva);
-        head.appendChild(kansikuva);
+        element.appendChild(img);
+        head.appendChild(element);
     }
 
 }
