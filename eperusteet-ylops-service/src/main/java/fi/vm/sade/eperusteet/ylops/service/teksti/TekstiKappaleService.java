@@ -36,6 +36,9 @@ public interface TekstiKappaleService {
     TekstiKappaleDto update(@P("opsId") Long opsId, TekstiKappaleDto tekstiKappaleDto, MuokkausTapahtuma tapahtuma);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    TekstiKappaleDto update(@P("opsId") Long opsId, TekstiKappaleDto tekstiKappaleDto, boolean requiredLock, MuokkausTapahtuma tapahtuma);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     TekstiKappaleDto mergeNew(@P("opsId") Long opsId, TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")

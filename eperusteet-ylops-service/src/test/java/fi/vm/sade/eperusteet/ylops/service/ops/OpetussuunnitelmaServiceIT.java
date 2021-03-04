@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.utils.KoodistoUtils;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
@@ -384,6 +385,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
             TekstiKappaleViiteDto.Matala tk = tekstiKappaleViiteService.getTekstiKappaleViite(ops.getId(), ops.getTekstit().get().getLapset().get(1).getId());
             tk.setPakollinen(true);
+            tk.setOmistussuhde(Omistussuhde.LAINATTU);
             tekstiKappaleViiteService.updateTekstiKappaleViite(ops.getId(), tk.getId(), tk);
             tekstiKappaleViiteService.addTekstiKappaleViite(ops.getId(), tk.getId(), tk);
 
@@ -404,7 +406,9 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
             assertThat(ops.getTekstit().get().getLapset().get(0).getTekstiKappale().getNimi().get(Kieli.FI)).doesNotContain("(vanha)");
             assertThat(ops.getTekstit().get().getLapset().get(2).getTekstiKappale().getNimi().get(Kieli.FI)).contains("(vanha)");
             assertThat(ops.getTekstit().get().getLapset().get(2).isPakollinen()).isFalse();
+            assertThat(ops.getTekstit().get().getLapset().get(2)).extracting("omistussuhde").containsExactly(Omistussuhde.OMA);
             assertThat(ops.getTekstit().get().getLapset().get(2).getLapset().get(0).isPakollinen()).isFalse();
+            assertThat(ops.getTekstit().get().getLapset().get(2).getLapset().get(0)).extracting("omistussuhde").containsExactly(Omistussuhde.OMA);
         }
 
         {

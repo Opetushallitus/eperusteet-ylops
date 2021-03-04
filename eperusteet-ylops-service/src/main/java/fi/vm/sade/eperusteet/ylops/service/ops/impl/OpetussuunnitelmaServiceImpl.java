@@ -1511,7 +1511,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
             List<Long> vanhatIdt = new ArrayList<>();
             ops.getTekstit().getLapset().forEach(tekstikappaleViite -> {
-                TekstiKappaleViiteDto.Matala tekstikappale = tekstiKappaleViiteService.getTekstiKappaleViite(id, tekstikappaleViite.getId());
+                TekstiKappaleViiteDto.Matala tekstikappale = tarkistaJaKorjaaTekstikappaleViiteOmistussuhde(id, tekstikappaleViite.getId());
                 Map<Kieli, String> nimet = tekstikappale.getTekstiKappale().getNimi().getTekstit();
                 nimet.replaceAll((kieli, teksti) -> teksti + " (vanha)");
                 tekstikappale.getTekstiKappale().setNimi(new LokalisoituTekstiDto(null, nimet));
@@ -1546,12 +1546,21 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private void paivitaTekstikappaleViiteLapsetPakollisuusRec(Long opsId, List<Reference> lapset, boolean pakollisuus) {
         if (CollectionUtils.isNotEmpty(lapset)) {
             lapset.forEach(lapsi -> {
-                TekstiKappaleViiteDto.Matala tekstikappale = tekstiKappaleViiteService.getTekstiKappaleViite(opsId, Long.valueOf(lapsi.getId()));
+                TekstiKappaleViiteDto.Matala tekstikappale = tarkistaJaKorjaaTekstikappaleViiteOmistussuhde(opsId, Long.valueOf(lapsi.getId()));
                 tekstikappale.setPakollinen(pakollisuus);
                 tekstiKappaleViiteService.updateTekstiKappaleViite(opsId, tekstikappale.getId(), tekstikappale);
                 paivitaTekstikappaleViiteLapsetPakollisuusRec(opsId, tekstikappale.getLapset(), pakollisuus);
             });
         }
+    }
+
+    private TekstiKappaleViiteDto.Matala tarkistaJaKorjaaTekstikappaleViiteOmistussuhde(Long opsId, Long viiteId) {
+        TekstiKappaleViiteDto.Matala tekstikappale = tekstiKappaleViiteService.getTekstiKappaleViite(opsId, viiteId);
+        if (tekstikappale.getOmistussuhde() != Omistussuhde.OMA) {
+            return tekstiKappaleViiteService.kloonaaTekstiKappale(opsId, viiteId, TekstiKappaleViiteDto.Matala.class);
+        }
+
+        return tekstikappale;
     }
 
     private void poistaKielletytMuutokset(Opetussuunnitelma ops, OpetussuunnitelmaDto opetussuunnitelmaDto) {
