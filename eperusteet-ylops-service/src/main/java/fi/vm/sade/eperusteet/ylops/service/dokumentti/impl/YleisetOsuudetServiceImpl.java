@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.YleisetOsuudetService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
@@ -26,6 +27,8 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
+import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +53,9 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
+
+    @Autowired
+    private TekstiKappaleViiteService tekstiKappaleViiteService;
 
     public void addYleisetOsuudet(DokumenttiBase docBase) {
         Optional.ofNullable(docBase.getOps().getTekstit())
@@ -105,6 +111,11 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                         } catch (BusinessRuleViolationException | NotExistsException e) {
                             // Ohitetaan. Voi olla toisen tyyppinen ops.
                         }
+                    }
+
+                    if (lapsi.isNaytaPohjanTeksti()) {
+                        List<TekstiKappaleViiteDto.Matala> pohjaTekstit = tekstiKappaleViiteService.getTekstiKappaleViiteOriginals(docBase.getOps().getId(), lapsi.getId());
+                        pohjaTekstit.forEach(pohjaTeksti -> addLokalisoituteksti(docBase, pohjaTeksti.getTekstiKappale().getTeksti(), "cite"));
                     }
 
                     // Opsin teksti luvulle
