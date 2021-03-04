@@ -115,7 +115,9 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
                     if (lapsi.isNaytaPohjanTeksti()) {
                         List<TekstiKappaleViiteDto.Matala> pohjaTekstit = tekstiKappaleViiteService.getTekstiKappaleViiteOriginals(docBase.getOps().getId(), lapsi.getId());
-                        pohjaTekstit.forEach(pohjaTeksti -> addLokalisoituteksti(docBase, pohjaTeksti.getTekstiKappale().getTeksti(), "cite"));
+                        pohjaTekstit.stream()
+                                .filter(pohjaTeksti -> pohjaTeksti != null && pohjaTeksti.getTekstiKappale() != null && pohjaTeksti.getTekstiKappale().getTeksti() != null)
+                                .forEach(pohjaTeksti -> addLokalisoituteksti(docBase, pohjaTeksti.getTekstiKappale().getTeksti(), "cite"));
                     }
 
                     // Opsin teksti luvulle
