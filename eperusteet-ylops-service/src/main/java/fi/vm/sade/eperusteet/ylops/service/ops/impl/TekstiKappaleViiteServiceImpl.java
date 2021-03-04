@@ -294,6 +294,12 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Override
     @Transactional(readOnly = false)
     public TekstiKappaleViiteDto.Puu kloonaaTekstiKappale(Long opsId, Long viiteId) {
+        return kloonaaTekstiKappale(opsId, viiteId, TekstiKappaleViiteDto.Puu.class);
+    }
+
+    @Override
+    @Transactional(readOnly = false)
+    public <T> T kloonaaTekstiKappale(Long opsId, Long viiteId, Class<T> t) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         TekstiKappale originaali = viite.getTekstiKappale();
         // TODO: Tarkista onko tekstikappaleeseen lukuoikeutta
@@ -302,7 +308,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.setTekstiKappale(tekstiKappaleRepository.save(klooni));
         viite.setOmistussuhde(Omistussuhde.OMA);
         viite = tekstikappaleviiteRepository.save(viite);
-        return mapper.map(viite, TekstiKappaleViiteDto.Puu.class);
+        return mapper.map(viite, t);
     }
 
     @Override
@@ -429,7 +435,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                         lockMgr.ensureLockedByAuthenticatedUser(tid);
                     }
                 }
-                tekstiKappaleService.update(opsId, uusiTekstiKappale, null);
+                tekstiKappaleService.update(opsId, uusiTekstiKappale, requireLock, null);
             } else {
                 throw new BusinessRuleViolationException("Lainattua tekstikappaletta ei voida muokata");
             }

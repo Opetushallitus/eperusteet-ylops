@@ -81,9 +81,18 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
 
     @Override
     public TekstiKappaleDto update(Long opsId, TekstiKappaleDto tekstiKappaleDto, MuokkausTapahtuma tapahtuma) {
+        return update(opsId, tekstiKappaleDto, true, tapahtuma);
+    }
+
+    @Override
+    public TekstiKappaleDto update(Long opsId, TekstiKappaleDto tekstiKappaleDto, boolean requiredLock, MuokkausTapahtuma tapahtuma) {
         Long id = tekstiKappaleDto.getId();
         TekstiKappale current = assertExists(repository.findOne(id), "Tekstikappaletta ei ole olemassa");
-        repository.lock(current);
+
+        if (requiredLock) {
+            repository.lock(current);
+        }
+
         mapper.map(tekstiKappaleDto, current);
         current.updateMuokkaustiedot();
         TekstiKappale tekstiKappale = repository.save(current);
