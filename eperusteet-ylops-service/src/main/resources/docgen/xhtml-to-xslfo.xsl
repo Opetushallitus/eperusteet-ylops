@@ -106,19 +106,23 @@
 
                 <fo:static-content flow-name="rb-right">
                     <fo:block font-size="10pt" text-align="start"/>
+                    <xsl:apply-templates select="/html/head/ylatunniste"/>
                 </fo:static-content>
                 <fo:static-content flow-name="ra-right">
                     <fo:block text-align="end" font-size="10pt" color="#6C6D70">
                         <fo:page-number/>
                     </fo:block>
+                    <xsl:apply-templates select="/html/head/alatunniste"/>
                 </fo:static-content>
                 <fo:static-content flow-name="rb-left">
                     <fo:block font-size="10pt" text-align="end"/>
+                    <xsl:apply-templates select="/html/head/ylatunniste"/>
                 </fo:static-content>
                 <fo:static-content flow-name="ra-left">
                     <fo:block font-size="10pt" color="#6C6D70">
                         <fo:page-number/>
                     </fo:block>
+                    <xsl:apply-templates select="/html/head/alatunniste"/>
                 </fo:static-content>
                 <fo:static-content flow-name="rs-left">
                     <fo:block text-align="start" color="#007ec5" margin-left="20mm"

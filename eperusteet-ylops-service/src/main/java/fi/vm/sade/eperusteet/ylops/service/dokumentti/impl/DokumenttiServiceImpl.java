@@ -167,7 +167,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         dokumenttiStateService.save(dto);
 
         try {
-            Dokumentti dokumentti = mapper.map(dto, Dokumentti.class);
+            Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
             Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
             if (ops != null) {
                 dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
