@@ -111,11 +111,18 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         if (ops == null) {
             throw new BusinessRuleViolationException("ops-ei-loydy");
         }
+
         PerusteCache perusteCached = ops.getCachedPeruste();
+        PerusteDto perusteDto = null;
         if (perusteCached == null) {
+            perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+        } else {
+            perusteDto = eperusteetService.getPerusteById(perusteCached.getPerusteId());
+        }
+
+        if (perusteDto == null) {
             throw new BusinessRuleViolationException("peruste-cache-puuttuu");
         }
-        PerusteDto perusteDto = eperusteetService.getPerusteById(perusteCached.getPerusteId());
 
         TekstiKappaleViiteDto.Matala tekstiKappaleViite = getTekstiKappaleViite(opsId, viiteId);
 
