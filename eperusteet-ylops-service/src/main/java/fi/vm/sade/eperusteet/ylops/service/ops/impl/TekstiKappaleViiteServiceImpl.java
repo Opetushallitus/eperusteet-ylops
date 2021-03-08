@@ -47,6 +47,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsStrategy;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -142,7 +143,11 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     public TekstiKappaleViiteDto.Matala getTekstiKappaleViite(Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         TekstiKappaleViiteDto.Matala viiteDto = mapper.map(viite, TekstiKappaleViiteDto.Matala.class);
-        viiteDto.getTekstiKappale().setMuokkaaja(kayttajanTietoService.haeKayttajanimi(viiteDto.getTekstiKappale().getMuokkaaja()));
+
+        if (SecurityUtil.isAuthenticated()) {
+            viiteDto.getTekstiKappale().setMuokkaaja(kayttajanTietoService.haeKayttajanimi(viiteDto.getTekstiKappale().getMuokkaaja()));
+        }
+
         return viiteDto;
     }
 
