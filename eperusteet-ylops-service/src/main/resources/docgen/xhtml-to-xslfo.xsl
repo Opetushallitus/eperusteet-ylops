@@ -696,6 +696,15 @@
         <fo:table-cell
                 padding-start="3pt" padding-end="3pt"
                 padding-before="3pt" padding-after="3pt">
+            <xsl:attribute name="border-style">
+                <xsl:text>solid</xsl:text>
+            </xsl:attribute>
+            <xsl:attribute name="border-color">
+                <xsl:text>#ddd</xsl:text>
+            </xsl:attribute>
+            <xsl:attribute name="border-width">
+                <xsl:text>1pt</xsl:text>
+            </xsl:attribute>
             <xsl:if test="@colspan">
                 <xsl:attribute name="number-columns-spanned">
                     <xsl:value-of select="@colspan"/>
@@ -704,21 +713,6 @@
             <xsl:if test="@rowspan">
                 <xsl:attribute name="number-rows-spanned">
                     <xsl:value-of select="@rowspan"/>
-                </xsl:attribute>
-            </xsl:if>
-            <xsl:if test="@border='1' or
-                    ancestor::tr[@border='1'] or
-                    ancestor::tbody[@border='1'] or
-                    ancestor::thead[@border='1'] or
-                    ancestor::table[@border='1']">
-                <xsl:attribute name="border-style">
-                    <xsl:text>solid</xsl:text>
-                </xsl:attribute>
-                <xsl:attribute name="border-color">
-                    <xsl:text>black</xsl:text>
-                </xsl:attribute>
-                <xsl:attribute name="border-width">
-                    <xsl:text>1pt</xsl:text>
                 </xsl:attribute>
             </xsl:if>
             <xsl:variable name="align">
