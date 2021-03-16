@@ -15,6 +15,8 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.mapping;
 
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti_;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
@@ -38,6 +40,7 @@ import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -159,6 +162,20 @@ public class DtoMapperConfig {
                         dokumenttiDto.setKansikuva(dokumentti.getKansikuva() != null);
                         dokumenttiDto.setYlatunniste(dokumentti.getYlatunniste() != null);
                         dokumenttiDto.setAlatunniste(dokumentti.getAlatunniste() != null);
+                    }
+                })
+                .register();
+
+        factory.classMap(Opetussuunnitelma.class, OpetussuunnitelmaInfoDto.class)
+                .byDefault()
+                .favorExtension(true)
+                .customize(new CustomMapper<Opetussuunnitelma, OpetussuunnitelmaInfoDto>() {
+                    @Override
+                    public void mapAtoB(Opetussuunnitelma opetussuunnitelma, OpetussuunnitelmaInfoDto opetussuunnitelmaInfoDto, MappingContext context) {
+                        super.mapAtoB(opetussuunnitelma, opetussuunnitelmaInfoDto, context);
+                        if (!Tyyppi.POHJA.equals(opetussuunnitelma.getTyyppi()) && !Tila.POISTETTU.equals(opetussuunnitelma.getTila()) && CollectionUtils.isNotEmpty(opetussuunnitelma.getJulkaisut())) {
+                            opetussuunnitelmaInfoDto.setTila(Tila.JULKAISTU);
+                        }
                     }
                 })
                 .register();

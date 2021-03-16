@@ -10,7 +10,9 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import org.springframework.context.annotation.Profile;
 
+@Profile("!test")
 @Entity
 @Immutable
 @Table(name = "opetussuunnitelman_julkaisu_data")
