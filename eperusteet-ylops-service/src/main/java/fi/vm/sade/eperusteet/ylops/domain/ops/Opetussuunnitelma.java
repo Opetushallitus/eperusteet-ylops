@@ -51,6 +51,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsIdentifiable;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
 import org.springframework.util.StringUtils;
 
@@ -248,6 +249,11 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     @Column(name = "viimeisin_sync_pvm")
     private Date viimeisinSyncPvm;
+
+    @NotAudited
+    @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY)
+    @Getter
+    private List<OpetussuunnitelmanJulkaisu> julkaisut;
 
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
         vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));
