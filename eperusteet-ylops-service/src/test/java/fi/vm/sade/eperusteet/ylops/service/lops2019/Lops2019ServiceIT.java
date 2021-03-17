@@ -302,6 +302,14 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                     Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_bi1").build(),
                     Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_maa2").build()));
 
+            opintojaksoDto.setKoodi("virheellinen!2");
+            assertThatThrownBy(() -> opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto))
+                    .isInstanceOf(BusinessRuleViolationException.class)
+                    .hasMessage("koodi-virheellinen");
+        }
+        
+        {
+            opintojaksoDto.setKoodi("vali_di.12-3");
             assertThat(opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto)).isNotNull();
         }
     }
@@ -389,6 +397,23 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
             wrapperDto.setData(oppiaineDto);
 
             oppiaineService.updateOppiaine(ops3.getId(), oppiaineDto.getId(), wrapperDto);
+
+            oppiaineDto.setKoodi("koodi!");
+            Long oppiaineId = oppiaineDto.getId();
+            UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> wrapperDto2 = new UpdateWrapperDto<>();
+            wrapperDto2.setData(oppiaineDto);
+
+            assertThatThrownBy(() -> oppiaineService.updateOppiaine(ops3.getId(), oppiaineId, wrapperDto2));
+        }
+
+        {
+            Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
+                    .nimi(LokalisoituTekstiDto.of("Biologia"))
+                    .kuvaus(LokalisoituTekstiDto.of("Kuvaus"))
+                    .koodi("virhe!1")
+                    .perusteenOppiaineUri("oppiaineet_bi")
+                    .build();
+            assertThatThrownBy(() -> oppiaineService.addOppiaine(ops3.getId(), oppiaineDto));
         }
 
         List<Lops2019OpintojaksonOppiaine> opintojaksonOppiaineet = opintojaksonOppiaineRepository.findAll();

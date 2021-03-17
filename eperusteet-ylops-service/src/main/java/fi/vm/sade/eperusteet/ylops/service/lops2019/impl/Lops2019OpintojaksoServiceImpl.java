@@ -30,6 +30,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
+import fi.vm.sade.eperusteet.ylops.service.util.KoodiValidator;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import java.math.BigDecimal;
 import java.util.*;
@@ -456,6 +457,8 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
                 }
             }));
         }
+
+        KoodiValidator.validate(opintojaksoDto.getKoodi());
     }
 
     @Override
