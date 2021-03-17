@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
+import fi.vm.sade.eperusteet.ylops.service.util.KoodiValidator;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 
 import java.util.*;
@@ -153,6 +154,7 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
             Lops2019PaikallinenOppiaineDto oppiaineDto,
             MuokkausTapahtuma tapahtuma
     ) {
+        KoodiValidator.validate(oppiaineDto.getKoodi());
         Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
         Lops2019Oppiaine oppiaine = mapper.map(oppiaineDto, Lops2019Oppiaine.class);
         oppiaine.setId(null);
@@ -181,12 +183,14 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
             UpdateWrapperDto<Lops2019PaikallinenOppiaineDto> oppiaineDto,
             MuokkausTapahtuma tapahtuma
     ) {
+        KoodiValidator.validate(oppiaineDto.getData().getKoodi());
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         Lops2019Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
         String oppiaineenKoodi = oppiaine.getKoodi();
         mapper.map(oppiaineDto.getData(), oppiaine);
         oppiaine.updateMuokkaustiedot();
         oppiaine = oppiaineRepository.save(oppiaine);
+
         if (!Objects.equals(oppiaineenKoodi, oppiaineDto.getData().getKoodi())) {
             for (Lops2019OpintojaksonOppiaine ojOa : sisaltoRepository.findOpintojaksonOppiaineetByOpetussuunnitelma(opsId, oppiaineenKoodi)) {
                 ojOa.setKoodi(oppiaine.getKoodi());
