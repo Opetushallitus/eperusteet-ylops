@@ -227,7 +227,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
 
                 // Oppiaine nimi
                 if (oppiaine.isKoosteinen() || optOaVlk.isPresent()) {
-                    addHeader(docBase, getTextString(docBase, oppiaine.getNimi()));
+                    addHeader(docBase, getTextString(docBase, oppiaine.getNimi()), false);
 
                     docBase.getGenerator().increaseDepth();
                     docBase.getGenerator().increaseDepth();
