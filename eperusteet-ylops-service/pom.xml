@@ -37,6 +37,8 @@
         <metrics.version>4.0.2</metrics.version>
         <apache.httpclient.version>4.5.13</apache.httpclient.version>
         <eperusteet.backendutils.version>2.3-SNAPSHOT</eperusteet.backendutils.version>
+        <surefire.version>2.22.2</surefire.version>
+        <failsafe.version>2.22.2</failsafe.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -485,8 +487,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${failsafe.version}</version>
                 <configuration>
                     <argLine>${failsafeArgLine}</argLine>
+                    <forkCount>3</forkCount>
+                    <reuseForks>true</reuseForks>
                     <systemPropertyVariables>
                         <ittestdb.user>${eperusteet-ylops.ittestdb.user}</ittestdb.user>
                         <ittestdb.password>${eperusteeti-ylops.ittestdb.password}</ittestdb.password>
@@ -503,8 +508,11 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire.version}</version>
                 <configuration>
                     <argLine>${surefireArgLine}</argLine>
+                    <forkCount>3</forkCount>
+                    <reuseForks>true</reuseForks>
                     <systemPropertyVariables>
                         <ittestdb.user>${eperusteet-ylops.ittestdb.user}</ittestdb.user>
                         <ittestdb.password>${eperusteet-ylops.ittestdb.password}</ittestdb.password>
