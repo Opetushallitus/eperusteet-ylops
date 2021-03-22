@@ -15,8 +15,10 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.PalauteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
@@ -63,4 +65,7 @@ public interface EperusteetService {
 
     @PreAuthorize("permitAll()")
     byte[] getLiite(final Long perusteId, final UUID id);
+
+    @PreAuthorize("permitAll()")
+    PalauteDto lahetaPalaute(PalauteDto palaute) throws JsonProcessingException;
 }

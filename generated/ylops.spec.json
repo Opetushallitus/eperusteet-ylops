@@ -44,6 +44,8 @@
   }, {
     "name" : "Oppiaineet"
   }, {
+    "name" : "Palautteet"
+  }, {
     "name" : "Termisto"
   }, {
     "name" : "Ulkopuoliset"
@@ -4802,6 +4804,31 @@
         }
       }
     },
+    "/palaute" : {
+      "post" : {
+        "tags" : [ "Palautteet" ],
+        "operationId" : "sendPalaute",
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PalauteDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PalauteDto"
+            }
+          },
+          "202" : {
+            "description" : ""
+          }
+        }
+      }
+    },
     "/ulkopuoliset/julkaistutperusteet" : {
       "get" : {
         "tags" : [ "Ulkopuoliset" ],
@@ -6628,12 +6655,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -8202,6 +8229,9 @@
         },
         "luoja" : {
           "type" : "string"
+        },
+        "kayttajanTieto" : {
+          "$ref" : "#/definitions/KayttajanTietoDto"
         }
       }
     },
@@ -8731,6 +8761,31 @@
           "items" : {
             "type" : "string"
           }
+        }
+      }
+    },
+    "PalauteDto" : {
+      "type" : "object",
+      "properties" : {
+        "stars" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "feedback" : {
+          "type" : "string"
+        },
+        "key" : {
+          "type" : "string"
+        },
+        "data" : {
+          "type" : "string"
+        },
+        "user-agent" : {
+          "type" : "string"
+        },
+        "created-at" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },

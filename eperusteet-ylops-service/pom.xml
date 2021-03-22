@@ -614,6 +614,7 @@
                                     <locations>
                                         <location>${eperusteet.resources}.dokumentti.*</location>
                                         <location>${eperusteet.resources}.external.*</location>
+                                        <location>${eperusteet.resources}.julkinen.*</location>
                                         <location>${eperusteet.resources}.lops2019.Lops2019Controller</location>
                                         <location>${eperusteet.resources}.lops2019.Lops2019OpintojaksoController</location>
                                         <location>${eperusteet.resources}.lops2019.Lops2019OppiaineController</location>
