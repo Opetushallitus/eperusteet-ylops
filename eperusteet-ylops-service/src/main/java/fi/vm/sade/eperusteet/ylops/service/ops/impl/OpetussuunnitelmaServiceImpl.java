@@ -1564,18 +1564,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void poistaKielletytMuutokset(Opetussuunnitelma ops, OpetussuunnitelmaDto opetussuunnitelmaDto) {
-        // Ei sallita kunnan muuttamista
-        opetussuunnitelmaDto.setKunnat(ops.getKunnat().stream()
-                .map(kunta -> mapper.map(kunta, KoodistoDto.class))
-                .collect(toSet()));
-
-        // Ei sallita organisaation muuttamista
-        opetussuunnitelmaDto.setOrganisaatiot(ops.getOrganisaatiot().stream().map(orgOid -> {
-            OrganisaatioDto dto = new OrganisaatioDto();
-            dto.setOid(orgOid);
-            return dto;
-        }).collect(toSet()));
-
         // Ei sallita pohjan muuttamista
         opetussuunnitelmaDto.setPohja(mapper.map(ops.getPohja(), OpetussuunnitelmaNimiDto.class));
 
@@ -1627,6 +1615,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void validoiMuutokset(Opetussuunnitelma ops, OpetussuunnitelmaDto opetussuunnitelmaDto) {
+        if (CollectionUtils.isNotEmpty(ops.getKunnat()) && CollectionUtils.isEmpty(opetussuunnitelmaDto.getKunnat())) {
+            throw new BusinessRuleViolationException("Kuntia ei voi poistaa");
+        }
+
+        if (CollectionUtils.isNotEmpty(ops.getOrganisaatiot()) && CollectionUtils.isEmpty(opetussuunnitelmaDto.getOrganisaatiot())) {
+            throw new BusinessRuleViolationException("Organisaatioita ei voi poistaa");
+        }
+        
         // Käyttäjällä ei oikeutta tulevassa organisaatiossa
         Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD,
                 RolePermission.ADMIN));
@@ -1636,6 +1632,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (CollectionUtil.intersect(userOids, organisaatiot).isEmpty()) {
             throw new BusinessRuleViolationException("Käyttäjällä ei ole oikeuksia organisaatiossa");
         }
+
 
         if (opetussuunnitelmaDto.getTyyppi() != ops.getTyyppi()) {
             throw new BusinessRuleViolationException("Opetussuunnitelman tyyppiä ei voi vaihtaa");
