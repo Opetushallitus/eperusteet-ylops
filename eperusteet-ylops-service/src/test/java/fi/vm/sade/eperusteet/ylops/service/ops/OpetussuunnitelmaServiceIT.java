@@ -161,6 +161,27 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertEquals(pvm, ops.getPaatospaivamaara());
     }
 
+    @Test
+    public void testUpdateOrganisationUpdate() {
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
+        assertEquals(1, opsit.size());
+
+        Long id = opsit.get(0).getId();
+        {
+            OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
+            ops.setKunnat(Collections.emptySet());
+            assertThatThrownBy(() -> opetussuunnitelmaService.updateOpetussuunnitelma(ops)).hasMessage("Kuntia ei voi poistaa");
+
+        }
+
+        {
+            OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
+            ops.setOrganisaatiot(Collections.emptySet());
+            assertThatThrownBy(() -> opetussuunnitelmaService.updateOpetussuunnitelma(ops)).hasMessage("Organisaatioita ei voi poistaa");
+
+        }
+    }
+
     @Test(expected = BusinessRuleViolationException.class)
     public void testOpsPohja() {
         OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
