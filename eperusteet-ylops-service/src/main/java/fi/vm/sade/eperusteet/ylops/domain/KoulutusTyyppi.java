@@ -72,7 +72,8 @@ public enum KoulutusTyyppi {
                 || tyyppi.equals(ESIOPETUS.toString())
                 || tyyppi.equals(VARHAISKASVATUS.toString())
                 || tyyppi.equals(LUKIOVALMISTAVAKOULUTUS.toString())
-                || tyyppi.equals(TPO.toString()));
+                || tyyppi.equals(TPO.toString())
+                || tyyppi.equals(PERUSOPETUSVALMISTAVA.toString()));
     }
 
     public boolean isAmmatillinen() {
