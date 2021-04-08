@@ -127,7 +127,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                                     .getKoodi().getUri().equals(poa.getPerusteenOppiaineUri()))
                             .findFirst()
                             .orElse(null);
-                    return addPaikallinenOppiaine(docBase, poa, opintojaksotMap.get(poa.getKoodi()), oppimaaranOppiaine, moduulit);
+                    return addPaikallinenOppiaine(docBase, (Lops2019PaikallinenOppiaineDto) poa, opintojaksotMap.get(poa.getKoodi()), oppimaaranOppiaine, moduulit);
                 }
         );
 
@@ -343,7 +343,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                                     .getKoodi().getUri().equals(pom.getPerusteenOppiaineUri()))
                             .findFirst()
                             .orElse(null);
-                    return addPaikallinenOppiaine(docBase, pom, opintojaksotMap.get(pom.getKoodi()), oppimaaranOppiaine, moduulit);
+                    return addPaikallinenOppiaine(docBase, (Lops2019PaikallinenOppiaineDto) pom, opintojaksotMap.get(pom.getKoodi()), oppimaaranOppiaine, moduulit);
                 }
         );
 
