@@ -15,7 +15,7 @@ import java.util.List;
 
 public interface Lops2019OppiaineService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    <T extends Lops2019PaikallinenOppiaineDto> List<T> getAll(@P("opsId") Long opsId, Class<T> clz);
+    <T> List<T> getAll(@P("opsId") Long opsId, Class<T> clz);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<Lops2019Oppiaine> getTuodut(Opetussuunnitelma opetussuunnitelma);

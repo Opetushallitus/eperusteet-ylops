@@ -159,7 +159,6 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     JsonNode queryOpetussuunnitelmaJulkaisu(@P("opsId") Long opsId, String query);
 
-    @Cacheable("ops-navigation")
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     <T extends NavigationBuilder> NavigationNodeDto buildNavigationWithDate(@P("opsId") Long opsId, Date pvm, String kieli, Class<T> clazz);
 
@@ -168,6 +167,9 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     NavigationNodeDto buildNavigationPublic(@P("opsId") Long opsId, String kieli);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    void publicNavigationEvict(@P("opsId") Long opsId, String kieli);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     void vaihdaPohja(@P("opsId") Long id, Long pohjaId);

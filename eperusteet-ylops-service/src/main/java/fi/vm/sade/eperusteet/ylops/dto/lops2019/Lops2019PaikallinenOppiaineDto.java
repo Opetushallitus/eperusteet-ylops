@@ -14,7 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Lops2019PaikallinenOppiaineDto {
+public class Lops2019PaikallinenOppiaineDto implements Lops2019SortablePaikallinenOppiaineDto {
     private Long id;
     private String koodi;
     private LokalisoituTekstiDto nimi;

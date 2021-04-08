@@ -17,18 +17,44 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import fi.vm.sade.eperusteet.ylops.domain.*;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache_;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuudet;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Kurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OpetuksenYleisetTavoitteet;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
-import fi.vm.sade.eperusteet.ylops.domain.ops.*;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.*;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaistuOpetussuunnitelmaData;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu_;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
@@ -36,26 +62,51 @@ import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
-import fi.vm.sade.eperusteet.ylops.dto.koodisto.*;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.dto.ops.*;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.*;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaisuKevyt;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaQuery;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuudetDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioOpetussuunnitelmaRakenneDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokurssiPerusteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
-import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
+import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineJarjestysRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
-import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaDataRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
@@ -72,41 +123,79 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ops.*;
+import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
+import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsExport;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjanVaihto;
+import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
+import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
+import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
-import fi.vm.sade.eperusteet.ylops.service.util.*;
+import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
+import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
+import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
-
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.*;
-
-import static java.util.Collections.emptyList;
-import static java.util.Optional.ofNullable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.Stack;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import static java.util.stream.Collectors.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.*;
-
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @author mikkom
@@ -206,6 +295,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @PersistenceContext
     private EntityManager em;
+
+    @Autowired
+    private OpetussuunnitelmaService self;
 
     private List<Opetussuunnitelma> findJulkaistutByQuery(OpetussuunnitelmaQuery pquery) {
         CriteriaQuery<Opetussuunnitelma> query = getJulkaistutQuery(pquery);
@@ -473,16 +565,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public NavigationNodeDto buildNavigation(Long opsId, String kieli) {
-        // Todo: toteuta global version, jotta navigaatio voidaan cachea
         return buildNavigationWithDate(opsId, new Date(), kieli, NavigationBuilder.class);
     }
 
     @Override
+    @Cacheable("ops-navigation")
     public NavigationNodeDto buildNavigationPublic(Long opsId, String kieli) {
-        // Todo: toteuta global version, jotta navigaatio voidaan cachea
         return buildNavigationWithDate(opsId, new Date(), kieli, NavigationBuilderPublic.class);
     }
 
+    @Override
+    @CacheEvict("ops-navigation")
+    public void publicNavigationEvict(Long opsId, String kieli) {
+        // this method doesn't do anything and is only here for evicting the cache
+    }
 
     @Override
     public OpetussuunnitelmanJulkaisuDto addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
@@ -533,6 +629,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             julkaisu.setData(data);
             julkaisu.setRevision(vanhatJulkaisut.size() + 1);
             julkaisu = julkaisuRepository.save(julkaisu);
+
+            Stream.of(Kieli.FI, Kieli.SV, Kieli.EN).forEach(kieli -> {
+                self.publicNavigationEvict(opsId, kieli.toString());
+                self.buildNavigationPublic(opsId, kieli.toString());
+            });
+
             return taytaKayttajaTiedot(mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class));
         } catch (IOException e) {
             e.printStackTrace();

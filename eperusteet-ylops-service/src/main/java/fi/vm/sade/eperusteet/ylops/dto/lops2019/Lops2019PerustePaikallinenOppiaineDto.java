@@ -8,6 +8,6 @@ import lombok.Setter;
 public class Lops2019PerustePaikallinenOppiaineDto {
     private Integer jarjestys;
     private Lops2019SortableOppiaineDto oa;
-    private Lops2019PaikallinenOppiaineDto poa;
+    private Lops2019SortablePaikallinenOppiaineDto poa;
     private boolean paikallinen;
 }

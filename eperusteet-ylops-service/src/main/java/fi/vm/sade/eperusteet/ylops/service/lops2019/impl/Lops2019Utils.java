@@ -12,9 +12,9 @@ public class Lops2019Utils {
     public static void sortOppiaineet(
             Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset,
             List<? extends Lops2019SortableOppiaineDto> oppiaineet,
-            List<Lops2019PaikallinenOppiaineDto> paikallisetOppiaineet,
+            List<? extends Lops2019SortablePaikallinenOppiaineDto> paikallisetOppiaineet,
             Function<Lops2019SortableOppiaineDto, Boolean> oaFunction,
-            Function<Lops2019PaikallinenOppiaineDto, Boolean> poaFunction
+            Function<Lops2019SortablePaikallinenOppiaineDto, Boolean> poaFunction
     ) {
 
         Map<String, Lops2019PerustePaikallinenOppiaineDto> oppiaineJarjestyksetMap = new HashMap<>();
