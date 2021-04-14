@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+
+<Configure class="org.eclipse.jetty.webapp.WebAppContext">
+    <New id="DSTest" class="org.eclipse.jetty.plus.jndi.Resource">
+        <Arg></Arg>
+        <Arg>jdbc/eperusteet-ylops</Arg>
+        <Arg>
+            <New class="org.postgresql.ds.PGSimpleDataSource">
+                <Set name="User">oph</Set>
+                <Set name="Password">test</Set>
+                <Set name="ServerName">localhost</Set>
+                <Set name="PortNumber">5434</Set>
+                <Set name="url">jdbc:postgresql://localhost:5434/ylops</Set>
+            </New>
+        </Arg>
+    </New>
+</Configure>
