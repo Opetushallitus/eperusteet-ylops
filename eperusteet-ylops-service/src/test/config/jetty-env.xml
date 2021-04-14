@@ -7,11 +7,15 @@
         <Arg>jdbc/eperusteet-ylops</Arg>
         <Arg>
             <New class="org.postgresql.ds.PGSimpleDataSource">
-                <Set name="User">oph</Set>
-                <Set name="Password">test</Set>
-                <Set name="ServerName">localhost</Set>
-                <Set name="PortNumber">5434</Set>
-                <Set name="url">jdbc:postgresql://localhost:5434/ylops</Set>
+                <Set name="User">
+                    <SystemProperty name="user"/>
+                </Set>
+                <Set name="Password">
+                    <SystemProperty name="password"/>
+                </Set>
+                <Set name="url">
+                    <SystemProperty name="url"/>
+                </Set>
             </New>
         </Arg>
     </New>

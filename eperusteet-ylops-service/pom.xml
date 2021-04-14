@@ -376,7 +376,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.xmlgraphics</groupId>
-            <artifactId>fop-core</artifactId>
+            <artifactId>fop</artifactId>
             <version>${fop.version}</version>
             <exclusions>
                 <exclusion>
@@ -493,17 +493,28 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>9.4.39.v20210325</version>
                 <configuration>
+                    <httpConnector>
+                        <port>8081</port>
+                    </httpConnector>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <webApp>
                         <contextPath>/eperusteet-ylops-service</contextPath>
                     </webApp>
-                    <!--                    <scanIntervalSeconds>10</scanIntervalSeconds>-->
-                    <!--                    <connectors>-->
-                    <!--                        <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">-->
-                    <!--                            <port>8080</port>-->
-                    <!--                            <maxIdleTime>60000</maxIdleTime>-->
-                    <!--                        </connector>-->
-                    <!--                    </connectors>-->
+                    <contextXml>${basedir}/src/test/config/jetty-env.xml</contextXml>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>user</name>
+                            <value>${eperusteet-ylops.devdb.user}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>password</name>
+                            <value>${eperusteet-ylops.devdb.password}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>url</name>
+                            <value>${eperusteet-ylops.devdb.jdbcurl}</value>
+                        </systemProperty>
+                    </systemProperties>
                 </configuration>
                 <dependencies>
                     <dependency>
