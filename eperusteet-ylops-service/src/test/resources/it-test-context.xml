@@ -130,19 +130,18 @@
         <security:authentication-manager alias="authenticationManager">
             <security:authentication-provider>
                 <security:user-service>
-                    <security:user name="test" password="test"
+                    <security:user name="test" password="{noop}test"
                                    authorities="ROLE_USER, ROLE_APP_EPERUSTEET_YLOPS, ROLE_APP_EPERUSTEET_YLOPS_CRUD, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.00000000001, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.83037752777, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.15252345624572462"/>
-                    <security:user name="test2" password="test" authorities="ROLE_USER"/>
-                    <security:user name="test3" password="test" authorities="ROLE_USER"/>
-                    <security:user name="test4" password="test" authorities="ROLE_USER"/>
-                    <security:user name="test5" password="test" authorities="ROLE_USER"/>
-                    <security:user name="test6" password="test" authorities="ROLE_USER"/>
-                    <security:user name="test7" password="test" authorities="ROLE_USER"/>
-                    <security:user name="test8" password="test"
+                    <security:user name="test2" password="{noop}test" authorities="ROLE_USER"/>
+                    <security:user name="test3" password="{noop}test" authorities="ROLE_USER"/>
+                    <security:user name="test4" password="{noop}test" authorities="ROLE_USER"/>
+                    <security:user name="test5" password="{noop}test" authorities="ROLE_USER"/>
+                    <security:user name="test6" password="{noop}test" authorities="ROLE_USER"/>
+                    <security:user name="test7" password="{noop}test" authorities="ROLE_USER"/>
+                    <security:user name="test8" password="t{noop}est"
                                    authorities="ROLE_USER, ROLE_APP_EPERUSTEET_YLOPS, ROLE_APP_EPERUSTEET_YLOPS_CRUD, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.83037752777, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.83037752778"/>
-                    <security:user name="testAdmin" password="test"
+                    <security:user name="testAdmin" password="{noop}test"
                                    authorities="ROLE_USER, ROLE_APP_EPERUSTEET_YLOPS, ROLE_APP_EPERUSTEET_YLOPS_CRUD, ROLE_APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.10.00000000001"/>
-
                 </security:user-service>
             </security:authentication-provider>
         </security:authentication-manager>

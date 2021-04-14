@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 
+import fi.vm.sade.eperusteet.ylops.repository.CustomJpaRepository;
 import java.util.List;
 
 import org.springframework.data.domain.Sort;
@@ -30,7 +31,7 @@ import org.springframework.stereotype.Repository;
  * @author iSaul
  */
 @Repository
-public interface DokumenttiRepository extends JpaRepository<Dokumentti, Long> {
+public interface DokumenttiRepository extends CustomJpaRepository<Dokumentti, Long> {
     List<Dokumentti> findByOpsIdAndKieli(Long opsId, Kieli kieli);
 
     List<Dokumentti> findByOpsIdAndKieliAndTila(Long opsId, Kieli kieli, DokumenttiTila tila, Sort sort);

@@ -16,17 +16,21 @@
 package fi.vm.sade.eperusteet.ylops.repository.version;
 
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
+import fi.vm.sade.eperusteet.ylops.repository.CustomJpaRepository;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @NoRepositoryBean
-public interface JpaWithVersioningRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
+public interface JpaWithVersioningRepository<T, ID extends Serializable> extends CustomJpaRepository<T, ID> {
 
     List<Revision> getRevisions(final ID id);
 

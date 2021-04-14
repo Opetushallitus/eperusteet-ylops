@@ -16,6 +16,7 @@
 
 package fi.vm.sade.eperusteet.ylops.repository.ops;
 
+import fi.vm.sade.eperusteet.ylops.repository.CustomJpaRepository;
 import java.util.List;
 
 import fi.vm.sade.eperusteet.ylops.domain.Termi;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Repository;
  * @author apvilkko
  */
 @Repository
-public interface TermistoRepository extends JpaRepository<Termi, Long> {
+public interface TermistoRepository extends CustomJpaRepository<Termi, Long> {
     List<Termi> findByOpsId(Long opsId);
 
     Termi findOneByOpsAndAvain(Opetussuunnitelma ops, String avain);

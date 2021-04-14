@@ -344,7 +344,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional(readOnly = true)
     public Long getDokumenttiId(Long opsId, Kieli kieli) {
-        Sort sort = new Sort(Sort.Direction.DESC, "valmistumisaika");
+        Sort sort = Sort.by(Sort.Direction.DESC, "valmistumisaika");
         List<Dokumentti> documents = dokumenttiRepository
                 .findByOpsIdAndKieliAndTila(opsId, kieli, DokumenttiTila.VALMIS, sort);
 

@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.repository.liite;
 
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
 
+import fi.vm.sade.eperusteet.ylops.repository.CustomJpaRepository;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,7 +29,7 @@ import org.springframework.stereotype.Repository;
  * @author jhyoty
  */
 @Repository
-public interface LiiteRepository extends JpaRepository<Liite, UUID>, LiiteRepositoryCustom {
+public interface LiiteRepository extends CustomJpaRepository<Liite, UUID>, LiiteRepositoryCustom {
 
     @Query("SELECT l FROM Opetussuunnitelma o JOIN o.liitteet l WHERE o.id = ?1")
     List<Liite> findByOpsId(Long opsId);
