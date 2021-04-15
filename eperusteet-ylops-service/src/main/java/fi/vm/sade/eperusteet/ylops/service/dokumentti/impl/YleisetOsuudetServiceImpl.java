@@ -15,8 +15,10 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -61,8 +63,18 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
     public void addYleisetOsuudet(DokumenttiBase docBase) {
         Optional.ofNullable(docBase.getOps().getTekstit())
                 .ifPresent(tekstit -> {
-                    addTekstiKappale(docBase, tekstit, false);
+                    addTekstiKappale(docBase, tekstit, opetussuunnitelmaVanhaaRakennetta(docBase));
                 });
+    }
+
+    // EP-2745 - tekstikappaleen päätason näkyvyys vain "uudemmille" opetussuunnitelmille
+    private boolean opetussuunnitelmaVanhaaRakennetta(DokumenttiBase docBase) {
+
+        if (KoulutusTyyppi.PERUSOPETUS.equals(docBase.getOps().getKoulutustyyppi())) {
+            return docBase.getOps().getTekstit().getLapset().stream().noneMatch(tekstiKappaleViite -> tekstiKappaleViite.getPerusteTekstikappaleId() != null);
+        }
+
+        return false;
     }
 
     private void addTekstiKappale(DokumenttiBase docBase, TekstiKappaleViite viite, boolean paataso) {
@@ -89,38 +101,41 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                             addHeader(docBase, getTextString(docBase, lapsi.getTekstiKappale().getNimi()));
                         }
 
-                        // Perusteen teksti luvulle jos valittu esittäminen
-                        Long pTekstikappaleId = lapsi.getPerusteTekstikappaleId();
-                        if (lapsi.isNaytaPerusteenTeksti() && pTekstikappaleId != null) {
-                            try {
-                                if (docBase.getOps().getToteutus().equals(KoulutustyyppiToteutus.LOPS2019)) {
-                                    PerusteTekstiKappaleViiteMatalaDto perusteTekstikappale = lopsService
-                                            .getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
+                        if (!opetussuunnitelmaVanhaaRakennetta(docBase)) {
 
-                                    if (perusteTekstikappale != null && perusteTekstikappale.getPerusteenOsa() != null) {
-                                        addLokalisoituteksti(docBase,
-                                                perusteTekstikappale.getPerusteenOsa().getTeksti(),
-                                                "cite");
+                            // Perusteen teksti luvulle jos valittu esittäminen
+                            Long pTekstikappaleId = lapsi.getPerusteTekstikappaleId();
+                            if (lapsi.isNaytaPerusteenTeksti() && pTekstikappaleId != null) {
+                                try {
+                                    if (docBase.getOps().getToteutus().equals(KoulutustyyppiToteutus.LOPS2019)) {
+                                        PerusteTekstiKappaleViiteMatalaDto perusteTekstikappale = lopsService
+                                                .getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
+
+                                        if (perusteTekstikappale != null && perusteTekstikappale.getPerusteenOsa() != null) {
+                                            addLokalisoituteksti(docBase,
+                                                    perusteTekstikappale.getPerusteenOsa().getTeksti(),
+                                                    "cite");
+                                        }
+                                    } else {
+                                        TekstiKappaleDto tekstikappale = opetussuunnitelmaService.getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
+                                        if (tekstikappale != null) {
+                                            addLokalisoituteksti(docBase,
+                                                    tekstikappale.getTeksti(),
+                                                    "cite");
+                                        }
                                     }
-                                } else {
-                                    TekstiKappaleDto tekstikappale = opetussuunnitelmaService.getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
-                                    if (tekstikappale != null) {
-                                        addLokalisoituteksti(docBase,
-                                                tekstikappale.getTeksti(),
-                                                "cite");
-                                    }
+
+                                } catch (BusinessRuleViolationException | NotExistsException e) {
+                                    // Ohitetaan. Voi olla toisen tyyppinen ops.
                                 }
-
-                            } catch (BusinessRuleViolationException | NotExistsException e) {
-                                // Ohitetaan. Voi olla toisen tyyppinen ops.
                             }
-                        }
 
-                        if (lapsi.isNaytaPohjanTeksti()) {
-                            List<TekstiKappaleViiteDto.Matala> pohjaTekstit = tekstiKappaleViiteService.getTekstiKappaleViiteOriginals(docBase.getOps().getId(), lapsi.getId());
-                            pohjaTekstit.stream()
-                                    .filter(pohjaTeksti -> pohjaTeksti != null && pohjaTeksti.getTekstiKappale() != null && pohjaTeksti.getTekstiKappale().getTeksti() != null)
-                                    .forEach(pohjaTeksti -> addLokalisoituteksti(docBase, pohjaTeksti.getTekstiKappale().getTeksti(), "cite"));
+                            if (lapsi.isNaytaPohjanTeksti()) {
+                                List<TekstiKappaleViiteDto.Matala> pohjaTekstit = tekstiKappaleViiteService.getTekstiKappaleViiteOriginals(docBase.getOps().getId(), lapsi.getId());
+                                pohjaTekstit.stream()
+                                        .filter(pohjaTeksti -> pohjaTeksti != null && pohjaTeksti.getTekstiKappale() != null && pohjaTeksti.getTekstiKappale().getTeksti() != null)
+                                        .forEach(pohjaTeksti -> addLokalisoituteksti(docBase, pohjaTeksti.getTekstiKappale().getTeksti(), "cite"));
+                            }
                         }
 
                         // Opsin teksti luvulle
