@@ -83,7 +83,7 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     }
 
     @Override
-    @Async
+    @Async(value = "defaultTaskExecutor")
     public Future<KayttajanTietoDto> haeAsync(String oid) {
         return new AsyncResult<>(hae(oid));
     }
