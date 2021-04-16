@@ -29,12 +29,23 @@ public class NavigationBuilderLops2019PublicImpl extends NavigationBuilderLops20
     protected List<Lops2019OppiaineKevytDto> getOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
         List<Lops2019OppiaineKevytDto> perusteOppiaineet = mapper.mapAsList(lopsService.getPerusteOppiaineet(opsId), Lops2019OppiaineKevytDto.class);
         List<Lops2019PaikallinenOppiaineKevytDto> paikallisetOppiaineet = oppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineKevytDto.class);
+        Set<String> opintojaksojenModuuliUrit = opintojaksotMap.values().stream()
+                .flatMap(x -> x.stream())
+                .map(opintojakso -> opintojakso.getModuulit())
+                .flatMap(x -> x.stream())
+                .map(moduuli -> moduuli.getKoodiUri())
+                .collect(Collectors.toSet());
         return perusteOppiaineet.stream()
                 .peek(oppiaine -> {
-                    if (!CollectionUtils.isEmpty(oppiaine.getOppimaarat())) {
+                    if (CollectionUtils.isNotEmpty(oppiaine.getOppimaarat())) {
                         // Piilotetaan oppimäärät, joilla ei ole opintojaksoja
                         oppiaine.setOppimaarat(oppiaine.getOppimaarat().stream()
                                 .filter(oppimaara -> opintojaksotMap.containsKey(oppimaara.getKoodi().getUri()))
+                                .collect(Collectors.toList()));
+                    }
+                    if (CollectionUtils.isNotEmpty(oppiaine.getModuulit())) {
+                        oppiaine.setModuulit(oppiaine.getModuulit().stream()
+                                .filter(lops2019ModuuliDto -> opintojaksojenModuuliUrit.contains(lops2019ModuuliDto.getKoodi().getUri()))
                                 .collect(Collectors.toList()));
                     }
                 })

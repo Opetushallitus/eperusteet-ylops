@@ -3,9 +3,11 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
@@ -99,6 +101,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         {
             Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
                     .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_bi").build()))
+                    .moduulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_bi2_1").build()))
                     .build();
 
             opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
@@ -106,6 +109,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         {
             Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
                     .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("paikallinen2").build()))
+                    .moduulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_bi5").build()))
                     .build();
 
             opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
@@ -126,6 +130,12 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         assertThat(oppiaineet.get(0).getChildren().get(0).getChildren()).hasSize(3);
         assertThat(oppiaineet.get(0).getChildren().get(0).getChildren()).extracting("type")
                 .containsExactly(NavigationType.oppimaarat, NavigationType.opintojaksot, NavigationType.moduulit);
+
+        assertThat(oppiaineet.get(0).getChildren().get(0).getChildren().stream()
+                .filter(child -> child.getType().equals(NavigationType.moduulit))
+                .map(NavigationNodeDto::getChildren)
+                .flatMap(x -> x.stream())
+                .collect(Collectors.toList())).hasSize(2);
     }
 
     @Test
