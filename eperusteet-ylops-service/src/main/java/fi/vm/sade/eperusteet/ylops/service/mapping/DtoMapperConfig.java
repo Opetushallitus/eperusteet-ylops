@@ -29,13 +29,23 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale_;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
-import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineRakenneListausDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineTiedotDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiSaveDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiUpdateDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto;
+import java.time.Instant;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
@@ -45,8 +55,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.time.Instant;
-
 /**
  * @author jhyoty
  */
@@ -54,7 +62,7 @@ import java.time.Instant;
 public class DtoMapperConfig {
     @Autowired
     private LokalisoituTekstiRepository lokalisoituTekstiRepository;
-
+    
     @Bean
     public DtoMapper dtoMapper(
             ReferenceableEntityConverter referenceableEntityConverter,
