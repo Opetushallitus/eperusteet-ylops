@@ -18,6 +18,7 @@ import java.util.Set;
 public class Lops2019OpintojaksoDto extends Lops2019OpintojaksoBaseDto {
     private LokalisoituTekstiDto kuvaus;
     private LokalisoituTekstiDto arviointi;
+    private LokalisoituTekstiDto opiskeluymparistoTyotavat;
 
     private Set<Lops2019OpintojaksonOppiaineDto> oppiaineet = new HashSet<>();
 

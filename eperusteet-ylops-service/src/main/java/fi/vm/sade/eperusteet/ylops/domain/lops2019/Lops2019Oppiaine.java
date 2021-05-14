@@ -91,6 +91,11 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
     @Getter
     @Setter
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    private Lops2019OpiskeluymparistoTyotavat opiskeluymparistoTyotavat;
+
+    @Getter
+    @Setter
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @JoinTable(name = "lops2019_oppiaine_tavoitteet")
     private Lops2019Tavoitteet tavoitteet;
 
@@ -129,6 +134,7 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
             result.setLaajaAlainenOsaaminen(original.getLaajaAlainenOsaaminen());
             result.setArviointi(Lops2019PaikallinenArviointi.copy(original.getArviointi()));
             result.setTehtava(Lops2019Tehtava.copy(original.getTehtava()));
+            result.setOpiskeluymparistoTyotavat(Lops2019OpiskeluymparistoTyotavat.copy(original.getOpiskeluymparistoTyotavat()));
             result.setTavoitteet(Lops2019Tavoitteet.copy(original.getTavoitteet()));
             return result;
         }

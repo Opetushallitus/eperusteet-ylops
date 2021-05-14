@@ -21,6 +21,7 @@ public class Lops2019PaikallinenOppiaineDto implements Lops2019SortablePaikallin
     private LokalisoituTekstiDto kuvaus;
     private List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = new ArrayList<>();
     private Lops2019TehtavaDto tehtava;
+    private Lops2019OpiskeluymparistoTyotavatDto opiskeluymparistoTyotavat;
     private Lops2019ArviointiDto arviointi;
     private Lops2019OppiaineenTavoitteetDto tavoitteet;
     private String perusteenOppiaineUri;

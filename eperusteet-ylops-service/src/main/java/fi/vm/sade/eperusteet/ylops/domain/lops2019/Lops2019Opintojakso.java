@@ -56,6 +56,13 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti arviointi;
 
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    @Getter
+    @Setter
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
+    private LokalisoituTeksti opiskeluymparistoTyotavat;
+
     @Getter
     @OrderColumn
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)

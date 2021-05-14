@@ -6216,6 +6216,12 @@
             "type" : "string"
           }
         },
+        "opiskeluymparistoTyotavat" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
         "oppiaineet" : {
           "type" : "array",
           "uniqueItems" : true,
@@ -6318,6 +6324,17 @@
         }
       }
     },
+    "Lops2019OpiskeluymparistoTyotavatDto" : {
+      "type" : "object",
+      "properties" : {
+        "kuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
     "Lops2019OppiaineJarjestysDto" : {
       "type" : "object",
       "properties" : {
@@ -6358,6 +6375,9 @@
         },
         "tehtava" : {
           "$ref" : "#/definitions/Lops2019TehtavaDto"
+        },
+        "opiskeluymparistoTyotavat" : {
+          "$ref" : "#/definitions/Lops2019OpiskeluymparistoTyotavatDto"
         },
         "laajaAlaisetOsaamiset" : {
           "$ref" : "#/definitions/Lops2019OppiaineLaajaAlainenOsaaminenDto"
@@ -6529,6 +6549,9 @@
         },
         "tehtava" : {
           "$ref" : "#/definitions/Lops2019TehtavaDto"
+        },
+        "opiskeluymparistoTyotavat" : {
+          "$ref" : "#/definitions/Lops2019OpiskeluymparistoTyotavatDto"
         },
         "arviointi" : {
           "$ref" : "#/definitions/Lops2019ArviointiDto"
@@ -10050,6 +10073,12 @@
             "type" : "string"
           }
         },
+        "opiskeluymparistoTyotavat" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
         "oppiaineet" : {
           "type" : "array",
           "uniqueItems" : true,
@@ -10122,6 +10151,9 @@
         },
         "tehtava" : {
           "$ref" : "#/definitions/Lops2019TehtavaDto"
+        },
+        "opiskeluymparistoTyotavat" : {
+          "$ref" : "#/definitions/Lops2019OpiskeluymparistoTyotavatDto"
         },
         "arviointi" : {
           "$ref" : "#/definitions/Lops2019ArviointiDto"

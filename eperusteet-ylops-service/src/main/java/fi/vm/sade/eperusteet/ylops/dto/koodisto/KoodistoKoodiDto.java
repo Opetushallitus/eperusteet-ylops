@@ -40,13 +40,16 @@ public class KoodistoKoodiDto {
 
     public LokalisoituTekstiDto getNimi() {
         Map<String, String> tekstit = new HashMap<>();
-        for (KoodistoMetadataDto metadata : this.getMetadata()) {
-            try {
-                tekstit.put(metadata.getKieli(), metadata.getNimi());
+        if (this.getMetadata() != null) {
+            for (KoodistoMetadataDto metadata : this.getMetadata()) {
+                try {
+                    tekstit.put(metadata.getKieli(), metadata.getNimi());
+                } catch (IllegalArgumentException ignored) {
+                }
             }
-            catch (IllegalArgumentException ignored) {
-            }
+            return new LokalisoituTekstiDto(tekstit);
         }
-        return new LokalisoituTekstiDto(tekstit);
+
+        return null;
     }
 }
