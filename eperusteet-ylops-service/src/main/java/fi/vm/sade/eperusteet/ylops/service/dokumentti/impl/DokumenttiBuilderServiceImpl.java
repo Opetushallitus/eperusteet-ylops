@@ -17,6 +17,7 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Throwables;
 import fi.vm.sade.eperusteet.utils.dto.dokumentti.DokumenttiMetaDto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
@@ -407,13 +408,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     continue;
                 }
 
-                // Todo: Jokin parempi tapa tunnistaa peruste olisi hyvä olla
-                boolean isPerusteesta = false;
-                PerusteDto perusteDto = docBase.getPerusteDto();
-                if (src.contains("eperusteet-service") && perusteDto != null) {
-                    isPerusteesta = true;
-                }
-
                 UUID uuid = null;
                 try {
                     uuid = UUID.fromString(id);
@@ -433,11 +427,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 }
 
                 // Ladataan kuvat data muistiin
-                InputStream in = liiteService.export(
-                        docBase.getOps().getId(),
-                        uuid,
-                        isPerusteesta ? perusteDto.getId() : null
-                );
+                InputStream in = liiteService.export(docBase.getOps().getId(), uuid, docBase.getPerusteDto().getId());
 
                 // Tehdään muistissa olevasta datasta kuva
                 BufferedImage bufferedImage = ImageIO.read(in);

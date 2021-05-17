@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.repository.liite.LiiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
@@ -87,37 +88,53 @@ public class LiiteServiceImpl implements LiiteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public void exportLiitePerusteelta(Long opsId, UUID id, OutputStream os) {
+        Opetussuunnitelma ops = opetussuunnitelmat.findOne(opsId);
+        PerusteDto perusteDto = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+        InputStream is = exportLiitePerusteelta(opsId, id, perusteDto.getId());
+
+        // Kopioidaan kuva bufferiin
+        try {
+            IOUtils.copy(is, os);
+        } catch (IOException | NullPointerException e) {
+            throw new ServiceException("liite-kopiointi-epaonnistui", e);
+        }
+    }
+
+    @Override
     @Transactional(readOnly = true, noRollbackFor = NotExistsException.class)
     public InputStream export(Long opsId, UUID id, Long perusteId) {
-        if (perusteId != null) {
-            // Perusteen kuva
-            try {
-                byte[] liite = eperusteetService.getLiite(perusteId, id);
-                if (liite.length > 0) {
-                    return new ByteArrayInputStream(liite);
-                } else {
-                    throw new NotExistsException("liite-ei-ole");
-                }
-            } catch(HttpClientErrorException e) {
-                if(e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
-                    throw new NotExistsException("liite-ei-ole");
-                }
+        // Opsin kuva
+        Liite liite = liiteRepository.findOne(id);
 
-                throw e;
+        if (liite == null) {
+            return exportLiitePerusteelta(opsId, id, perusteId);
+        }
+
+        try {
+            return liite.getData().getBinaryStream();
+        } catch (SQLException e) {
+            throw new ServiceException("liite-blob-hakeminen-epaonnistui", e);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true, noRollbackFor = NotExistsException.class)
+    public InputStream exportLiitePerusteelta(Long opsId, UUID id, Long perusteId) {
+        try {
+            byte[] liite = eperusteetService.getLiite(perusteId, id);
+            if (liite.length > 0) {
+                return new ByteArrayInputStream(liite);
+            } else {
+                throw new NotExistsException("liite-ei-ole");
             }
-        } else {
-            // Opsin kuva
-            Liite liite = liiteRepository.findOne(id);
-
-            if (liite == null) {
+        } catch (HttpClientErrorException e) {
+            if (e.getStatusCode().equals(HttpStatus.NOT_FOUND)) {
                 throw new NotExistsException("liite-ei-ole");
             }
 
-            try {
-                return liite.getData().getBinaryStream();
-            } catch (SQLException e) {
-                throw new ServiceException("liite-blob-hakeminen-epaonnistui", e);
-            }
+            throw e;
         }
     }
 
