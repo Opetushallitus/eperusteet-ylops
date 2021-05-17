@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import io.swagger.annotations.Api;
 import java.awt.*;
@@ -169,20 +170,29 @@ public class LiitetiedostoController {
             isCorrectExtension = Objects.equals(dto.getTyyppi(), new MimetypesFileTypeMap().getContentType(fileName));
         }
 
-        if (dto != null && isCorrectExtension) {
-            if (dto.getId().toString().equals(etag)) {
+        if (isCorrectExtension) {
+            if (id.toString().equals(etag)) {
                 response.setStatus(HttpStatus.NOT_MODIFIED.value());
-            } else {
+            } else if (dto != null) {
                 response.setHeader("Content-Type", dto.getTyyppi());
                 response.setHeader("ETag", id.toString());
                 try (OutputStream os = response.getOutputStream()) {
                     liitteet.export(opsId, id, os);
                     os.flush();
                 }
+            } else {
+                response.setHeader("ETag", id.toString());
+                try (OutputStream os = response.getOutputStream()) {
+                    liitteet.exportLiitePerusteelta(opsId, id, os);
+                    os.flush();
+                } catch (Exception e) {
+                    response.setStatus(HttpStatus.NOT_FOUND.value());
+                }
             }
         } else {
             response.setStatus(HttpStatus.NOT_FOUND.value());
         }
+
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
