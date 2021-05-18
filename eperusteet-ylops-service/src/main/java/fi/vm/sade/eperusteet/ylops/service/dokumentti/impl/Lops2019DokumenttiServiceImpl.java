@@ -1,10 +1,12 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OpiskeluymparistoTyotavatDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019ArviointiDto;
@@ -215,11 +217,19 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             addLokalisoituteksti(docBase, tehtava.getKuvaus(), "cite");
         }
 
-        // Laaja-alainen osaaminen
-        Lops2019OppiaineLaajaAlainenOsaaminenDto laoKokonaisuus = oa.getLaajaAlaisetOsaamiset();
-        if (laoKokonaisuus != null) {
-            addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
-            addLokalisoituteksti(docBase, laoKokonaisuus.getKuvaus(), "cite");
+        if (!docBase.getPerusteDto().getKoulutustyyppi().equals(KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS)) {
+            // Laaja-alainen osaaminen
+            Lops2019OppiaineLaajaAlainenOsaaminenDto laoKokonaisuus = oa.getLaajaAlaisetOsaamiset();
+            if (laoKokonaisuus != null) {
+                addTeksti(docBase, messages.translate("laaja-alainen-osaaminen", docBase.getKieli()), "h6");
+                addLokalisoituteksti(docBase, laoKokonaisuus.getKuvaus(), "cite");
+            }
+        } else {
+            Lops2019OpiskeluymparistoTyotavatDto opiskeluymparistoTyotavat = oa.getOpiskeluymparistoTyotavat();
+            if (opiskeluymparistoTyotavat != null) {
+                addTeksti(docBase, messages.translate("opiskeluymparisto-ja-tyotavat", docBase.getKieli()), "h6");
+                addLokalisoituteksti(docBase, opiskeluymparistoTyotavat.getKuvaus(), "cite");
+            }
         }
 
         // Tavoitteet
@@ -479,7 +489,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
             }
         }
 
-        { // Laaja-alainen osaaminen
+        if (!docBase.getPerusteDto().getKoulutustyyppi().equals(KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS)) { // Laaja-alainen osaaminen
 
             Lops2019OppiaineLaajaAlainenOsaaminenDto oppiaineenLaajaAlainenOsaaminen = oa != null ? oa.getLaajaAlaisetOsaamiset() : null;
             List<Lops2019PaikallinenLaajaAlainenDto> laajaAlainenOsaaminen = poa.getLaajaAlainenOsaaminen();
@@ -504,6 +514,27 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                     }
                     addLokalisoituteksti(docBase, lao.getKuvaus(), "div");
                 });
+            }
+        } else { // opiskeluymparisto ja tyotavat
+
+            Lops2019OpiskeluymparistoTyotavatDto opiskeluymparistoTyotavatDto = oa != null ? oa.getOpiskeluymparistoTyotavat() : null;
+            fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpiskeluymparistoTyotavatDto opiskeluymparistoTyotavat = poa.getOpiskeluymparistoTyotavat();
+
+            if (hasLokalisoituTeksti(opiskeluymparistoTyotavatDto, Lops2019OpiskeluymparistoTyotavatDto::getKuvaus, docBase)
+                    || hasLokalisoituTeksti(opiskeluymparistoTyotavat, fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpiskeluymparistoTyotavatDto::getKuvaus, docBase)) {
+                addTeksti(docBase, messages.translate("opiskeluymparisto-ja-tyotavat", docBase.getKieli()), "h6");
+            }
+
+
+            if (hasLokalisoituTeksti(opiskeluymparistoTyotavatDto, Lops2019OpiskeluymparistoTyotavatDto::getKuvaus, docBase)) {
+                addLokalisoituteksti(docBase, opiskeluymparistoTyotavatDto.getKuvaus(), "div");
+            }
+
+            if (hasLokalisoituTeksti(opiskeluymparistoTyotavat, fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpiskeluymparistoTyotavatDto::getKuvaus, docBase)) {
+                if (hasLokalisoituTeksti(opiskeluymparistoTyotavatDto, Lops2019OpiskeluymparistoTyotavatDto::getKuvaus, docBase)) {
+                    addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+                }
+                addLokalisoituteksti(docBase, opiskeluymparistoTyotavat.getKuvaus(), "div");
             }
         }
 
@@ -642,11 +673,18 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         // NOTE: mahdollisesti palautetaan tulevaisuudessa
         //addOpintojaksonOppiaineenLaajaAlainenOsaaminen(docBase, oppiaineet);
         //addOpintojaksonOppiaineenPaikallinenLaajaAlainenOsaaminen(docBase, paikallisetOppiaineet);
-        addOpintojaksonLaajaAlainenOsaaminenPaikallinenLisays(docBase, oj);
+
+        if (!docBase.getPerusteDto().getKoulutustyyppi().equals(KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS)) {
+            addOpintojaksonLaajaAlainenOsaaminenPaikallinenLisays(docBase, oj);
+        }
 
         // Arviointi
         //addOpintojaksonArviointi(docBase, oppiaineet);
         addOpintojaksonArviointiPaikallinenLisays(docBase, oj);
+
+        if (docBase.getPerusteDto().getKoulutustyyppi().equals(KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS)) {
+            addOpintojaksonOpiskeluymparisoTyotavatPaikallinenLisays(docBase, oj);
+        }
 
         // Vapaa kuvaus
         addOpintojaksonVapaaKuvaus(docBase, oj);
@@ -760,11 +798,18 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         // NOTE: mahdollisesti palautetaan tulevaisuudessa
         //addOpintojaksonOppiaineenLaajaAlainenOsaaminen(docBase, oppiaineet);
         //addOpintojaksonOppiaineenPaikallinenLaajaAlainenOsaaminen(docBase, paikallisetOppiaineet);
-        addOpintojaksonLaajaAlainenOsaaminenPaikallinenLisays(docBase, oj);
+
+        if (!docBase.getPerusteDto().getKoulutustyyppi().equals(KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS)) {
+            addOpintojaksonLaajaAlainenOsaaminenPaikallinenLisays(docBase, oj);
+        }
 
         // Arviointi
         //addOpintojaksonArviointi(docBase, oppiaineet);
         addOpintojaksonArviointiPaikallinenLisays(docBase, oj);
+
+        if (docBase.getPerusteDto().getKoulutustyyppi().equals(KoulutusTyyppi.LUKIOVALMISTAVAKOULUTUS)) {
+            addOpintojaksonOpiskeluymparisoTyotavatPaikallinenLisays(docBase, oj);
+        }
 
         // Vapaa kuvaus
         addOpintojaksonVapaaKuvaus(docBase, oj);
@@ -1160,6 +1205,36 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                             ? messages.translate("nimeton-opintojakso", docBase.getKieli())
                             : nimi, "p");
                     addLokalisoituteksti(docBase, paikallinenArviointi, "div");
+                }
+            });
+        }
+    }
+
+    private void addOpintojaksonOpiskeluymparisoTyotavatPaikallinenLisays(
+            DokumenttiBase docBase,
+            Lops2019OpintojaksoDto oj
+    ) {
+        LokalisoituTekstiDto opiskeluymparistoTyotavat = oj.getOpiskeluymparistoTyotavat();
+
+        if (opiskeluymparistoTyotavat != null || (!ObjectUtils.isEmpty(oj.getPaikallisetOpintojaksot())
+                && oj.getPaikallisetOpintojaksot().stream().anyMatch(paikallinenOpintojakso -> paikallinenOpintojakso.getOpiskeluymparistoTyotavat() != null))) {
+            addTeksti(docBase, messages.translate("opiskeluymparisto-ja-tyotavat", docBase.getKieli()), "h6");
+        }
+
+        if (opiskeluymparistoTyotavat != null) {
+            addTeksti(docBase, messages.translate("paikallinen-lisays", docBase.getKieli()), "p");
+            addLokalisoituteksti(docBase, opiskeluymparistoTyotavat, "div");
+        }
+
+        if (!ObjectUtils.isEmpty(oj.getPaikallisetOpintojaksot())) {
+            oj.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
+                LokalisoituTekstiDto paikallinenOpiskeluymparistoTyotavat = paikallinenOpintojakso.getOpiskeluymparistoTyotavat();
+                if (paikallinenOpiskeluymparistoTyotavat != null) {
+                    String nimi = getTextString(docBase, paikallinenOpintojakso.getNimi());
+                    addTeksti(docBase, StringUtils.isEmpty(nimi)
+                            ? messages.translate("nimeton-opintojakso", docBase.getKieli())
+                            : nimi, "p");
+                    addLokalisoituteksti(docBase, paikallinenOpiskeluymparistoTyotavat, "div");
                 }
             });
         }
