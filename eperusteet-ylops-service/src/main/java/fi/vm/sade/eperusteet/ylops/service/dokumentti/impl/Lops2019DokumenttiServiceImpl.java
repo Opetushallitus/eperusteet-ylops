@@ -569,6 +569,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
     private <T> boolean hasLokalisoituTeksti(T objekti, Function<T, LokalisoituTekstiDto> getLokalisoituTeksti, DokumenttiBase docBase) {
         return objekti != null
                 && getLokalisoituTeksti.apply(objekti) != null
+                && getLokalisoituTeksti.apply(objekti).get(docBase.getKieli()) != null
                 && !ObjectUtils.isEmpty(Jsoup.parse(getLokalisoituTeksti.apply(objekti).get(docBase.getKieli())).text());
     }
 
