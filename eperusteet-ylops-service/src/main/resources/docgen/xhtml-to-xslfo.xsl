@@ -606,7 +606,7 @@
                     </xsl:choose>
                 </fo:block>
             </fo:list-item-label>
-            <fo:list-item-body start-indent="body-start()"> 
+            <fo:list-item-body start-indent="body-start()">
                 <fo:block font-size="10pt">
                     <xsl:apply-templates select="*|text()"/>
                 </fo:block>
@@ -1227,38 +1227,6 @@
                 <xsl:with-param name="cols" select="concat($remaining-cols, ' ')"/>
             </xsl:call-template>
         </xsl:if>
-    </xsl:template>
-
-    <xsl:template match="text()">
-        <xsl:call-template name="split-string">
-            <xsl:with-param name="string">
-                <xsl:value-of select="."/>
-            </xsl:with-param>
-        </xsl:call-template>
-    </xsl:template>
-
-    <!--
-    this template is used to break a long long string with zero width space at
-    every fixed offset which allows the FOP processor to break it into multiple
-    lines for a fo:table-cell object and does not interference the displaying.
-    -->
-    <xsl:template name="split-string">
-        <xsl:param name="string"/>
-        <xsl:param name="width" select="5"/>
-        <xsl:choose>
-            <xsl:when test="string-length($string) &gt; $width">
-                <xsl:value-of select="substring($string,0,$width)"/>
-                <xsl:text>​</xsl:text>
-                <xsl:call-template name="split-string">
-                    <xsl:with-param name="string">
-                        <xsl:value-of select="substring($string,$width)"/>
-                    </xsl:with-param>
-                </xsl:call-template>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="$string"/>
-            </xsl:otherwise>
-        </xsl:choose>
     </xsl:template>
 
 </xsl:stylesheet>
