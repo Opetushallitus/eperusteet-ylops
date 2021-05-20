@@ -4,7 +4,6 @@ import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonTavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.pdfbox.preflight.PreflightDocument;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -172,7 +170,8 @@ public class DokumenttiUtils {
         if (string == null) {
             return "";
         }
-        return Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL.getWhitelist());
+        String cleanXmlString = Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL.getWhitelist());
+        return cleanXmlString.replace("&nbsp;", " ");
     }
 
     public static String stripNonValidXMLCharacters(String in) {
