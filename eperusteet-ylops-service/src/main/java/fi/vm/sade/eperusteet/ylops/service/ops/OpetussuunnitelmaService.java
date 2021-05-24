@@ -65,7 +65,7 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     OpetussuunnitelmaStatistiikkaDto getStatistiikka();
 
-    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
+    @PreAuthorize("isAuthenticated()")
     List<OpetussuunnitelmaInfoDto> getAdminList();
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
