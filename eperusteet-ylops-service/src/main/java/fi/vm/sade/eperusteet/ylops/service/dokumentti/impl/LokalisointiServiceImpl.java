@@ -81,14 +81,19 @@ public class LokalisointiServiceImpl implements LokalisointiService {
     @Cacheable("ylops-lokalisoinnit")
     public Map<Kieli, List<LokalisointiDto>> getAll() {
         Map<Kieli, List<LokalisointiDto>> result = new HashMap<>();
-        for (LokalisointiDto l : getAllByCategoryAndLocale("eperusteet-ylops")) {
+        extractCategoryToMap(result, "eperusteet-ylops");
+        extractCategoryToMap(result, "eperusteet");
+        return result;
+    }
+
+    private void extractCategoryToMap(Map<Kieli, List<LokalisointiDto>> result, String category) {
+        for (LokalisointiDto l : getAllByCategoryAndLocale(category)) {
             Kieli locale = Kieli.of(l.getLocale());
             if (!result.containsKey(locale)) {
                 result.put(locale, new ArrayList<>());
             }
             result.get(locale).add(l);
         }
-        return result;
     }
 
     public List<LokalisointiDto> getAllByCategoryAndLocale(String category) {
