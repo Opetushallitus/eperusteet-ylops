@@ -45,9 +45,11 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -74,7 +76,12 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Autowired
     private DokumenttiStateService dokumenttiStateService;
 
+    @Lazy
+    @Autowired
+    private DokumenttiService self;
+
     @Override
+    @Transactional
     public DokumenttiDto getDto(Long opsId, Kieli kieli) {
         Dokumentti dokumentti = getLatestDokumentti(opsId, kieli);
 
@@ -90,11 +97,12 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
             return mapper.map(dokumentti, DokumenttiDto.class);
         } else {
-            return createDtoFor(opsId, kieli);
+            return self.createDtoFor(opsId, kieli);
         }
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public DokumenttiDto createDtoFor(Long id, Kieli kieli) {
         Dokumentti dokumentti = new Dokumentti();
         dokumentti.setTila(DokumenttiTila.EI_OLE);
@@ -152,6 +160,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
+    @Transactional
     public void setStarted(DokumenttiDto dto) {
         dto.setAloitusaika(new Date());
         dto.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
@@ -164,10 +173,9 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Async(value = "docTaskExecutor")
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         dto.setTila(DokumenttiTila.LUODAAN);
-        dokumenttiStateService.save(dto);
+        Dokumentti dokumentti = dokumenttiStateService.save(dto);
 
         try {
-            Dokumentti dokumentti = dokumenttiRepository.findOne(dto.getId());
             Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
             if (ops != null) {
                 dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));

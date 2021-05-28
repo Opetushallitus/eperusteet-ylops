@@ -611,17 +611,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 }
             }
 
-            Set<DokumenttiDto> dokumentit = ops.getJulkaisukielet().stream()
-                    .map(kieli -> dokumenttiService.getDto(opsId, kieli))
-                    .collect(toSet());
-
-            for (DokumenttiDto dokumenttiDto : dokumentit) {
+            Set<DokumenttiDto> dokumentit = ops.getJulkaisukielet().stream().map(kieli -> {
+                DokumenttiDto dokumenttiDto = dokumenttiService.getDto(opsId, kieli);
                 try {
+                    dokumenttiService.setStarted(dokumenttiDto);
                     dokumenttiService.generateWithDto(dokumenttiDto);
                 } catch (DokumenttiException e) {
                     logger.error(e.getLocalizedMessage(), e.getCause());
                 }
-            }
+                return dokumenttiDto;
+            }).collect(toSet());
 
             JulkaistuOpetussuunnitelmaData data = new JulkaistuOpetussuunnitelmaData(opsDataJson);
             data = julkaistuOpetussuunnitelmaDataRepository.save(data);
