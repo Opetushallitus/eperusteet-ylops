@@ -103,6 +103,15 @@ public class LokalisoituTekstiDto {
         return tekstit.get(kieli);
     }
 
+    @JsonIgnore
+    public String getOrDefault(Kieli kieli) {
+        return tekstit.getOrDefault(
+                kieli,
+                tekstit.getOrDefault(
+                        tekstit.keySet().stream().findAny().isPresent() ? tekstit.keySet().stream().findAny().get() : Kieli.FI,
+                        ""));
+    }
+
     @SuppressWarnings("DtoClassesNotContainEntities")
     public static <K> Map<K, Optional<LokalisoituTekstiDto>> ofOptionalMap(Map<K, Optional<LokalisoituTeksti>> map) {
         Map<K, Optional<LokalisoituTekstiDto>> result = new HashMap<>();
