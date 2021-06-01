@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.domain.validation;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,7 +32,8 @@ import org.jsoup.select.Elements;
 public abstract class ValidHtmlValidatorBase {
 
     private Whitelist whitelist;
-    private UrlValidator validator = new UrlValidator(UrlValidator.ALLOW_LOCAL_URLS);
+    private UrlValidator urlValidator = new UrlValidator(UrlValidator.ALLOW_LOCAL_URLS);
+    private EmailValidator emailValidator = EmailValidator.getInstance(true, true);
 
     protected void setupValidator(ValidHtml constraintAnnotation) {
         whitelist = constraintAnnotation.whitelist().getWhitelist();
@@ -51,6 +53,7 @@ public abstract class ValidHtmlValidatorBase {
     private boolean isValidUrls(String teksti) {
         Document doc = Jsoup.parse(teksti);
         Elements links = doc.select("a[href]");
-        return links.stream().allMatch(link -> validator.isValid(link.attr("abs:href")));
+        return links.stream().allMatch(link -> urlValidator.isValid(link.attr("abs:href"))
+                || emailValidator.isValid(link.attr("href").replace("mailto:", "")));
     }
 }
