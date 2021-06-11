@@ -585,6 +585,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                             .forEach(perusteenKeskeinenSisaltoalue -> {
 
                                 addLokalisoituteksti(docBase, perusteenKeskeinenSisaltoalue.getNimi(), "h6");
+                                addLokalisoituteksti(docBase, perusteenKeskeinenSisaltoalue.getKuvaus(), "cite");
 
                                 Optional<OpetuksenKeskeinensisaltoalue> opetuksenKeskeinenSisaltoalue = opetuksentavoite.getSisaltoalueet()
                                         .stream()
@@ -595,16 +596,15 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                                 if (opetuksenKeskeinenSisaltoalue.isPresent()) {
                                     OpetuksenKeskeinensisaltoalue sisaltoalue = opetuksenKeskeinenSisaltoalue.get();
                                     if (hasLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus()) || hasLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus())) {
+                                        addTeksti(docBase, messages.translate("paikallinen-tarkennus", docBase.getKieli()), "h6");
+
                                         if (hasLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus())) {
                                             addLokalisoituteksti(docBase, sisaltoalue.getOmaKuvaus(), "div");
                                         } else if (hasLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus())) {
                                             addLokalisoituteksti(docBase, sisaltoalue.getSisaltoalueet().getKuvaus(), "div");
                                         }
-                                    } else {
-                                        addLokalisoituteksti(docBase, perusteenKeskeinenSisaltoalue.getKuvaus(), "div");
                                     }
-                                } else {
-                                    addLokalisoituteksti(docBase, perusteenKeskeinenSisaltoalue.getKuvaus(), "div");
+
                                 }
                             });
                 }
