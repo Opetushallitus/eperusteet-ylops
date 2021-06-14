@@ -37,6 +37,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiUpdateDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
@@ -180,6 +181,19 @@ public class DtoMapperConfig {
                 .customize(new CustomMapper<Opetussuunnitelma, OpetussuunnitelmaInfoDto>() {
                     @Override
                     public void mapAtoB(Opetussuunnitelma opetussuunnitelma, OpetussuunnitelmaInfoDto opetussuunnitelmaInfoDto, MappingContext context) {
+                        super.mapAtoB(opetussuunnitelma, opetussuunnitelmaInfoDto, context);
+                        if (!Tyyppi.POHJA.equals(opetussuunnitelma.getTyyppi()) && !Tila.POISTETTU.equals(opetussuunnitelma.getTila()) && CollectionUtils.isNotEmpty(opetussuunnitelma.getJulkaisut())) {
+                            opetussuunnitelmaInfoDto.setTila(Tila.JULKAISTU);
+                        }
+                    }
+                })
+                .register();
+
+        factory.classMap(Opetussuunnitelma.class, OpetussuunnitelmaKevytDto.class)
+                .byDefault()
+                .customize(new CustomMapper<Opetussuunnitelma, OpetussuunnitelmaKevytDto>() {
+                    @Override
+                    public void mapAtoB(Opetussuunnitelma opetussuunnitelma, OpetussuunnitelmaKevytDto opetussuunnitelmaInfoDto, MappingContext context) {
                         super.mapAtoB(opetussuunnitelma, opetussuunnitelmaInfoDto, context);
                         if (!Tyyppi.POHJA.equals(opetussuunnitelma.getTyyppi()) && !Tila.POISTETTU.equals(opetussuunnitelma.getTila()) && CollectionUtils.isNotEmpty(opetussuunnitelma.getJulkaisut())) {
                             opetussuunnitelmaInfoDto.setTila(Tila.JULKAISTU);
