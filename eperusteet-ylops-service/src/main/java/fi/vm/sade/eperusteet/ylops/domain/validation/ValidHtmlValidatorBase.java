@@ -25,6 +25,7 @@ import org.jsoup.safety.Whitelist;
 
 import java.util.Map;
 import org.jsoup.select.Elements;
+import org.springframework.util.StringUtils;
 
 /**
  * @author mikkom
@@ -53,7 +54,6 @@ public abstract class ValidHtmlValidatorBase {
     private boolean isValidUrls(String teksti) {
         Document doc = Jsoup.parse(teksti);
         Elements links = doc.select("a[href]");
-        return links.stream().allMatch(link -> urlValidator.isValid(link.attr("abs:href"))
-                || emailValidator.isValid(link.attr("href").replace("mailto:", "")));
+        return links.stream().allMatch(link -> link.hasText() && !StringUtils.isEmpty(link.attr("href").trim()));
     }
 }
