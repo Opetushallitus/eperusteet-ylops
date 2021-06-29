@@ -596,4 +596,34 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         }
     }
 
+    @Test
+    public void testAdminFetch() {
+        OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
+        pohjaLuontiDto.setTuoPohjanOpintojaksot(false);
+        pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.PERUSOPETUS);
+        pohjaLuontiDto.setTyyppi(Tyyppi.POHJA);
+        pohjaLuontiDto.setPerusteenDiaarinumero("perusopetus-diaarinumero");
+        OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
+        opetussuunnitelmaService.updateTila(pohjaDto.getId(), Tila.VALMIS);
+
+        setUser("test8");
+        OpetussuunnitelmaLuontiDto opsLuontiDto = new OpetussuunnitelmaLuontiDto();
+        opsLuontiDto.setTuoPohjanOpintojaksot(true);
+        pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.PERUSOPETUS);
+        opsLuontiDto.setTyyppi(Tyyppi.OPS);
+        opsLuontiDto.setOrganisaatiot(Stream.of("1.2.246.562.10.83037752777")
+                .map(oid -> {
+                    OrganisaatioDto result = new OrganisaatioDto();
+                    result.setOid(oid);
+                    return result;
+                })
+                .collect(Collectors.toSet()));
+        opsLuontiDto.setPohja(Reference.of(pohjaDto.getId()));
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
+
+        assertThat(opetussuunnitelmaService.getAll(Tyyppi.OPS)).hasSize(1);
+
+        setUser("testAdmin");
+        assertThat(opetussuunnitelmaService.getAll(Tyyppi.OPS)).hasSize(2);
+    }
 }

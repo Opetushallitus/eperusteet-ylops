@@ -35,6 +35,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public final class SecurityUtil {
 
     public static final String OPH_OID = "1.2.246.562.10.00000000001";
+    public static final String OPH_ADMIN = "ROLE_APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.10.00000000001";
 
     private SecurityUtil() {
         //helper class
@@ -91,5 +92,10 @@ public final class SecurityUtil {
         return authentication != null
                 && !(authentication instanceof AnonymousAuthenticationToken)
                 && authentication.isAuthenticated();
+    }
+
+    public static boolean isUserAdmin() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).anyMatch(authority -> authority.equals(OPH_ADMIN));
     }
 }

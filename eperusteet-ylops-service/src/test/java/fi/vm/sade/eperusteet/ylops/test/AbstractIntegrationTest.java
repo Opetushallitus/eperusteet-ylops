@@ -47,8 +47,12 @@ public class AbstractIntegrationTest {
 
     @Before
     public void setUpSecurityContext() {
+        setUser("test");
+    }
+
+    protected void setUser(String user) {
         SecurityContext ctx = SecurityContextHolder.createEmptyContext();
-        ctx.setAuthentication(new UsernamePasswordAuthenticationToken("test", "test"));
+        ctx.setAuthentication(new UsernamePasswordAuthenticationToken(user, "test"));
         SecurityContextHolder.setContext(ctx);
     }
 

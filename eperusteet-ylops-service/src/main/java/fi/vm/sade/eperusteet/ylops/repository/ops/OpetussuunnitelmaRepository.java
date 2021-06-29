@@ -75,10 +75,31 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
                        @Param("tilat") Collection<Tila> tilat,
                        @Param("organisaatiot") Collection<String> organisaatiot);
 
+    @Query(value = "SELECT COUNT(DISTINCT o) FROM Opetussuunnitelma o WHERE o.tyyppi = :tyyppi AND o.tila IN (:tilat)")
+    Long countByTyyppi(@Param("tyyppi") Tyyppi tyyppi,
+                       @Param("tilat") Collection<Tila> tilat);
+
+    @Query(value = "SELECT COUNT(DISTINCT o) " +
+            "FROM Opetussuunnitelma o " +
+            "JOIN o.organisaatiot org " +
+            "LEFT JOIN o.julkaisut j " +
+            "WHERE org IN (:organisaatiot) " +
+            "AND o.tyyppi = :tyyppi " +
+            "AND (o.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.JULKAISTU OR j.id IS NOT NULL)")
+    Long countByTyyppiAndJulkaistut(@Param("tyyppi") Tyyppi tyyppi,
+                                    @Param("organisaatiot") Collection<String> organisaatiot);
+
+    @Query(value = "SELECT COUNT(DISTINCT o) " +
+            "FROM Opetussuunnitelma o " +
+            "LEFT JOIN o.julkaisut j " +
+            "WHERE o.tyyppi = :tyyppi " +
+            "AND (o.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.JULKAISTU OR j.id IS NOT NULL)")
+    Long countByTyyppiAndJulkaistut(@Param("tyyppi") Tyyppi tyyppi);
+
     @Query(value = "SELECT DISTINCT o FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
             "WHERE o.tyyppi = fi.vm.sade.eperusteet.ylops.domain.Tyyppi.POHJA AND (o.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.VALMIS OR org IN (:organisaatiot))")
     List<Opetussuunnitelma> findPohja(@Param("organisaatiot") Collection<String> organisaatiot);
-
+    
     @Query(value = "SELECT DISTINCT o FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
             "WHERE o.tyyppi = fi.vm.sade.eperusteet.ylops.domain.Tyyppi.OPS AND org IN (:organisaatiot)")
     Set<Opetussuunnitelma> findOpsPohja(@Param("organisaatiot") Collection<String> organisaatiot);
