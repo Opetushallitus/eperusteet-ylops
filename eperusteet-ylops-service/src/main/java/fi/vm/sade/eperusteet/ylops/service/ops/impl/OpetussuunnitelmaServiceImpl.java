@@ -429,16 +429,21 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public List<OpetussuunnitelmaInfoDto> getAll(Tyyppi tyyppi, Tila tila) {
         Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
         final List<Opetussuunnitelma> opetussuunnitelmat;
-        if (tyyppi == Tyyppi.POHJA) {
-            opetussuunnitelmat = opetussuunnitelmaRepository.findPohja(organisaatiot);
+
+        if (SecurityUtil.isUserAdmin()) {
+            opetussuunnitelmat = opetussuunnitelmaRepository.findAllByTyyppi(tyyppi);
         } else {
-            opetussuunnitelmat = opetussuunnitelmaRepository.findAllByTyyppi(tyyppi, organisaatiot);
+            if (tyyppi == Tyyppi.POHJA) {
+                opetussuunnitelmat = opetussuunnitelmaRepository.findPohja(organisaatiot);
+            } else {
+                opetussuunnitelmat = opetussuunnitelmaRepository.findAllByTyyppi(tyyppi, organisaatiot);
+            }
         }
 
         return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class).stream()
-            .filter(ops -> tila == null || ops.getTila() == tila)
-            .map(dto -> {
-                fetchKuntaNimet(dto);
+                .filter(ops -> tila == null || ops.getTila() == tila)
+                .map(dto -> {
+                    fetchKuntaNimet(dto);
                 fetchOrganisaatioNimet(dto);
                 return dto;
             })
@@ -449,8 +454,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Transactional(readOnly = true)
     public Long getAmount(Tyyppi tyyppi, Set<Tila> tilat) {
         Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
-        if (tyyppi == Tyyppi.POHJA) {
-            return opetussuunnitelmaRepository.countByTyyppi(tyyppi, tilat, organisaatiot);
+        if (SecurityUtil.isUserAdmin()) {
+            if (tilat.contains(Tila.JULKAISTU)) {
+                return opetussuunnitelmaRepository.countByTyyppiAndJulkaistut(tyyppi);
+            } else {
+                return opetussuunnitelmaRepository.countByTyyppi(tyyppi, tilat);
+            }
+        }
+
+        if (tilat.contains(Tila.JULKAISTU)) {
+            return opetussuunnitelmaRepository.countByTyyppiAndJulkaistut(tyyppi, organisaatiot);
         } else {
             return opetussuunnitelmaRepository.countByTyyppi(tyyppi, tilat, organisaatiot);
         }

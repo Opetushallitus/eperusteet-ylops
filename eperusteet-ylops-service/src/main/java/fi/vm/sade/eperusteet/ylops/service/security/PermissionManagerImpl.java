@@ -79,6 +79,8 @@ public class PermissionManagerImpl extends AbstractPermissionManager {
                 return true;
             } else if (opetussuunnitelmaRepository.isEsikatseltavissa((long) targetId)) {
                 return true;
+            } else if (SecurityUtil.isUserAdmin()) {
+                return true;
             }
         }
 
