@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
@@ -642,16 +643,41 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             julkaisu.setRevision(vanhatJulkaisut.size() + 1);
             julkaisu = julkaisuRepository.save(julkaisu);
 
-            Stream.of(Kieli.FI, Kieli.SV, Kieli.EN).forEach(kieli -> {
-                self.publicNavigationEvict(opsId, kieli.toString());
-                self.buildNavigationPublic(opsId, kieli.toString());
-            });
+            muokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.JULKAISU);
+            refreshOpetussuunnitelmaNavigation(opsId);
 
             return taytaKayttajaTiedot(mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class));
         } catch (IOException e) {
             e.printStackTrace();
             throw new BusinessRuleViolationException("julkaisun-tallennus-epaonnistui");
         }
+    }
+
+    private void refreshOpetussuunnitelmaNavigation(Long opsId) {
+        Stream.of(Kieli.FI, Kieli.SV, Kieli.EN).forEach(kieli -> {
+            self.publicNavigationEvict(opsId, kieli.toString());
+            self.buildNavigationPublic(opsId, kieli.toString());
+        });
+    }
+
+    @Override
+    public OpetussuunnitelmanJulkaisuDto aktivoiJulkaisu(Long opsId, int revision) {
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
+        OpetussuunnitelmanJulkaisu vanhaJulkaisu = julkaisuRepository.findByOpetussuunnitelmaAndRevision(opetussuunnitelma, revision);
+        OpetussuunnitelmanJulkaisu viimeisinJulkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(opetussuunnitelma);
+
+        OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
+        julkaisu.setRevision(viimeisinJulkaisu != null ? viimeisinJulkaisu.getRevision() + 1 : 1);
+        julkaisu.setTiedote(vanhaJulkaisu.getTiedote());
+        julkaisu.setDokumentit(Sets.newHashSet(vanhaJulkaisu.getDokumentit()));
+        julkaisu.setOpetussuunnitelma(opetussuunnitelma);
+        julkaisu.setData(vanhaJulkaisu.getData());
+        julkaisu = julkaisuRepository.save(julkaisu);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, opetussuunnitelma, MuokkausTapahtuma.JULKAISU);
+        refreshOpetussuunnitelmaNavigation(opsId);
+
+        return taytaKayttajaTiedot(mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class));
     }
 
     private List<OpetussuunnitelmanJulkaisuDto> taytaKayttajaTiedot(List<OpetussuunnitelmanJulkaisuDto> julkaisut) {
