@@ -30,6 +30,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
@@ -44,10 +45,12 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.DirtiesContext;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
@@ -597,33 +600,74 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testAdminFetch() {
-        OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
-        pohjaLuontiDto.setTuoPohjanOpintojaksot(false);
-        pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.PERUSOPETUS);
-        pohjaLuontiDto.setTyyppi(Tyyppi.POHJA);
-        pohjaLuontiDto.setPerusteenDiaarinumero("perusopetus-diaarinumero");
-        OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
-        opetussuunnitelmaService.updateTila(pohjaDto.getId(), Tila.VALMIS);
+    public void testGetTop10ByLuomisaika() {
+        OpetussuunnitelmaLuontiDto perusopetusPohja = new OpetussuunnitelmaLuontiDto();
+        perusopetusPohja.setTuoPohjanOpintojaksot(false);
+        perusopetusPohja.setToteutus(KoulutustyyppiToteutus.PERUSOPETUS);
+        perusopetusPohja.setTyyppi(Tyyppi.POHJA);
+        perusopetusPohja.setPerusteenDiaarinumero("perusopetus-diaarinumero");
+        OpetussuunnitelmaDto perusopetusPohjaDto = opetussuunnitelmaService.addPohja(perusopetusPohja);
+        opetussuunnitelmaService.updateTila(perusopetusPohjaDto.getId(), Tila.VALMIS);
+
+        OpetussuunnitelmaLuontiDto lukioPohja = new OpetussuunnitelmaLuontiDto();
+        lukioPohja.setToteutus(KoulutustyyppiToteutus.LOPS2019);
+        lukioPohja.setTyyppi(Tyyppi.POHJA);
+        lukioPohja.setPerusteenDiaarinumero("1/2/3");
+        OpetussuunnitelmaDto lukioPohjaDto = opetussuunnitelmaService.addPohja(lukioPohja);
+        opetussuunnitelmaService.updateTila(lukioPohjaDto.getId(), Tila.VALMIS);
 
         setUser("test8");
-        OpetussuunnitelmaLuontiDto opsLuontiDto = new OpetussuunnitelmaLuontiDto();
-        opsLuontiDto.setTuoPohjanOpintojaksot(true);
-        pohjaLuontiDto.setToteutus(KoulutustyyppiToteutus.PERUSOPETUS);
-        opsLuontiDto.setTyyppi(Tyyppi.OPS);
-        opsLuontiDto.setOrganisaatiot(Stream.of("1.2.246.562.10.83037752777")
-                .map(oid -> {
-                    OrganisaatioDto result = new OrganisaatioDto();
-                    result.setOid(oid);
-                    return result;
-                })
-                .collect(Collectors.toSet()));
-        opsLuontiDto.setPohja(Reference.of(pohjaDto.getId()));
-        OpetussuunnitelmaDto ops = opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
 
-        assertThat(opetussuunnitelmaService.getAll(Tyyppi.OPS)).hasSize(1);
+        IntStream.range(1, 11).forEach(lkm -> {
+            createOpetussuunnitelma((ops) -> {
+                ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+                ops.setPohja(Reference.of(perusopetusPohjaDto.getId()));
+                ops.setNimi(LokalisoituTekstiDto.of("nimi" + lkm));
+            });
+        });
+
+        IntStream.range(11, 26).forEach(lkm -> {
+            createOpetussuunnitelma((ops) -> {
+                ops.setKoulutustyyppi(KoulutusTyyppi.LUKIOKOULUTUS);
+                ops.setPohja(Reference.of(lukioPohjaDto.getId()));
+                ops.setNimi(LokalisoituTekstiDto.of("nimi" + lkm));
+            });
+        });
+
+        Page<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, null, null, 0, 10);
+        assertThat(opsit.getContent()).hasSize(10);
+        assertThat(opsit.getTotalElements()).isEqualTo(25);
+        assertThat(opsit.getTotalPages()).isEqualTo(3);
+
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, null, null, 1, 10);
+        assertThat(opsit.getContent()).hasSize(10);
+
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, null, null, 2, 10);
+        assertThat(opsit.getContent()).hasSize(5);
+
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, KoulutusTyyppi.LUKIOKOULUTUS, null, 0, 10);
+        assertThat(opsit.getContent()).hasSize(10);
+        assertThat(opsit.getTotalElements()).isEqualTo(15);
+        assertThat(opsit.getTotalPages()).isEqualTo(2);
+
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, KoulutusTyyppi.LUKIOKOULUTUS, null, 1, 10);
+        assertThat(opsit.getContent()).hasSize(5);
+
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, KoulutusTyyppi.LUKIOKOULUTUS, "nimi11", 0, 10);
+        assertThat(opsit.getContent()).hasSize(1);
+        assertThat(opsit.getTotalElements()).isEqualTo(1);
+        assertThat(opsit.getTotalPages()).isEqualTo(1);
 
         setUser("testAdmin");
-        assertThat(opetussuunnitelmaService.getAll(Tyyppi.OPS)).hasSize(2);
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, null, null, 0, 10);
+        assertThat(opsit.getContent()).hasSize(10);
+        assertThat(opsit.getTotalElements()).isEqualTo(26);
+        assertThat(opsit.getTotalPages()).isEqualTo(3);
+
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, null, null, 1, 10);
+        assertThat(opsit.getContent()).hasSize(10);
+
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, null, null, 2, 10);
+        assertThat(opsit.getContent()).hasSize(6);
     }
 }

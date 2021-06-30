@@ -15,6 +15,8 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 /**
  * @author harrik
  */
@@ -32,5 +34,14 @@ public enum Tyyppi {
     @Override
     public String toString() {
         return tyyppi;
+    }
+
+    public static Tyyppi of(String tila) {
+        for (Tyyppi s : values()) {
+            if (s.tyyppi.equalsIgnoreCase(tila)) {
+                return s;
+            }
+        }
+        throw new IllegalArgumentException(tila + " ei ole kelvollinen tyyppi");
     }
 }

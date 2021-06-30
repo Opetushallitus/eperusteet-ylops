@@ -186,6 +186,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -431,24 +435,47 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
         final List<Opetussuunnitelma> opetussuunnitelmat;
 
-        if (SecurityUtil.isUserAdmin()) {
-            opetussuunnitelmat = opetussuunnitelmaRepository.findAllByTyyppi(tyyppi);
+        if (tyyppi == Tyyppi.POHJA) {
+            opetussuunnitelmat = opetussuunnitelmaRepository.findPohja(organisaatiot);
         } else {
-            if (tyyppi == Tyyppi.POHJA) {
-                opetussuunnitelmat = opetussuunnitelmaRepository.findPohja(organisaatiot);
-            } else {
-                opetussuunnitelmat = opetussuunnitelmaRepository.findAllByTyyppi(tyyppi, organisaatiot);
-            }
+            opetussuunnitelmat = opetussuunnitelmaRepository.findAllByTyyppi(tyyppi, organisaatiot);
         }
 
         return mapper.mapAsList(opetussuunnitelmat, OpetussuunnitelmaInfoDto.class).stream()
                 .filter(ops -> tila == null || ops.getTila() == tila)
                 .map(dto -> {
                     fetchKuntaNimet(dto);
-                fetchOrganisaatioNimet(dto);
-                return dto;
-            })
-            .collect(Collectors.toList());
+                    fetchOrganisaatioNimet(dto);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OpetussuunnitelmaInfoDto> getSivutettu(Tyyppi tyyppi, Tila tila, KoulutusTyyppi koulutustyyppi, String nimi, int sivu, int sivukoko) {
+        Page<Opetussuunnitelma> opetussuunnitelmat;
+        Pageable pageable = new PageRequest(sivu, sivukoko, new Sort(Sort.Direction.fromString("DESC"), "luotu"));
+        if (SecurityUtil.isUserAdmin()) {
+            opetussuunnitelmat = opetussuunnitelmaRepository.findSivutettu(
+                    tyyppi,
+                    tila.name(),
+                    nimi,
+                    koulutustyyppi != null ? koulutustyyppi.name() : "",
+                    Collections.singletonList("empty"),
+                    pageable);
+        } else {
+            Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
+            opetussuunnitelmat = opetussuunnitelmaRepository.findSivutettu(
+                    tyyppi,
+                    tila.name(),
+                    nimi,
+                    koulutustyyppi != null ? koulutustyyppi.name() : "",
+                    organisaatiot,
+                    pageable);
+        }
+
+        return opetussuunnitelmat.map(ops -> mapper.map(ops, OpetussuunnitelmaInfoDto.class));
     }
 
     @Override

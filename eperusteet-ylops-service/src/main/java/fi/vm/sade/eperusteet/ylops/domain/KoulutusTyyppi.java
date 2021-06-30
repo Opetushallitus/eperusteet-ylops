@@ -53,7 +53,7 @@ public enum KoulutusTyyppi {
                 return s;
             }
         }
-        throw new IllegalArgumentException(tila + " ei ole kelvollinen tila");
+        throw new IllegalArgumentException(tila + " ei ole kelvollinen koulutustyyppi");
     }
 
     public boolean isOneOf(KoulutusTyyppi[] tyypit) {

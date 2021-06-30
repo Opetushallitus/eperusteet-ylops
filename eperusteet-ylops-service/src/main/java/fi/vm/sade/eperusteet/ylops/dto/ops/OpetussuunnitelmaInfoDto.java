@@ -15,10 +15,16 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import java.util.Date;
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * @author jhyoty
  */
 
+@Setter
+@Getter
 public class OpetussuunnitelmaInfoDto extends OpetussuunnitelmaBaseDto {
-
+    private Date julkaistu;
 }
