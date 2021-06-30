@@ -181,6 +181,13 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.addJulkaisu(opsId, julkaisuDto);
     }
 
+    @RequestMapping(value = "/{opsId}/aktivoi/{revision}", method = RequestMethod.POST)
+    public OpetussuunnitelmanJulkaisuDto aktivoiJulkaisu(
+            @PathVariable final Long opsId,
+            @PathVariable final int revision) {
+        return opetussuunnitelmaService.aktivoiJulkaisu(opsId, revision);
+    }
+
     @RequestMapping(value = "/{opsId}/julkaisut", method = RequestMethod.GET)
     public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(
             @PathVariable final Long opsId) {
