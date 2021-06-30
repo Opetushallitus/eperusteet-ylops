@@ -113,7 +113,7 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     @Override
     public EtusivuDto haeKayttajanEtusivu() {
         EtusivuDto result = new EtusivuDto();
-        result.setOpetussuunnitelmatKeskeneraiset(opetussuunnitelmaService.getAmount(Tyyppi.OPS, Tila.julkaisemattomat()));
+        result.setOpetussuunnitelmatKeskeneraiset(opetussuunnitelmaService.getAmount(Tyyppi.OPS, Sets.newHashSet(Tila.LUONNOS)));
         result.setOpetussuunnitelmatJulkaistut(opetussuunnitelmaService.getAmount(Tyyppi.OPS, Tila.julkiset()));
         result.setPohjatKeskeneraiset(opetussuunnitelmaService.getAmount(Tyyppi.POHJA, Sets.newHashSet(Tila.LUONNOS)));
         result.setPohjatJulkaistut(opetussuunnitelmaService.getAmount(Tyyppi.POHJA, Sets.newHashSet(Tila.VALMIS)));

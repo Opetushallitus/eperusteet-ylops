@@ -17,6 +17,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
@@ -28,7 +29,6 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
@@ -47,8 +47,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,6 +85,23 @@ public class OpetussuunnitelmaController {
             @RequestParam(value = "tyyppi", required = false) Tyyppi tyyppi,
             @RequestParam(value = "tila", required = false) Tila tila) {
         return opetussuunnitelmaService.getAll(tyyppi == null ? Tyyppi.OPS : tyyppi, tila);
+    }
+
+    @RequestMapping(value = "/sivutettu", method = RequestMethod.GET)
+    @ResponseBody
+    @Timed
+    public Page<OpetussuunnitelmaInfoDto> getSivutettu(
+            @RequestParam(value = "tyyppi") String tyyppi,
+            @RequestParam(value = "tila") String tila,
+            @RequestParam(value = "koulutustyyppi", required = false) String koulutusTyyppi,
+            @RequestParam(value = "nimi", required = false) String nimi,
+            @RequestParam(value = "sivu", required = false) final int sivu,
+            @RequestParam(value = "sivukoko", required = false, defaultValue = "10") final int sivukoko) {
+        return opetussuunnitelmaService.getSivutettu(
+                Tyyppi.of(tyyppi),
+                Tila.of(tila),
+                StringUtils.isEmpty(koulutusTyyppi) ? null : KoulutusTyyppi.of(koulutusTyyppi),
+                nimi, sivu, sivukoko);
     }
 
     @RequestMapping(value = "/pohjat", method = RequestMethod.GET)

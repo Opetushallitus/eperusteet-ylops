@@ -47,6 +47,7 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto;
 import java.time.Instant;
+import java.util.Comparator;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
@@ -183,6 +184,7 @@ public class DtoMapperConfig {
                     public void mapAtoB(Opetussuunnitelma opetussuunnitelma, OpetussuunnitelmaInfoDto opetussuunnitelmaInfoDto, MappingContext context) {
                         super.mapAtoB(opetussuunnitelma, opetussuunnitelmaInfoDto, context);
                         if (!Tyyppi.POHJA.equals(opetussuunnitelma.getTyyppi()) && !Tila.POISTETTU.equals(opetussuunnitelma.getTila()) && CollectionUtils.isNotEmpty(opetussuunnitelma.getJulkaisut())) {
+                            opetussuunnitelmaInfoDto.setJulkaistu(opetussuunnitelma.getJulkaisut().stream().max(Comparator.comparing(julkaisu -> julkaisu.getLuotu())).get().getLuotu());
                             opetussuunnitelmaInfoDto.setTila(Tila.JULKAISTU);
                         }
                     }

@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.google.common.collect.Sets;
 
 import java.util.EnumSet;
@@ -78,5 +79,14 @@ public enum Tila {
 
     public Set<Tila> mahdollisetSiirtymat(boolean isPohja) {
         return EnumSet.noneOf(Tila.class);
+    }
+
+    public static Tila of(String tila) {
+        for (Tila s : values()) {
+            if (s.tila.equalsIgnoreCase(tila)) {
+                return s;
+            }
+        }
+        throw new IllegalArgumentException(tila + " ei ole kelvollinen tila");
     }
 }

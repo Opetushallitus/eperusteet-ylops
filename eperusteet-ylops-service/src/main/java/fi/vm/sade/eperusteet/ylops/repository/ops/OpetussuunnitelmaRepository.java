@@ -19,14 +19,20 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustieto;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
 /**
  * @author mikkom
@@ -68,6 +74,29 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
             "WHERE org IN (:organisaatiot) AND o.tyyppi = :tyyppi")
     List<Opetussuunnitelma> findAllByTyyppi(@Param("tyyppi") Tyyppi tyyppi,
                                             @Param("organisaatiot") Collection<String> organisaatiot);
+
+    String limitedPagedOpetussuunnitelmat =
+            "FROM Opetussuunnitelma o " +
+                    "JOIN o.organisaatiot org " +
+                    "LEFT JOIN o.nimi nimi " +
+                    "LEFT JOIN nimi.teksti teksti " +
+                    "WHERE o.tyyppi = :tyyppi " +
+                    "AND ((:tila = 'JULKAISTU' AND (o.julkaisut IS NOT EMPTY OR o.tila = 'JULKAISTU')) OR (o.tila = :tila AND o.julkaisut IS EMPTY)) " +
+                    "AND (coalesce(:nimi, null) IS NULL or LOWER(teksti.teksti) LIKE LOWER(CONCAT('%',:nimi,'%'))) " +
+                    "AND (:koulutustyyppi = '' or o.koulutustyyppi = :koulutustyyppi) " +
+                    "AND (:organisaatiot IN ('empty') or org IN (:organisaatiot)) ";
+
+    @Query(
+            value = "SELECT DISTINCT o " + limitedPagedOpetussuunnitelmat,
+            countQuery = "SELECT COUNT(DISTINCT o) " + limitedPagedOpetussuunnitelmat)
+    Page<Opetussuunnitelma> findSivutettu(
+            @Param("tyyppi") Tyyppi tyyppi,
+            @Param("tila") String tila,
+            @Param("nimi") String nimi,
+            @Param("koulutustyyppi") String koulutusTyyppi,
+            @Param("organisaatiot") Collection<String> organisaatiot,
+            Pageable pageable
+    );
 
     @Query(value = "SELECT COUNT(DISTINCT o) FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
             "WHERE org IN (:organisaatiot) AND o.tyyppi = :tyyppi AND o.tila IN (:tilat)")

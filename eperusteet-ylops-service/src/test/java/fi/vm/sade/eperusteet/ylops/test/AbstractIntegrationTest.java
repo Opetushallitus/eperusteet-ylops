@@ -15,13 +15,16 @@
  */
 package fi.vm.sade.eperusteet.ylops.test;
 
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.Before;
@@ -75,6 +78,22 @@ public class AbstractIntegrationTest {
                 })
                 .collect(Collectors.toSet()));
         opsLuontiDto.setPohja(Reference.of(pohjaDto.getId()));
+
+        return opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
+    }
+
+    protected OpetussuunnitelmaDto createOpetussuunnitelma(Consumer<OpetussuunnitelmaLuontiDto> opsfn) {
+        OpetussuunnitelmaLuontiDto opsLuontiDto = new OpetussuunnitelmaLuontiDto();
+        opsLuontiDto.setTyyppi(Tyyppi.OPS);
+        opsLuontiDto.setNimi(LokalisoituTekstiDto.of("nimi1"));
+        opsLuontiDto.setOrganisaatiot(Stream.of("1.2.246.562.10.83037752777")
+                .map(oid -> {
+                    OrganisaatioDto result = new OrganisaatioDto();
+                    result.setOid(oid);
+                    return result;
+                })
+                .collect(Collectors.toSet()));
+        opsfn.accept(opsLuontiDto);
 
         return opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
     }

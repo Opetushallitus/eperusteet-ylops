@@ -1247,6 +1247,53 @@
         }
       }
     },
+    "/opetussuunnitelmat/sivutettu" : {
+      "get" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "getSivutettu",
+        "parameters" : [ {
+          "name" : "tyyppi",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "tila",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "koulutustyyppi",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "nimi",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "sivu",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        }, {
+          "name" : "sivukoko",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageOpetussuunnitelmaInfoDto"
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/tilastot" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
@@ -6705,12 +6752,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -7826,6 +7873,10 @@
         "viimeisinSyncPvm" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "julkaistu" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },
@@ -8814,6 +8865,86 @@
         }
       }
     },
+    "Page" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "type" : "object"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "first" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "PageOpetussuunnitelmaInfoDto" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OpetussuunnitelmaInfoDto"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "first" : {
+          "type" : "boolean"
+        }
+      }
+    },
     "PalauteDto" : {
       "type" : "object",
       "properties" : {
@@ -9691,6 +9822,9 @@
           "type" : "string"
         }
       }
+    },
+    "Sort" : {
+      "type" : "object"
     },
     "TPOOpetuksenSisaltoDto" : {
       "type" : "object",
