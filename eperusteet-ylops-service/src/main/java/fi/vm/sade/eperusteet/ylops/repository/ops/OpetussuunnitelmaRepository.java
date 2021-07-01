@@ -99,12 +99,12 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     );
 
     @Query(value = "SELECT COUNT(DISTINCT o) FROM Opetussuunnitelma o JOIN o.organisaatiot org " +
-            "WHERE org IN (:organisaatiot) AND o.tyyppi = :tyyppi AND o.tila IN (:tilat)")
+            "WHERE org IN (:organisaatiot) AND o.tyyppi = :tyyppi AND o.tila IN (:tilat) AND o.julkaisut IS EMPTY")
     Long countByTyyppi(@Param("tyyppi") Tyyppi tyyppi,
                        @Param("tilat") Collection<Tila> tilat,
                        @Param("organisaatiot") Collection<String> organisaatiot);
 
-    @Query(value = "SELECT COUNT(DISTINCT o) FROM Opetussuunnitelma o WHERE o.tyyppi = :tyyppi AND o.tila IN (:tilat)")
+    @Query(value = "SELECT COUNT(DISTINCT o) FROM Opetussuunnitelma o WHERE o.tyyppi = :tyyppi AND o.tila IN (:tilat) AND o.julkaisut IS EMPTY")
     Long countByTyyppi(@Param("tyyppi") Tyyppi tyyppi,
                        @Param("tilat") Collection<Tila> tilat);
 
