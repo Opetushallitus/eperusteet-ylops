@@ -24,6 +24,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
@@ -779,9 +780,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oppiaine.getVuosiluokkakokonaisuudet().forEach(vuosiluokkakokonaisuus -> vuosiluokkakokonaisuusService
                 .removeSisaltoalueetInKeskeinensisaltoalueet(opsId, vuosiluokkakokonaisuus, true));
 
-        lukioOppiaineJarjestysRepository.delete(lukioOppiaineJarjestysRepository
-                .findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
-        oppiaineLukiokurssiRepository.delete(oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, id));
+        lukioOppiaineJarjestysRepository.delete(
+                lukioOppiaineJarjestysRepository.findByOppiaineIds(oppiaine.maarineen()
+                        .map(Oppiaine::getId).collect(toSet()))
+                        .stream().map(LukioOppiaineJarjestys::getId).collect(toSet()));
+        oppiaineLukiokurssiRepository.delete(
+                oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, id)
+                        .stream().map(OppiaineLukiokurssi::getId).collect(toSet()));
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
         PoistettuOppiaineDto poistettu = tallennaPoistettu(id, ops, oppiaine);

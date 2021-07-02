@@ -19,6 +19,17 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ServiceException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolation;
+import javax.validation.ConstraintViolationException;
+import javax.validation.ValidationException;
 import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -48,18 +59,6 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
-import javax.validation.ValidationException;
-import java.io.IOException;
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 /**
  * @author teele1
  */
@@ -87,13 +86,19 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
         }
     }
 
-    @ExceptionHandler(ClientAbortException.class)
-    public void clientAbortExceptionHandler(HttpServletRequest request, ClientAbortException ex) {
-        Principal principal = request.getUserPrincipal();
-        String username = principal != null ? principal.getName() : "<NONE>";
-        LOG.warn("ClientAbortException: message={} username={}, remoteAddr={}, userAgent={}, requestedURL={}",
-                ex.getLocalizedMessage(), username, request.getRemoteAddr(), request.getHeader("User-Agent"),
-                request.getRequestURL());
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<Object> clientAbortExceptionHandler(HttpServletRequest request, WebRequest webRequest, IOException ex) throws Exception {
+        String exceptionSimpleName = ex.getCause().getClass().getSimpleName();
+        if ("ClientAbortException".equals(exceptionSimpleName)) {
+            Principal principal = request.getUserPrincipal();
+            String username = principal != null ? principal.getName() : "<NONE>";
+            LOG.warn("ClientAbortException: message={} username={}, remoteAddr={}, userAgent={}, requestedURL={}",
+                    ex.getLocalizedMessage(), username, request.getRemoteAddr(), request.getHeader("User-Agent"),
+                    request.getRequestURL());
+            return null;
+        } else {
+            return handleAllExceptions(ex, webRequest);
+        }
     }
 
     @ExceptionHandler(value = {
