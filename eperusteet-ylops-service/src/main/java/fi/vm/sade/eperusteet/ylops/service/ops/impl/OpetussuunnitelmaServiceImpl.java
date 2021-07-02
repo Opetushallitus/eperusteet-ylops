@@ -459,7 +459,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Transactional(readOnly = true)
     public Page<OpetussuunnitelmaInfoDto> getSivutettu(Tyyppi tyyppi, Tila tila, KoulutusTyyppi koulutustyyppi, String nimi, int sivu, int sivukoko) {
         Page<Opetussuunnitelma> opetussuunnitelmat;
-        Pageable pageable = new PageRequest(sivu, sivukoko, new Sort(Sort.Direction.fromString("DESC"), "luotu"));
+        Pageable pageable = PageRequest.of(sivu, sivukoko, Sort.by(Sort.Direction.fromString("DESC"), "luotu"));
         if (SecurityUtil.isUserAdmin()) {
             opetussuunnitelmat = opetussuunnitelmaRepository.findSivutettuAdmin(
                     tyyppi,
