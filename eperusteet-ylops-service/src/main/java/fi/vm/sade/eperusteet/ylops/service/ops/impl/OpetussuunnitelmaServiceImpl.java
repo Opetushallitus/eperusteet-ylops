@@ -184,6 +184,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -303,6 +304,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private OpetussuunnitelmaService self;
+
+    @Autowired
+    private CacheManager cacheManager;
 
     private List<Opetussuunnitelma> findJulkaistutByQuery(OpetussuunnitelmaQuery pquery) {
         CriteriaQuery<Opetussuunnitelma> query = getJulkaistutQuery(pquery);
@@ -1398,6 +1402,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         PerusteDto peruste = eperusteetService.getPerusteUpdateCache(pohja.getPerusteenDiaarinumero());
         pohja.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
+        cacheManager.getCache("perusteet").evict(peruste.getId());
         lisaaPerusteenSisalto(pohja, peruste, null);
     }
 
