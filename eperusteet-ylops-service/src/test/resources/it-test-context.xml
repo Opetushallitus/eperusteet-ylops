@@ -138,7 +138,7 @@
                     <security:user name="test5" password="{noop}test" authorities="ROLE_USER"/>
                     <security:user name="test6" password="{noop}test" authorities="ROLE_USER"/>
                     <security:user name="test7" password="{noop}test" authorities="ROLE_USER"/>
-                    <security:user name="test8" password="t{noop}est"
+                    <security:user name="test8" password="{noop}test"
                                    authorities="ROLE_USER, ROLE_APP_EPERUSTEET_YLOPS, ROLE_APP_EPERUSTEET_YLOPS_CRUD, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.83037752777, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.83037752778"/>
                     <security:user name="testAdmin" password="{noop}test"
                                    authorities="ROLE_USER, ROLE_APP_EPERUSTEET_YLOPS, ROLE_APP_EPERUSTEET_YLOPS_CRUD, ROLE_APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.10.00000000001"/>
