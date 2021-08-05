@@ -83,18 +83,29 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
                     "WHERE o.tyyppi = :tyyppi " +
                     "AND ((:tila = 'JULKAISTU' AND (o.julkaisut IS NOT EMPTY OR o.tila = 'JULKAISTU')) OR (o.tila = :tila AND o.julkaisut IS EMPTY)) " +
                     "AND (coalesce(:nimi, null) IS NULL or LOWER(teksti.teksti) LIKE LOWER(CONCAT('%',:nimi,'%'))) " +
-                    "AND (:koulutustyyppi = '' or o.koulutustyyppi = :koulutustyyppi) " +
-                    "AND ((:organisaatiot) IN ('empty') or org IN (:organisaatiot)) ";
+                    "AND (:koulutustyyppi = '' or o.koulutustyyppi = :koulutustyyppi) ";
+    String limitedPagedOpetussuunnitelmatOrganisaatiot = "AND org IN (:organisaatiot)";
 
     @Query(
-            value = "SELECT DISTINCT o " + limitedPagedOpetussuunnitelmat,
-            countQuery = "SELECT COUNT(DISTINCT o) " + limitedPagedOpetussuunnitelmat)
+            value = "SELECT DISTINCT o " + limitedPagedOpetussuunnitelmat + limitedPagedOpetussuunnitelmatOrganisaatiot,
+            countQuery = "SELECT COUNT(DISTINCT o) " + limitedPagedOpetussuunnitelmat + limitedPagedOpetussuunnitelmatOrganisaatiot)
     Page<Opetussuunnitelma> findSivutettu(
             @Param("tyyppi") Tyyppi tyyppi,
             @Param("tila") String tila,
             @Param("nimi") String nimi,
             @Param("koulutustyyppi") String koulutusTyyppi,
             @Param("organisaatiot") Collection<String> organisaatiot,
+            Pageable pageable
+    );
+
+    @Query(
+            value = "SELECT DISTINCT o " + limitedPagedOpetussuunnitelmat,
+            countQuery = "SELECT COUNT(DISTINCT o) " + limitedPagedOpetussuunnitelmat)
+    Page<Opetussuunnitelma> findSivutettuAdmin(
+            @Param("tyyppi") Tyyppi tyyppi,
+            @Param("tila") String tila,
+            @Param("nimi") String nimi,
+            @Param("koulutustyyppi") String koulutusTyyppi,
             Pageable pageable
     );
 
