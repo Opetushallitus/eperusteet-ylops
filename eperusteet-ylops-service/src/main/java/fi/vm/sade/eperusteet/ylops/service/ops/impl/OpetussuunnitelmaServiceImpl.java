@@ -461,12 +461,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Page<Opetussuunnitelma> opetussuunnitelmat;
         Pageable pageable = new PageRequest(sivu, sivukoko, new Sort(Sort.Direction.fromString("DESC"), "luotu"));
         if (SecurityUtil.isUserAdmin()) {
-            opetussuunnitelmat = opetussuunnitelmaRepository.findSivutettu(
+            opetussuunnitelmat = opetussuunnitelmaRepository.findSivutettuAdmin(
                     tyyppi,
                     tila.name(),
                     nimi,
                     koulutustyyppi != null ? koulutustyyppi.name() : "",
-                    Collections.singletonList("empty"),
                     pageable);
         } else {
             Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
