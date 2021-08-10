@@ -56,7 +56,7 @@
             <constructor-arg value="-tcpAllowOthers,-tcpPort,12345" />
         </bean>
         <bean id="dataSource"
-              class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" destroy-method="close" depends-on="h2db">
+              class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close" depends-on="h2db">
             <property name="driverClassName" value="org.h2.Driver"/>
             <property name="url" value="jdbc:h2:tcp://localhost:12345/mem:test"/>
         </bean>
@@ -74,7 +74,7 @@
         </bean>
 
         <bean id="dataSource"
-              class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" destroy-method="close">
+              class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
             <property name="driverClassName" value="org.h2.Driver"/>
             <property name="url" value="jdbc:h2:mem:test"/>
         </bean>
