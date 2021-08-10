@@ -12,11 +12,12 @@
     <name>eperusteet-ylops-service</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <hibernate.version>4.3.9.Final</hibernate.version>
-        <spring.version>4.3.23.RELEASE</spring.version>
+        <hibernate.version>4.3.11.Final</hibernate.version>
+        <spring.version>5.3.6</spring.version>
+        <spring.security.version>5.4.6</spring.security.version>
+        <spring.data.jpa.version>1.11.23.RELEASE</spring.data.jpa.version>
+        <spring.session.jdbc.version>2.4.3</spring.session.jdbc.version>
         <logback.version>1.2.3</logback.version>
-        <spring.security.version>4.2.13.RELEASE</spring.security.version>
-        <spring.data.jpa.version>1.11.22.RELEASE</spring.data.jpa.version>
         <postgresql.version>9.4.1211</postgresql.version>
         <jackson.version>2.10.2</jackson.version>
         <eperusteet-ylops.devdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.devdb.user}</eperusteet-ylops.devdb.jdbcurl>
@@ -148,7 +149,7 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
+            <version>3.1.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -184,7 +185,7 @@
         <dependency>
             <groupId>org.springframework.session</groupId>
             <artifactId>spring-session-jdbc</artifactId>
-            <version>2.0.10.RELEASE</version>
+            <version>${spring.session.jdbc.version}</version>
         </dependency>
         <dependency>
             <groupId>com.ryantenney.metrics</groupId>
@@ -478,6 +479,42 @@
                 <configuration>
                     <path>/eperusteet-ylops-service</path>
                     <contextFile>${basedir}/src/test/config/context.xml</contextFile>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.postgresql</groupId>
+                        <artifactId>postgresql</artifactId>
+                        <version>${postgresql.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.4.39.v20210325</version>
+                <configuration>
+                    <httpConnector>
+                        <port>8081</port>
+                    </httpConnector>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <webApp>
+                        <contextPath>/eperusteet-ylops-service</contextPath>
+                    </webApp>
+                    <contextXml>${basedir}/src/test/config/jetty-env.xml</contextXml>
+                    <systemProperties>
+                        <systemProperty>
+                            <name>user</name>
+                            <value>${eperusteet-ylops.devdb.user}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>password</name>
+                            <value>${eperusteet-ylops.devdb.password}</value>
+                        </systemProperty>
+                        <systemProperty>
+                            <name>url</name>
+                            <value>${eperusteet-ylops.devdb.jdbcurl}</value>
+                        </systemProperty>
+                    </systemProperties>
                 </configuration>
                 <dependencies>
                     <dependency>
