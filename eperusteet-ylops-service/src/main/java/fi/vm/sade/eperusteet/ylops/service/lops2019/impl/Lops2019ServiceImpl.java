@@ -99,7 +99,7 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     public Lops2019SisaltoDto getPerusteSisalto(Long opsId) {
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         
-        if (ops.getToteutus().equals(KoulutustyyppiToteutus.LOPS2019)) {
+        if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
             PerusteDto perusteDto = getPerusteImpl(opsId);
             return perusteDto.getLops2019();
         }

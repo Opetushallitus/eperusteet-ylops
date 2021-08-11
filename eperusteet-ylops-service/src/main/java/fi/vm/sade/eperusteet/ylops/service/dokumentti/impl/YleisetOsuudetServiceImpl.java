@@ -107,7 +107,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                             Long pTekstikappaleId = lapsi.getPerusteTekstikappaleId();
                             if (lapsi.isNaytaPerusteenTeksti() && pTekstikappaleId != null) {
                                 try {
-                                    if (docBase.getOps().getToteutus().equals(KoulutustyyppiToteutus.LOPS2019)) {
+                                    if (KoulutustyyppiToteutus.LOPS2019.equals(docBase.getOps().getToteutus())) {
                                         PerusteTekstiKappaleViiteMatalaDto perusteTekstikappale = lopsService
                                                 .getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
 
@@ -168,7 +168,7 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
         Long pTekstikappaleId = viite.getPerusteTekstikappaleId();
         if (viite.isNaytaPerusteenTeksti() && pTekstikappaleId != null) {
             try {
-                if (docBase.getOps().getToteutus().equals(KoulutustyyppiToteutus.LOPS2019)) {
+                if (KoulutustyyppiToteutus.LOPS2019.equals(docBase.getOps().getToteutus())) {
                     PerusteTekstiKappaleViiteMatalaDto perusteTekstikappale = lopsService
                             .getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
 
