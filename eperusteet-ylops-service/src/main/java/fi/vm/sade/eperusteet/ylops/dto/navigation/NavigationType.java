@@ -7,6 +7,7 @@ public enum NavigationType {
     liitteet, liite,
     laajaalaiset, laajaalainen,
     oppiaineet, oppimaarat, oppiaine, poppiaine,
+    lukiooppiaineet_2015, lukiooppimaarat_2015, lukiooppiaine_2015, lukiokurssit, lukiokurssi,
     moduulit, moduuli,
     opintojaksot, opintojakso,
     opetussuunnitelma,
