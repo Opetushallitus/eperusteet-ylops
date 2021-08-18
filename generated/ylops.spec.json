@@ -28,6 +28,8 @@
   }, {
     "name" : "Lops2019PerusteController"
   }, {
+    "name" : "LukioOpetussuunnitelmat"
+  }, {
     "name" : "Muokkaustieto"
   }, {
     "name" : "Ohjeet"
@@ -1183,6 +1185,535 @@
             "schema" : {
               "$ref" : "#/definitions/OpetussuunnitelmaJulkinenDto"
             }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/aihekokonaisuudet" : {
+      "get" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "getAihekokonaisuudet",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/AihekokonaisuudetPerusteOpsDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/aihekokonaisuudet/jarjesta" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "reArrangeAihekokonaisuudet",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/AihekokonaisuudetJarjestaDto"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/aihekokonaisuudet/kokonaisuus" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "saveAihekokonaisuus",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/AihekokonaisuusSaveDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LongIdResultDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/aihekokonaisuudet/kokonaisuus/{aihekokonaisuusId}" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "updateAihekokonaisuus",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "aihekokonaisuusId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/AihekokonaisuusSaveDto"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "deleteAihekokonaisuus",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "aihekokonaisuusId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/aihekokonaisuudet/yleiskuvaus" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "updateAihekokonaisuudetYleiskuvaus",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/AihekokonaisuusSaveDto"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/kurssi" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "saveKurssi",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/LukiokurssiSaveDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LongIdResultDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/kurssi/{kurssiId}" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "updateKurssi",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "kurssiId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/LukiokurssiUpdateDto"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/kurssi/{kurssiId}/remove" : {
+      "delete" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "removeKurssi",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "kurssiId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/opetuksenYleisetTavoitteet" : {
+      "get" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "getOpetuksenYleisetTavoitteet",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OpetuksenYleisetTavoitteetPerusteOpsDto"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "updateOpetuksenYleisetTavoitteet",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/OpetuksenYleisetTavoitteetUpdateDto"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/oppiaine" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "saveLukioOppiaine",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/LukioOppiaineSaveDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LongIdResultDto"
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "updateLukioOppiaine",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/LukioOppiaineSaveDto"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/oppiaine/abstrakti" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "addAbstraktiOppiaine",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/LukioAbstraktiOppiaineTuontiDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LongIdResultDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/oppiaine/{oppiaineId}" : {
+      "get" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "getLukioOppiaine",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "oppiaineId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LukioOppiaineTiedotDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/oppiaine/{oppiaineId}/kielitarjonta" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "addLukioOppimaara",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "oppiaineId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/LukioKopioiOppimaaraDto"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LongIdResultDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/oppiaine/{oppiaineId}/kurssi/{kurssiId}/disconnect" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "disconnectKurssi",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "oppiaineId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "kurssiId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LongIdResultDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/oppiaine/{oppiaineId}/kurssi/{kurssiId}/reconnect" : {
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "reconnectKurssi",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "oppiaineId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "kurssiId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LongIdResultDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/lukio/{opsId}/rakenne" : {
+      "get" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "getRakenne",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/LukioOpetussuunnitelmaRakenneOpsDto"
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "updateStructure",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/OppaineKurssiTreeStructureDto"
+          }
+        } ],
+        "responses" : {
+          "204" : {
+            "description" : ""
           }
         }
       }
@@ -5548,6 +6079,38 @@
     }
   },
   "definitions" : {
+    "AihekokonaisuudetBaseDto" : {
+      "type" : "object",
+      "properties" : {
+        "uuidTunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "otsikko" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "yleiskuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "muokkaaja" : {
+          "type" : "string"
+        }
+      }
+    },
     "AihekokonaisuudetDto" : {
       "type" : "object",
       "properties" : {
@@ -5589,6 +6152,77 @@
         }
       }
     },
+    "AihekokonaisuudetJarjestaDto" : {
+      "type" : "object",
+      "required" : [ "aihekokonaisuudet" ],
+      "properties" : {
+        "aihekokonaisuudet" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/AihekokonaisuusJarjestysDto"
+          }
+        }
+      }
+    },
+    "AihekokonaisuudetOpsDto" : {
+      "type" : "object",
+      "properties" : {
+        "uuidTunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "otsikko" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "yleiskuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "muokkaaja" : {
+          "type" : "string"
+        },
+        "parent" : {
+          "$ref" : "#/definitions/AihekokonaisuudetBaseDto"
+        },
+        "aihekokonaisuudet" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/AihekokonaisuusOpsDto"
+          }
+        }
+      }
+    },
+    "AihekokonaisuudetPerusteOpsDto" : {
+      "type" : "object",
+      "properties" : {
+        "perusteen" : {
+          "$ref" : "#/definitions/AihekokonaisuudetDto"
+        },
+        "paikallinen" : {
+          "$ref" : "#/definitions/AihekokonaisuudetOpsDto"
+        },
+        "kommentti" : {
+          "type" : "string"
+        },
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        }
+      }
+    },
     "AihekokonaisuusDto" : {
       "type" : "object",
       "properties" : {
@@ -5625,6 +6259,76 @@
         },
         "muokkaaja" : {
           "type" : "string"
+        }
+      }
+    },
+    "AihekokonaisuusJarjestysDto" : {
+      "type" : "object",
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        }
+      }
+    },
+    "AihekokonaisuusOpsDto" : {
+      "type" : "object",
+      "properties" : {
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "otsikko" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "yleiskuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "jnro" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "parent" : {
+          "$ref" : "#/definitions/AihekokonaisuusDto"
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "muokkaaja" : {
+          "type" : "string"
+        },
+        "perusteen" : {
+          "$ref" : "#/definitions/AihekokonaisuusDto"
+        }
+      }
+    },
+    "AihekokonaisuusSaveDto" : {
+      "type" : "object",
+      "required" : [ "otsikko" ],
+      "properties" : {
+        "otsikko" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "yleiskuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         }
       }
     },
@@ -6005,6 +6709,19 @@
         }
       }
     },
+    "KurssinOppiaineDto" : {
+      "type" : "object",
+      "properties" : {
+        "oppiaineId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "jarjestys" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
     "KysymysDto" : {
       "type" : "object",
       "properties" : {
@@ -6099,6 +6816,15 @@
         "created" : {
           "type" : "string",
           "format" : "date-time"
+        }
+      }
+    },
+    "LongIdResultDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
         }
       }
     },
@@ -6764,6 +7490,50 @@
         }
       }
     },
+    "LukioAbstraktiOppiaineTuontiDto" : {
+      "type" : "object",
+      "required" : [ "nimi", "tunniste" ],
+      "properties" : {
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        }
+      }
+    },
+    "LukioKopioiOppimaaraDto" : {
+      "type" : "object",
+      "required" : [ "nimi", "tunniste" ],
+      "properties" : {
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "kieliKoodiUri" : {
+          "type" : "string"
+        },
+        "kieliKoodiArvo" : {
+          "type" : "string"
+        },
+        "kieli" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
     "LukioOpetussuunnitelmaRakenneDto" : {
       "type" : "object",
       "properties" : {
@@ -6777,6 +7547,340 @@
           "items" : {
             "$ref" : "#/definitions/LukioPerusteOppiaineDto"
           }
+        }
+      }
+    },
+    "LukioOpetussuunnitelmaRakenneOpsDto" : {
+      "type" : "object",
+      "properties" : {
+        "root" : {
+          "type" : "boolean"
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "opsId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "oppiaineet" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LukioOppiaineRakenneListausDto"
+          }
+        },
+        "pohjanTarjonta" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LukioOppiaineRakenneListausDto"
+          }
+        }
+      }
+    },
+    "LukioOppiaineRakenneListausDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "oppiaineId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "tila" : {
+          "type" : "string",
+          "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
+        },
+        "oma" : {
+          "type" : "boolean"
+        },
+        "maariteltyPohjassa" : {
+          "type" : "boolean"
+        },
+        "jarjestys" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tyyppi" : {
+          "type" : "string",
+          "enum" : [ "YHTEINEN", "TAIDE_TAITOAINE", "MUU_VALINNAINEN", "LUKIO" ]
+        },
+        "laajuus" : {
+          "type" : "string"
+        },
+        "koosteinen" : {
+          "type" : "boolean"
+        },
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "abstrakti" : {
+          "type" : "boolean"
+        },
+        "koodiUri" : {
+          "type" : "string"
+        },
+        "koodiArvo" : {
+          "type" : "string"
+        },
+        "kieliKoodiUri" : {
+          "type" : "string"
+        },
+        "kieliKoodiArvo" : {
+          "type" : "string"
+        },
+        "oppimaarat" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LukioOppiaineRakenneListausDto"
+          }
+        },
+        "kieli" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "kurssit" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LukiokurssiListausOpsDto"
+          }
+        }
+      }
+    },
+    "LukioOppiaineSaveDto" : {
+      "type" : "object",
+      "properties" : {
+        "oppiaineId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "laajuus" : {
+          "type" : "string"
+        },
+        "koosteinen" : {
+          "type" : "boolean"
+        },
+        "koodiUri" : {
+          "type" : "string"
+        },
+        "koodiArvo" : {
+          "type" : "string"
+        },
+        "tehtava" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "tavoitteet" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "arviointi" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "kurssiTyyppiKuvaukset" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "LukioOppiaineTiedotDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "oppiaineId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "tila" : {
+          "type" : "string",
+          "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
+        },
+        "oma" : {
+          "type" : "boolean"
+        },
+        "maariteltyPohjassa" : {
+          "type" : "boolean"
+        },
+        "jarjestys" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tyyppi" : {
+          "type" : "string",
+          "enum" : [ "YHTEINEN", "TAIDE_TAITOAINE", "MUU_VALINNAINEN", "LUKIO" ]
+        },
+        "laajuus" : {
+          "type" : "string"
+        },
+        "koosteinen" : {
+          "type" : "boolean"
+        },
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "abstrakti" : {
+          "type" : "boolean"
+        },
+        "koodiUri" : {
+          "type" : "string"
+        },
+        "koodiArvo" : {
+          "type" : "string"
+        },
+        "kieliKoodiUri" : {
+          "type" : "string"
+        },
+        "kieliKoodiArvo" : {
+          "type" : "string"
+        },
+        "oppimaarat" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LukioOppimaaraPerusTiedotDto"
+          }
+        },
+        "kieli" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "kurssit" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LukiokurssiOpsDto"
+          }
+        },
+        "perusteen" : {
+          "$ref" : "#/definitions/LukioPerusteOppiaineDto"
+        },
+        "tehtava" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "tavoitteet" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "arviointi" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "pohjanTarjonta" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LukioOppimaaraPerusTiedotDto"
+          }
+        },
+        "kurssiTyyppiKuvaukset" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "LukioOppimaaraPerusTiedotDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "oppiaineId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "tila" : {
+          "type" : "string",
+          "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
+        },
+        "oma" : {
+          "type" : "boolean"
+        },
+        "maariteltyPohjassa" : {
+          "type" : "boolean"
+        },
+        "jarjestys" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "tyyppi" : {
+          "type" : "string",
+          "enum" : [ "YHTEINEN", "TAIDE_TAITOAINE", "MUU_VALINNAINEN", "LUKIO" ]
+        },
+        "laajuus" : {
+          "type" : "string"
+        },
+        "koosteinen" : {
+          "type" : "boolean"
+        },
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "abstrakti" : {
+          "type" : "boolean"
+        },
+        "koodiUri" : {
+          "type" : "string"
+        },
+        "koodiArvo" : {
+          "type" : "string"
+        },
+        "kieliKoodiUri" : {
+          "type" : "string"
+        },
+        "kieliKoodiArvo" : {
+          "type" : "string"
         }
       }
     },
@@ -6983,6 +8087,136 @@
         }
       }
     },
+    "LukiokurssiListausOpsDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "laajuus" : {
+          "type" : "number"
+        },
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "oma" : {
+          "type" : "boolean"
+        },
+        "palautettava" : {
+          "type" : "boolean"
+        },
+        "koodiUri" : {
+          "type" : "string"
+        },
+        "koodiArvo" : {
+          "type" : "string"
+        },
+        "tyyppi" : {
+          "type" : "string",
+          "enum" : [ "VALTAKUNNALLINEN_PAKOLLINEN", "VALTAKUNNALLINEN_SYVENTAVA", "VALTAKUNNALLINEN_SOVELTAVA", "PAIKALLINEN_SYVENTAVA", "PAIKALLINEN_SOVELTAVA" ]
+        },
+        "lokalisoituKoodi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        }
+      }
+    },
+    "LukiokurssiOppaineMuokkausDto" : {
+      "type" : "object",
+      "required" : [ "id" ],
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "oppiaineet" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/KurssinOppiaineDto"
+          }
+        }
+      }
+    },
+    "LukiokurssiOpsDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "laajuus" : {
+          "type" : "number"
+        },
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "oma" : {
+          "type" : "boolean"
+        },
+        "palautettava" : {
+          "type" : "boolean"
+        },
+        "koodiUri" : {
+          "type" : "string"
+        },
+        "koodiArvo" : {
+          "type" : "string"
+        },
+        "tyyppi" : {
+          "type" : "string",
+          "enum" : [ "VALTAKUNNALLINEN_PAKOLLINEN", "VALTAKUNNALLINEN_SYVENTAVA", "VALTAKUNNALLINEN_SOVELTAVA", "PAIKALLINEN_SYVENTAVA", "PAIKALLINEN_SOVELTAVA" ]
+        },
+        "lokalisoituKoodi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "perusteen" : {
+          "$ref" : "#/definitions/LukiokurssiPerusteDto"
+        },
+        "kuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "tavoitteet" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "keskeinenSisalto" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        },
+        "tavoitteetJaKeskeinenSisalto" : {
+          "$ref" : "#/definitions/TekstiosaDto"
+        }
+      }
+    },
     "LukiokurssiPerusteDto" : {
       "type" : "object",
       "properties" : {
@@ -7041,6 +8275,102 @@
         },
         "tavoitteetJaKeskeisetSisallot" : {
           "$ref" : "#/definitions/PerusteTekstiOsaDto"
+        }
+      }
+    },
+    "LukiokurssiSaveDto" : {
+      "type" : "object",
+      "required" : [ "laajuus", "nimi", "oppiaineId", "tyyppi" ],
+      "properties" : {
+        "oppiaineId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "tyyppi" : {
+          "type" : "string",
+          "enum" : [ "PAIKALLINEN_SYVENTAVA", "PAIKALLINEN_SOVELTAVA" ]
+        },
+        "laajuus" : {
+          "type" : "number"
+        },
+        "kuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "koodiUri" : {
+          "type" : "string"
+        },
+        "koodiArvo" : {
+          "type" : "string"
+        },
+        "lokalisoituKoodi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "tavoitteet" : {
+          "$ref" : "#/definitions/TekstiOsaDto"
+        },
+        "keskeinenSisalto" : {
+          "$ref" : "#/definitions/TekstiOsaDto"
+        },
+        "tavoitteetJaKeskeinenSisalto" : {
+          "$ref" : "#/definitions/TekstiOsaDto"
+        }
+      }
+    },
+    "LukiokurssiUpdateDto" : {
+      "type" : "object",
+      "required" : [ "laajuus", "nimi", "tyyppi" ],
+      "properties" : {
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "tyyppi" : {
+          "type" : "string",
+          "enum" : [ "VALTAKUNNALLINEN_PAKOLLINEN", "VALTAKUNNALLINEN_SYVENTAVA", "VALTAKUNNALLINEN_SOVELTAVA", "PAIKALLINEN_SYVENTAVA", "PAIKALLINEN_SOVELTAVA" ]
+        },
+        "kuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "laajuus" : {
+          "type" : "number"
+        },
+        "koodiUri" : {
+          "type" : "string"
+        },
+        "koodiArvo" : {
+          "type" : "string"
+        },
+        "lokalisoituKoodi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "tavoitteet" : {
+          "$ref" : "#/definitions/TekstiOsaDto"
+        },
+        "keskeinenSisalto" : {
+          "$ref" : "#/definitions/TekstiOsaDto"
+        },
+        "tavoitteetJaKeskeinenSisalto" : {
+          "$ref" : "#/definitions/TekstiOsaDto"
         }
       }
     },
@@ -7135,7 +8465,7 @@
         },
         "kohde" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
         },
         "luotu" : {
           "type" : "string",
@@ -7177,7 +8507,7 @@
         },
         "type" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
         },
         "meta" : {
           "type" : "object",
@@ -7360,6 +8690,79 @@
         },
         "muokkaaja" : {
           "type" : "string"
+        }
+      }
+    },
+    "OpetuksenYleisetTavoitteetOpsDto" : {
+      "type" : "object",
+      "properties" : {
+        "parent" : {
+          "$ref" : "#/definitions/OpetuksenYleisetTavoitteetDto"
+        },
+        "uuidTunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        },
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "otsikko" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "kuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "muokkaaja" : {
+          "type" : "string"
+        },
+        "perusteen" : {
+          "$ref" : "#/definitions/OpetuksenYleisetTavoitteetDto"
+        }
+      }
+    },
+    "OpetuksenYleisetTavoitteetPerusteOpsDto" : {
+      "type" : "object",
+      "properties" : {
+        "perusteen" : {
+          "$ref" : "#/definitions/OpetuksenYleisetTavoitteetDto"
+        },
+        "paikallinen" : {
+          "$ref" : "#/definitions/OpetuksenYleisetTavoitteetOpsDto"
+        },
+        "kommentti" : {
+          "type" : "string"
+        },
+        "tunniste" : {
+          "type" : "string",
+          "format" : "uuid"
+        }
+      }
+    },
+    "OpetuksenYleisetTavoitteetUpdateDto" : {
+      "type" : "object",
+      "properties" : {
+        "otsikko" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "kuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         }
       }
     },
@@ -8341,11 +9744,31 @@
       "properties" : {
         "kohde" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
         },
         "kohdeId" : {
           "type" : "integer",
           "format" : "int64"
+        }
+      }
+    },
+    "OppaineKurssiTreeStructureDto" : {
+      "type" : "object",
+      "properties" : {
+        "kommentti" : {
+          "type" : "string"
+        },
+        "kurssit" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/LukiokurssiOppaineMuokkausDto"
+          }
+        },
+        "oppiaineet" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OppiaineJarjestysDto"
+          }
         }
       }
     },
@@ -8430,6 +9853,19 @@
         },
         "_liittyvaOppiaine" : {
           "$ref" : "#/definitions/Reference"
+        }
+      }
+    },
+    "OppiaineJarjestysDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "jarjestys" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -10006,6 +11442,21 @@
         },
         "_tekstiKappale" : {
           "$ref" : "#/definitions/Reference"
+        }
+      }
+    },
+    "TekstiOsaDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "otsikko" : {
+          "$ref" : "#/definitions/PerusteenLokalisoituTekstiDto"
+        },
+        "teksti" : {
+          "$ref" : "#/definitions/PerusteenLokalisoituTekstiDto"
         }
       }
     },

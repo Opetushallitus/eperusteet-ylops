@@ -51,7 +51,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  */
 @RestController
 @RequestMapping("/opetussuunnitelmat/lukio/{opsId}")
-@Api(value = "Lukio")
+@Api(value = "LukioOpetussuunnitelmat")
 public class LukioOpetussuunnitelmatController {
 
     @Autowired
@@ -65,8 +65,8 @@ public class LukioOpetussuunnitelmatController {
 
     @ResponseBody
     @RequestMapping(value = "/oppiaine/{oppiaineId}", method = RequestMethod.GET)
-    public LukioOppiaineTiedotDto getOppiaine(@PathVariable("opsId") Long opsId,
-                                              @PathVariable("oppiaineId") Long oppiaineId) {
+    public LukioOppiaineTiedotDto getLukioOppiaine(@PathVariable("opsId") Long opsId,
+                                                   @PathVariable("oppiaineId") Long oppiaineId) {
         return lukioOpetussuunnitelmaService.getOppiaineTiedot(opsId, oppiaineId);
     }
 
@@ -130,23 +130,23 @@ public class LukioOpetussuunnitelmatController {
 
     @ResponseBody
     @RequestMapping(value = "/oppiaine", method = RequestMethod.POST)
-    public LongIdResultDto saveOppiaine(@PathVariable("opsId") Long opsId,
-                                        @RequestBody LukioOppiaineSaveDto oppiaine) {
+    public LongIdResultDto saveLukioOppiaine(@PathVariable("opsId") Long opsId,
+                                             @RequestBody LukioOppiaineSaveDto oppiaine) {
         return new LongIdResultDto(lukioOpetussuunnitelmaService.saveOppiaine(opsId, oppiaine));
     }
 
     @ResponseBody
     @RequestMapping(value = "/oppiaine", method = RequestMethod.PUT)
-    public void updateOppiaine(@PathVariable("opsId") Long opsId,
-                               @RequestBody LukioOppiaineSaveDto oppiaine) {
+    public void updateLukioOppiaine(@PathVariable("opsId") Long opsId,
+                                    @RequestBody LukioOppiaineSaveDto oppiaine) {
         lukioOpetussuunnitelmaService.updateOppiaine(opsId, oppiaine);
     }
 
     @ResponseBody
     @RequestMapping(value = "/oppiaine/{oppiaineId}/kielitarjonta", method = RequestMethod.POST)
-    public LongIdResultDto addOppimaara(@PathVariable("opsId") final Long opsId,
-                                        @PathVariable("oppiaineId") final Long oppiaineId,
-                                        @RequestBody LukioKopioiOppimaaraDto kt) {
+    public LongIdResultDto addLukioOppimaara(@PathVariable("opsId") final Long opsId,
+                                             @PathVariable("oppiaineId") final Long oppiaineId,
+                                             @RequestBody LukioKopioiOppimaaraDto kt) {
         return new LongIdResultDto(lukioOpetussuunnitelmaService.addOppimaara(opsId, oppiaineId, kt));
     }
 
