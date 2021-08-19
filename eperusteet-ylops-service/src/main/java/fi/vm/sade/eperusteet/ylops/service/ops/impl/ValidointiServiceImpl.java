@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
@@ -133,10 +134,12 @@ public class ValidointiServiceImpl implements ValidointiService {
                         , ImmutableMap.of("route", moduuliNavigationNode(moduuli)));
 
                 // - Valinnainen moduuli vähintään yhdessä opintojaksossa suoritettavissa kahden opintopisteen kokonaisuutena
-                validointi.virhe(ValidationCategory.MODUULI, "valinnainen-moduuli-suoritettavissa-kahden-opintopisteen-kokonaisuutena", moduuli.getId(), moduuli.getNimi(),
-                        !moduuli.isPakollinen() && !moduulinOpintojaksot.isEmpty() && moduulinOpintojaksot.stream()
-                                .noneMatch(oj -> oj.getLaajuus() == 2L)
-                        , ImmutableMap.of("route", moduuliNavigationNode(moduuli)));
+                if (!KoulutusTyyppi.AIKUISLUKIOKOULUTUS.equals(ops.getKoulutustyyppi())) {
+                    validointi.virhe(ValidationCategory.MODUULI, "valinnainen-moduuli-suoritettavissa-kahden-opintopisteen-kokonaisuutena", moduuli.getId(), moduuli.getNimi(),
+                            !moduuli.isPakollinen() && !moduulinOpintojaksot.isEmpty() && moduulinOpintojaksot.stream()
+                                    .noneMatch(oj -> oj.getLaajuus() == 2L)
+                            , ImmutableMap.of("route", moduuliNavigationNode(moduuli)));
+                }
             });
         }
 
