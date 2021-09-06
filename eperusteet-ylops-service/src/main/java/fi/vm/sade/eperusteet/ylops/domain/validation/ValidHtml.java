@@ -53,7 +53,7 @@ public @interface ValidHtml {
                 .addAttributes("table", "align", "border", "cellpadding", "cellspacing", "style", "summary")
                 .addAttributes("th", "scope", "colspan", "rowspan", "style")
                 .addAttributes("td", "colspan", "rowspan", "style", "style", "data-colwidth")
-                .addAttributes("a", "href", "target", "rel")
+                .addAttributes("a", "href", "target", "rel", "routenode")
                 .addAttributes("img", "data-uid", "alt", "style", "src", "figcaption")
                 .addAttributes("figure", "class")
                 .addAttributes("abbr", "data-viite")
