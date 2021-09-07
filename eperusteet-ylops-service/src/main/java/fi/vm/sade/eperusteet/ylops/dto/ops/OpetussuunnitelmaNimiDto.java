@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
@@ -30,5 +31,7 @@ import java.io.Serializable;
 public class OpetussuunnitelmaNimiDto implements Serializable {
     private Long id;
     private LokalisoituTekstiDto nimi;
+
+    @JsonProperty("_pohja")
     private Reference pohja;
 }

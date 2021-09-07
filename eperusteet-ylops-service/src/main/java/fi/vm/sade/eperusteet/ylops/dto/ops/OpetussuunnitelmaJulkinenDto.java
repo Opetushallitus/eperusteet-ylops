@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
@@ -34,6 +35,7 @@ import java.util.Set;
  */
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpetussuunnitelmaJulkinenDto implements Serializable {
     private Long id;
     private Set<Kieli> julkaisukielet;

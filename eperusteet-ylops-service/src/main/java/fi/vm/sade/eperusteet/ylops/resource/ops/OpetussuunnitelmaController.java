@@ -155,6 +155,13 @@ public class OpetussuunnitelmaController {
         return new ResponseEntity<>(opetussuunnitelmaService.getExportedOpetussuunnitelma(id), HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{id}/julkaisu", method = RequestMethod.GET)
+    @ResponseBody
+    @Timed
+    public ResponseEntity<OpetussuunnitelmaExportDto> getOpetussuunnitelmaJulkaistuSisalto(@PathVariable("id") final Long id) {
+        return new ResponseEntity<>(opetussuunnitelmaService.getExportedOpetussuunnitelma(id), HttpStatus.OK);
+    }
+
     @RequestMapping(value = "/{id}/opetussuunnitelmat", method = RequestMethod.GET)
     @ResponseBody
     @Timed

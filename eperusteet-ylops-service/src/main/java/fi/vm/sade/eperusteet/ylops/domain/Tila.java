@@ -81,6 +81,7 @@ public enum Tila {
         return EnumSet.noneOf(Tila.class);
     }
 
+    @JsonCreator
     public static Tila of(String tila) {
         for (Tila s : values()) {
             if (s.tila.equalsIgnoreCase(tila)) {

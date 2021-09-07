@@ -36,6 +36,7 @@ public enum Tyyppi {
         return tyyppi;
     }
 
+    @JsonCreator
     public static Tyyppi of(String tila) {
         for (Tyyppi s : values()) {
             if (s.tyyppi.equalsIgnoreCase(tila)) {

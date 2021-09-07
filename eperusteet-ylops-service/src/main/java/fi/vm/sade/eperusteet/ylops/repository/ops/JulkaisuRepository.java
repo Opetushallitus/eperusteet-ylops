@@ -3,6 +3,8 @@ package fi.vm.sade.eperusteet.ylops.repository.ops;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaisuKevyt;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,4 +24,23 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
     List<OpetussuunnitelmaJulkaisuKevyt> findKevytdataByOpetussuunnitelma(@Param("ops") Opetussuunnitelma ops);
 
     OpetussuunnitelmanJulkaisu findByOpetussuunnitelmaAndRevision(Opetussuunnitelma opetussuunnitelma, int revision);
+
+    String julkaisutQuery = "FROM ( " +
+            "   SELECT * " +
+            "   FROM julkaistu_opetussuunnitelma_data_view data" +
+            "   WHERE 1 = 1 " +
+            "   AND (:nimi LIKE '' OR LOWER(nimi->>:kieli) LIKE LOWER(CONCAT('%',:nimi,'%'))) " +
+            "   AND (:perusteenDiaarinumero = '' OR peruste->>'diaarinumero' = :perusteenDiaarinumero) " +
+            "   order by nimi->>:kieli asc, ?#{#pageable} " +
+            ") t";
+
+    @Query(nativeQuery = true,
+            value = "SELECT CAST(row_to_json(t) as text) " + julkaisutQuery,
+            countQuery = "SELECT count(*) " + julkaisutQuery
+    )
+    Page<String> findAllJulkisetJulkaisut(
+            @Param("nimi") String nimi,
+            @Param("kieli") String kieli,
+            @Param("perusteenDiaarinumero") String perusteenDiaarinumero,
+            Pageable pageable);
 }

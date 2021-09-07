@@ -14,5 +14,5 @@ import lombok.Setter;
 public class OpetussuunnitelmaExportDto extends OpetussuunnitelmaBaseDto {
     private PerusteInfoDto peruste;
     private OpetussuunnitelmaNimiDto pohja;
-    private TekstiKappaleViiteDto.Puu tekstit;
+    private TekstiKappaleViiteExportDto.Puu tekstit;
 }

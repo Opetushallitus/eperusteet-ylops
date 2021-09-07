@@ -64,6 +64,9 @@ public interface OpetussuunnitelmaService {
     List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query);
 
     @PreAuthorize("permitAll()")
+    Page<OpetussuunnitelmaJulkinenDto> getAllJulkaistutOpetussuunnitelmat(OpetussuunnitelmaJulkaistuQuery query);
+
+    @PreAuthorize("permitAll()")
     OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(Long opsId);
 
     @PreAuthorize("isAuthenticated()")
@@ -189,6 +192,9 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaExportDto getExportedOpetussuunnitelma(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     TekstiKappaleDto getPerusteTekstikappale(Long opsId, Long tekstikappaleId);

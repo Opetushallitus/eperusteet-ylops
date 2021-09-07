@@ -32,6 +32,7 @@ import lombok.Setter;
 public class TekstiKappaleViiteDto {
     private Long id;
 
+    @JsonProperty("_original")
     private Reference original;
 
     @JsonProperty("_tekstiKappale")
