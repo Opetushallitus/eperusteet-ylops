@@ -62,7 +62,7 @@ script:
   - cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
   - cp -vr src/main/resources/tomcat $DOCKER_BUILD_DIR/config/
 
-  - export BASE_IMAGE="baseimage-war-openjdk8:master"
+  - export BASE_IMAGE="baseimage-war-tomcat8-openjdk8:master"
   - ./ci-tools/common/pull-image.sh
   - ./ci-tools/build/build-war.sh ${ARTIFACT_NAME}
 

@@ -50,7 +50,7 @@
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 
     <bean id="dataSource"
-          class="org.apache.tomcat.dbcp.dbcp.BasicDataSource" destroy-method="close">
+          class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
         <property name="driverClassName" value="org.postgresql.Driver"/>
         <property name="username" value="${ittestdb.user}"/>
         <property name="password" value="${ittestdb.password}"/>
