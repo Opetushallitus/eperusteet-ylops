@@ -9,7 +9,7 @@ create materialized view julkaistu_opetussuunnitelma_data_view as
       	opsdata->'nimi' as nimi,
       	opsdata->'peruste' as peruste,
       	opsdata->>'koulutustyyppi' as koulutustyyppi,
-      	opsdata->'organisaatio' as organisaatiot
+      	opsdata->'organisaatiot' as organisaatiot
    	FROM opetussuunnitelman_julkaisu j
    	INNER JOIN opetussuunnitelman_julkaisu_data d on d.id = j.data_id
 	INNER JOIN opetussuunnitelma o on o.id = j.ops_id

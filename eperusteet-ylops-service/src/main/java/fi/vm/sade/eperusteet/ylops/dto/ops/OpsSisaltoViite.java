@@ -12,6 +12,8 @@ public class OpsSisaltoViite {
     String koodi;
 
     @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class Opintojakso extends OpsSisaltoViite {
         Long opintojaksoId;
 

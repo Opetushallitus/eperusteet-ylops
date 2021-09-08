@@ -92,6 +92,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
@@ -117,6 +118,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
+import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
 import fi.vm.sade.eperusteet.ylops.resource.config.MappingModule;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -317,13 +319,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Autowired
     private CacheManager cacheManager;
 
-    private ObjectMapper objectMapper;
-
-    @PostConstruct
-    protected void init() {
-        objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_IGNORED_PROPERTIES, false);
-    }
+    private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
     private List<Opetussuunnitelma> findJulkaistutByQuery(OpetussuunnitelmaQuery pquery) {
         CriteriaQuery<Opetussuunnitelma> query = getJulkaistutQuery(pquery);
@@ -1981,13 +1977,19 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU)) {
                 Validointi validointi = validoiOpetussuunnitelma(ops);
                 validointi.tuomitse();
-                for (Kieli kieli : ops.getJulkaisukielet()) {
-                    try {
-                        dokumenttiService.autogenerate(ops.getId(), kieli);
-                    } catch (DokumenttiException e) {
-                        logger.error(e.getLocalizedMessage(), e.getCause());
-                    }
-                }
+                addJulkaisu(id,
+                        UusiJulkaisuDto
+                                .builder()
+                                .julkaisutiedote(LokalisoituTekstiDto.of("Julkaisu"))
+                                .build());
+
+//                for (Kieli kieli : ops.getJulkaisukielet()) {
+//                    try {
+//                        dokumenttiService.autogenerate(ops.getId(), kieli);
+//                    } catch (DokumenttiException e) {
+//                        logger.error(e.getLocalizedMessage(), e.getCause());
+//                    }
+//                }
             } else if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.VALMIS) {
                 Validointi validointi = validoiPohja(ops);
                 validointi.tuomitse();
@@ -2135,7 +2137,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (julkaisu != null) {
             ObjectNode data = julkaisu.getData().getOpsData();
             try {
-                OpetussuunnitelmaExportDto exportDto = objectMapper.treeToValue(data, OpetussuunnitelmaExportDto.class);
+                OpetussuunnitelmaExportDto exportDto = objectMapper.treeToValue(data, dispatcher.get(opsId, OpsExport.class).getExportClass());
                 exportDto.setTila(Tila.JULKAISTU);
                 return exportDto;
             } catch (JsonProcessingException e) {

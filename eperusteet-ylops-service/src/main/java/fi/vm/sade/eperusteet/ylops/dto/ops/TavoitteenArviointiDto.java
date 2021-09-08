@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
@@ -25,6 +26,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class TavoitteenArviointiDto implements ReferenceableDto {
     private Long id;
     private LokalisoituTekstiDto arvioinninKohde;

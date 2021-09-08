@@ -192,19 +192,6 @@ public class DtoMapperConfig {
                 })
                 .register();
 
-        factory.classMap(Opetussuunnitelma.class, OpetussuunnitelmaKevytDto.class)
-                .byDefault()
-                .customize(new CustomMapper<Opetussuunnitelma, OpetussuunnitelmaKevytDto>() {
-                    @Override
-                    public void mapAtoB(Opetussuunnitelma opetussuunnitelma, OpetussuunnitelmaKevytDto opetussuunnitelmaInfoDto, MappingContext context) {
-                        super.mapAtoB(opetussuunnitelma, opetussuunnitelmaInfoDto, context);
-                        if (!Tyyppi.POHJA.equals(opetussuunnitelma.getTyyppi()) && !Tila.POISTETTU.equals(opetussuunnitelma.getTila()) && CollectionUtils.isNotEmpty(opetussuunnitelma.getJulkaisut())) {
-                            opetussuunnitelmaInfoDto.setTila(Tila.JULKAISTU);
-                        }
-                    }
-                })
-                .register();
-
         return new DtoMapperImpl(factory.getMapperFacade());
     }
 

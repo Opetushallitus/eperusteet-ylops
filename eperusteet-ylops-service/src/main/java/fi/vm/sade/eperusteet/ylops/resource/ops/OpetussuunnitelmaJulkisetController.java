@@ -60,7 +60,7 @@ public class OpetussuunnitelmaJulkisetController {
         return opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query);
     }
 
-    @RequestMapping(value = "/{id}/julkaistu", method = RequestMethod.GET)
+    @RequestMapping(value = "/{id}/julkaisu", method = RequestMethod.GET)
     @ResponseBody
     @Timed
     public ResponseEntity<OpetussuunnitelmaExportDto> getOpetussuunnitelmaJulkaistu(@PathVariable("id") final Long id) {

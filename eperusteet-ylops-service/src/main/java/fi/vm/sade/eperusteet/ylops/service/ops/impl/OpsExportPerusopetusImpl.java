@@ -57,7 +57,14 @@ public class OpsExportPerusopetusImpl implements OpsExport {
     }
 
     @Override
+    public Class getExportClass() {
+        return OpetussuunnitelmaLaajaDto.class;
+    }
+
+    @Override
     public Set<KoulutustyyppiToteutus> getTyypit() {
         return Sets.newHashSet(KoulutustyyppiToteutus.PERUSOPETUS);
     }
+
+
 }

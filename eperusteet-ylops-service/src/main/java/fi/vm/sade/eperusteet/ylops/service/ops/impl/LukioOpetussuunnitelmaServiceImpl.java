@@ -41,6 +41,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -205,7 +206,6 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
         return dto;
     }
-
 
     private <Kt extends LukiokurssiListausOpsDto,
             T extends LukioOppiaineRakenneDto<T, Kt>> void map(Stream<Oppiaine> from, Function<Long, Boolean> isOma,
