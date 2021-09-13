@@ -158,21 +158,6 @@ public interface OpetussuunnitelmaService {
     PerusteInfoDto getPerusteBase(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(@P("opsId") Long opsId);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(@P("opsId") Long opsId);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'TILANVAIHTO')")
-    OpetussuunnitelmanJulkaisuDto addJulkaisu(@P("opsId") Long opsId, UusiJulkaisuDto julkaisuDto);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'TILANVAIHTO')")
-    OpetussuunnitelmanJulkaisuDto aktivoiJulkaisu(@P("opsId") Long opsId, int revision);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    JsonNode queryOpetussuunnitelmaJulkaisu(@P("opsId") Long opsId, String query);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     <T extends NavigationBuilder> NavigationNodeDto buildNavigationWithDate(@P("opsId") Long opsId, Date pvm, String kieli, Class<T> clazz);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")

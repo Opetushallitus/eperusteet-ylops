@@ -149,6 +149,7 @@ import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
 import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
+import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
@@ -314,10 +315,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private EntityManager em;
 
     @Autowired
-    private OpetussuunnitelmaService self;
+    private CacheManager cacheManager;
 
     @Autowired
-    private CacheManager cacheManager;
+    private JulkaisuService julkaisuService;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -599,36 +600,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(Long opsId) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        List<OpetussuunnitelmanJulkaisu> julkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
-        return taytaKayttajaTiedot(mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuDto.class));
-    }
-
-    @Override
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(Long opsId) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        List<OpetussuunnitelmaJulkaisuKevyt> julkaisut = julkaisuRepository.findKevytdataByOpetussuunnitelma(ops);
-        return mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuDto.class);
-    }
-
-    @Override
     public PerusteInfoDto getPerusteBase(Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         PerusteDto perusteDto = eperusteetService.getPerusteById(ops.getCachedPeruste().getPerusteId());
         return mapper.map(perusteDto, PerusteInfoDto.class);
-    }
-
-    @Override
-    public JsonNode queryOpetussuunnitelmaJulkaisu(Long opsId, String query) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        OpetussuunnitelmanJulkaisu julkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(ops);
-        assertExists(julkaisu, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        JsonNode data = julkaisuRepositoryCustom.querySisalto(julkaisu.getId(), query);
-        return data;
     }
 
     @Override
@@ -653,104 +628,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @CacheEvict("ops-navigation")
     public void publicNavigationEvict(Long opsId, String kieli) {
         // this method doesn't do anything and is only here for evicting the cache
-    }
-
-    @Override
-    public OpetussuunnitelmanJulkaisuDto addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-
-        if (!Tyyppi.OPS.equals(ops.getTyyppi())) {
-            throw new BusinessRuleViolationException("pohjaa-ei-voi-julkaista");
-        }
-
-        if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
-            Lops2019ValidointiDto validointi = validointiService.getValidointi(opsId);
-            if (!validointi.isValid()) {
-                throw new BusinessRuleViolationException("julkaisu-ei-mahdollinen-keskeneraiselle");
-            }
-        }
-
-        OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
-        julkaisu.setOpetussuunnitelma(ops);
-        julkaisu.setTiedote(mapper.map(julkaisuDto.getJulkaisutiedote(), LokalisoituTeksti.class));
-        OpetussuunnitelmaExportDto opsData = getExportedOpetussuunnitelma(opsId);
-
-        try {
-            ObjectNode opsDataJson = (ObjectNode) jsonMapper.toJson(opsData);
-            List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
-            if (!vanhatJulkaisut.isEmpty()) {
-                int lastHash = vanhatJulkaisut.get(vanhatJulkaisut.size() - 1).getData().getHash();
-                if (lastHash == opsDataJson.hashCode()) {
-                    throw new BusinessRuleViolationException("opetussuunnitelma-ei-muuttunut-viime-julkaisun-jalkeen");
-                }
-            }
-
-            Set<DokumenttiDto> dokumentit = ops.getJulkaisukielet().stream().map(kieli -> {
-                DokumenttiDto dokumenttiDto = dokumenttiService.getDto(opsId, kieli);
-                try {
-                    dokumenttiService.setStarted(dokumenttiDto);
-                    dokumenttiService.generateWithDto(dokumenttiDto);
-                } catch (DokumenttiException e) {
-                    logger.error(e.getLocalizedMessage(), e.getCause());
-                }
-                return dokumenttiDto;
-            }).collect(toSet());
-
-            JulkaistuOpetussuunnitelmaData data = new JulkaistuOpetussuunnitelmaData(opsDataJson);
-            data = julkaistuOpetussuunnitelmaDataRepository.save(data);
-            julkaisu.setDokumentit(dokumentit.stream().map(DokumenttiDto::getId).collect(toSet()));
-            julkaisu.setData(data);
-            julkaisu.setRevision(vanhatJulkaisut.size() + 1);
-            julkaisu = julkaisuRepository.save(julkaisu);
-
-            muokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.JULKAISU);
-            refreshOpetussuunnitelmaNavigation(opsId);
-
-            return taytaKayttajaTiedot(mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class));
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new BusinessRuleViolationException("julkaisun-tallennus-epaonnistui");
-        }
-    }
-
-    private void refreshOpetussuunnitelmaNavigation(Long opsId) {
-        Stream.of(Kieli.FI, Kieli.SV, Kieli.EN).forEach(kieli -> {
-            self.publicNavigationEvict(opsId, kieli.toString());
-            self.buildNavigationPublic(opsId, kieli.toString());
-        });
-    }
-
-    @Override
-    public OpetussuunnitelmanJulkaisuDto aktivoiJulkaisu(Long opsId, int revision) {
-        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
-        OpetussuunnitelmanJulkaisu vanhaJulkaisu = julkaisuRepository.findByOpetussuunnitelmaAndRevision(opetussuunnitelma, revision);
-        OpetussuunnitelmanJulkaisu viimeisinJulkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(opetussuunnitelma);
-
-        OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
-        julkaisu.setRevision(viimeisinJulkaisu != null ? viimeisinJulkaisu.getRevision() + 1 : 1);
-        julkaisu.setTiedote(vanhaJulkaisu.getTiedote());
-        julkaisu.setDokumentit(Sets.newHashSet(vanhaJulkaisu.getDokumentit()));
-        julkaisu.setOpetussuunnitelma(opetussuunnitelma);
-        julkaisu.setData(vanhaJulkaisu.getData());
-        julkaisu = julkaisuRepository.save(julkaisu);
-
-        muokkaustietoService.addOpsMuokkausTieto(opsId, opetussuunnitelma, MuokkausTapahtuma.JULKAISU);
-        refreshOpetussuunnitelmaNavigation(opsId);
-
-        return taytaKayttajaTiedot(mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class));
-    }
-
-    private List<OpetussuunnitelmanJulkaisuDto> taytaKayttajaTiedot(List<OpetussuunnitelmanJulkaisuDto> julkaisut) {
-        Map<String, KayttajanTietoDto> kayttajatiedot = kayttajanTietoService
-                .haeKayttajatiedot(julkaisut.stream().map(OpetussuunnitelmanJulkaisuDto::getLuoja).collect(Collectors.toList()))
-                .stream().collect(Collectors.toMap(kayttajanTieto -> kayttajanTieto.getOidHenkilo(), kayttajanTieto -> kayttajanTieto));
-        julkaisut.forEach(julkaisu -> julkaisu.setKayttajanTieto(kayttajatiedot.get(julkaisu.getLuoja())));
-        return julkaisut;
-    }
-
-    private OpetussuunnitelmanJulkaisuDto taytaKayttajaTiedot(OpetussuunnitelmanJulkaisuDto julkaisu) {
-        return taytaKayttajaTiedot(Arrays.asList(julkaisu)).get(0);
     }
 
     @Override
@@ -1977,19 +1854,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU)) {
                 Validointi validointi = validoiOpetussuunnitelma(ops);
                 validointi.tuomitse();
-                addJulkaisu(id,
+                julkaisuService.addJulkaisu(id,
                         UusiJulkaisuDto
                                 .builder()
                                 .julkaisutiedote(LokalisoituTekstiDto.of("Julkaisu"))
                                 .build());
-
-//                for (Kieli kieli : ops.getJulkaisukielet()) {
-//                    try {
-//                        dokumenttiService.autogenerate(ops.getId(), kieli);
-//                    } catch (DokumenttiException e) {
-//                        logger.error(e.getLocalizedMessage(), e.getCause());
-//                    }
-//                }
             } else if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.VALMIS) {
                 Validointi validointi = validoiPohja(ops);
                 validointi.tuomitse();
