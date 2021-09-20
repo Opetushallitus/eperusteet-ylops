@@ -154,4 +154,19 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     Set<Opetussuunnitelma> findByVuosiluokkakokonaisuusId(long id);
 
     Opetussuunnitelma findByLops2019OpintojaksotIdIn(List<Long> ids);
+
+    @Query(value = "SELECT o " +
+            "FROM Opetussuunnitelma o " +
+            "WHERE o.tyyppi = :tyyppi " +
+            "AND tila != 'POISTETTU' " +
+            "AND  o.koulutustyyppi IN (:koulutustyyppi) " +
+            "AND (o.julkaisut IS NOT EMPTY OR o.tila = 'JULKAISTU')")
+    List<Opetussuunnitelma> findJulkaistutByTyyppi(@Param("tyyppi") Tyyppi tyyppi, @Param("koulutustyyppi") Set<KoulutusTyyppi> koulutusTyyppi);
+
+    @Query(value = "SELECT o " +
+            "FROM Opetussuunnitelma o " +
+            "WHERE o.tyyppi = :tyyppi " +
+            "AND tila != 'POISTETTU' " +
+            "AND (o.julkaisut IS NOT EMPTY OR o.tila = 'JULKAISTU')")
+    List<Opetussuunnitelma> findJulkaistutByTyyppi(@Param("tyyppi") Tyyppi tyyppi);
 }

@@ -15,6 +15,9 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+
 /**
  * @author mikkom
  */
@@ -45,5 +48,15 @@ public enum OppiaineTyyppi {
     @Override
     public String toString() {
         return tyyppi;
+    }
+
+    @JsonCreator
+    public static OppiaineTyyppi of(String tyyppi) {
+        for (OppiaineTyyppi s : values()) {
+            if (s.tyyppi.equalsIgnoreCase(tyyppi)) {
+                return s;
+            }
+        }
+        throw new IllegalArgumentException(tyyppi + " ei ole kelvollinen OppiaineTyyppi");
     }
 }

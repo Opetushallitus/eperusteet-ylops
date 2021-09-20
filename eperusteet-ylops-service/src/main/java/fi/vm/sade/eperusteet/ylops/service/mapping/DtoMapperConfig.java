@@ -27,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale_;
+import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineRakenneListausDto;
@@ -185,19 +186,6 @@ public class DtoMapperConfig {
                         super.mapAtoB(opetussuunnitelma, opetussuunnitelmaInfoDto, context);
                         if (!Tyyppi.POHJA.equals(opetussuunnitelma.getTyyppi()) && !Tila.POISTETTU.equals(opetussuunnitelma.getTila()) && CollectionUtils.isNotEmpty(opetussuunnitelma.getJulkaisut())) {
                             opetussuunnitelmaInfoDto.setJulkaistu(opetussuunnitelma.getJulkaisut().stream().max(Comparator.comparing(julkaisu -> julkaisu.getLuotu())).get().getLuotu());
-                            opetussuunnitelmaInfoDto.setTila(Tila.JULKAISTU);
-                        }
-                    }
-                })
-                .register();
-
-        factory.classMap(Opetussuunnitelma.class, OpetussuunnitelmaKevytDto.class)
-                .byDefault()
-                .customize(new CustomMapper<Opetussuunnitelma, OpetussuunnitelmaKevytDto>() {
-                    @Override
-                    public void mapAtoB(Opetussuunnitelma opetussuunnitelma, OpetussuunnitelmaKevytDto opetussuunnitelmaInfoDto, MappingContext context) {
-                        super.mapAtoB(opetussuunnitelma, opetussuunnitelmaInfoDto, context);
-                        if (!Tyyppi.POHJA.equals(opetussuunnitelma.getTyyppi()) && !Tila.POISTETTU.equals(opetussuunnitelma.getTila()) && CollectionUtils.isNotEmpty(opetussuunnitelma.getJulkaisut())) {
                             opetussuunnitelmaInfoDto.setTila(Tila.JULKAISTU);
                         }
                     }

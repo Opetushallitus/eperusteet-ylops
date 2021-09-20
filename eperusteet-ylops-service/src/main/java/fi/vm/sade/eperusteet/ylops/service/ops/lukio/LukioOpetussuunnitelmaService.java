@@ -17,6 +17,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
+import java.util.List;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 

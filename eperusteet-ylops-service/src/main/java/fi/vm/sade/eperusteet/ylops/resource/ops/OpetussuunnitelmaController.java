@@ -41,6 +41,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.Permission;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
+import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -77,6 +78,9 @@ public class OpetussuunnitelmaController {
 
     @Autowired
     private PermissionManager permissionManager;
+
+    @Autowired
+    private JulkaisuService julkaisuService;
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
@@ -144,7 +148,7 @@ public class OpetussuunnitelmaController {
     public ResponseEntity<JsonNode> getOpetussuunnitelmaSisalto(
             @PathVariable("id") final Long id,
             @RequestParam String query) {
-        JsonNode result = opetussuunnitelmaService.queryOpetussuunnitelmaJulkaisu(id, query);
+        JsonNode result = julkaisuService.queryOpetussuunnitelmaJulkaisu(id, query);
         return ResponseEntity.ok(result);
     }
 
@@ -197,26 +201,26 @@ public class OpetussuunnitelmaController {
     public OpetussuunnitelmanJulkaisuDto julkaise(
             @PathVariable final Long opsId,
             @RequestBody final UusiJulkaisuDto julkaisuDto) {
-        return opetussuunnitelmaService.addJulkaisu(opsId, julkaisuDto);
+        return julkaisuService.addJulkaisu(opsId, julkaisuDto);
     }
 
     @RequestMapping(value = "/{opsId}/aktivoi/{revision}", method = RequestMethod.POST)
     public OpetussuunnitelmanJulkaisuDto aktivoiJulkaisu(
             @PathVariable final Long opsId,
             @PathVariable final int revision) {
-        return opetussuunnitelmaService.aktivoiJulkaisu(opsId, revision);
+        return julkaisuService.aktivoiJulkaisu(opsId, revision);
     }
 
     @RequestMapping(value = "/{opsId}/julkaisut", method = RequestMethod.GET)
     public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(
             @PathVariable final Long opsId) {
-        return opetussuunnitelmaService.getJulkaisut(opsId);
+        return julkaisuService.getJulkaisut(opsId);
     }
 
     @RequestMapping(value = "/{opsId}/julkaisut/kevyt", method = RequestMethod.GET)
     public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(
             @PathVariable final Long opsId) {
-        return opetussuunnitelmaService.getJulkaisutKevyt(opsId);
+        return julkaisuService.getJulkaisutKevyt(opsId);
     }
 
     @RequestMapping(method = RequestMethod.POST)

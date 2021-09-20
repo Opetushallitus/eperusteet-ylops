@@ -73,6 +73,7 @@ public class EperusteetLocalService implements EperusteetService {
         perusteet.add(openFakeData("/fakedata/varhaiskasvatus.json"));
         perusteet.add(openFakeData("/fakedata/peruste.json"));
         perusteet.add(openFakeData("/fakedata/lops.json"));
+        perusteet.add(openFakeData("/fakedata/lops2019.json"));
         perusteet.add(openFakeData("/fakedata/peruste-arvioinninkohteet.json"));
         perusteet.add(openFakeData("/fakedata/peruste-perusopetus.json"));
         perusteet.add(openFakeData("/fakedata/peruste-tpo.json"));

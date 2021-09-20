@@ -1168,6 +1168,50 @@
         }
       }
     },
+    "/opetussuunnitelmat/julkiset/julkaisut" : {
+      "get" : {
+        "tags" : [ "Opetussuunnitelmat julkiset" ],
+        "operationId" : "getAllJulkaistutOpetussuunnitelmat",
+        "parameters" : [ {
+          "name" : "nimi",
+          "in" : "query",
+          "description" : "nimi",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "kieli",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "perusteenDiaarinumero",
+          "in" : "query",
+          "description" : "perusteenDiaarinumero",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "sivu",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "sivukoko",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageOpetussuunnitelmaJulkinenDto"
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/julkiset/{id}" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat julkiset" ],
@@ -1184,6 +1228,27 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/OpetussuunnitelmaJulkinenDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/julkiset/{id}/julkaisu" : {
+      "get" : {
+        "tags" : [ "Opetussuunnitelmat julkiset" ],
+        "operationId" : "getOpetussuunnitelmaJulkaistu",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OpetussuunnitelmaExportDto"
             }
           }
         }
@@ -8381,9 +8446,6 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "original" : {
-          "$ref" : "#/definitions/Reference"
-        },
         "tekstiKappale" : {
           "$ref" : "#/definitions/TekstiKappaleDto"
         },
@@ -8418,6 +8480,9 @@
           "items" : {
             "$ref" : "#/definitions/Reference"
           }
+        },
+        "_original" : {
+          "$ref" : "#/definitions/Reference"
         },
         "_tekstiKappale" : {
           "$ref" : "#/definitions/Reference"
@@ -9634,7 +9699,7 @@
             "type" : "string"
           }
         },
-        "pohja" : {
+        "_pohja" : {
           "$ref" : "#/definitions/Reference"
         }
       }
@@ -10329,15 +10394,15 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "first" : {
+          "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
         },
-        "first" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -10369,15 +10434,55 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "first" : {
+          "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        }
+      }
+    },
+    "PageOpetussuunnitelmaJulkinenDto" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "size" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "content" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OpetussuunnitelmaJulkinenDto"
+          }
+        },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "first" : {
           "type" : "boolean"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -11191,9 +11296,6 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "original" : {
-          "$ref" : "#/definitions/Reference"
-        },
         "tekstiKappale" : {
           "$ref" : "#/definitions/TekstiKappaleDto"
         },
@@ -11228,6 +11330,9 @@
           "items" : {
             "$ref" : "#/definitions/Puu"
           }
+        },
+        "_original" : {
+          "$ref" : "#/definitions/Reference"
         },
         "_tekstiKappale" : {
           "$ref" : "#/definitions/Reference"
@@ -11408,6 +11513,47 @@
         },
         "perusteenOsa" : {
           "$ref" : "#/definitions/TekstiKappaleDto"
+        }
+      }
+    },
+    "TekstiKappaleViiteExportDto" : {
+      "type" : "object",
+      "properties" : {
+        "original" : {
+          "$ref" : "#/definitions/TekstiKappaleViiteExportDto"
+        },
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "tekstiKappale" : {
+          "$ref" : "#/definitions/TekstiKappaleDto"
+        },
+        "omistussuhde" : {
+          "type" : "string",
+          "enum" : [ "OMA", "LAINATTU" ]
+        },
+        "pakollinen" : {
+          "type" : "boolean"
+        },
+        "valmis" : {
+          "type" : "boolean"
+        },
+        "perusteTekstikappaleId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "naytaPerusteenTeksti" : {
+          "type" : "boolean"
+        },
+        "naytaPohjanTeksti" : {
+          "type" : "boolean"
+        },
+        "piilotettu" : {
+          "type" : "boolean"
+        },
+        "liite" : {
+          "type" : "boolean"
         }
       }
     },
