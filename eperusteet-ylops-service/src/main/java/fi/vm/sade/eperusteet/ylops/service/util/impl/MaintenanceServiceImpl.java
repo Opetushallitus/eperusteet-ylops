@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -57,6 +58,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     private JsonMapper jsonMapper;
 
     @Override
+    @Async
     @Transactional(propagation = Propagation.NEVER)
     public void teeJulkaisut(boolean julkaiseKaikki, Set<KoulutusTyyppi> koulutustyypit) {
         List<Opetussuunnitelma> opetussuunnitelmat;
@@ -80,9 +82,10 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 log.error(ex.getLocalizedMessage(), ex);
             }
         }
+
+        log.info("julkaisut tehty");
     }
 
-    @Transactional(propagation = Propagation.NEVER)
     private void teeJulkaisu(String username, Long opsId) {
         TransactionTemplate template = new TransactionTemplate(ptm);
         template.execute(status -> {
