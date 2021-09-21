@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -53,6 +54,7 @@ public class LukioPerusteOppiaineDto implements PerusteenOsa {
         return Stream.concat(oppimaarat.stream(), kurssit.stream());
     }
 
+    @JsonIgnore
     public Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> getKurssiTyyppiKuvaukset() {
         Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> map = new HashMap<>();
         map.put(LukiokurssiTyyppi.VALTAKUNNALLINEN_PAKOLLINEN, Optional.ofNullable(pakollinenKurssiKuvaus));
