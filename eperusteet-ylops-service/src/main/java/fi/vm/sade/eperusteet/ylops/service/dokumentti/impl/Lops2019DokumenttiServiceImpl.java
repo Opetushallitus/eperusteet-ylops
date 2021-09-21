@@ -119,7 +119,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
                 .collect(Collectors.toList());
 
         Lops2019Utils.sortOppiaineet(
-                oppiaineJarjestykset,
+                new HashSet<>(mapper.mapAsList(oppiaineJarjestykset, Lops2019OppiaineJarjestysDto.class)),
                 perusteOppiaineet,
                 paikallisetOppiaineet,
                 oa -> addOppiaine(docBase, (Lops2019OppiaineKaikkiDto) oa, opintojaksotMap.get(oa.getKoodi().getUri()), opintojaksotMap, oppiaineJarjestykset, moduulit),
@@ -336,7 +336,7 @@ public class Lops2019DokumenttiServiceImpl implements Lops2019DokumenttiService 
         docBase.getGenerator().increaseDepth();
 
         Lops2019Utils.sortOppiaineet(
-                oppiaineJarjestykset,
+                new HashSet<>(mapper.mapAsList(oppiaineJarjestykset, Lops2019OppiaineJarjestysDto.class)),
                 oa.getOppimaarat().stream().filter(om -> om.getKoodi() != null && opintojaksotMap.containsKey(om.getKoodi().getUri())).collect(Collectors.toList()),
                 paikallisetOppimaarat.stream().filter(poa -> opintojaksotMap.get(poa.getKoodi()) != null).collect(Collectors.toList()),
                 om -> {

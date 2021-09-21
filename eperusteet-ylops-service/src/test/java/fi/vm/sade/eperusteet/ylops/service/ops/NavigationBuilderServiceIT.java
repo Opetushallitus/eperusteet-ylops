@@ -115,7 +115,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
             opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
         }
 
-        NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilderPublic.class).buildNavigation(ops.getId());
+        NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilderJulkinen.class).buildNavigation(ops.getId());
         assertThat(navi.getType()).isEqualTo(NavigationType.root);
         assertThat(navi.getChildren()).hasSize(6);
 
@@ -148,7 +148,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         }
 
         {
-            NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilderPublic.class).buildNavigation(ops.getId());
+            NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilderJulkinen.class).buildNavigation(ops.getId());
             assertThat(navi.getChildren()).hasSize(5);
         }
     }

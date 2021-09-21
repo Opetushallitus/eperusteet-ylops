@@ -1,10 +1,11 @@
-package fi.vm.sade.eperusteet.ylops.service.ops.impl;
+package fi.vm.sade.eperusteet.ylops.service.ops.impl.navigationjulkinen;
 
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineKevytDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
-import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
+import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderJulkinen;
+import fi.vm.sade.eperusteet.ylops.service.ops.impl.navigation.NavigationBuilderLops2019Impl;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,11 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Transactional
-public class NavigationBuilderLops2019PublicImpl extends NavigationBuilderLops2019Impl implements NavigationBuilderPublic {
+public class NavigationBuilderLops2019JulkinenImpl extends NavigationBuilderLops2019Impl implements NavigationBuilderJulkinen {
 
     @Override
     protected Class<? extends NavigationBuilder> getNavigationBuilderClass() {
-        return NavigationBuilderPublic.class;
+        return NavigationBuilderJulkinen.class;
     }
 
     @Override

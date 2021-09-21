@@ -16,18 +16,16 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
-import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * @author mikkom
+ * @author jhyoty
  */
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class OpetussuunnitelmaLaajaDto extends OpetussuunnitelmaExportDto {
-    private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
-    private Set<OpsOppiaineExportDto> oppiaineet;
+public class OpsOppiaineExportDto {
+    private boolean oma;
+    private OppiaineExportDto oppiaine;
 }

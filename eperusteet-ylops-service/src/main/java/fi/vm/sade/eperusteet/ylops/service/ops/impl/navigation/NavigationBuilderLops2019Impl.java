@@ -1,9 +1,10 @@
-package fi.vm.sade.eperusteet.ylops.service.ops.impl;
+package fi.vm.sade.eperusteet.ylops.service.ops.impl.navigation;
 
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.utils.dto.peruste.lops2019.tutkinnonrakenne.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OppiaineJarjestys;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineJarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineKevytDto;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
@@ -28,6 +29,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -110,7 +112,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
         List<NavigationNodeDto> navigationOppiaineet = new ArrayList<>();
 
         Lops2019Utils.sortOppiaineet(
-                oppiaineJarjestykset,
+                new HashSet<>(mapper.mapAsList(oppiaineJarjestykset, Lops2019OppiaineJarjestysDto.class)),
                 oppiaineet,
                 paikallisetOppiaineet,
                 oa -> navigationOppiaineet.add(mapOppiaine((Lops2019OppiaineKevytDto) oa, opintojaksotMap, opsId, oppiaineJarjestykset)),
@@ -167,7 +169,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                     .meta("navigation-subtype", true);
 
             Lops2019Utils.sortOppiaineet(
-                    oppiaineJarjestykset,
+                    new HashSet<>(mapper.mapAsList(oppiaineJarjestykset, Lops2019OppiaineJarjestysDto.class)),
                     oa.getOppimaarat(),
                     paikallisetOppimaarat.stream().filter(getPaikallinenFilter(opintojaksotMap)).collect(Collectors.toList()),
                     om -> oppimaaratNode.add(mapOppiaine((Lops2019OppiaineKevytDto) om, opintojaksotMap, opsId, oppiaineJarjestykset)) != null,
