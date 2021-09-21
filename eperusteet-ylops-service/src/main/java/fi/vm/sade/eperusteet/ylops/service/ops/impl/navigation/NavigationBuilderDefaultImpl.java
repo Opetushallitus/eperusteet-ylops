@@ -1,4 +1,4 @@
-package fi.vm.sade.eperusteet.ylops.service.ops.impl;
+package fi.vm.sade.eperusteet.ylops.service.ops.impl.navigation;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;

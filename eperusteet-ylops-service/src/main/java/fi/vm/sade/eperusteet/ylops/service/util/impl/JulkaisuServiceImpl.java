@@ -175,7 +175,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     private void refreshOpetussuunnitelmaNavigation(Long opsId) {
         Stream.of(Kieli.FI, Kieli.SV, Kieli.EN).forEach(kieli -> {
             opetussuunnitelmaService.publicNavigationEvict(opsId, kieli.toString());
-            opetussuunnitelmaService.buildNavigationPublic(opsId, kieli.toString());
+            opetussuunnitelmaService.buildNavigationJulkinen(opsId, kieli.toString());
         });
     }
 

@@ -1,4 +1,4 @@
-package fi.vm.sade.eperusteet.ylops.service.ops.impl;
+package fi.vm.sade.eperusteet.ylops.service.ops.impl.navigation;
 
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.utils.dto.peruste.lops2019.tutkinnonrakenne.KoodiDto;
