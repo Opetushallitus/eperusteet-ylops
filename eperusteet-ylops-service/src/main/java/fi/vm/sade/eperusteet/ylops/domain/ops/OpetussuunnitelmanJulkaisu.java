@@ -56,7 +56,9 @@ public class OpetussuunnitelmanJulkaisu extends AbstractReferenceableEntity {
     @PrePersist
     private void prepersist() {
         luotu = new Date();
-        luoja = SecurityUtil.getAuthenticatedPrincipal().getName();
+        if (luoja == null) {
+            luoja = SecurityUtil.getAuthenticatedPrincipal().getName();
+        }
     }
 
 }
