@@ -36,5 +36,5 @@ public interface OpsOppiaineParentViewRepository extends JpaRepository<OpsOppiai
     List<OpsOppiaineParentView> findByOpetusuunnitelmaId(long opsId);
 
     @Query(value = "select v from OpsOppiaineParentView v where v.opsOppiaine.opetussuunnitelmaId = ?1 and v.tunniste = ?2")
-    OpsOppiaineParentView findFirstByTunnisteAndOpetusuunnitelmaId(long opsId, UUID tunniste);
+    List<OpsOppiaineParentView> findByTunnisteAndOpetusuunnitelmaId(long opsId, UUID tunniste);
 }
