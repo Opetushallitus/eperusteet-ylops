@@ -151,7 +151,7 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
         LukioOppiaineTiedotDto dto = new LukioOppiaineTiedotDto();
         OpsOppiaineParentView parentRelateion
-                = oppiaineParentViewRepository.findByTunnisteAndOpetusuunnitelmaId(ops.getId(),
+                = oppiaineParentViewRepository.findFirstByTunnisteAndOpetusuunnitelmaId(ops.getId(),
                 (oppiaine.getOppiaine() != null ? oppiaine.getOppiaine() : oppiaine).getTunniste());
         Oppiaine pohjanOppiaine = parentRelateion != null ? parentRelateion.getPohjanOppiaine() : null;
         mapPerustiedot(dto, oppiaine, parentRelateion != null && parentRelateion.isOma(), pohjanOppiaine);
