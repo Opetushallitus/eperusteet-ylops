@@ -98,7 +98,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
                 OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
                 julkaisu.setRevision(viimeisinJulkaisu != null ? viimeisinJulkaisu.getRevision() + 1 : 1);
                 julkaisu.setLuoja("maintenance");
-                julkaisu.setTiedote(LokalisoituTeksti.of(Kieli.FI, "Julkaisu"));
+                julkaisu.setTiedote(LokalisoituTeksti.of(Kieli.FI, "Ylläpidon suorittama julkaisu"));
                 julkaisu.setLuotu(new Date());
                 julkaisu.setOpetussuunnitelma(opetussuunnitelma);
 
