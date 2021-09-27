@@ -847,31 +847,51 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public void fetchOrganisaatioNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
-        for (OrganisaatioDto organisaatioDto : opetussuunnitelmaDto.getOrganisaatiot()) {
-            Map<String, String> tekstit = new HashMap<>();
-            List<String> tyypit = new ArrayList<>();
-            JsonNode organisaatio = organisaatioService.getOrganisaatio(organisaatioDto.getOid());
-            if (organisaatio != null) {
-                JsonNode nimiNode = organisaatio.get("nimi");
-                if (nimiNode != null) {
-                    Iterator<Map.Entry<String, JsonNode>> it = nimiNode.fields();
-                    while (it.hasNext()) {
-                        Map.Entry<String, JsonNode> field = it.next();
-                        tekstit.put(field.getKey(), field.getValue().asText());
-                    }
-                }
+        fetchOrganisaatioNimet(opetussuunnitelmaDto, false);
+    }
 
-                JsonNode tyypitNode = ofNullable(organisaatio.get("tyypit"))
-                        .orElse(organisaatio.get("organisaatiotyypit"));
-                if (tyypitNode != null) {
-                    tyypit = StreamSupport.stream(tyypitNode.spliterator(), false)
-                            .map(JsonNode::asText)
-                            .collect(Collectors.toList());
+    @Override
+    public void fetchOrganisaatioNimet(OpetussuunnitelmaBaseDto opetussuunnitelmaDto, boolean fetchParents) {
+        opetussuunnitelmaDto.setOrganisaatiot(opetussuunnitelmaDto.getOrganisaatiot().stream()
+                .map(org -> fetchOrganisaatio(org.getOid(), fetchParents))
+                .collect(toSet()));
+    }
+
+    private OrganisaatioDto fetchOrganisaatio(String oid, boolean fetchParent) {
+        Map<String, String> tekstit = new HashMap<>();
+        List<String> tyypit = new ArrayList<>();
+        JsonNode organisaatio = organisaatioService.getOrganisaatio(oid);
+        OrganisaatioDto organisaatioDto = new OrganisaatioDto();
+        organisaatioDto.setOid(oid);
+
+        if (organisaatio != null) {
+            JsonNode nimiNode = organisaatio.get("nimi");
+            if (nimiNode != null) {
+                Iterator<Map.Entry<String, JsonNode>> it = nimiNode.fields();
+                while (it.hasNext()) {
+                    Map.Entry<String, JsonNode> field = it.next();
+                    tekstit.put(field.getKey(), field.getValue().asText());
                 }
             }
-            organisaatioDto.setNimi(new LokalisoituTekstiDto(tekstit));
-            organisaatioDto.setTyypit(tyypit);
+
+            JsonNode tyypitNode = ofNullable(organisaatio.get("tyypit"))
+                    .orElse(organisaatio.get("organisaatiotyypit"));
+            if (tyypitNode != null) {
+                tyypit = StreamSupport.stream(tyypitNode.spliterator(), false)
+                        .map(JsonNode::asText)
+                        .collect(Collectors.toList());
+            }
+
+            if (fetchParent && organisaatio.get("parentOid") != null) {
+                organisaatioDto.setParent(fetchOrganisaatio(organisaatio.get("parentOid").asText(), true));
+            }
         }
+        
+        organisaatioDto.setNimi(new LokalisoituTekstiDto(tekstit));
+        organisaatioDto.setTyypit(tyypit);
+
+
+        return organisaatioDto;
     }
 
     public void kopioiPohjanSisallotOpetussuunnitelmaan(Opetussuunnitelma pohja, Opetussuunnitelma ops) {

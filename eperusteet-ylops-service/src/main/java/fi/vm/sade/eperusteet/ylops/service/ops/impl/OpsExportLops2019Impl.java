@@ -107,7 +107,7 @@ public class OpsExportLops2019Impl implements OpsExport {
         result.setOppiaineJarjestykset(new HashSet<>(mapper.mapAsList(ops.getOppiaineJarjestykset(), Lops2019OppiaineJarjestysDto.class)));
 
         opetussuunnitelmaService.fetchKuntaNimet(result);
-        opetussuunnitelmaService.fetchOrganisaatioNimet(result);
+        opetussuunnitelmaService.fetchOrganisaatioNimet(result, true);
         return result;
     }
 

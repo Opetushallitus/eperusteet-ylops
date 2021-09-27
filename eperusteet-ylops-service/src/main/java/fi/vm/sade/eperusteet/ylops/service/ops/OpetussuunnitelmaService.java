@@ -93,6 +93,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#ops.id, 'opetussuunnitelma', 'LUKU')")
     void fetchOrganisaatioNimet(@P("ops") OpetussuunnitelmaBaseDto opetussuunnitelmaDto);
 
+    @PreAuthorize("hasPermission(#ops.id, 'opetussuunnitelma', 'LUKU')")
+    void fetchOrganisaatioNimet(@P("ops") OpetussuunnitelmaBaseDto opetussuunnitelmaDto, boolean fetchParents);
+
     @PreAuthorize("hasPermission(null, 'opetussuunnitelma', 'LUONTI')")
     OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto);
 

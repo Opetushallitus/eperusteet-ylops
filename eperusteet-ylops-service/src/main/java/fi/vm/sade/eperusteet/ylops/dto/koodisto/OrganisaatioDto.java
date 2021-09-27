@@ -33,4 +33,5 @@ public class OrganisaatioDto {
     private String oid;
     private List<String> tyypit;
     private LokalisoituTekstiDto nimi;
+    private OrganisaatioDto parent;
 }
