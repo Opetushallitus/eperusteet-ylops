@@ -332,6 +332,12 @@
            eternal="false"
            timeToLiveSeconds="3600"
            overflowToDisk="false" />
+
+    <cache name="ops-julkaisu"
+           maxElementsInMemory="50"
+           eternal="false"
+           timeToLiveSeconds="28800"
+           overflowToDisk="false"/>
     
     <cache name="ops-navigation"
            maxElementsInMemory="500"

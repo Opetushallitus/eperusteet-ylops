@@ -378,8 +378,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             opetussuunnitelmat = opetussuunnitelmaRepository.findAllByTyyppiAndTilaIsJulkaistu(Tyyppi.OPS);
         }
 
-        final List<OpetussuunnitelmaJulkinenDto> dtot = mapper.mapAsList(opetussuunnitelmat,
-                OpetussuunnitelmaJulkinenDto.class);
+        final List<OpetussuunnitelmaJulkinenDto> dtot = opetussuunnitelmat.stream()
+                .filter((ops) -> !Tila.POISTETTU.equals(ops.getTila()))
+                .map(ops -> mapper.map(ops, OpetussuunnitelmaJulkinenDto.class))
+                .collect(Collectors.toList());
 
         dtot.forEach(dto -> {
             for (KoodistoDto koodistoDto : dto.getKunnat()) {
@@ -466,7 +468,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     tila.name(),
                     nimi,
                     koulutustyyppi != null ? koulutustyyppi.name() : "",
-                    Collections.singletonList("empty"),
+                    null,
                     pageable);
         } else {
             Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
@@ -599,6 +601,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         assertExists(julkaisu, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         JsonNode data = julkaisuRepositoryCustom.querySisalto(julkaisu.getId(), query);
         return data;
+    }
+
+    @Override
+    @Cacheable("ops-julkaisu")
+    public JsonNode queryOpetussuunnitelmaJulkaisu(Long opsId) {
+        return queryOpetussuunnitelmaJulkaisu(opsId, null);
     }
 
     @Override

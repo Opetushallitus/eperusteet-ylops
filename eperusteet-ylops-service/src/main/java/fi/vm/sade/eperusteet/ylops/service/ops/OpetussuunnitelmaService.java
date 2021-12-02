@@ -167,6 +167,9 @@ public interface OpetussuunnitelmaService {
     OpetussuunnitelmanJulkaisuDto aktivoiJulkaisu(@P("opsId") Long opsId, int revision);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    JsonNode queryOpetussuunnitelmaJulkaisu(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     JsonNode queryOpetussuunnitelmaJulkaisu(@P("opsId") Long opsId, String query);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
