@@ -162,8 +162,8 @@ public class NavigationBuilderLops2019PublicImpl implements NavigationBuilderPub
 
     protected List<Lops2019PaikallinenOppiaineExportDto> getPaikallisetOppiaineet(OpetussuunnitelmaExportLops2019Dto opetussuunnitelmaDto, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
         return opetussuunnitelmaDto.getPaikallisetOppiaineet().stream()
-                .filter(poa -> opintojaksotMap.containsKey(poa.getKoodi()))
-                .filter(poa -> StringUtils.isEmpty(poa.getPerusteenOppiaineUri()))
+//                .filter(poa -> opintojaksotMap.containsKey(poa.getKoodi()))
+//                .filter(poa -> StringUtils.isEmpty(poa.getPerusteenOppiaineUri()))
                 .collect(Collectors.toList());
     }
 
