@@ -322,10 +322,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         List<Predicate> ehdot = new ArrayList<>();
 
-        // VAIN JULKAISTUT
-        ehdot.add(builder.or(
-                builder.equal(ops.get(Opetussuunnitelma_.tila), Tila.JULKAISTU),
-                builder.greaterThan(opsJulkaistuSubQuery(ops, builder), 0l)));
+        // Perusteet joista julkaisu ja ovat arkistoimattomia
+        ehdot.add(builder.and(
+                builder.notEqual(ops.get(Opetussuunnitelma_.tila), Tila.POISTETTU),
+                builder.or(
+                    builder.equal(ops.get(Opetussuunnitelma_.tila), Tila.JULKAISTU),
+                    builder.greaterThan(opsJulkaistuSubQuery(ops, builder), 0l))));
 
         // Haettu organisaatio löytyy opsilta
         if (pquery.getOrganisaatio() != null) {
@@ -1991,6 +1993,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    @Cacheable("ops-julkaisu")
     public OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(Long opsId) {
 
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);

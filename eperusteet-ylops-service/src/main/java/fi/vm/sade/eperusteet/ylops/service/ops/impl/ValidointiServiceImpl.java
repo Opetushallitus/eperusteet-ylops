@@ -133,13 +133,14 @@ public class ValidointiServiceImpl implements ValidointiService {
                                 )
                         , ImmutableMap.of("route", moduuliNavigationNode(moduuli)));
 
+                // Poistettu käytöstä toistaiseksi: EP-2938
                 // - Valinnainen moduuli vähintään yhdessä opintojaksossa suoritettavissa kahden opintopisteen kokonaisuutena
-                if (!KoulutusTyyppi.AIKUISLUKIOKOULUTUS.equals(ops.getKoulutustyyppi())) {
-                    validointi.virhe(ValidationCategory.MODUULI, "valinnainen-moduuli-suoritettavissa-kahden-opintopisteen-kokonaisuutena", moduuli.getId(), moduuli.getNimi(),
-                            !moduuli.isPakollinen() && !moduulinOpintojaksot.isEmpty() && moduulinOpintojaksot.stream()
-                                    .noneMatch(oj -> oj.getLaajuus() == 2L)
-                            , ImmutableMap.of("route", moduuliNavigationNode(moduuli)));
-                }
+//                if (!KoulutusTyyppi.AIKUISLUKIOKOULUTUS.equals(ops.getKoulutustyyppi())) {
+//                    validointi.virhe(ValidationCategory.MODUULI, "valinnainen-moduuli-suoritettavissa-kahden-opintopisteen-kokonaisuutena", moduuli.getId(), moduuli.getNimi(),
+//                            !moduuli.isPakollinen() && !moduulinOpintojaksot.isEmpty() && moduulinOpintojaksot.stream()
+//                                    .noneMatch(oj -> oj.getLaajuus() == 2L)
+//                            , ImmutableMap.of("route", moduuliNavigationNode(moduuli)));
+//                }
             });
         }
 
