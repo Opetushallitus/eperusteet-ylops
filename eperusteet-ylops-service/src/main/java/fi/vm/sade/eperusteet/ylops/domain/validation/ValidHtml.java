@@ -48,20 +48,20 @@ public @interface ValidHtml {
         MINIMAL(Whitelist.none()),
         SIMPLIFIED(Whitelist.none().addTags("p", "strong", "em", "i", "s", "ol", "li", "ul")),
         NORMAL(Whitelist.none()
-                .addTags("p", "strong", "em", "i", "s", "ol", "li", "ul", "blockquote", "table", "caption",
+                .addTags("p", "span", "strong", "em", "i", "s", "ol", "li", "ul", "blockquote", "table", "caption",
                         "tbody", "tr", "td", "hr", "pre", "th", "thead", "a", "abbr", "comment", "figcaption", "br")
                 .addAttributes("table", "align", "border", "cellpadding", "cellspacing", "style", "summary")
                 .addAttributes("th", "scope", "colspan", "rowspan", "style")
-                .addAttributes("td", "colspan", "rowspan", "style", "style", "data-colwidth")
+                .addAttributes("td", "colspan", "rowspan", "style", "data-colwidth")
                 .addAttributes("a", "href", "target", "rel", "routenode")
-                .addAttributes("img", "data-uid", "alt", "style", "src", "figcaption")
-                .addAttributes("figure", "class")
+                .addAttributes("img", "data-uid", "src", "alt", "height", "width", "style", "figcaption")
                 .addAttributes("abbr", "data-viite")
-                .addAttributes("span", "kommentti"));
+                .addAttributes("figure", "class")
+                .addAttributes("span", "kommentti", "class"));
 
-        private Whitelist whitelist;
+        private final Whitelist whitelist;
 
-        private WhitelistType(Whitelist whitelist) {
+        WhitelistType(Whitelist whitelist) {
             this.whitelist = whitelist;
         }
 
