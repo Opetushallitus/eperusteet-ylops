@@ -17,6 +17,8 @@ create materialized view julkaistu_opetussuunnitelma_data_view as
     	AND o.tila != 'POISTETTU'
     ORDER BY id;
 
+CREATE UNIQUE INDEX ON julkaistu_opetussuunnitelma_data_view (id);
+
 CREATE OR REPLACE FUNCTION tg_refresh_julkaistu_opetussuunnitelma_data_view()
 RETURNS trigger AS
 '
@@ -30,3 +32,6 @@ LANGUAGE plpgsql;
 CREATE TRIGGER tg_refresh_julkaistu_opetussuunnitelma_data_view AFTER INSERT
 ON opetussuunnitelman_julkaisu
 FOR EACH STATEMENT EXECUTE PROCEDURE tg_refresh_julkaistu_opetussuunnitelma_data_view();
+
+CREATE UNIQUE INDEX ON julkaistu_opetussuunnitelma_data_view (id);
+CREATE UNIQUE INDEX opetussuunnitelman_julkaisu_uniq_ops_rev ON opetussuunnitelman_julkaisu (ops_id, revision);
