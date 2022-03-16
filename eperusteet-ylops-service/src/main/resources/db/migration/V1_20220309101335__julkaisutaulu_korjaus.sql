@@ -33,5 +33,4 @@ CREATE TRIGGER tg_refresh_julkaistu_opetussuunnitelma_data_view AFTER INSERT
 ON opetussuunnitelman_julkaisu
 FOR EACH STATEMENT EXECUTE PROCEDURE tg_refresh_julkaistu_opetussuunnitelma_data_view();
 
-CREATE UNIQUE INDEX ON julkaistu_opetussuunnitelma_data_view (id);
 CREATE UNIQUE INDEX opetussuunnitelman_julkaisu_uniq_ops_rev ON opetussuunnitelman_julkaisu (ops_id, revision);
