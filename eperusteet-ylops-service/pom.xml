@@ -20,7 +20,7 @@
         <logback.version>1.2.3</logback.version>
         <postgresql.version>9.4.1211</postgresql.version>
         <jackson.version>2.11.4</jackson.version>
-        <jackson.databind.version>2.10.5.1</jackson.databind.version>
+        <jackson.databind.version>2.13.2.1</jackson.databind.version>
         <eperusteet-ylops.devdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.devdb.user}</eperusteet-ylops.devdb.jdbcurl>
         <eperusteet-ylops.ittestdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.ittestdb.user}</eperusteet-ylops.ittestdb.jdbcurl>
         <buildhelper.skipAttach>true</buildhelper.skipAttach>
