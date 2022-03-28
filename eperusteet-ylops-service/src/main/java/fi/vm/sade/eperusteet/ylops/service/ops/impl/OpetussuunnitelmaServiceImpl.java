@@ -186,6 +186,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -307,6 +308,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private JulkaisuService julkaisuService;
+
+    @Lazy
+    @Autowired
+    private OpetussuunnitelmaService self;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -1993,24 +1998,27 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    @Cacheable("ops-julkaisu")
     public OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(Long opsId) {
-
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         OpetussuunnitelmanJulkaisu julkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(ops);
 
         if (julkaisu != null) {
-            ObjectNode data = julkaisu.getData().getOpsData();
-            try {
-                OpetussuunnitelmaExportDto exportDto = objectMapper.treeToValue(data, dispatcher.get(opsId, OpsExport.class).getExportClass());
-                exportDto.setTila(Tila.JULKAISTU);
-                return exportDto;
-            } catch (JsonProcessingException e) {
-                log.error(Throwables.getStackTraceAsString(e));
-                throw new BusinessRuleViolationException("opetussuunnitelman-haku-epaonnistui");
-            }
+            return self.getOpetussuunnitelmanJulkaisuWithData(opsId, julkaisu);
         } else {
             return getExportedOpetussuunnitelma(opsId);
+        }
+    }
+
+    @Cacheable(value = "ops-julkaisu", key = "#opsId")
+    public OpetussuunnitelmaExportDto getOpetussuunnitelmanJulkaisuWithData(Long opsId, OpetussuunnitelmanJulkaisu julkaisu) {
+        ObjectNode data = julkaisu.getData().getOpsData();
+        try {
+            OpetussuunnitelmaExportDto exportDto = objectMapper.treeToValue(data, dispatcher.get(opsId, OpsExport.class).getExportClass());
+            exportDto.setTila(Tila.JULKAISTU);
+            return exportDto;
+        } catch (JsonProcessingException e) {
+            log.error(Throwables.getStackTraceAsString(e));
+            throw new BusinessRuleViolationException("opetussuunnitelman-haku-epaonnistui");
         }
     }
 
