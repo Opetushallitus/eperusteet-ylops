@@ -81,7 +81,11 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
                     "LEFT JOIN o.nimi nimi " +
                     "LEFT JOIN nimi.teksti teksti " +
                     "WHERE o.tyyppi = :tyyppi " +
-                    "AND ((:tila = 'JULKAISTU' AND (o.julkaisut IS NOT EMPTY OR o.tila = 'JULKAISTU')) OR (o.tila = :tila AND o.julkaisut IS EMPTY)) " +
+                    "AND ( " +
+                    "   (:tila = 'JULKAISTU' AND o.tila != 'POISTETTU' AND (o.julkaisut IS NOT EMPTY OR o.tila = 'JULKAISTU')) " +
+                    "   OR (:tila = 'POISTETTU' AND o.tila = :tila)" +
+                    "   OR (o.tila = :tila AND o.julkaisut IS EMPTY)" +
+                    " ) " +
                     "AND (coalesce(:nimi, null) IS NULL or LOWER(teksti.teksti) LIKE LOWER(CONCAT('%',:nimi,'%'))) " +
                     "AND (:koulutustyyppi = '' or o.koulutustyyppi = :koulutustyyppi) ";
     String limitedPagedOpetussuunnitelmatOrganisaatiot = "AND org IS NOT NULL AND org IN (:organisaatiot)";
