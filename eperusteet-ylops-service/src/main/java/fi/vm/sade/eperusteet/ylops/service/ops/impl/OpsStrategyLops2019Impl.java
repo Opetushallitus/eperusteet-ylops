@@ -21,24 +21,6 @@ public class OpsStrategyLops2019Impl implements OpsStrategy {
     @Override
     @Transactional(readOnly = false)
     public void reorder(TekstiKappaleViiteDto.Puu tree, Opetussuunnitelma ops) {
-        Opetussuunnitelma pohja = ops.getPohja();
-        if (pohja != null) {
-            List<UUID> pohjaTekstit = pohja.getTekstit().getLapset().stream()
-                    .map(x -> x.getTekstiKappale().getTunniste())
-                    .collect(Collectors.toList());
-
-            List<UUID> tekstit = tree.getLapset().stream()
-                    .map(x -> x.getTekstiKappale().getTunniste())
-                    .filter(tunniste -> pohjaTekstit.contains(tunniste))
-                    .collect(Collectors.toList());
-
-            Collection disjunction = CollectionUtils.disjunction(pohjaTekstit, tekstit);
-
-            // Päätasolle ei sallita muutoksia
-            if (!pohjaTekstit.equals(tekstit) ) {
-                throw new BusinessRuleViolationException("paatasolle-ei-sallita-muutoksia");
-            }
-
-        }
+        
     }
 }
