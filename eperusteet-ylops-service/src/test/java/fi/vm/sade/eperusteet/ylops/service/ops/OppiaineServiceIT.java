@@ -106,10 +106,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testPalautaYlempi() {
-        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
-        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
-
-        OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
+        OpetussuunnitelmaLuontiDto ops = createPohjaOps();
 
         OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
 
@@ -146,10 +143,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
      */
     @Test
     public void testOppimaaraRemoveCantRemovePohjaOppimaara() {
-        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
-        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
-
-        OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
+        OpetussuunnitelmaLuontiDto ops = createPohjaOps();
 
         OpetussuunnitelmaDto uusiOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
         OppiaineDto vieraatKielet = oppiaineService.add(uusiOps.getId(), TestUtils.createOppiaine("vieraat kielet"));
@@ -157,6 +151,14 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         ranskaB1.setOmaNimi(LokalisoituTekstiDto.of("Ranska, B1-oppimäärä"));
         oppiaineService.addCopyOppimaara(uusiOps.getId(), vieraatKielet.getId(), ranskaB1);
 
+    }
+
+    private OpetussuunnitelmaLuontiDto createPohjaOps() {
+        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
+
+        OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
+        return ops;
     }
 
     private OpetussuunnitelmaLuontiDto createOpetussuunnitelmaLuonti(OpetussuunnitelmaDto pohjaOps) {
@@ -181,10 +183,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testMuokattavaksiKopioiminen() {
-        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
-        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
-
-        OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
+        OpetussuunnitelmaLuontiDto ops = createPohjaOps();
 
         OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
         OppiaineDto oppiaine = oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
