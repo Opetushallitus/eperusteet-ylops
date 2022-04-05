@@ -25,6 +25,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
@@ -94,7 +95,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         opetussuunnitelmaService.addPohja(ops);
 
         List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.POHJA);
-//        assertEquals(1, opsit.size());
 
         this.opsId = opsit.get(0).getId();
         assertNotNull(this.opsId);
@@ -137,6 +137,25 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         } catch (Exception e) {
             assertEquals(e.getClass(), BusinessRuleViolationException.class);
         }
+
+    }
+
+    /*
+     * EP-3085: Pohjasta luodun opetussuunitelman oppimäärän poisto poisti oppimäärän myös pohjasta.
+     * Testataan että tämä poisto estetään.
+     */
+    @Test
+    public void testOppimaaraRemoveCantRemovePohjaOppimaara() {
+        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
+
+        OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
+
+        OpetussuunnitelmaDto uusiOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
+        OppiaineDto vieraatKielet = oppiaineService.add(uusiOps.getId(), TestUtils.createOppiaine("vieraat kielet"));
+        KopioOppimaaraDto ranskaB1 = new KopioOppimaaraDto();
+        ranskaB1.setOmaNimi(LokalisoituTekstiDto.of("Ranska, B1-oppimäärä"));
+        oppiaineService.addCopyOppimaara(uusiOps.getId(), vieraatKielet.getId(), ranskaB1);
 
     }
 
