@@ -157,8 +157,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
         opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
 
-        OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
-        return ops;
+        return createOpetussuunnitelmaLuonti(pohjaOps);
     }
 
     private OpetussuunnitelmaLuontiDto createOpetussuunnitelmaLuonti(OpetussuunnitelmaDto pohjaOps) {
