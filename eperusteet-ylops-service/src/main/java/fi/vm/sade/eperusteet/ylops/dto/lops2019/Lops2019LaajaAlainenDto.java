@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.lops2019;
 
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.Getter;
@@ -16,10 +17,10 @@ public class Lops2019LaajaAlainenDto {
     private LokalisoituTekstiDto kuvaus;
     private KoodiDto koodi;
 
-    static public Lops2019LaajaAlainenDto of(String koodisto, String koodiArvo, String nimi) {
+    static public Lops2019LaajaAlainenDto of(String koodisto, String koodiArvo, String nimi, Kieli kieli) {
         Lops2019LaajaAlainenDto lao = new Lops2019LaajaAlainenDto();
         lao.setKoodi(KoodiDto.of(koodisto, koodiArvo));
-        lao.setNimi(LokalisoituTekstiDto.of(nimi));
+        lao.setNimi(LokalisoituTekstiDto.of(nimi, kieli));
         return lao;
     }
 }
