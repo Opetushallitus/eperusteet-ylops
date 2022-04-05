@@ -249,7 +249,10 @@ public class Lops2019ServiceImpl implements Lops2019Service {
         Lops2019LaajaAlainenOsaaminenDto laajaAlaisetOsaamiset = new Lops2019LaajaAlainenOsaaminenDto();
         laajaAlaisetOsaamiset.setLaajaAlaisetOsaamiset(laajaAlaisetkoodit.stream()
                 .map(laajaAlainenKoodi -> Lops2019LaajaAlainenDto
-                        .of("laajaalainenosaaminenlops2021", laajaAlainenKoodi.getKoodiArvo(), laajaAlainenKoodi.getNimi().get(kieli)))
+                        .of("laajaalainenosaaminenlops2021",
+                                laajaAlainenKoodi.getKoodiArvo(),
+                                laajaAlainenKoodi.getNimi().get(kieli),
+                                kieli))
                 .collect(Collectors.toList()));
 
         return laajaAlaisetOsaamiset;

@@ -49,6 +49,12 @@ public class LokalisoituTekstiDto {
         return new LokalisoituTekstiDto(null, null, map);
     }
 
+    public static LokalisoituTekstiDto of(String value, Kieli kieli) {
+        HashMap<Kieli, String> map = new HashMap<>();
+        map.put(kieli, value);
+        return new LokalisoituTekstiDto(null, null, map);
+    }
+
     public LokalisoituTekstiDto(Long id, Map<Kieli, String> values) {
         this(id, null, values);
     }
