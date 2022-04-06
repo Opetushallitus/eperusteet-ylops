@@ -73,6 +73,7 @@ public abstract class TestUtils {
         oppiaineDto.setKoodiUri("koodikoodi");
         oppiaineDto.setTunniste(UUID.randomUUID());
         oppiaineDto.setKoosteinen(false);
+        oppiaineDto.setKoodiArvo("VK");
         return oppiaineDto;
     }
 
