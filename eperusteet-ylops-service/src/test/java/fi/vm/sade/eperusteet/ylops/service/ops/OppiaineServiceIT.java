@@ -106,9 +106,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testPalautaYlempi() {
-        OpetussuunnitelmaLuontiDto ops = createPohjaOps();
-
-        OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
+        OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
 
         oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
         oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 2"));
@@ -143,21 +141,22 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
      */
     @Test
     public void testOppimaaraRemoveCantRemovePohjaOppimaara() {
-        OpetussuunnitelmaLuontiDto ops = createPohjaOps();
+        OpetussuunnitelmaDto uusiOps = createOpsBasedOnPohja();
 
-        OpetussuunnitelmaDto uusiOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
         OppiaineDto vieraatKielet = oppiaineService.add(uusiOps.getId(), TestUtils.createOppiaine("vieraat kielet"));
+
         KopioOppimaaraDto ranskaB1 = new KopioOppimaaraDto();
         ranskaB1.setOmaNimi(LokalisoituTekstiDto.of("Ranska, B1-oppimäärä"));
         oppiaineService.addCopyOppimaara(uusiOps.getId(), vieraatKielet.getId(), ranskaB1);
 
     }
 
-    private OpetussuunnitelmaLuontiDto createPohjaOps() {
+    private OpetussuunnitelmaDto createOpsBasedOnPohja() {
         OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
         opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
 
-        return createOpetussuunnitelmaLuonti(pohjaOps);
+        OpetussuunnitelmaLuontiDto newOps = createOpetussuunnitelmaLuonti(pohjaOps);
+        return opetussuunnitelmaService.addOpetussuunnitelma(newOps);
     }
 
     private OpetussuunnitelmaLuontiDto createOpetussuunnitelmaLuonti(OpetussuunnitelmaDto pohjaOps) {
@@ -182,9 +181,8 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testMuokattavaksiKopioiminen() {
-        OpetussuunnitelmaLuontiDto ops = createPohjaOps();
+        OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
 
-        OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
         OppiaineDto oppiaine = oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
 
         OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
