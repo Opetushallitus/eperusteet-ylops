@@ -104,7 +104,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         this.vlkViiteRef = Reference.of(vlkViitteet.save(viite));
     }
 
-
     @Test
     public void testPalautaYlempi() {
         OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
@@ -142,15 +141,25 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
      */
     @Test
     @Ignore
-    public void testOppimaaraRemoveCantRemovePohjaOppimaara() {
-        OpetussuunnitelmaDto uusiOps = createOpsBasedOnPohja();
+    public void testOppimaaraDeleteCantRemovePohjaOppimaara() {
+        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+        OppiaineDto vieraatKieletDto = TestUtils.createKoosteinenOppiaine("vieraat kielet");
 
-        OppiaineDto vieraatKielet = oppiaineService.add(uusiOps.getId(), TestUtils.createOppiaine("vieraat kielet"));
+        HashSet<OppiaineSuppeaDto> oppimaarat = new HashSet<>();
+        oppimaarat.add(TestUtils.createOppimaara("Ranska, B1-oppimäärä"));
+        oppimaarat.add(TestUtils.createOppimaara("Saksa, B1-oppimäärä"));
 
-        KopioOppimaaraDto ranskaB1 = new KopioOppimaaraDto();
-        ranskaB1.setOmaNimi(LokalisoituTekstiDto.of("Ranska, B1-oppimäärä"));
-        oppiaineService.addCopyOppimaara(uusiOps.getId(), vieraatKielet.getId(), ranskaB1);
+        vieraatKieletDto.setOppimaarat(oppimaarat);
+        OppiaineDto vieraatKielet = oppiaineService.add(pohjaOps.getId(), vieraatKieletDto);
+        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
 
+
+        OpetussuunnitelmaDto newOps = opetussuunnitelmaService.addOpetussuunnitelma(createOpetussuunnitelmaLuonti(pohjaOps));
+
+        oppiaineService.delete(newOps.getId(), vieraatKielet.getOppimaarat().iterator().next().getId());
+        OpetussuunnitelmaDto pohjaOpsAfterDelete = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+
+//        TODO assert että lentää poikkeus jos yritetään poistaa pohjasta irrottamatonta oppimäärää
     }
 
     private OpetussuunnitelmaDto createOpsBasedOnPohja() {
