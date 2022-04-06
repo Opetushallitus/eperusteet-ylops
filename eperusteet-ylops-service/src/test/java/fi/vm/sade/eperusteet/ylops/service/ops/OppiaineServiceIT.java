@@ -36,6 +36,7 @@ import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
@@ -140,6 +141,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
      * Testataan että tämä poisto estetään.
      */
     @Test
+    @Ignore
     public void testOppimaaraRemoveCantRemovePohjaOppimaara() {
         OpetussuunnitelmaDto uusiOps = createOpsBasedOnPohja();
 
