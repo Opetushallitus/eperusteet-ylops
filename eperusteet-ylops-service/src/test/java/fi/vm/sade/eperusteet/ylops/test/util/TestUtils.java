@@ -29,6 +29,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenTavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -66,15 +67,33 @@ public abstract class TestUtils {
         return Optional.of(lt(teksti));
     }
 
-    public static OppiaineDto createOppiaine(String nimi) {
+    public static OppiaineDto createOppiaine(String nimi){
+        return createOppiaine(nimi, false);
+    }
+
+    public static OppiaineDto createKoosteinenOppiaine(String nimi){
+        return createOppiaine(nimi, true);
+    }
+
+    private static OppiaineDto createOppiaine(String nimi, boolean isKoosteinen) {
         OppiaineDto oppiaineDto = new OppiaineDto();
         oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
         oppiaineDto.setNimi(lt(nimi));
         oppiaineDto.setKoodiUri("koodikoodi");
         oppiaineDto.setTunniste(UUID.randomUUID());
-        oppiaineDto.setKoosteinen(false);
+        oppiaineDto.setKoosteinen(isKoosteinen);
         oppiaineDto.setKoodiArvo("VK");
         return oppiaineDto;
+    }
+
+    public static OppiaineSuppeaDto createOppimaara(String nimi) {
+        OppiaineSuppeaDto oppimaara = new OppiaineSuppeaDto();
+        oppimaara.setTyyppi(OppiaineTyyppi.YHTEINEN);
+        oppimaara.setNimi(lt(nimi));
+        oppimaara.setKoodiUri("oppimaarakoodi");
+        oppimaara.setTunniste(UUID.randomUUID());
+        oppimaara.setKoosteinen(false);
+        return oppimaara;
     }
 
     public static OpetuksenTavoiteDto createTavoite() {
@@ -129,5 +148,4 @@ public abstract class TestUtils {
         ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
         return ops;
     }
-
 }
