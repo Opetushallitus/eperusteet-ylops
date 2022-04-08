@@ -161,13 +161,8 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
     @Test
     public void testOppimaaraDeleteCantRemovePohjaOppimaara() {
         OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
-
-        OppiaineDto vieraatKieletCreateDto = TestUtils.createKoosteinenOppiaine("Vieraat kielet");
-        vieraatKieletCreateDto.setOppimaarat(Collections.singleton(TestUtils.createOppimaara("Ranska B2")));
-        OppiaineDto vieraatKielet = oppiaineService.add(ylaOps.getId(), vieraatKieletCreateDto);
-
-        OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
-        OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
+        OppiaineDto vieraatKielet = addVieraatKieletOppiaineWithOppimaara(ylaOps);
+        OpetussuunnitelmaDto alaOps = createOpsBasedOnOps(ylaOps);
 
         assertThatThrownBy(() -> oppiaineService.delete(alaOps.getId(), vieraatKielet.getOppimaarat().iterator().next().getId()))
                 .isInstanceOf(BusinessRuleViolationException.class)
@@ -180,6 +175,17 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         OpetussuunnitelmaLuontiDto newOps = createOpetussuunnitelmaLuonti(pohjaOps);
         return opetussuunnitelmaService.addOpetussuunnitelma(newOps);
+    }
+
+    private OppiaineDto addVieraatKieletOppiaineWithOppimaara(OpetussuunnitelmaDto ops) {
+        OppiaineDto vieraatKielet = TestUtils.createKoosteinenOppiaine("Vieraat kielet");
+        vieraatKielet.setOppimaarat(Collections.singleton(TestUtils.createOppimaara("Ranska B2")));
+        return oppiaineService.add(ops.getId(), vieraatKielet);
+    }
+
+    private OpetussuunnitelmaDto createOpsBasedOnOps(OpetussuunnitelmaDto ylaOps) {
+        OpetussuunnitelmaLuontiDto alaOps = createOpetussuunnitelmaLuonti(ylaOps);
+        return opetussuunnitelmaService.addOpetussuunnitelma(alaOps);
     }
 
     private OpetussuunnitelmaLuontiDto createOpetussuunnitelmaLuonti(OpetussuunnitelmaDto pohjaOps) {
