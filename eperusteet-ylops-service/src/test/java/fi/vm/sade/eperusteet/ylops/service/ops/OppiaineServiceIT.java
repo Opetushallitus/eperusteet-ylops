@@ -60,11 +60,13 @@ import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.*;
 
 /**
@@ -154,20 +156,15 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     }
 
-    /*
+    /**
      * EP-3085: Pohjasta luodun opetussuunitelman oppimäärän poisto poisti oppimäärän myös pohjasta.
      * Testataan että tämä poisto estetään.
      */
     @Test
     public void testOppimaaraDeleteCantRemovePohjaOppimaara() {
         OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
-
-        OppiaineDto vieraatKieletCreateDto = TestUtils.createKoosteinenOppiaine("Vieraat kielet");
-        vieraatKieletCreateDto.setOppimaarat(Collections.singleton(TestUtils.createOppimaara("Ranska B2")));
-        OppiaineDto vieraatKielet = oppiaineService.add(ylaOps.getId(), vieraatKieletCreateDto);
-
-        OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
-        OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
+        OppiaineDto vieraatKielet = addVieraatKieletOppiaineWithOppimaara(ylaOps);
+        OpetussuunnitelmaDto alaOps = createOpsBasedOnOps(ylaOps);
 
         assertThatThrownBy(() -> oppiaineService.delete(alaOps.getId(), vieraatKielet.getOppimaarat().iterator().next().getId()))
                 .isInstanceOf(BusinessRuleViolationException.class)
@@ -180,6 +177,17 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         OpetussuunnitelmaLuontiDto newOps = createOpetussuunnitelmaLuonti(pohjaOps);
         return opetussuunnitelmaService.addOpetussuunnitelma(newOps);
+    }
+
+    private OppiaineDto addVieraatKieletOppiaineWithOppimaara(OpetussuunnitelmaDto ops) {
+        OppiaineDto vieraatKielet = TestUtils.createKoosteinenOppiaine("Vieraat kielet");
+        vieraatKielet.setOppimaarat(Collections.singleton(TestUtils.createOppimaara("Ranska B2")));
+        return oppiaineService.add(ops.getId(), vieraatKielet);
+    }
+
+    private OpetussuunnitelmaDto createOpsBasedOnOps(OpetussuunnitelmaDto ylaOps) {
+        OpetussuunnitelmaLuontiDto alaOps = createOpetussuunnitelmaLuonti(ylaOps);
+        return opetussuunnitelmaService.addOpetussuunnitelma(alaOps);
     }
 
     private OpetussuunnitelmaLuontiDto createOpetussuunnitelmaLuonti(OpetussuunnitelmaDto pohjaOps) {
@@ -200,6 +208,37 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         ops.setPohja(Reference.of(pohjaOps.getId()));
         return ops;
+    }
+
+    /**
+     * Jos alemman tason opsin oppiaine irroitetaan ylemmän tason opsista, ei oppimäärän poiston pitäisi enää
+     * vaikuttaa yllemmän tason oppimääriin.
+     */
+    @Test
+    public void testAbleToRemoveIrrotettuOppimaara() {
+        OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
+        OppiaineDto vieraatKielet = addVieraatKieletOppiaineWithOppimaara(ylaOps);
+        OpetussuunnitelmaDto alaOps = createOpsBasedOnOps(ylaOps);
+
+        OpsOppiaineDto vieraatkieletKopio = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), vieraatKielet.getId());
+        oppiaineService.delete(alaOps.getId(), vieraatkieletKopio.getOppiaine().getOppimaarat().iterator().next().getId());
+
+        OpetussuunnitelmaDto ylaOpsAfterDelete = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(ylaOps.getId());
+        Set<OppiaineSuppeaDto> ylaOpsinOppimaara = getOppimaarat(ylaOpsAfterDelete);
+        assertThat(ylaOpsinOppimaara).isNotEmpty();
+
+        OpetussuunnitelmaDto alaOpsAfterDelete = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(alaOps.getId());
+        Set<OppiaineSuppeaDto> alaOpsinOppimaara = getOppimaarat(alaOpsAfterDelete);
+        assertThat(alaOpsinOppimaara).isEmpty();
+    }
+
+    private Set<OppiaineSuppeaDto> getOppimaarat(OpetussuunnitelmaDto ops) {
+        return ops.getOppiaineet()
+                .stream()
+                .findFirst()
+                .get()
+                .getOppiaine()
+                .getOppimaarat();
     }
 
     @Test
