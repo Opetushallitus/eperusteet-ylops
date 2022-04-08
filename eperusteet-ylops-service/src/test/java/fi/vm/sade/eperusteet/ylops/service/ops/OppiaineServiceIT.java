@@ -140,7 +140,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
      * Testataan että tämä poisto estetään.
      */
     @Test
-    @Ignore
+    @Ignore //TODO tämä testi on keskeneräinen joten siksi ignoressa
     public void testOppimaaraDeleteCantRemovePohjaOppimaara() {
         OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
         OppiaineDto vieraatKieletDto = TestUtils.createKoosteinenOppiaine("vieraat kielet");
