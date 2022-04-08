@@ -797,7 +797,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     private void checkOppiaineDeleteIsAllowed(Long opsId, Long oppiaineId) {
-        if (oppiaineet.isOma(opsId, oppiaineId)) {
+        Boolean isOma = oppiaineet.isOma(opsId, oppiaineId);
+
+        if (isOma == null) {
+            throw new BusinessRuleViolationException("Poistettavaa oppiainetta ei ole olemassa.");
+        }
+
+        if (isOma) {
             return;
         }
 
