@@ -762,6 +762,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public PoistettuOppiaineDto delete(Long opsId, Long oppiaineId) {
+        checkOppiaineDeleteIsAllowed(opsId, oppiaineId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
         oppiaineet.lock(oppiaine);
@@ -793,6 +794,14 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         return poistettu;
+    }
+
+    private void checkOppiaineDeleteIsAllowed(Long opsId, Long oppiaineId) {
+        if (oppiaineet.isOma(opsId, oppiaineId)) {
+            return;
+        }
+
+        throw new BusinessRuleViolationException("Oppiaine tulee opetussuunnitelman pohjasta, joten sitä ei voi poistaa.");
     }
 
     private PoistettuOppiaineDto tallennaPoistettu(Long id, Opetussuunnitelma ops, Oppiaine oppiaine) {
