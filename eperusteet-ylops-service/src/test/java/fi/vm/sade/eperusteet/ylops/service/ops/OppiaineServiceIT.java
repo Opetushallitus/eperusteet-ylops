@@ -15,7 +15,11 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.*;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineValinnainenTyyppi;
@@ -24,7 +28,17 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
@@ -38,12 +52,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-
-import java.util.*;
 import org.springframework.test.annotation.Rollback;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.Assert.*;
 
 /**
@@ -94,7 +115,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         opetussuunnitelmaService.addPohja(ops);
 
         List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.POHJA);
-//        assertEquals(1, opsit.size());
 
         this.opsId = opsit.get(0).getId();
         assertNotNull(this.opsId);
@@ -103,15 +123,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         this.vlkViiteRef = Reference.of(vlkViitteet.save(viite));
     }
 
-
     @Test
     public void testPalautaYlempi() {
-        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
-        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
-
-        OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
-
-        OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
+        OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
 
         oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
         oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 2"));
@@ -140,6 +154,34 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     }
 
+    /*
+     * EP-3085: Pohjasta luodun opetussuunitelman oppimäärän poisto poisti oppimäärän myös pohjasta.
+     * Testataan että tämä poisto estetään.
+     */
+    @Test
+    public void testOppimaaraDeleteCantRemovePohjaOppimaara() {
+        OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
+
+        OppiaineDto vieraatKieletCreateDto = TestUtils.createKoosteinenOppiaine("Vieraat kielet");
+        vieraatKieletCreateDto.setOppimaarat(Collections.singleton(TestUtils.createOppimaara("Ranska B2")));
+        OppiaineDto vieraatKielet = oppiaineService.add(ylaOps.getId(), vieraatKieletCreateDto);
+
+        OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
+        OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
+
+        assertThatThrownBy(() -> oppiaineService.delete(alaOps.getId(), vieraatKielet.getOppimaarat().iterator().next().getId()))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Oppiaine tulee opetussuunnitelman pohjasta, joten sitä ei voi poistaa.");
+    }
+
+    private OpetussuunnitelmaDto createOpsBasedOnPohja() {
+        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
+
+        OpetussuunnitelmaLuontiDto newOps = createOpetussuunnitelmaLuonti(pohjaOps);
+        return opetussuunnitelmaService.addOpetussuunnitelma(newOps);
+    }
+
     private OpetussuunnitelmaLuontiDto createOpetussuunnitelmaLuonti(OpetussuunnitelmaDto pohjaOps) {
         OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
         ops.setNimi(lt(uniikkiString()));
@@ -162,12 +204,8 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testMuokattavaksiKopioiminen() {
-        OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
-        opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
+        OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
 
-        OpetussuunnitelmaLuontiDto ops = createOpetussuunnitelmaLuonti(pohjaOps);
-
-        OpetussuunnitelmaDto ylaOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
         OppiaineDto oppiaine = oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
 
         OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);

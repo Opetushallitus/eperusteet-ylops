@@ -761,9 +761,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public PoistettuOppiaineDto delete(Long opsId, Long id) {
+    public PoistettuOppiaineDto delete(Long opsId, Long oppiaineId) {
+        checkOppiaineDeleteIsAllowed(opsId, oppiaineId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        Oppiaine oppiaine = getOppiaine(opsId, id);
+        Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
         oppiaineet.lock(oppiaine);
 
         if (oppiaine.getOppiaine() == null) {
@@ -781,10 +782,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         lukioOppiaineJarjestysRepository.delete(lukioOppiaineJarjestysRepository
                 .findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
-        oppiaineLukiokurssiRepository.delete(oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, id));
+        oppiaineLukiokurssiRepository.delete(oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, oppiaineId));
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
-        PoistettuOppiaineDto poistettu = tallennaPoistettu(id, ops, oppiaine);
+        PoistettuOppiaineDto poistettu = tallennaPoistettu(oppiaineId, ops, oppiaine);
 
         if (oppiaine.getOppiaine() != null) {
             oppiaine.getOppiaine().removeOppimaara(oppiaine);
@@ -793,6 +794,20 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         return poistettu;
+    }
+
+    private void checkOppiaineDeleteIsAllowed(Long opsId, Long oppiaineId) {
+        Boolean isOma = oppiaineet.isOma(opsId, oppiaineId);
+
+        if (isOma == null) {
+            throw new BusinessRuleViolationException("Poistettavaa oppiainetta ei ole olemassa.");
+        }
+
+        if (isOma) {
+            return;
+        }
+
+        throw new BusinessRuleViolationException("Oppiaine tulee opetussuunnitelman pohjasta, joten sitä ei voi poistaa.");
     }
 
     private PoistettuOppiaineDto tallennaPoistettu(Long id, Opetussuunnitelma ops, Oppiaine oppiaine) {
