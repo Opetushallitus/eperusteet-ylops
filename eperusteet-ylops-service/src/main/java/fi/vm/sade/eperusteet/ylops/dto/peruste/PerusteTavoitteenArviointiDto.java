@@ -32,7 +32,7 @@ public class PerusteTavoitteenArviointiDto implements ReferenceableDto {
     private Integer arvosana;
 
     public LokalisoituTekstiDto getHyvanOsaamisenKuvaus() {
-        if(arvosana == null || arvosana == 8) {
+        if (arvosana == null || arvosana == 8) {
             return osaamisenKuvaus;
         }
 

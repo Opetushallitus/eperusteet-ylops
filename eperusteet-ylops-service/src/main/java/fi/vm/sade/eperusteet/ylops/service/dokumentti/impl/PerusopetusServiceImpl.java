@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Laajaalainenosaaminen;
@@ -541,22 +542,24 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                         taulukko.addOtsikkoSarake(messages.translate("osaamisen-kuvaus", docBase.getKieli()));
                         taulukko.addOtsikkoSarake(messages.translate("arvion-kuvaus", docBase.getKieli()));
 
-                        perusteOpetuksentavoiteDto.getArvioinninkohteet().forEach(perusteenTavoitteenArviointi -> {
-                            DokumenttiRivi rivi = new DokumenttiRivi();
-                            String kohde = "";
-                            if (perusteenTavoitteenArviointi.getArvosana() != null) {
-                                kohde = messages.translate("osaamisen-kuvaus-arvosanalle-" + perusteenTavoitteenArviointi.getArvosana(), docBase.getKieli());
-                            }
-                            rivi.addSarake(kohde);
+                        perusteOpetuksentavoiteDto.getArvioinninkohteet()
+                                .stream().sorted(Comparator.comparing(arv -> arv.getArvosana() != null ? arv.getArvosana() : 0))
+                                .forEach(perusteenTavoitteenArviointi -> {
+                                    DokumenttiRivi rivi = new DokumenttiRivi();
+                                    String kohde = "";
+                                    if (perusteenTavoitteenArviointi.getArvosana() != null) {
+                                        kohde = messages.translate("osaamisen-kuvaus-arvosanalle-" + perusteenTavoitteenArviointi.getArvosana(), docBase.getKieli());
+                                    }
+                                    rivi.addSarake(kohde);
 
-                            String kuvaus = "";
-                            if (perusteenTavoitteenArviointi.getOsaamisenKuvaus() != null
-                                    && perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()) != null) {
-                                kuvaus = cleanHtml(perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()));
-                            }
-                            rivi.addSarake(kuvaus);
-                            taulukko.addRivi(rivi);
-                        });
+                                    String kuvaus = "";
+                                    if (perusteenTavoitteenArviointi.getOsaamisenKuvaus() != null
+                                            && perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()) != null) {
+                                        kuvaus = cleanHtml(perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()));
+                                    }
+                                    rivi.addSarake(kuvaus);
+                                    taulukko.addRivi(rivi);
+                                });
                     }
 
                     taulukko.addToDokumentti(docBase);
@@ -674,22 +677,23 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                         taulukko.addOtsikkoSarake(messages.translate("osaamisen-kuvaus", docBase.getKieli()));
                         taulukko.addOtsikkoSarake(messages.translate("arvion-kuvaus", docBase.getKieli()));
 
-                        perusteOpetuksentavoiteDto.getArvioinninkohteet().forEach(perusteenTavoitteenArviointi -> {
-                            DokumenttiRivi rivi = new DokumenttiRivi();
-                            String kohde = "";
-                            if (perusteenTavoitteenArviointi.getArvosana() != null) {
-                                kohde = messages.translate("osaamisen-kuvaus-arvosanalle-" + perusteenTavoitteenArviointi.getArvosana(), docBase.getKieli());
-                            }
-                            rivi.addSarake(kohde);
+                        perusteOpetuksentavoiteDto.getArvioinninkohteet()
+                                .forEach(perusteenTavoitteenArviointi -> {
+                                    DokumenttiRivi rivi = new DokumenttiRivi();
+                                    String kohde = "";
+                                    if (perusteenTavoitteenArviointi.getArvosana() != null) {
+                                        kohde = messages.translate("osaamisen-kuvaus-arvosanalle-" + perusteenTavoitteenArviointi.getArvosana(), docBase.getKieli());
+                                    }
+                                    rivi.addSarake(kohde);
 
-                            String kuvaus = "";
-                            if (perusteenTavoitteenArviointi.getOsaamisenKuvaus() != null
-                                    && perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()) != null) {
-                                kuvaus = cleanHtml(perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()));
-                            }
-                            rivi.addSarake(kuvaus);
-                            taulukko.addRivi(rivi);
-                        });
+                                    String kuvaus = "";
+                                    if (perusteenTavoitteenArviointi.getOsaamisenKuvaus() != null
+                                            && perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()) != null) {
+                                        kuvaus = cleanHtml(perusteenTavoitteenArviointi.getOsaamisenKuvaus().get(docBase.getKieli()));
+                                    }
+                                    rivi.addSarake(kuvaus);
+                                    taulukko.addRivi(rivi);
+                                });
                     }
 
                     taulukko.addToDokumentti(docBase);
