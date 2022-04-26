@@ -10,6 +10,8 @@
   }, {
     "name" : "Dokumentit"
   }, {
+    "name" : "Julkinen"
+  }, {
     "name" : "Kayttajat"
   }, {
     "name" : "Kommentit"
@@ -394,6 +396,73 @@
             "description" : "successful operation",
             "schema" : {
               "type" : "object"
+            }
+          }
+        }
+      }
+    },
+    "/external/opetussuunnitelma/{id}" : {
+      "get" : {
+        "tags" : [ "Julkinen" ],
+        "operationId" : "getPublicOpetussuunnitelma",
+        "produces" : [ "application/json;charset=UTF-8" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OpetussuunnitelmaExportDto"
+            }
+          }
+        }
+      }
+    },
+    "/external/opetussuunnitelmat" : {
+      "get" : {
+        "tags" : [ "Julkinen" ],
+        "operationId" : "getPublicOpetussuunnitelmat",
+        "produces" : [ "application/json;charset=UTF-8" ],
+        "parameters" : [ {
+          "name" : "nimi",
+          "in" : "query",
+          "description" : "nimi",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "kieli",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "perusteenDiaarinumero",
+          "in" : "query",
+          "description" : "perusteenDiaarinumero",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "sivu",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "sivukoko",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PageOpetussuunnitelmaJulkinenDto"
             }
           }
         }
@@ -7569,12 +7638,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -8053,15 +8122,6 @@
           "uniqueItems" : true,
           "items" : {
             "$ref" : "#/definitions/LukiokurssiPerusteDto"
-          }
-        },
-        "kurssiTyyppiKuvaukset" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
           }
         }
       }
@@ -10395,13 +10455,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10424,10 +10484,10 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         }
       }
@@ -10435,13 +10495,13 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10464,10 +10524,10 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         }
       }
@@ -10475,13 +10535,13 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10504,10 +10564,10 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         }
       }
