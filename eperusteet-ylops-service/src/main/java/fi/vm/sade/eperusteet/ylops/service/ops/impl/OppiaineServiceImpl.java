@@ -219,6 +219,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OppiaineDto addCopyOppimaara(Long opsId, Long oppiaineId, KopioOppimaaraDto kt) {
+        checkOppimaaraCreateIsAllowed(opsId, oppiaineId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
@@ -247,6 +248,20 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         assertExists(uusi, "Pyydettyä kielitarjonnan oppiainetta ei ole");
         return mapper.map(uusi, OppiaineDto.class);
+    }
+
+    private void checkOppimaaraCreateIsAllowed(Long opsId, Long oppiaineId) {
+        Boolean isOmaOppiaine = oppiaineet.isOma(opsId, oppiaineId);
+
+        if (isOmaOppiaine == null) {
+            throw new BusinessRuleViolationException("Oppiainetta jolle oppimäärää luodaan, ei ole olemassa.");
+        }
+
+        if (isOmaOppiaine) {
+            return;
+        }
+
+        throw new BusinessRuleViolationException("Oppiaine tulee opetussuunnitelman pohjasta, joten siihen ei voi lisätä oppimäärää.");
     }
 
     @Override
