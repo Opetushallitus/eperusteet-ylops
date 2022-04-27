@@ -28,6 +28,7 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
@@ -239,6 +240,21 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
                 .get()
                 .getOppiaine()
                 .getOppimaarat();
+    }
+
+    /**
+     * EP-3122: Testataan että ei ole mahdollista luoda uutta oppimäärää alatason opsiin jos linkitystä pohjaopsiin ei ole
+     * katkaistu.
+     */
+    @Test
+    public void testCantAddOppimaara() {
+        OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
+        OppiaineDto vieraatKielet = addVieraatKieletOppiaineWithOppimaara(ylaOps);
+        OpetussuunnitelmaDto alaOps = createOpsBasedOnOps(ylaOps);
+
+        assertThatThrownBy(() -> oppiaineService.addCopyOppimaara(alaOps.getId(), vieraatKielet.getId(), new KopioOppimaaraDto()))
+                .isInstanceOf(BusinessRuleViolationException.class)
+                .hasMessage("Oppiaine tulee opetussuunnitelman pohjasta, joten siihen ei voi lisätä oppimäärää.");
     }
 
     @Test
