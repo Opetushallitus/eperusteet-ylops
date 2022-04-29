@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.validation;
 
+import com.google.common.base.CharMatcher;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -45,15 +46,20 @@ public abstract class ValidHtmlValidatorBase {
             Map<Kieli, String> tekstit = lokalisoituTeksti.getTeksti();
             if (tekstit != null) {
                 return tekstit.values().stream()
-                        .allMatch(teksti -> Jsoup.isValid(teksti, whitelist) && isValidUrls(teksti));
+                        .allMatch(teksti -> Jsoup.isValid(teksti, whitelist));
             }
         }
         return true;
     }
 
+    @Deprecated
     private boolean isValidUrls(String teksti) {
         Document doc = Jsoup.parse(teksti);
         Elements links = doc.select("a[href]");
-        return links.stream().allMatch(link -> link.hasText() && !StringUtils.isEmpty(link.attr("href").trim()));
+        return links.stream().allMatch(link ->
+                !link.attr("routenode").isEmpty()
+                        || urlValidator.isValid(CharMatcher.whitespace().trimFrom(link.attr("abs:href")))
+                        || emailValidator.isValid(CharMatcher.whitespace().trimFrom(link.attr("href").replace("mailto:", "")))
+        );
     }
 }
