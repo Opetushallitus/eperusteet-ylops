@@ -36,6 +36,7 @@ public class PerusteDto extends PerusteBaseDto {
     private Lops2019SisaltoDto lops2019;
     private EsiopetuksenPerusteenSisaltoDto esiopetus;
     private TPOOpetuksenSisaltoDto tpo;
+    private AipePerusteenSisaltoDto aipe;
 
     @JsonIgnore
     public TekstiKappaleViiteDto getTekstiKappaleViiteSisalto() {
@@ -46,9 +47,13 @@ public class PerusteDto extends PerusteBaseDto {
         if (getEsiopetus() != null) {
             return getEsiopetus().getSisalto();
         }
-        
+
         if (getTpo() != null) {
             return getTpo().getSisalto();
+        }
+
+        if (getAipe() != null) {
+            return getAipe().getSisalto();
         }
 
         return null;
