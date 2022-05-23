@@ -1,0 +1,22 @@
+name: Eperusteet-ylops build
+#TODO muuta kunhan valmis
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - EP-3158-github-actions
+    # Workflow ajetaan jos jokin muu kuin markdown tiedosto muuttui
+    paths-ignore:
+      - '**.md'
+
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  EPERUSTEET_SERVICE_DIR: ${{ github.workspace }}/eperusteet/eperusteet/eperusteet-service
+  AMOSAA_SERVICE_DIR: ${{ github.workspace }}/eperusteet-amosaa/eperusteet-amosaa-service
+
+jobs:
+  build-and-test-eperusteet-ylops-service:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
