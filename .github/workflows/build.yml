@@ -20,3 +20,112 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Cache Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-cache-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build with Maven
+        run: |
+          git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
+          source ci-tools/common/setup-tools.sh
+          export ARTIFACT_NAME="eperusteet-ylops"
+          
+          cd eperusteet-ylops-service
+          mvn clean verify --batch-mode
+
+  build-and-test-eperusteet-ylops-app:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 8
+        uses: actions/setup-java@v3
+        with:
+          java-version: '8'
+          distribution: 'temurin'
+
+      - name: Set up Node 10
+        uses: actions/setup-node@v3
+        with:
+          node-version: '10'
+
+      - name: Cache Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-cache-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Print yarn cache directory path
+        id: yarn-cache-dir-path
+        run: |
+          yarn cache dir
+          echo "::set-output name=dir::$(yarn cache dir)"
+
+      - name: Cache yarn
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Print npm cache directory
+        id: npm-cache-dir
+        run: |
+          npm config get cache
+          echo "::set-output name=dir::$(npm config get cache)"
+
+      - name: Cache npm
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node- 
+
+      - name: Build with Maven
+        run: |
+          git clone --recurse-submodules --depth 1 https://github.com/Opetushallitus/eperusteet-ylops-ui.git
+          git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
+          git clone --depth=1 https://github.com/Opetushallitus/eperusteet
+          git clone --depth=1 https://github.com/Opetushallitus/eperusteet-amosaa
+          source ci-tools/common/setup-tools.sh
+          export ARTIFACT_NAME="eperusteet-ylops"
+          export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
+            
+          cd eperusteet-ylops-ui
+          yarn install --silent
+          cd eperusteet-frontend-utils/vue
+          yarn install --silent
+          yarn gen:api
+          rm -rf node_modules
+          cd ../..
+          git rev-parse HEAD
+          yarn run build
+          cd ..
+          
+          cd eperusteet-ylops-app
+          mvn clean verify --batch-mode
+
+#          mv ${ARTIFACT_NAME}-service/target/${ARTIFACT_NAME}-service.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-service.war
+#          mv ${ARTIFACT_NAME}-app/target/${ARTIFACT_NAME}-app.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-app.war
+#          cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
+#          cp -vr src/main/resources/tomcat $DOCKER_BUILD_DIR/config/
+
+      - name: Cache eperusteet-ylops-app build results
+        uses: actions/cache@v3
+        id: restore-app-build
+        with:
+          path: eperusteet-ylops-app/target
+          key: ${{ github.sha }}
