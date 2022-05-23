@@ -51,7 +51,7 @@ jobs:
           path: eperusteet-ylops-service/target
           key: ${{ github.sha }}
 
-  build-and-test-eperusteet-ylops-app:
+  build-and-test-eperusteet-ylops-ui:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -125,14 +125,45 @@ jobs:
           cd eperusteet-ylops-app
           mvn clean verify --batch-mode
 
-#          mv ${ARTIFACT_NAME}-service/target/${ARTIFACT_NAME}-service.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-service.war
-#          mv ${ARTIFACT_NAME}-app/target/${ARTIFACT_NAME}-app.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-app.war
-#          cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
-#          cp -vr src/main/resources/tomcat $DOCKER_BUILD_DIR/config/
-
       - name: Cache eperusteet-ylops-app build results
         uses: actions/cache@v3
         id: restore-app-build
         with:
           path: eperusteet-ylops-app/target
           key: ${{ github.sha }}
+
+  build-image:
+    needs: [build-and-test-eperusteet-ylops-service, build-and-test-eperusteet-ylops-ui]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Get eperusteet-ylops-service build results
+        uses: actions/cache@v3
+        id: restore-service-build
+        with:
+          path: eperusteet-ylops-service/target
+          key: ${{ github.sha }}
+
+      - name: Get eperusteet-ylops-app build results
+        uses: actions/cache@v3
+        id: restore-app-build
+        with:
+          path: eperusteet-ylops-app/target
+          key: ${{ github.sha }}
+
+      - name: Build image
+        run: |
+          git clone https://github.com/Opetushallitus/ci-tools.git
+          source ci-tools/common/setup-tools.sh
+          export ARTIFACT_NAME="eperusteet-ylops"
+          
+          mv ${ARTIFACT_NAME}-service/target/${ARTIFACT_NAME}-service.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-service.war
+          mv ${ARTIFACT_NAME}-app/target/${ARTIFACT_NAME}-app.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-app.war
+          cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
+          cp -vr src/main/resources/tomcat $DOCKER_BUILD_DIR/config/
+          
+          export BASE_IMAGE="baseimage-war-tomcat8-openjdk8:master"
+          ./ci-tools/common/pull-image.sh
+          ./ci-tools/github-build/build-war.sh ${ARTIFACT_NAME}
+          ./ci-tools/github-build/upload-image.sh ${ARTIFACT_NAME}
