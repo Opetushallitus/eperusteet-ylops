@@ -161,7 +161,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             data = julkaistuOpetussuunnitelmaDataRepository.save(data);
             julkaisu.setDokumentit(dokumentit.stream().map(DokumenttiDto::getId).collect(toSet()));
             julkaisu.setData(data);
-            julkaisu.setRevision(vanhatJulkaisut.size() + 1);
+            julkaisu.setRevision(vanhatJulkaisut.stream().mapToInt(OpetussuunnitelmanJulkaisu::getRevision).max().orElse(0) + 1);
             julkaisu = julkaisuRepository.save(julkaisu);
 
             muokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.JULKAISU);
