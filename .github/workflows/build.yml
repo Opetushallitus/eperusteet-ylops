@@ -44,6 +44,13 @@ jobs:
           cd eperusteet-ylops-service
           mvn clean verify --batch-mode
 
+      - name: Cache eperusteet-ylops-service build results
+        uses: actions/cache@v3
+        id: restore-service-build
+        with:
+          path: eperusteet-ylops-service/target
+          key: ${{ github.sha }}
+
   build-and-test-eperusteet-ylops-app:
     runs-on: ubuntu-latest
     steps:
