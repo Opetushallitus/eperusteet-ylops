@@ -162,7 +162,7 @@ jobs:
           git push origin ${{ github.ref_name }}
 
   build-image:
-    needs: [build-and-test-eperusteet-ylops-service, build-and-test-eperusteet-ylops-ui]
+    needs: [build-and-test-eperusteet-ylops-service, build-and-test-eperusteet-ylops-ui, generate-spec-file]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
