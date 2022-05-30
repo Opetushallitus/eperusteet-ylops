@@ -338,15 +338,15 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -378,15 +378,15 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
