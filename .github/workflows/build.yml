@@ -38,9 +38,6 @@ jobs:
 
       - name: Build with Maven
         run: |
-          git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
-          source ci-tools/common/setup-tools.sh
-          
           cd eperusteet-ylops-service
           mvn clean verify --batch-mode
 
@@ -104,10 +101,8 @@ jobs:
       - name: Build with Maven
         run: |
           git clone --recurse-submodules --depth 1 https://github.com/Opetushallitus/eperusteet-ylops-ui.git
-          git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
           git clone --depth=1 https://github.com/Opetushallitus/eperusteet
           git clone --depth=1 https://github.com/Opetushallitus/eperusteet-amosaa
-          source ci-tools/common/setup-tools.sh
           export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
             
           cd eperusteet-ylops-ui
