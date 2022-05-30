@@ -10506,9 +10506,24 @@
           "type" : "integer",
           "format" : "int32"
         },
+<<<<<<< HEAD
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+=======
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
+>>>>>>> 07302974... github actions generated spec files [skip actions]
         },
         "size" : {
           "type" : "integer",
@@ -10523,6 +10538,7 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+<<<<<<< HEAD
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10536,6 +10552,8 @@
         },
         "last" : {
           "type" : "boolean"
+=======
+>>>>>>> 07302974... github actions generated spec files [skip actions]
         }
       }
     },
@@ -10546,9 +10564,24 @@
           "type" : "integer",
           "format" : "int32"
         },
+<<<<<<< HEAD
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+=======
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
+>>>>>>> 07302974... github actions generated spec files [skip actions]
         },
         "size" : {
           "type" : "integer",
@@ -10563,6 +10596,7 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+<<<<<<< HEAD
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10576,6 +10610,8 @@
         },
         "last" : {
           "type" : "boolean"
+=======
+>>>>>>> 07302974... github actions generated spec files [skip actions]
         }
       }
     },
@@ -10586,9 +10622,24 @@
           "type" : "integer",
           "format" : "int32"
         },
+<<<<<<< HEAD
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+=======
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
+>>>>>>> 07302974... github actions generated spec files [skip actions]
         },
         "size" : {
           "type" : "integer",
@@ -10603,6 +10654,7 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+<<<<<<< HEAD
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10616,6 +10668,8 @@
         },
         "last" : {
           "type" : "boolean"
+=======
+>>>>>>> 07302974... github actions generated spec files [skip actions]
         }
       }
     },
