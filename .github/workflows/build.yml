@@ -14,6 +14,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   EPERUSTEET_SERVICE_DIR: ${{ github.workspace }}/eperusteet/eperusteet/eperusteet-service
   AMOSAA_SERVICE_DIR: ${{ github.workspace }}/eperusteet-amosaa/eperusteet-amosaa-service
+  ARTIFACT_NAME: eperusteet-ylops
 
 jobs:
   build-and-test-eperusteet-ylops-service:
@@ -39,7 +40,6 @@ jobs:
         run: |
           git clone --depth 1 https://github.com/Opetushallitus/ci-tools.git
           source ci-tools/common/setup-tools.sh
-          export ARTIFACT_NAME="eperusteet-ylops"
           
           cd eperusteet-ylops-service
           mvn clean verify --batch-mode
@@ -108,7 +108,6 @@ jobs:
           git clone --depth=1 https://github.com/Opetushallitus/eperusteet
           git clone --depth=1 https://github.com/Opetushallitus/eperusteet-amosaa
           source ci-tools/common/setup-tools.sh
-          export ARTIFACT_NAME="eperusteet-ylops"
           export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
             
           cd eperusteet-ylops-ui
@@ -156,7 +155,6 @@ jobs:
         run: |
           git clone https://github.com/Opetushallitus/ci-tools.git
           source ci-tools/common/setup-tools.sh
-          export ARTIFACT_NAME="eperusteet-ylops"
           
           mv ${ARTIFACT_NAME}-service/target/${ARTIFACT_NAME}-service.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-service.war
           mv ${ARTIFACT_NAME}-app/target/${ARTIFACT_NAME}-app.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-app.war
