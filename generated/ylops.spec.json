@@ -2199,6 +2199,27 @@
         }
       }
     },
+    "/opetussuunnitelmat/{id}/opetussuunnitelmanPohjallaUusiaTeksteja" : {
+      "post" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "opetussuunnitelmanPohjallaUusiaTeksteja",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "boolean"
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/{id}/opetussuunnitelmat" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
@@ -2371,6 +2392,24 @@
       "post" : {
         "tags" : [ "Opetussuunnitelmat" ],
         "operationId" : "sync",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{id}/syncTekstitPohjasta" : {
+      "post" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "syncTekstitPohjasta",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -6492,6 +6531,14 @@
         }
       }
     },
+    "AipePerusteenSisaltoDto" : {
+      "type" : "object",
+      "properties" : {
+        "sisalto" : {
+          "$ref" : "#/definitions/TekstiKappaleViiteDto"
+        }
+      }
+    },
     "DokumenttiDto" : {
       "type" : "object",
       "properties" : {
@@ -7638,12 +7685,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -10455,13 +10502,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10480,12 +10527,12 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
@@ -10495,13 +10542,13 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10520,12 +10567,12 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
@@ -10535,13 +10582,13 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10560,12 +10607,12 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
@@ -10717,6 +10764,9 @@
         },
         "tpo" : {
           "$ref" : "#/definitions/TPOOpetuksenSisaltoDto"
+        },
+        "aipe" : {
+          "$ref" : "#/definitions/AipePerusteenSisaltoDto"
         }
       }
     },

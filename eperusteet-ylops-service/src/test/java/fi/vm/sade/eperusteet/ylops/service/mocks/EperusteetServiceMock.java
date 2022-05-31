@@ -58,6 +58,9 @@ import javax.annotation.PostConstruct;
 public class EperusteetServiceMock extends EperusteetLocalService {
 
     public static final String DIAARINUMERO = "mock-diaarinumero";
+    public static final String PERUSOPETUS_DIAARINUMERO = "perusopetus-diaarinumero";
+    public static final String LOPS2019_DIAARINUMERO = "1/2/3";
+
     private EperusteetPerusteDto perusteDto = null;
 
     @Autowired
