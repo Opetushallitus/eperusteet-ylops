@@ -1,13 +1,5 @@
 name: Eperusteet-ylops build
-#TODO muuta kunhan valmis
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - EP-3158-github-actions
-    # Workflow ajetaan jos jokin muu kuin markdown tiedosto muuttui
-    paths-ignore:
-      - '**.md'
+on: [workflow_dispatch, push]
 
 env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
