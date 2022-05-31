@@ -7685,12 +7685,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -10531,6 +10531,19 @@
           "format" : "int64"
 >>>>>>> c2f9be87... github actions generated spec files [skip actions]
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -10546,6 +10559,7 @@
           "format" : "int32"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10561,6 +10575,8 @@
           "type" : "boolean"
 =======
 >>>>>>> 07302974... github actions generated spec files [skip actions]
+=======
+>>>>>>> 18942882... github actions generated spec files [skip actions]
         }
       }
     },
@@ -10607,6 +10623,19 @@
           "type" : "integer",
           "format" : "int64"
 >>>>>>> c2f9be87... github actions generated spec files [skip actions]
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10623,6 +10652,7 @@
           "format" : "int32"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10670,6 +10700,8 @@
 <<<<<<< HEAD
 >>>>>>> 07302974... github actions generated spec files [skip actions]
 =======
+=======
+>>>>>>> 18942882... github actions generated spec files [skip actions]
         }
       }
     },
@@ -10684,6 +10716,19 @@
           "type" : "integer",
           "format" : "int64"
 >>>>>>> c2f9be87... github actions generated spec files [skip actions]
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10700,6 +10745,7 @@
           "format" : "int32"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 >>>>>>> c2f9be87... github actions generated spec files [skip actions]
         },
@@ -10720,6 +10766,8 @@
 >>>>>>> 07302974... github actions generated spec files [skip actions]
 =======
 >>>>>>> c2f9be87... github actions generated spec files [skip actions]
+=======
+>>>>>>> 18942882... github actions generated spec files [skip actions]
         }
       }
     },
