@@ -12,6 +12,7 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaHierarkiaKopiointiService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjanVaihto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,75 +40,8 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
-    private void kopioiHierarkia(TekstiKappaleViite vanha,
-                                 TekstiKappaleViite parent,
-                                 Map<Long, TekstiKappaleViite> omat,
-                                 Map<Long, TekstiKappaleViite> perusteen) {
-        List<TekstiKappaleViite> vanhaLapset = vanha.getLapset();
-        if (vanhaLapset != null) {
-            vanhaLapset.stream()
-                .filter(original -> original.getTekstiKappale() != null)
-                .forEach(original -> {
-                    TekstiKappaleViite tkv = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(original));
-                    tkv.setVanhempi(parent);
-                    tkv.setOmistussuhde(original.getOmistussuhde());
-                    tkv.setTekstiKappale(tekstiKappaleRepository.save(tkv.getTekstiKappale()));
-                    parent.getLapset().add(tkv);
-                    kopioiHierarkia(original, tkv, omat, perusteen);
-
-                    if (tkv.getPerusteTekstikappaleId() != null) {
-                        // Perusteen tekstin paikallinen tarkennus
-                        if (perusteen.containsKey(tkv.getPerusteTekstikappaleId())) {
-                            TekstiKappaleViite viite = perusteen.get(tkv.getPerusteTekstikappaleId());
-                            if (viite.getTekstiKappale() != null) {
-                                tkv.getTekstiKappale().setTeksti(viite.getTekstiKappale().getTeksti());
-                            }
-                        }
-
-                        // Omat alikappaleet
-                        if (omat.containsKey(tkv.getPerusteTekstikappaleId())) {
-                            TekstiKappaleViite vanhaOma = omat.get(tkv.getPerusteTekstikappaleId());
-                            TekstiKappaleViite oma = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(vanhaOma));
-                            oma.setOmistussuhde(Omistussuhde.OMA);
-                            oma.setLapset(new ArrayList<>());
-                            oma.updateOriginal(null);
-                            oma.setTekstiKappale(tekstiKappaleRepository.save(vanhaOma.getTekstiKappale()));
-                            oma.setVanhempi(tkv);
-                            tkv.getLapset().add(oma);
-                            omat.remove(tkv.getPerusteTekstikappaleId());
-                        }
-                    }
-                });
-        }
-    }
-
-    private Long findPerusteenTekstiId(TekstiKappaleViite viite) {
-        TekstiKappaleViite vanhempi = viite.getVanhempi();
-        while (vanhempi != null) {
-            if (vanhempi.getPerusteTekstikappaleId() != null) {
-                return vanhempi.getPerusteTekstikappaleId();
-            }
-            vanhempi = vanhempi.getVanhempi();
-        }
-        return null;
-    }
-
-    private void collectTekstit(TekstiKappaleViite viite,
-                                Map<Long, TekstiKappaleViite> omat,
-                                Map<Long, TekstiKappaleViite> perusteen) {
-        if (viite.getTekstiKappale() != null) {
-            if (viite.getPerusteTekstikappaleId() == null && viite.getOriginal() == null) {
-                Long perusteenTekstiId = findPerusteenTekstiId(viite);
-                omat.put(perusteenTekstiId, viite);
-            }
-            else {
-                perusteen.put(viite.getPerusteTekstikappaleId(), viite);
-            }
-        }
-        for (TekstiKappaleViite lapsi : viite.getLapset()) {
-            collectTekstit(lapsi, omat, perusteen);
-        }
-    }
+    @Autowired
+    private OpetussuunnitelmaHierarkiaKopiointiService hierarkiaKopiointiService;
 
     @Override
     public void vaihdaPohja(Long opsId, Long pohjaId) {
@@ -128,22 +62,7 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
             throw new BusinessRuleViolationException("uuden-pohjan-organisaatiot-vaarat");
         }
 
-        Map<Long, TekstiKappaleViite> omat = new HashMap<>();
-        Map<Long, TekstiKappaleViite> perusteen = new HashMap<>();
-        collectTekstit(ops.getTekstit(), omat, perusteen);
-
-        ops.setTekstit(tekstikappaleviiteRepository.save(new TekstiKappaleViite()));
-        kopioiHierarkia(uusi.getTekstit(), ops.getTekstit(), omat, perusteen);
-
-        for (TekstiKappaleViite vanhaOma : omat.values()) {
-            TekstiKappaleViite oma = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(vanhaOma));
-            oma.setOmistussuhde(Omistussuhde.OMA);
-            oma.setLapset(new ArrayList<>());
-            oma.updateOriginal(null);
-            oma.setTekstiKappale(tekstiKappaleRepository.save(vanhaOma.getTekstiKappale()));
-            oma.setVanhempi(ops.getTekstit());
-            ops.getTekstit().getLapset().add(oma);
-        }
+        hierarkiaKopiointiService.kopioiPohjanRakenne(ops, uusi);
         ops.setPohja(uusi);
     }
 

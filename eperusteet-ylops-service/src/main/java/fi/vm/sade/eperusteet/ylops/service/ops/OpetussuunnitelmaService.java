@@ -176,6 +176,12 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     void vaihdaPohja(@P("opsId") Long id, Long pohjaId);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void syncTekstitPohjasta(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    boolean opetussuunnitelmanPohjallaUusiaTeksteja(@P("opsId") Long opsId);
+
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     Set<OpetussuunnitelmaInfoDto> vaihdettavatPohjat(@P("opsId") Long id);
 

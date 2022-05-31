@@ -189,6 +189,21 @@ public class OpetussuunnitelmaController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/{id}/syncTekstitPohjasta", method = RequestMethod.POST)
+    @Timed
+    public ResponseEntity syncTekstitPohjasta(
+            @PathVariable("id") final Long id) {
+        opetussuunnitelmaService.syncTekstitPohjasta(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{id}/opetussuunnitelmanPohjallaUusiaTeksteja", method = RequestMethod.POST)
+    @Timed
+    public ResponseEntity<Boolean> opetussuunnitelmanPohjallaUusiaTeksteja(
+            @PathVariable("id") final Long id) {
+        return ResponseEntity.ok(opetussuunnitelmaService.opetussuunnitelmanPohjallaUusiaTeksteja(id));
+    }
+
     @RequestMapping(value = "/{id}/pohjavaihtoehdot", method = RequestMethod.GET)
     @Timed
     public ResponseEntity<Set<OpetussuunnitelmaInfoDto>> haePohjavaihtoehdot(

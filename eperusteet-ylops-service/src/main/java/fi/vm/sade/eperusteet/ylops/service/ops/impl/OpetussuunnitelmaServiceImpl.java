@@ -129,6 +129,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoSe
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsExport;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjaSynkronointi;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjanVaihto;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
@@ -1131,8 +1132,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         tkv.setNaytaPerusteenTeksti(vanhaTkv.isNaytaPerusteenTeksti());
                         tkv.setPerusteTekstikappaleId(vanhaTkv.getPerusteTekstikappaleId());
                         tkv.setLiite(vanhaTkv.isLiite());
-                        // EP-2405 Tämä tekee vielä comebackin
-//                        tkv.setTekstiKappale(teeKopio ? tekstiKappaleRepository.save(vanhaTkv.getTekstiKappale().copy()) : vanhaTkv.getTekstiKappale());
                         TekstiKappale copy = vanhaTkv.getTekstiKappale().copy();
                         copy.setTeksti(null);
                         copy = tekstiKappaleRepository.save(copy);
@@ -1347,6 +1346,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Lops2019Sisalto sisalto = new Lops2019Sisalto();
         sisalto.setOpetussuunnitelma(ops);
         ops.setLops2019(sisalto);
+
         return ops;
     }
 
@@ -1989,6 +1989,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public Set<OpetussuunnitelmaInfoDto> vaihdettavatPohjat(Long id) {
         return dispatcher.get(KoulutustyyppiToteutus.LOPS2019, OpsPohjanVaihto.class).haeVaihtoehdot(id);
+    }
+
+    @Override
+    public void syncTekstitPohjasta(Long id) {
+        dispatcher.get(KoulutustyyppiToteutus.LOPS2019, OpsPohjaSynkronointi.class).syncTekstitPohjasta(id);
+    }
+
+    @Override
+    public boolean opetussuunnitelmanPohjallaUusiaTeksteja(Long id) {
+        return dispatcher.get(id, OpsPohjaSynkronointi.class).opetussuunnitelmanPohjallaUusiaTeksteja(id);
     }
 
     @Override

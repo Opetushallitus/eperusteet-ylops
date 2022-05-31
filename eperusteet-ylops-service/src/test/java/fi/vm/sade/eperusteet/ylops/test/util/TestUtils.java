@@ -46,6 +46,10 @@ public abstract class TestUtils {
         return LokalisoituTeksti.of(Collections.singletonMap(kieli, teksti));
     }
 
+    public static LokalisoituTeksti lokalisoituTekstiOf(String teksti) {
+        return LokalisoituTeksti.of(Collections.singletonMap(Kieli.FI, teksti));
+    }
+
     static Long uniikki = (long) 0;
 
     static public String uniikkiString() {
