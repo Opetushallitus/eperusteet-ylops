@@ -2200,7 +2200,7 @@
       }
     },
     "/opetussuunnitelmat/{id}/opetussuunnitelmanPohjallaUusiaTeksteja" : {
-      "post" : {
+      "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
         "operationId" : "opetussuunnitelmanPohjallaUusiaTeksteja",
         "parameters" : [ {
@@ -10502,13 +10502,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10527,10 +10527,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
@@ -10542,13 +10542,13 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10567,10 +10567,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
@@ -10582,13 +10582,13 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10607,10 +10607,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
