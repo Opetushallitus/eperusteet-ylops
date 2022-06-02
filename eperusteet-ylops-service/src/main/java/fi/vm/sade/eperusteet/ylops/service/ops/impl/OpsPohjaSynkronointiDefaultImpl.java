@@ -5,11 +5,13 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaHierarkiaKopiointiService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjaSynkronointi;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import java.util.Collections;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,7 +31,26 @@ public class OpsPohjaSynkronointiDefaultImpl implements OpsPohjaSynkronointi {
     public void syncTekstitPohjasta(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.getOne(opsId);
         Opetussuunnitelma pohja = opetussuunnitelmaRepository.getOne(ops.getPohja().getId());
+
+        Set<UUID> aiemmatTekstikappaleTunnisteet = getOpetussuunnitelmaOmatTekstikappaleViiteUUID(ops);
+
         hierarkiaKopiointiService.kopioiPohjanRakenne(ops, pohja);
+
+        Set<UUID> uudetTekstikappaleTunnisteet = getOpetussuunnitelmaOmatTekstikappaleViiteUUID(ops);
+
+        if (aiemmatTekstikappaleTunnisteet.size() > 0 && !uudetTekstikappaleTunnisteet.contains(aiemmatTekstikappaleTunnisteet)) {
+            throw new BusinessRuleViolationException("hierarkiakopiointi-epaonnistui");
+        }
+    }
+
+    private Set<UUID> getOpetussuunnitelmaOmatTekstikappaleViiteUUID(Opetussuunnitelma ops) {
+        return CollectionUtil.treeToStream(
+                ops.getTekstit(),
+                TekstiKappaleViite::getLapset)
+                .filter(tkv -> tkv.getVanhempi() != null)
+                .filter(perusteTekstikappaleId -> perusteTekstikappaleId == null)
+                .map(tkv -> tkv.getTekstiKappale().getTunniste())
+                .collect(Collectors.toSet());
     }
 
     @Override
