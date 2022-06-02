@@ -197,7 +197,7 @@ public class OpetussuunnitelmaController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{id}/opetussuunnitelmanPohjallaUusiaTeksteja", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}/opetussuunnitelmanPohjallaUusiaTeksteja", method = RequestMethod.GET)
     @Timed
     public ResponseEntity<Boolean> opetussuunnitelmanPohjallaUusiaTeksteja(
             @PathVariable("id") final Long id) {
