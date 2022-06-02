@@ -179,7 +179,7 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void syncTekstitPohjasta(@P("opsId") Long opsId);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     boolean opetussuunnitelmanPohjallaUusiaTeksteja(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
