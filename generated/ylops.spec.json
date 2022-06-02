@@ -10502,47 +10502,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
-        },
-<<<<<<< HEAD
-<<<<<<< HEAD
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-=======
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
->>>>>>> 07302974... github actions generated spec files [skip actions]
-=======
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
->>>>>>> c2f9be87... github actions generated spec files [skip actions]
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10557,9 +10523,6 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10567,75 +10530,25 @@
         "first" : {
           "type" : "boolean"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
-=======
->>>>>>> 07302974... github actions generated spec files [skip actions]
-=======
->>>>>>> 18942882... github actions generated spec files [skip actions]
         }
       }
     },
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-=======
->>>>>>> c2f9be87... github actions generated spec files [skip actions]
-        },
-<<<<<<< HEAD
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
-=======
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
-<<<<<<< HEAD
->>>>>>> 07302974... github actions generated spec files [skip actions]
-=======
-        }
-      }
-    },
-    "PageOpetussuunnitelmaInfoDto" : {
-      "type" : "object",
-      "properties" : {
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
->>>>>>> c2f9be87... github actions generated spec files [skip actions]
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10650,9 +10563,6 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10660,75 +10570,25 @@
         "first" : {
           "type" : "boolean"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
-=======
->>>>>>> 07302974... github actions generated spec files [skip actions]
         }
       }
     },
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-=======
->>>>>>> c2f9be87... github actions generated spec files [skip actions]
-        },
-<<<<<<< HEAD
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
-=======
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
-<<<<<<< HEAD
->>>>>>> 07302974... github actions generated spec files [skip actions]
-=======
-=======
->>>>>>> 18942882... github actions generated spec files [skip actions]
-        }
-      }
-    },
-    "PageOpetussuunnitelmaJulkinenDto" : {
-      "type" : "object",
-      "properties" : {
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
->>>>>>> c2f9be87... github actions generated spec files [skip actions]
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10743,11 +10603,6 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c2f9be87... github actions generated spec files [skip actions]
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10755,19 +10610,12 @@
         "first" : {
           "type" : "boolean"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
-<<<<<<< HEAD
-=======
->>>>>>> 07302974... github actions generated spec files [skip actions]
-=======
->>>>>>> c2f9be87... github actions generated spec files [skip actions]
-=======
->>>>>>> 18942882... github actions generated spec files [skip actions]
         }
       }
     },
