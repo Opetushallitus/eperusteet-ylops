@@ -38,7 +38,7 @@ public class OpsPohjaSynkronointiDefaultImpl implements OpsPohjaSynkronointi {
 
         Set<UUID> uudetTekstikappaleTunnisteet = getOpetussuunnitelmaOmatTekstikappaleViiteUUID(ops);
 
-        if (aiemmatTekstikappaleTunnisteet.size() > 0 && !uudetTekstikappaleTunnisteet.contains(aiemmatTekstikappaleTunnisteet)) {
+        if (aiemmatTekstikappaleTunnisteet.size() > 0 && !uudetTekstikappaleTunnisteet.containsAll(aiemmatTekstikappaleTunnisteet)) {
             throw new BusinessRuleViolationException("hierarkiakopiointi-epaonnistui");
         }
     }
