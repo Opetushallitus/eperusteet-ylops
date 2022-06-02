@@ -121,7 +121,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
             assertThat(tkViitteet(ops1)).hasSize(20);
 
-            hierarkiaKopiointiService.kopioiPohjanRakenne(ops1, pohjaOps);
+            opsPohjaSynkronointi.syncTekstitPohjasta(ops1Id);
 
             assertThat(tkViitteet(ops1)).hasSize(26);
             assertThat(perusteTekstikappaleIdt(ops1)).hasSize(17);
@@ -140,7 +140,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
             assertThat(tkViitteet(ops2)).hasSize(20);
 
-            hierarkiaKopiointiService.kopioiPohjanRakenne(ops2, ops1);
+            opsPohjaSynkronointi.syncTekstitPohjasta(ops2Id);
 
             assertThat(tkViitteet(ops2)).hasSize(32);
             assertThat(perusteTekstikappaleIdt(ops2)).hasSize(17);
@@ -161,7 +161,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         addTekstikappaleLapsi("perustetekstin alla oleva teksti", ops2Id, findTkNimi(ops2, "Uudistuva lukiokoulutus").getId());
         assertThat(tkViitteet(ops2)).hasSize(18);
 
-        hierarkiaKopiointiService.kopioiPohjanRakenne(ops2, ops1);
+        opsPohjaSynkronointi.syncTekstitPohjasta(ops2Id);
         assertThat(tkViitteet(ops2)).hasSize(17);
 
         assertThat(findTkNimi(ops1, "Uudistuva lukiokoulutus")).isNull();
@@ -189,7 +189,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
             TekstiKappaleViiteDto.Matala tk1 = addTekstikappale("ops2 oma tekstikappale", ops2Id);
         }
 
-        hierarkiaKopiointiService.kopioiPohjanRakenne(ops1, ops2);
+        opsPohjaSynkronointi.syncTekstitPohjasta(ops2Id);
 
         assertThat(findTkNimi(ops1, "Uudistuva lukiokoulutus").getTekstiKappale().getTeksti().getTeksti().get(Kieli.FI)).isEqualTo("ops1 teksti");
         assertThat(findTkNimi(ops1, "ops1 oma tekstikappale")).isNotNull();
