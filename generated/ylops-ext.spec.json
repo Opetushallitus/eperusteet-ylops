@@ -352,10 +352,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
@@ -392,10 +392,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
