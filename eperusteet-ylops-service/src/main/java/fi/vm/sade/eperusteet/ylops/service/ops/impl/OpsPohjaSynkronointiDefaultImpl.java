@@ -2,11 +2,13 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaHierarkiaKopiointiService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjaSynkronointi;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import java.util.Collections;
@@ -27,6 +29,9 @@ public class OpsPohjaSynkronointiDefaultImpl implements OpsPohjaSynkronointi {
     @Autowired
     private OpetussuunnitelmaHierarkiaKopiointiService hierarkiaKopiointiService;
 
+    @Autowired
+    private OpetussuunnitelmanMuokkaustietoService opetussuunnitelmanMuokkaustietoService;
+
     @Override
     public void syncTekstitPohjasta(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.getOne(opsId);
@@ -41,6 +46,8 @@ public class OpsPohjaSynkronointiDefaultImpl implements OpsPohjaSynkronointi {
         if (aiemmatTekstikappaleTunnisteet.size() > 0 && !uudetTekstikappaleTunnisteet.containsAll(aiemmatTekstikappaleTunnisteet)) {
             throw new BusinessRuleViolationException("hierarkiakopiointi-epaonnistui");
         }
+
+        opetussuunnitelmanMuokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-pohja-teksti-synkronointi");
     }
 
     private Set<UUID> getOpetussuunnitelmaOmatTekstikappaleViiteUUID(Opetussuunnitelma ops) {
