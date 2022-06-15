@@ -38,7 +38,7 @@ jobs:
         id: restore-service-build
         with:
           path: eperusteet-ylops-service/target
-          key: ${{ github.sha }}
+          key: ${{ github.run_number }}-${{ github.run_attempt }}-service
 
   build-and-test-eperusteet-ylops-ui:
     runs-on: ubuntu-latest
@@ -116,7 +116,7 @@ jobs:
         id: restore-app-build
         with:
           path: eperusteet-ylops-app/target
-          key: ${{ github.sha }}
+          key: ${{ github.run_number }}-${{ github.run_attempt }}-app
 
   # generate-spec-file:
     # runs-on: ubuntu-latest
@@ -164,14 +164,14 @@ jobs:
         id: restore-service-build
         with:
           path: eperusteet-ylops-service/target
-          key: ${{ github.sha }}
+          key: ${{ github.run_number }}-${{ github.run_attempt }}-service
 
       - name: Get eperusteet-ylops-app build results
         uses: actions/cache@v3
         id: restore-app-build
         with:
           path: eperusteet-ylops-app/target
-          key: ${{ github.sha }}
+          key: ${{ github.run_number }}-${{ github.run_attempt }}-app
 
       - name: Build image
         run: |
