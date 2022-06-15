@@ -19,6 +19,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.PalauteDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
@@ -68,4 +69,7 @@ public interface EperusteetService {
 
     @PreAuthorize("permitAll()")
     PalauteDto lahetaPalaute(PalauteDto palaute) throws JsonProcessingException;
+
+    @PreAuthorize("permitAll()")
+    TermiDto getTermi(final Long perusteId, String avain);
 }

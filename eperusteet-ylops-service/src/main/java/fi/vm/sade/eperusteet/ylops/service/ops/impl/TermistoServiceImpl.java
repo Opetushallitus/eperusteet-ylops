@@ -19,6 +19,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtumaAuditointitiedoilla;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
+import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TermistoService;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -53,6 +54,9 @@ public class TermistoServiceImpl implements TermistoService {
     OpetussuunnitelmaRepository opsit;
 
     @Autowired
+    EperusteetService eperusteetService;
+
+    @Autowired
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
     @Override
@@ -80,6 +84,11 @@ public class TermistoServiceImpl implements TermistoService {
     public TermiDto getTermi(Long opsId, String avain) {
         Opetussuunnitelma ops = opsit.findOne(opsId);
         Termi termi = termisto.findOneByOpsAndAvain(ops, avain);
+
+        if (termi == null) {
+            return eperusteetService.getTermi(ops.getCachedPeruste().getPerusteId(), avain);
+        }
+
         return mapper.map(termi, TermiDto.class);
     }
 
