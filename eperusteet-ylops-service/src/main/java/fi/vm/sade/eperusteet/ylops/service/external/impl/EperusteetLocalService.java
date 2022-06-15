@@ -11,6 +11,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.PalauteDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
@@ -206,6 +207,11 @@ public class EperusteetLocalService implements EperusteetService {
 
     @Override
     public PalauteDto lahetaPalaute(PalauteDto palaute) throws JsonProcessingException {
+        return null;
+    }
+
+    @Override
+    public TermiDto getTermi(Long perusteId, String avain) {
         return null;
     }
 }

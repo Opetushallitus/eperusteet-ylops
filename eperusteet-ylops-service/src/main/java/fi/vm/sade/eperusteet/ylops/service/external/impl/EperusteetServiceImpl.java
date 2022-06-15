@@ -25,6 +25,7 @@ import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.PalauteDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.LokalisointiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
@@ -367,6 +368,12 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     public PalauteDto lahetaPalaute(PalauteDto palaute) throws JsonProcessingException {
         return ophClientHelper.post(eperusteetServiceUrl, String.format(eperusteetServiceUrl + "/api/palaute"), palaute, PalauteDto.class);
+    }
+
+    @Override
+    public TermiDto getTermi(Long perusteId, String avain) {
+        return client.exchange(eperusteetServiceUrl + "/api/perusteet/{perusteId}/termisto/{id}", HttpMethod.GET, httpEntity, TermiDto.class, perusteId, avain).getBody();
+
     }
 
     @Getter
