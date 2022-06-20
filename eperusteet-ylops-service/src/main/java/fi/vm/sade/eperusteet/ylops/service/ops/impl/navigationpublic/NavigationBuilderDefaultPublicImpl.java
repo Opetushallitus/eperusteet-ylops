@@ -1,20 +1,13 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl.navigationpublic;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.TekstiKappaleViiteExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
-import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
-import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
-import fi.vm.sade.eperusteet.ylops.service.ops.impl.navigation.NavigationBuilderDefaultImpl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
@@ -52,9 +45,10 @@ public class NavigationBuilderDefaultPublicImpl implements NavigationBuilderPubl
     }
 
     @Override
-    public NavigationNodeDto buildNavigation(Long opsId) {
-        OpetussuunnitelmaExportDto opetussuunnitelmaDto = opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId);
+    public NavigationNodeDto buildNavigation(Long opsId, boolean esikatselu) {
+        OpetussuunnitelmaExportDto opetussuunnitelmaDto = opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, esikatselu);
         return NavigationNodeDto.of(NavigationType.root)
                 .addAll(buildTekstinavi(opetussuunnitelmaDto.getTekstit()).getChildren());
     }
+
 }

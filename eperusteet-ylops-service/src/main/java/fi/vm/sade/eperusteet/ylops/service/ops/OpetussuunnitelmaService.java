@@ -165,13 +165,11 @@ public interface OpetussuunnitelmaService {
     NavigationNodeDto buildNavigation(@P("opsId") Long opsId, String kieli);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    @Deprecated
     NavigationNodeDto buildNavigationJulkinen(@P("opsId") Long opsId, String kieli);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    NavigationNodeDto buildNavigationPublic(@P("opsId") Long opsId, String kieli);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    void publicNavigationEvict(@P("opsId") Long opsId, String kieli);
+    NavigationNodeDto buildNavigationPublic(@P("opsId") Long opsId, String kieli, boolean esikatselu);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     void vaihdaPohja(@P("opsId") Long id, Long pohjaId);
@@ -190,6 +188,9 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(@P("opsId") Long opsId, boolean esikatselu);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaExportDto getOpetussuunnitelmanJulkaisuWithData(Long opsId, OpetussuunnitelmanJulkaisu julkaisu);
