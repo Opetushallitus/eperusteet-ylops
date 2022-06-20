@@ -165,20 +165,12 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             julkaisu = julkaisuRepository.save(julkaisu);
 
             muokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.JULKAISU);
-            refreshOpetussuunnitelmaNavigation(opsId);
 
             return taytaKayttajaTiedot(mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class));
         } catch (IOException e) {
             e.printStackTrace();
             throw new BusinessRuleViolationException("julkaisun-tallennus-epaonnistui");
         }
-    }
-
-    private void refreshOpetussuunnitelmaNavigation(Long opsId) {
-        Stream.of(Kieli.FI, Kieli.SV, Kieli.EN).forEach(kieli -> {
-            opetussuunnitelmaService.publicNavigationEvict(opsId, kieli.toString());
-            opetussuunnitelmaService.buildNavigationJulkinen(opsId, kieli.toString());
-        });
     }
 
     @Override
@@ -196,8 +188,6 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         julkaisu = julkaisuRepository.save(julkaisu);
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, opetussuunnitelma, MuokkausTapahtuma.JULKAISU);
-        refreshOpetussuunnitelmaNavigation(opsId);
-
         return taytaKayttajaTiedot(mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class));
     }
 

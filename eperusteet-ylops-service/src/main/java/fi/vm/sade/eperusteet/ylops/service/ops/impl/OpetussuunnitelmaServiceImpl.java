@@ -615,20 +615,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    @Cacheable("ops-navigation")
     public NavigationNodeDto buildNavigationJulkinen(Long opsId, String kieli) {
         return buildNavigationWithDate(opsId, new Date(), kieli, NavigationBuilderJulkinen.class);
     }
 
     @Override
-    public NavigationNodeDto buildNavigationPublic(Long opsId, String kieli) {
-        return buildNavigationWithDate(opsId, new Date(), kieli, NavigationBuilderPublic.class);
-    }
-
-    @Override
-    @CacheEvict("ops-navigation")
-    public void publicNavigationEvict(Long opsId, String kieli) {
-        // this method doesn't do anything and is only here for evicting the cache
+    public NavigationNodeDto buildNavigationPublic(Long opsId, String kieli, boolean esikatselu) {
+        NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilderPublic.class).buildNavigation(opsId, kieli, esikatselu);
+        return siirraLiitteetLoppuun(navigationNodeDto);
     }
 
     @Override
@@ -2017,6 +2011,15 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         } else {
             return getExportedOpetussuunnitelma(opsId);
         }
+    }
+
+    @Override
+    public OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(Long opsId, boolean esikatselu) {
+        if (esikatselu) {
+            return getExportedOpetussuunnitelma(opsId);
+        }
+
+        return getOpetussuunnitelmaJulkaistuSisalto(opsId);
     }
 
     @Cacheable(value = "ops-julkaisu", key = "#opsId")

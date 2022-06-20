@@ -11,6 +11,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -63,8 +64,9 @@ public class OpetussuunnitelmaJulkisetController {
     @RequestMapping(value = "/{id}/julkaisu", method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public ResponseEntity<OpetussuunnitelmaExportDto> getOpetussuunnitelmaJulkaistu(@PathVariable("id") final Long id) {
-        return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(id), HttpStatus.OK);
+    public ResponseEntity<OpetussuunnitelmaExportDto> getOpetussuunnitelmaJulkaistu(
+            @PathVariable("id") final Long id, @RequestParam(required = false) boolean esikatselu) {
+        return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(id, esikatselu), HttpStatus.OK);
     }
 
 }
