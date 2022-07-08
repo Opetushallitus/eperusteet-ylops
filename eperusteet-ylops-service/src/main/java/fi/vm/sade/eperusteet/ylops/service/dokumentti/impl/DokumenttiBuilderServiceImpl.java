@@ -75,6 +75,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -370,18 +372,21 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     String avain = node.getAttributes().getNamedItem("data-viite").getNodeValue();
 
                     if (docBase.getOps() != null && docBase.getOps().getId() != null) {
-                        TermiDto termiDto = termistoService.getTermi(docBase.getOps().getId(), avain);
+                        try {
+                            TermiDto termiDto = termistoService.getTermi(docBase.getOps().getId(), avain);
 
-                        // todo: perusteen viite
-                        //if (termiDto == null) {}
-                        if (termiDto != null && termiDto.isAlaviite() && termiDto.getSelitys() != null) {
-                            element.setAttribute("number", String.valueOf(noteNumber));
+                            if (termiDto != null && termiDto.isAlaviite() && termiDto.getSelitys() != null) {
+                                element.setAttribute("number", String.valueOf(noteNumber));
 
-                            LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
-                            String selitys = getTextString(docBase, tekstiDto)
-                                    .replaceAll("<[^>]+>", ""); // Tällä hetkellä tuetaan vain tekstiä
-                            element.setAttribute("text", selitys);
-                            noteNumber++;
+                                LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
+                                String selitys = getTextString(docBase, tekstiDto)
+                                        .replaceAll("<[^>]+>", ""); // Tällä hetkellä tuetaan vain tekstiä
+                                element.setAttribute("text", selitys);
+                                noteNumber++;
+                            }
+                        }
+                        catch (RuntimeException ex) {
+                            LOG.error(ex.getMessage(), ExceptionUtils.getStackTrace(ex));
                         }
                     }
                 }
