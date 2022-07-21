@@ -81,9 +81,11 @@ import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestClientException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -385,8 +387,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                                 noteNumber++;
                             }
                         }
-                        catch (RuntimeException ex) {
+                        catch (HttpMessageNotReadableException | RestClientException ex) {
                             LOG.error(ex.getMessage(), ExceptionUtils.getStackTrace(ex));
+                            return;
                         }
                     }
                 }
