@@ -17,6 +17,7 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import com.google.common.base.Throwables;
 import fi.vm.sade.eperusteet.utils.dto.dokumentti.DokumenttiMetaDto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
@@ -210,12 +211,10 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // Liitteet
         yleisetOsuudetService.addLiitteet(docBase);
 
+        // FIXME EP-3230 Tarvitaan pois kiireellisen generoinnin vuoksi
         // Alaviitteet
-        try {
+        if (!KoulutusTyyppi.VARHAISKASVATUS.equals(ops.getKoulutustyyppi())) {
             buildFootnotes(docBase);
-        }
-        catch (HttpMessageNotReadableException ex) {
-            LOG.error(ex.getLocalizedMessage());
         }
 
         // Kuvat
