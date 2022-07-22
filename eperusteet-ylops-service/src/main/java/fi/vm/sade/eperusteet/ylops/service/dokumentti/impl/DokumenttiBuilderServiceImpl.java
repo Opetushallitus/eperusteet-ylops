@@ -211,10 +211,21 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         yleisetOsuudetService.addLiitteet(docBase);
 
         // Alaviitteet
-        buildFootnotes(docBase);
+        try {
+            buildFootnotes(docBase);
+        }
+        catch (HttpMessageNotReadableException ex) {
+            LOG.error(ex.getLocalizedMessage());
+        }
 
         // Kuvat
-        buildImages(docBase);
+        try {
+            buildImages(docBase);
+        }
+        catch (HttpMessageNotReadableException ex) {
+            LOG.error(ex.getLocalizedMessage());
+        }
+
         buildKuva(docBase, "kansikuva", dokumentti.getKansikuva());
         buildKuva(docBase, "ylatunniste", dokumentti.getYlatunniste());
         buildKuva(docBase, "alatunniste", dokumentti.getAlatunniste());
