@@ -213,9 +213,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
         // FIXME EP-3230 Tarvitaan pois kiireellisen generoinnin vuoksi
         // Alaviitteet
-        if (!KoulutusTyyppi.VARHAISKASVATUS.equals(ops.getKoulutustyyppi())) {
+        //if (!KoulutusTyyppi.VARHAISKASVATUS.equals(ops.getKoulutustyyppi())) {
             buildFootnotes(docBase);
-        }
+        // }
 
         // Kuvat
         try {
@@ -384,23 +384,23 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                     String avain = node.getAttributes().getNamedItem("data-viite").getNodeValue();
 
                     if (docBase.getOps() != null && docBase.getOps().getId() != null) {
-                        try {
-                            TermiDto termiDto = termistoService.getTermi(docBase.getOps().getId(), avain);
+//                        try {
+                        TermiDto termiDto = termistoService.getTermi(docBase.getOps().getId(), avain);
 
-                            if (termiDto != null && termiDto.isAlaviite() && termiDto.getSelitys() != null) {
-                                element.setAttribute("number", String.valueOf(noteNumber));
+                        if (termiDto != null && termiDto.isAlaviite() && termiDto.getSelitys() != null) {
+                            element.setAttribute("number", String.valueOf(noteNumber));
 
-                                LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
-                                String selitys = getTextString(docBase, tekstiDto)
-                                        .replaceAll("<[^>]+>", ""); // Tällä hetkellä tuetaan vain tekstiä
-                                element.setAttribute("text", selitys);
-                                noteNumber++;
-                            }
+                            LokalisoituTekstiDto tekstiDto = termiDto.getSelitys();
+                            String selitys = getTextString(docBase, tekstiDto)
+                                    .replaceAll("<[^>]+>", ""); // Tällä hetkellä tuetaan vain tekstiä
+                            element.setAttribute("text", selitys);
+                            noteNumber++;
                         }
-                        catch (HttpMessageNotReadableException | RestClientException ex) {
-                            LOG.error(ex.getMessage(), ExceptionUtils.getStackTrace(ex));
-                            return;
-                        }
+//                    }
+//                        catch (HttpMessageNotReadableException | RestClientException ex) {
+//                            LOG.error(ex.getMessage(), ExceptionUtils.getStackTrace(ex));
+//                            return;
+//                        }
                     }
                 }
             }
