@@ -327,11 +327,18 @@
     "Page" : {
       "type" : "object",
       "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "totalPages" : {
+        "last" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -340,13 +347,6 @@
         },
         "first" : {
           "type" : "boolean"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -367,11 +367,18 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "totalPages" : {
+        "last" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -380,13 +387,6 @@
         },
         "first" : {
           "type" : "boolean"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
