@@ -211,11 +211,8 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         // Liitteet
         yleisetOsuudetService.addLiitteet(docBase);
 
-        // FIXME EP-3230 Tarvitaan pois kiireellisen generoinnin vuoksi
         // Alaviitteet
-        //if (!KoulutusTyyppi.VARHAISKASVATUS.equals(ops.getKoulutustyyppi())) {
-            buildFootnotes(docBase);
-        // }
+        buildFootnotes(docBase);
 
         // Kuvat
         try {
@@ -383,8 +380,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                 if (node.getAttributes() != null & node.getAttributes().getNamedItem("data-viite") != null) {
                     String avain = node.getAttributes().getNamedItem("data-viite").getNodeValue();
 
-                    if (docBase.getOps() != null && docBase.getOps().getId() != null) {
-//                        try {
+                    if (docBase.getOps() != null && docBase.getOps().getId() != null && StringUtils.hasText(avain)) {
                         TermiDto termiDto = termistoService.getTermi(docBase.getOps().getId(), avain);
 
                         if (termiDto != null && termiDto.isAlaviite() && termiDto.getSelitys() != null) {
@@ -396,11 +392,6 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
                             element.setAttribute("text", selitys);
                             noteNumber++;
                         }
-//                    }
-//                        catch (HttpMessageNotReadableException | RestClientException ex) {
-//                            LOG.error(ex.getMessage(), ExceptionUtils.getStackTrace(ex));
-//                            return;
-//                        }
                     }
                 }
             }
