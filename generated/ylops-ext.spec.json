@@ -335,18 +335,18 @@
           "type" : "integer",
           "format" : "int64"
         },
+        "first" : {
+          "type" : "boolean"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -375,18 +375,18 @@
           "type" : "integer",
           "format" : "int64"
         },
+        "first" : {
+          "type" : "boolean"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
