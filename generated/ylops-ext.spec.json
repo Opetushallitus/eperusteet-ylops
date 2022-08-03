@@ -335,11 +335,11 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "first" : {
-          "type" : "boolean"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
@@ -375,11 +375,11 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "first" : {
-          "type" : "boolean"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
