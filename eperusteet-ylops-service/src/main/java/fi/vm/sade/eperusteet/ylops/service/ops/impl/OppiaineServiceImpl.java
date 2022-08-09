@@ -663,7 +663,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OpsOppiaineDto kopioiMuokattavaksi(Long opsId, Long id) {
+    public OpsOppiaineDto kopioiMuokattavaksi(Long opsId, Long id, boolean asetaPohjanOppiaine) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         opetussuunnitelmaRepository.lock(ops);
@@ -686,6 +686,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .collect(Collectors.toSet());
 
         Oppiaine newOppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
+
+        if (asetaPohjanOppiaine) {
+            newOppiaine.asetaPohjanOppiaine(oppiaine);
+        }
+
         OpsOppiaine kopio = new OpsOppiaine(newOppiaine, true);
         opsOppiaineet.add(kopio);
         ops.setOppiaineet(opsOppiaineet);
@@ -785,7 +790,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         if (oppiaine.getOppiaine() == null) {
             // Jos oppiaine käytössä alempien tasojen OPS:eissa, niin ei onnistu, ellei niitä ensin irroiteta:
             oppiaineet.findOtherOpetussuunnitelmasContainingOpsOppiaine(oppiaine.getId(), ops.getId())
-                    .forEach(otherOps -> kopioiMuokattavaksi(otherOps.getId(), oppiaine.getId()));
+                    .forEach(otherOps -> kopioiMuokattavaksi(otherOps.getId(), oppiaine.getId(), false));
         }
 
         if (oppiaine.isKoosteinen()) {

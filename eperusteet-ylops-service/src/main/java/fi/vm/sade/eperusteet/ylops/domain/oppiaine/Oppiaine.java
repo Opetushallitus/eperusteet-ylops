@@ -86,6 +86,11 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Setter
     private Oppiaine liittyvaOppiaine;
 
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @JoinColumn(name = "pohjan_oppiaine_id")
+    @Getter
+    private Oppiaine pohjanOppiaine;
+
     /**
      * Laajuus vuosiviikkotunteina (vvh)
      */
@@ -320,6 +325,21 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
         } else {
             throw new IllegalStateException("Oppiaineviittausta ei voi muuttaa");
         }
+    }
+
+    public void asetaPohjanOppiaine(Oppiaine pohjanOppiaine) {
+        this.pohjanOppiaine = pohjanOppiaine;
+        setTehtava(new Tekstiosa());
+        setTavoitteet(new Tekstiosa());
+        setArviointi(new Tekstiosa());
+        vuosiluokkakokonaisuudet.forEach(vlk -> {
+            vlk.setArviointi(new Tekstiosa());
+            vlk.setOhjaus(new Tekstiosa());
+            vlk.setTavoitteistaJohdetutOppimisenTavoitteet(new Tekstiosa());
+            vlk.setTehtava(new Tekstiosa());
+            vlk.setTyotavat(new Tekstiosa());
+            vlk.setYleistavoitteet(new Tekstiosa());
+        });
     }
 
     public Set<Opetuksenkohdealue> getKohdealueet() {

@@ -16,28 +16,53 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OpetuksenKeskeinensisaltoalue;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Laajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.*;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteKeskeinensisaltoalueDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsaDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteVuosiluokkakokonaisuudenLaajaalainenosaaminenDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.PerusopetusService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiRivi;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiTaulukko;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
-import org.w3c.dom.Element;
-
-import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.*;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addHeader;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addLokalisoituteksti;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addTeksti;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addTekstiosa;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.cleanHtml;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.getTextString;
+import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.hasLokalisoituteksti;
 
 /**
  * @author isaul
@@ -47,6 +72,9 @@ public class PerusopetusServiceImpl implements PerusopetusService {
 
     @Autowired
     private LocalizedMessagesService messages;
+
+    @Autowired
+    private DtoMapper mapper;
 
     @Override
     public void addVuosiluokkakokonaisuudet(DokumenttiBase docBase) {
@@ -208,10 +236,18 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                 PerusteOppiaineDto perusteOppiaineDto = null;
                 PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto = null;
                 Oppiaineenvuosiluokkakokonaisuus oaVlk = null;
+                OppiaineenVuosiluokkakokonaisuusDto oaPohjanVlk = new OppiaineenVuosiluokkakokonaisuusDto();
 
                 Optional<Oppiaineenvuosiluokkakokonaisuus> optOaVlk = oaVlkset.stream()
                         .filter(o -> o.getVuosiluokkakokonaisuus().getId() == vlk.getTunniste().getId())
                         .findFirst();
+
+                if (oppiaine.getPohjanOppiaine() != null) {
+                    oaPohjanVlk = oppiaine.getPohjanOppiaine()
+                            .getVuosiluokkakokonaisuus(vlk.getTunniste().getId())
+                            .map(ovlk -> mapper.map(ovlk, OppiaineenVuosiluokkakokonaisuusDto.class))
+                            .orElse(new OppiaineenVuosiluokkakokonaisuusDto());
+                }
 
                 if (optOaVlk.isPresent()) {
                     oaVlk = optOaVlk.get();
@@ -238,7 +274,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                     addOppiaineTehtava(docBase, oppiaine, perusteOppiaineDto);
 
                     // Oppiaineen vuosiluokkakokonaiuuden kohtaiset
-                    addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, oaVlk);
+                    addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, oaVlk, oaPohjanVlk);
 
                     docBase.getGenerator().decreaseDepth();
 
@@ -273,30 +309,36 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                 addLokalisoituteksti(docBase, tehtava.getTeksti(), "cite");
             }
         }
+
+        if (oppiaine.getPohjanOppiaine() != null) {
+            addTekstiosa(docBase, oppiaine.getPohjanOppiaine().getTehtava(), "div");
+        }
+
         addTekstiosa(docBase, oppiaine.getTehtava(), "div");
     }
 
     private void addOppiaineVuosiluokkkakokonaisuus(DokumenttiBase docBase,
                                                     PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto,
-                                                    Oppiaineenvuosiluokkakokonaisuus oaVlkDto) {
+                                                    Oppiaineenvuosiluokkakokonaisuus oaVlkDto,
+                                                    OppiaineenVuosiluokkakokonaisuusDto pohjanVlkDto) {
 
         if (oaVlkDto == null) {
             return;
         }
 
         if (perusteOaVlkDto != null) {
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), perusteOaVlkDto.getTehtava());
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getYleistavoitteet(), null);
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), perusteOaVlkDto.getTyotavat());
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), perusteOaVlkDto.getOhjaus());
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), perusteOaVlkDto.getArviointi());
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), pohjanVlkDto.getTehtava(), perusteOaVlkDto.getTehtava());
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getYleistavoitteet(), pohjanVlkDto.getYleistavoitteet(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), pohjanVlkDto.getTyotavat(), perusteOaVlkDto.getTyotavat());
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), pohjanVlkDto.getOhjaus(), perusteOaVlkDto.getOhjaus());
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), pohjanVlkDto.getArviointi(), perusteOaVlkDto.getArviointi());
             addTavoitteetJaSisaltoalueet(docBase, perusteOaVlkDto, oaVlkDto);
         } else {
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), null);
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getYleistavoitteet(), null);
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), null);
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), null);
-            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTehtava(), pohjanVlkDto.getTehtava(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getYleistavoitteet(), pohjanVlkDto.getYleistavoitteet(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getTyotavat(), pohjanVlkDto.getTyotavat(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getOhjaus(), pohjanVlkDto.getOhjaus(), null);
+            addOppiaineYleisetOsiot(docBase, oaVlkDto.getArviointi(), pohjanVlkDto.getArviointi(), null);
             addTavoitteetJaSisaltoalueet(docBase, null, oaVlkDto);
         }
     }
@@ -742,7 +784,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
         }
     }
 
-    private void addOppiaineYleisetOsiot(DokumenttiBase docBase, Tekstiosa tekstiosa, PerusteTekstiOsaDto perusteTekstiOsaDto) {
+    private void addOppiaineYleisetOsiot(DokumenttiBase docBase, Tekstiosa tekstiosa, TekstiosaDto pohjanTekstiosa, PerusteTekstiOsaDto perusteTekstiOsaDto) {
         if (tekstiosa != null) {
             LokalisoituTeksti otsikko = tekstiosa.getOtsikko();
             if (otsikko != null) {
@@ -750,6 +792,10 @@ public class PerusopetusServiceImpl implements PerusopetusService {
             } else if (perusteTekstiOsaDto != null) {
                 addHeader(docBase, getTextString(docBase, perusteTekstiOsaDto.getOtsikko()));
                 addLokalisoituteksti(docBase, perusteTekstiOsaDto.getTeksti(), "cite");
+            }
+
+            if (pohjanTekstiosa != null && pohjanTekstiosa.getTeksti() != null && pohjanTekstiosa.getTeksti().isPresent()) {
+                addLokalisoituteksti(docBase, pohjanTekstiosa.getTeksti().get(), "div");
             }
 
             addLokalisoituteksti(docBase, tekstiosa.getTeksti(), "div");
@@ -790,6 +836,13 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                               Oppiaine oppiaine, Vuosiluokkakokonaisuus vlk) {
         Optional<Oppiaineenvuosiluokkakokonaisuus> optOaVlk
                 = oppiaine.getVuosiluokkakokonaisuus(vlk.getTunniste().getId());
+        OppiaineenVuosiluokkakokonaisuusDto oaPohjanVlk = new OppiaineenVuosiluokkakokonaisuusDto();
+        if (oppiaine.getPohjanOppiaine() != null) {
+            oaPohjanVlk = oppiaine.getPohjanOppiaine()
+                    .getVuosiluokkakokonaisuus(vlk.getTunniste().getId())
+                    .map(ovlk -> mapper.map(ovlk, OppiaineenVuosiluokkakokonaisuusDto.class))
+                    .orElse(new OppiaineenVuosiluokkakokonaisuusDto());
+        }
 
         if (!optOaVlk.isPresent()) {
             return;
@@ -810,7 +863,11 @@ public class PerusopetusServiceImpl implements PerusopetusService {
         }
 
         // Tehtävä
-        addOppiaineYleisetOsiot(docBase, oppiaine.getTehtava(), perusteTehtavaDto);
+        addOppiaineYleisetOsiot(
+                docBase,
+                oppiaine.getTehtava(),
+                oppiaine.getPohjanOppiaine() != null ? mapper.map(oppiaine.getPohjanOppiaine().getTehtava(), TekstiosaDto.class) : null,
+                perusteTehtavaDto);
 
         // Peruste
         PerusteOppiaineenVuosiluokkakokonaisuusDto perusteOaVlkDto = null;
@@ -824,7 +881,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
         }
 
         // Oppimäärän vuosiluokkakokonaiuuden kohtaiset
-        addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, optOaVlk.get());
+        addOppiaineVuosiluokkkakokonaisuus(docBase, perusteOaVlkDto, optOaVlk.get(), oaPohjanVlk);
 
         docBase.getGenerator().decreaseDepth();
         docBase.getGenerator().increaseNumber();

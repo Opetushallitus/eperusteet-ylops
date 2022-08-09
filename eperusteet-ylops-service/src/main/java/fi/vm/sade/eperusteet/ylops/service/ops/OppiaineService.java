@@ -89,7 +89,7 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OppiainePalautettuDto restore(@P("opsId") Long opsId, Long oppiaineId, Long oppimaaraId, Integer versio);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    OpsOppiaineDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long id);
+    OpsOppiaineDto kopioiMuokattavaksi(@P("opsId") Long opsId, Long id, boolean asetaPohjanOppiaine);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     PoistettuOppiaineDto delete(@P("opsId") Long opsId, Long id);

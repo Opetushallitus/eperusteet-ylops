@@ -252,7 +252,7 @@ public class OppiaineController {
     public UnwrappedOpsOppiaineDto kopioiMuokattavaksi(
             @PathVariable final Long opsId,
             @PathVariable final Long id) {
-        return new UnwrappedOpsOppiaineDto(oppiaineService.kopioiMuokattavaksi(opsId, id));
+        return new UnwrappedOpsOppiaineDto(oppiaineService.kopioiMuokattavaksi(opsId, id, true));
     }
 
     @RequestMapping(value = "/{id}/palautaYlempi", method = RequestMethod.POST)
