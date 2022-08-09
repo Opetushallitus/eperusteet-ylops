@@ -3788,6 +3788,11 @@
           "required" : true,
           "type" : "integer",
           "format" : "int64"
+        }, {
+          "name" : "asetaPohjanOppiaine",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
         } ],
         "responses" : {
           "200" : {
