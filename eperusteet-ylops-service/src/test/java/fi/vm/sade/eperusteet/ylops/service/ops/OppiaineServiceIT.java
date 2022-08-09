@@ -138,13 +138,13 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
 
         OppiaineDto oppiaine = oppiaineService.getAll(ylaOps.getId()).get(0);
-        OpsOppiaineDto opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId());
+        OpsOppiaineDto opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId(), false);
         assertNotEquals("Oppiaineet ovat samat", opsOppiaine.getOppiaine().getId(), oppiaine.getId());
 
         OpsOppiaineDto palautettuOpsOppiaine = oppiaineService.palautaYlempi(alaOps.getId(), opsOppiaine.getOppiaine().getId());
         assertEquals("Oppiaineet eivät ole samat", palautettuOpsOppiaine.getOppiaine().getId(), oppiaine.getId());
 
-        opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId());
+        opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId(), false);
         assertNotEquals("Oppiaineet ovat samat", opsOppiaine.getOppiaine().getId(), oppiaine.getId());
 
         oppiaineService.delete(ylaOps.getId(), oppiaine.getId());
@@ -221,7 +221,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OppiaineDto vieraatKielet = addVieraatKieletOppiaineWithOppimaara(ylaOps);
         OpetussuunnitelmaDto alaOps = createOpsBasedOnOps(ylaOps);
 
-        OpsOppiaineDto vieraatkieletKopio = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), vieraatKielet.getId());
+        OpsOppiaineDto vieraatkieletKopio = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), vieraatKielet.getId(), false);
         oppiaineService.delete(alaOps.getId(), vieraatkieletKopio.getOppiaine().getOppimaarat().iterator().next().getId());
 
         OpetussuunnitelmaDto ylaOpsAfterDelete = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(ylaOps.getId());
@@ -261,13 +261,31 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
     public void testMuokattavaksiKopioiminen() {
         OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
 
-        OppiaineDto oppiaine = oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 1"));
+        OppiaineDto oppiainecreate = TestUtils.createOppiaine("oppiaine 1");
+        OppiaineenVuosiluokkakokonaisuusDto ovk = new OppiaineenVuosiluokkakokonaisuusDto();
+        ovk.setArviointi(getTekstiosa("Arviointi"));
+        ovk.setTehtava(getTekstiosa("Tehtävä"));
+        ovk.setTyotavat(getTekstiosa("Työtavat"));
+        ovk.setOhjaus(getTekstiosa("Ohjaus"));
+        ovk.setVuosiluokkakokonaisuus(vlkViiteRef);
+        oppiainecreate.setVuosiluokkakokonaisuudet(Collections.singleton(ovk));
+        OppiaineDto oppiaine = oppiaineService.add(ylaOps.getId(), oppiainecreate);
 
         OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
         OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
 
-        OpsOppiaineDto opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId());
+        OpsOppiaineDto opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId(), true);
         assertNotEquals("Oppiaineet ovat samat", opsOppiaine.getOppiaine().getId(), oppiaine.getId());
+        assertEquals("Väärä pohja", opsOppiaine.getOppiaine().getPohjanOppiaine().getId(), oppiaine.getId());
+        assertNull(opsOppiaine.getOppiaine().getTehtava().getTeksti());
+        opsOppiaine.getOppiaine().getVuosiluokkakokonaisuudet().forEach(vlk -> {
+            assertNull(vlk.getArviointi().getTeksti());
+            assertNull(vlk.getOhjaus().getTeksti());
+            assertNull(vlk.getTavoitteistaJohdetutOppimisenTavoitteet().getTeksti());
+            assertNull(vlk.getTehtava().getTeksti());
+            assertNull(vlk.getTyotavat().getTeksti());
+            assertNull(vlk.getYleistavoitteet().getTeksti());
+        });
     }
 
     @Test

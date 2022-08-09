@@ -37,4 +37,5 @@ public class OppiaineDto extends OppiaineBaseDto implements ReferenceableDto {
     private String koodiArvo;
     private String muokkaaja;
     private Date muokattu;
+    private OppiaineDto pohjanOppiaine;
 }
