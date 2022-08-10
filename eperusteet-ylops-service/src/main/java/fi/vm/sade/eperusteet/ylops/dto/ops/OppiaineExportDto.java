@@ -34,4 +34,5 @@ public class OppiaineExportDto extends OppiaineBaseDto {
     private Set<OppiaineenVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private String koodiUri;
     private String koodiArvo;
+    private OppiaineExportDto pohjanOppiaine;
 }
