@@ -332,14 +332,16 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
         setTehtava(new Tekstiosa());
         setTavoitteet(new Tekstiosa());
         setArviointi(new Tekstiosa());
-        vuosiluokkakokonaisuudet.forEach(vlk -> {
-            vlk.setArviointi(new Tekstiosa());
-            vlk.setOhjaus(new Tekstiosa());
-            vlk.setTavoitteistaJohdetutOppimisenTavoitteet(new Tekstiosa());
-            vlk.setTehtava(new Tekstiosa());
-            vlk.setTyotavat(new Tekstiosa());
-            vlk.setYleistavoitteet(new Tekstiosa());
-        });
+        if (vuosiluokkakokonaisuudet != null) {
+            vuosiluokkakokonaisuudet.forEach(vlk -> {
+                vlk.setArviointi(new Tekstiosa());
+                vlk.setOhjaus(new Tekstiosa());
+                vlk.setTavoitteistaJohdetutOppimisenTavoitteet(new Tekstiosa());
+                vlk.setTehtava(new Tekstiosa());
+                vlk.setTyotavat(new Tekstiosa());
+                vlk.setYleistavoitteet(new Tekstiosa());
+            });
+        }
     }
 
     public Set<Opetuksenkohdealue> getKohdealueet() {
