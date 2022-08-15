@@ -55,7 +55,7 @@ public class OpsPohjaSynkronointiDefaultImpl implements OpsPohjaSynkronointi {
                 ops.getTekstit(),
                 TekstiKappaleViite::getLapset)
                 .filter(tkv -> tkv.getVanhempi() != null)
-                .filter(perusteTekstikappaleId -> perusteTekstikappaleId == null)
+                .filter(tkv -> tkv.getPerusteTekstikappaleId() == null)
                 .map(tkv -> tkv.getTekstiKappale().getTunniste())
                 .collect(Collectors.toSet());
     }

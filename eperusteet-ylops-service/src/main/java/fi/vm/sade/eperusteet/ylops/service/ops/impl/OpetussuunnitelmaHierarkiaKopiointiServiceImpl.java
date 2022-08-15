@@ -33,7 +33,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
 
     @Override
     public void kopioiPohjanRakenne(Opetussuunnitelma ops, Opetussuunnitelma pohja) {
-        Map<Long, TekstiKappaleViite> omat = new HashMap<>();
+        Map<Long, List<TekstiKappaleViite>> omat = new HashMap<>();
         Map<Long, TekstiKappaleViite> perusteen = new HashMap<>();
         List<TekstiKappaleViite> perusteettomat = new ArrayList<>();
         collectTekstit(ops.getTekstit(), omat, perusteen, perusteettomat);
@@ -41,7 +41,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
         ops.setTekstit(tekstikappaleviiteRepository.save(new TekstiKappaleViite()));
         kopioiHierarkia(pohja.getTekstit(), ops.getTekstit(), omat, perusteen);
 
-        perusteettomat.addAll(omat.values());
+        perusteettomat.addAll(omat.values().stream().flatMap(x -> x.stream()).collect(Collectors.toList()));
         for (TekstiKappaleViite vanhaOma : perusteettomat) {
             TekstiKappaleViite oma = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(vanhaOma));
             oma.setOmistussuhde(Omistussuhde.OMA);
@@ -65,14 +65,17 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
     }
 
     private void collectTekstit(TekstiKappaleViite viite,
-                                Map<Long, TekstiKappaleViite> omat,
+                                Map<Long, List<TekstiKappaleViite>> omat,
                                 Map<Long, TekstiKappaleViite> perusteen,
                                 List<TekstiKappaleViite> perusteettomat) {
         if (viite.getTekstiKappale() != null) {
             if (viite.getPerusteTekstikappaleId() == null && viite.getOriginal() == null) {
                 Long perusteenTekstiId = findPerusteenTekstiId(viite);
                 if (perusteenTekstiId != null) {
-                    omat.put(perusteenTekstiId, viite);
+                    if (omat.get(perusteenTekstiId) == null) {
+                        omat.put(perusteenTekstiId, new ArrayList<>());
+                    }
+                    omat.get(perusteenTekstiId).add(viite);
                 } else {
                     perusteettomat.add(viite);
                 }
@@ -87,7 +90,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
 
     private void kopioiHierarkia(TekstiKappaleViite pohjanViite,
                                  TekstiKappaleViite opsViite,
-                                 Map<Long, TekstiKappaleViite> omat,
+                                 Map<Long, List<TekstiKappaleViite>> omat,
                                  Map<Long, TekstiKappaleViite> perusteen) {
         List<TekstiKappaleViite> pohjanLapset = pohjanViite.getLapset();
         if (pohjanLapset != null) {
@@ -112,14 +115,15 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
 
                             // Omat alikappaleet
                             if (omat.containsKey(tkv.getPerusteTekstikappaleId())) {
-                                TekstiKappaleViite vanhaOma = omat.get(tkv.getPerusteTekstikappaleId());
-                                TekstiKappaleViite oma = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(vanhaOma));
-                                oma.setOmistussuhde(Omistussuhde.OMA);
-                                oma.setLapset(new ArrayList<>());
-                                oma.updateOriginal(null);
-                                oma.setTekstiKappale(tekstiKappaleRepository.save(vanhaOma.getTekstiKappale()));
-                                oma.setVanhempi(tkv);
-                                tkv.getLapset().add(oma);
+                                omat.get(tkv.getPerusteTekstikappaleId()).forEach(vanhaOma -> {
+                                    TekstiKappaleViite oma = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(vanhaOma));
+                                    oma.setOmistussuhde(Omistussuhde.OMA);
+                                    oma.setLapset(new ArrayList<>());
+                                    oma.updateOriginal(null);
+                                    oma.setTekstiKappale(tekstiKappaleRepository.save(vanhaOma.getTekstiKappale()));
+                                    oma.setVanhempi(tkv);
+                                    tkv.getLapset().add(oma);
+                                });
                                 omat.remove(tkv.getPerusteTekstikappaleId());
                             }
                         }

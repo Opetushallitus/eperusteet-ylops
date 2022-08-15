@@ -186,7 +186,8 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
             TekstiKappaleViiteDto.Matala perusteenTekstiDto = tekstiKappaleViiteService.getTekstiKappaleViite(ops2Id, findTkNimi(ops2, "Uudistuva lukiokoulutus").getId());
             perusteenTekstiDto.getTekstiKappale().setTeksti(lt("ops2 teksti"));
             tekstiKappaleViiteService.updateTekstiKappaleViite(ops2Id, perusteenTekstiDto.getId(), perusteenTekstiDto);
-            TekstiKappaleViiteDto.Matala tk1 = addTekstikappale("ops2 oma tekstikappale", ops2Id);
+            TekstiKappaleViiteDto.Matala tk1 = addTekstikappaleLapsi("ops2.1 oma tekstikappale", ops2Id, perusteenTekstiDto.getId());
+            TekstiKappaleViiteDto.Matala tk2 = addTekstikappaleLapsi("ops2.2 oma tekstikappale", ops2Id, perusteenTekstiDto.getId());
         }
 
         opsPohjaSynkronointi.syncTekstitPohjasta(ops2Id);
@@ -197,7 +198,8 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getTekstiKappale().getTeksti().getTeksti().get(Kieli.FI)).isEqualTo("ops2 teksti");
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getOriginal()).isNotNull();
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getOriginal().getTekstiKappale().getTeksti().getTeksti().get(Kieli.FI)).isEqualTo("ops1 teksti");
-        assertThat(findTkNimi(ops2, "ops2 oma tekstikappale")).isNotNull();
+        assertThat(findTkNimi(ops2, "ops2.1 oma tekstikappale")).isNotNull();
+        assertThat(findTkNimi(ops2, "ops2.2 oma tekstikappale")).isNotNull();
         assertThat(findTkNimi(ops1, "ops1 oma tekstikappale")).isNotNull();
 
     }
