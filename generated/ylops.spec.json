@@ -10520,26 +10520,26 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "numberOfElements" : {
+        "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10560,26 +10560,26 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "numberOfElements" : {
+        "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10600,26 +10600,26 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "numberOfElements" : {
+        "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
