@@ -7700,12 +7700,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -10531,15 +10531,15 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "first" : {
           "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10571,15 +10571,15 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "first" : {
           "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10611,15 +10611,15 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "first" : {
           "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
