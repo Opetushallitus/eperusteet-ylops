@@ -186,8 +186,23 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
             TekstiKappaleViiteDto.Matala perusteenTekstiDto = tekstiKappaleViiteService.getTekstiKappaleViite(ops2Id, findTkNimi(ops2, "Uudistuva lukiokoulutus").getId());
             perusteenTekstiDto.getTekstiKappale().setTeksti(lt("ops2 teksti"));
             tekstiKappaleViiteService.updateTekstiKappaleViite(ops2Id, perusteenTekstiDto.getId(), perusteenTekstiDto);
-            TekstiKappaleViiteDto.Matala tk1 = addTekstikappaleLapsi("ops2.1 oma tekstikappale", ops2Id, perusteenTekstiDto.getId());
-            TekstiKappaleViiteDto.Matala tk2 = addTekstikappaleLapsi("ops2.2 oma tekstikappale", ops2Id, perusteenTekstiDto.getId());
+            TekstiKappaleViiteDto.Matala tk21 = addTekstikappaleLapsi("ops2.1 oma tekstikappale perusteen tekstikappaleen alla", ops2Id, perusteenTekstiDto.getId());
+            TekstiKappaleViiteDto.Matala tk22 = addTekstikappaleLapsi("ops2.2 oma tekstikappale perusteen tekstikappaleen alla", ops2Id, perusteenTekstiDto.getId());
+            TekstiKappaleViiteDto.Matala tk211 = addTekstikappaleLapsi("ops2.1.1 oma tekstikappale perusteen tekstikappaleen alla", ops2Id, tk21.getId());
+            TekstiKappaleViiteDto.Matala tk212 = addTekstikappaleLapsi("ops2.1.2 oma tekstikappale perusteen tekstikappaleen alla", ops2Id, tk21.getId());
+            TekstiKappaleViiteDto.Matala tk2121 = addTekstikappaleLapsi("ops2.1.2.1 oma tekstikappale perusteen tekstikappaleen alla", ops2Id, tk212.getId());
+            TekstiKappaleViiteDto.Matala tk2122 = addTekstikappaleLapsi("ops2.1.2.2 oma tekstikappale perusteen tekstikappaleen alla", ops2Id, tk212.getId());
+
+            TekstiKappaleViiteDto.Matala perusteenTekstiDto2 = tekstiKappaleViiteService.getTekstiKappaleViite(ops2Id, findTkNimi(ops2, "Opetussuunnitelman laatiminen ja sisältö").getId());
+            TekstiKappaleViiteDto.Matala tk31 = addTekstikappaleLapsi("ops3.1 oma tekstikappale perusteen tekstikappaleen alla", ops2Id, perusteenTekstiDto2.getId());
+            TekstiKappaleViiteDto.Matala tk32 = addTekstikappaleLapsi("ops3.2 oma tekstikappale perusteen tekstikappaleen alla", ops2Id, perusteenTekstiDto2.getId());
+            TekstiKappaleViiteDto.Matala tk311 = addTekstikappaleLapsi("ops3.1.1 oma tekstikappale perusteen tekstikappaleen alla", ops2Id, tk31.getId());
+            TekstiKappaleViiteDto.Matala tk312 = addTekstikappaleLapsi("ops3.1.2 oma tekstikappale perusteen tekstikappaleen alla", ops2Id, tk31.getId());
+
+            TekstiKappaleViiteDto.Matala tk4 = addTekstikappale("ops4 oma tekstikappale", ops2Id);
+            TekstiKappaleViiteDto.Matala tk5 = addTekstikappale("ops5 oma tekstikappale", ops2Id);
+            TekstiKappaleViiteDto.Matala tk41 = addTekstikappaleLapsi("ops4.1 oma tekstikappale", ops2Id, tk4.getId());
+            TekstiKappaleViiteDto.Matala tk42 = addTekstikappaleLapsi("ops4.2 oma tekstikappale", ops2Id, tk4.getId());
         }
 
         opsPohjaSynkronointi.syncTekstitPohjasta(ops2Id);
@@ -198,10 +213,37 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getTekstiKappale().getTeksti().getTeksti().get(Kieli.FI)).isEqualTo("ops2 teksti");
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getOriginal()).isNotNull();
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getOriginal().getTekstiKappale().getTeksti().getTeksti().get(Kieli.FI)).isEqualTo("ops1 teksti");
-        assertThat(findTkNimi(ops2, "ops2.1 oma tekstikappale")).isNotNull();
-        assertThat(findTkNimi(ops2, "ops2.2 oma tekstikappale")).isNotNull();
-        assertThat(findTkNimi(ops1, "ops1 oma tekstikappale")).isNotNull();
+        assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getLapset()).hasSize(2);
+        assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getLapset().get(0).getId()).isEqualTo(findTkNimi(ops2, "ops2.1 oma tekstikappale perusteen tekstikappaleen alla").getId());
+        assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getLapset().get(1).getId()).isEqualTo(findTkNimi(ops2, "ops2.2 oma tekstikappale perusteen tekstikappaleen alla").getId());
 
+        assertThat(findTkNimi(ops2, "ops2.1 oma tekstikappale perusteen tekstikappaleen alla")).isNotNull();
+        assertThat(findTkNimi(ops2, "ops2.1 oma tekstikappale perusteen tekstikappaleen alla").getLapset()).hasSize(2);
+        assertThat(findTkNimi(ops2, "ops2.1 oma tekstikappale perusteen tekstikappaleen alla").getLapset().get(0).getId()).isEqualTo(findTkNimi(ops2, "ops2.1.1 oma tekstikappale perusteen tekstikappaleen alla").getId());
+        assertThat(findTkNimi(ops2, "ops2.1 oma tekstikappale perusteen tekstikappaleen alla").getLapset().get(1).getId()).isEqualTo(findTkNimi(ops2, "ops2.1.2 oma tekstikappale perusteen tekstikappaleen alla").getId());
+
+        assertThat(findTkNimi(ops2, "ops2.1.2 oma tekstikappale perusteen tekstikappaleen alla")).isNotNull();
+        assertThat(findTkNimi(ops2, "ops2.1.2 oma tekstikappale perusteen tekstikappaleen alla").getLapset()).hasSize(2);
+        assertThat(findTkNimi(ops2, "ops2.1.2 oma tekstikappale perusteen tekstikappaleen alla").getLapset().get(0).getId()).isEqualTo(findTkNimi(ops2, "ops2.1.2.1 oma tekstikappale perusteen tekstikappaleen alla").getId());
+        assertThat(findTkNimi(ops2, "ops2.1.2 oma tekstikappale perusteen tekstikappaleen alla").getLapset().get(1).getId()).isEqualTo(findTkNimi(ops2, "ops2.1.2.2 oma tekstikappale perusteen tekstikappaleen alla").getId());
+
+        assertThat(findTkNimi(ops2, "Opetussuunnitelman laatiminen ja sisältö").getLapset()).hasSize(6);
+        assertThat(findTkNimi(ops2, "Opetussuunnitelman laatiminen ja sisältö").getLapset().get(0).getId()).isEqualTo(findTkNimi(ops2, "Uudistuva lukiokoulutus").getId());
+        assertThat(findTkNimi(ops2, "Opetussuunnitelman laatiminen ja sisältö").getLapset().get(1).getId()).isEqualTo(findTkNimi(ops2, "Opetussuunnitelman laatiminen").getId());
+        assertThat(findTkNimi(ops2, "Opetussuunnitelman laatiminen ja sisältö").getLapset().get(2).getId()).isEqualTo(findTkNimi(ops2, "Opetussuunnitelman sisältö").getId());
+        assertThat(findTkNimi(ops2, "Opetussuunnitelman laatiminen ja sisältö").getLapset().get(3).getId()).isEqualTo(findTkNimi(ops2, "Lukiokoulutuksen tehtävä").getId());
+        assertThat(findTkNimi(ops2, "Opetussuunnitelman laatiminen ja sisältö").getLapset().get(4).getId()).isEqualTo(findTkNimi(ops2, "ops3.1 oma tekstikappale perusteen tekstikappaleen alla").getId());
+        assertThat(findTkNimi(ops2, "Opetussuunnitelman laatiminen ja sisältö").getLapset().get(5).getId()).isEqualTo(findTkNimi(ops2, "ops3.2 oma tekstikappale perusteen tekstikappaleen alla").getId());
+        assertThat(findTkNimi(ops2, "ops3.1 oma tekstikappale perusteen tekstikappaleen alla").getLapset()).hasSize(2);
+        assertThat(findTkNimi(ops2, "ops3.1 oma tekstikappale perusteen tekstikappaleen alla").getLapset().get(0).getId()).isEqualTo(findTkNimi(ops2, "ops3.1.1 oma tekstikappale perusteen tekstikappaleen alla").getId());
+        assertThat(findTkNimi(ops2, "ops3.1 oma tekstikappale perusteen tekstikappaleen alla").getLapset().get(1).getId()).isEqualTo(findTkNimi(ops2, "ops3.1.2 oma tekstikappale perusteen tekstikappaleen alla").getId());
+
+        assertThat(findTkNimi(ops2, "ops4 oma tekstikappale")).isNotNull();
+        assertThat(findTkNimi(ops2, "ops4 oma tekstikappale").getLapset()).hasSize(2);
+        assertThat(findTkNimi(ops2, "ops4 oma tekstikappale").getLapset().get(0).getId()).isEqualTo(findTkNimi(ops2, "ops4.1 oma tekstikappale").getId());
+        assertThat(findTkNimi(ops2, "ops4 oma tekstikappale").getLapset().get(1).getId()).isEqualTo(findTkNimi(ops2, "ops4.2 oma tekstikappale").getId());
+
+        assertThat(findTkNimi(ops2, "ops5 oma tekstikappale")).isNotNull();
     }
 
     @Test
