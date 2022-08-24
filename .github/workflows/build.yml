@@ -81,6 +81,8 @@ jobs:
   build-and-test-eperusteet-ylops-ui:
     needs: [generate-spec-file]
     runs-on: ubuntu-latest
+    env:
+        EPERUSTEET_YLOPS_SPECFILE: https://raw.githubusercontent.com/Opetushallitus/eperusteet-ylops/${{ github.ref_name }}/generated/ylops.spec.json
     steps:
       - uses: actions/checkout@v3
 
@@ -143,7 +145,6 @@ jobs:
 
       - name: Build with Maven
         run: |
-          echo "EPERUSTEET_YLOPS_SPECFILE=https://raw.githubusercontent.com/Opetushallitus/eperusteet-ylops/${{ github.ref_name }}/generated/ylops.spec.json" >> $GITHUB_ENV
           git clone ${{ env.EPERUSTEET_YLOPS_UI_GIT_BRANCH }} --recurse-submodules --depth 1 https://github.com/Opetushallitus/eperusteet-ylops-ui.git
           git clone --depth=1 https://github.com/Opetushallitus/eperusteet
           git clone --depth=1 https://github.com/Opetushallitus/eperusteet-amosaa
