@@ -47,11 +47,11 @@ import io.swagger.annotations.Api;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -99,13 +99,17 @@ public class OpetussuunnitelmaController {
             @RequestParam(value = "tila") String tila,
             @RequestParam(value = "koulutustyyppi", required = false) String koulutusTyyppi,
             @RequestParam(value = "nimi", required = false) String nimi,
+            @RequestParam(value = "jarjestys", required = false, defaultValue = "luotu") String jarjestys,
+            @RequestParam(value = "jarjestyssuunta", required = false, defaultValue = "DESC") String jarjestysSuunta,
             @RequestParam(value = "sivu", required = false) final int sivu,
-            @RequestParam(value = "sivukoko", required = false, defaultValue = "10") final int sivukoko) {
+            @RequestParam(value = "sivukoko", required = false, defaultValue = "10") final int sivukoko,
+            @RequestParam(value = "kieli", required = false, defaultValue = "fi") final String kieli) {
         return opetussuunnitelmaService.getSivutettu(
                 Tyyppi.of(tyyppi),
                 Tila.of(tila),
                 StringUtils.isEmpty(koulutusTyyppi) ? null : KoulutusTyyppi.of(koulutusTyyppi),
-                nimi, sivu, sivukoko);
+                nimi, jarjestys, jarjestysSuunta, kieli,
+                sivu, sivukoko);
     }
 
     @RequestMapping(value = "/pohjat", method = RequestMethod.GET)

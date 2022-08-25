@@ -58,6 +58,11 @@ public interface OpetussuunnitelmaService {
             "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
     Page<OpetussuunnitelmaInfoDto> getSivutettu(Tyyppi tyyppi, Tila tila, KoulutusTyyppi koulutustyyppi, String nimi, int sivu, int sivukoko);
 
+    @PreAuthorize("hasPermission(null, 'tarkastelu', 'HALLINTA') ||" +
+            "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).OPS and (hasPermission(null, 'opetussuunnitelma', 'LUKU'))) || " +
+            "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).POHJA and hasPermission(null, 'pohja', 'LUKU'))")
+    Page<OpetussuunnitelmaInfoDto> getSivutettu(Tyyppi tyyppi, Tila tila, KoulutusTyyppi koulutustyyppi, String nimi, String jarjestys, String jarjestysSuunta, String kieli, int sivu, int sivukoko);
+
     @PreAuthorize("permitAll()")
     Long getAmount(Tyyppi tyyppi, Set<Tila> tila);
 

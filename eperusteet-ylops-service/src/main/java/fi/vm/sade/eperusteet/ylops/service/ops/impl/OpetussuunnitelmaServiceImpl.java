@@ -486,14 +486,21 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public Page<OpetussuunnitelmaInfoDto> getSivutettu(Tyyppi tyyppi, Tila tila, KoulutusTyyppi koulutustyyppi, String nimi, int sivu, int sivukoko) {
-        Page<Opetussuunnitelma> opetussuunnitelmat;
-        Pageable pageable = new PageRequest(sivu, sivukoko, new Sort(Sort.Direction.fromString("DESC"), "luotu"));
+        return getSivutettu(tyyppi, tila, koulutustyyppi, nimi, "luotu", "DESC", "fi", sivu, sivukoko);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OpetussuunnitelmaInfoDto> getSivutettu(Tyyppi tyyppi, Tila tila, KoulutusTyyppi koulutustyyppi, String nimi, String jarjestys, String jarjestysSuunta, String kieli, int sivu, int sivukoko) {
+        Page<Object[]> opetussuunnitelmat;
+        Pageable pageable = new PageRequest(sivu, sivukoko, new Sort(Sort.Direction.fromString(jarjestysSuunta), jarjestys));
         if (SecurityUtil.isUserAdmin()) {
             opetussuunnitelmat = opetussuunnitelmaRepository.findSivutettuAdmin(
                     tyyppi,
                     tila.name(),
                     nimi,
                     koulutustyyppi != null ? koulutustyyppi.name() : "",
+                    Kieli.of(kieli),
                     pageable);
         } else {
             Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
@@ -503,10 +510,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     nimi,
                     koulutustyyppi != null ? koulutustyyppi.name() : "",
                     organisaatiot,
+                    Kieli.of(kieli),
                     pageable);
         }
 
-        return opetussuunnitelmat.map(ops -> mapper.map(ops, OpetussuunnitelmaInfoDto.class));
+        return opetussuunnitelmat.map(ops -> mapper.map(ops[0], OpetussuunnitelmaInfoDto.class));
     }
 
     @Override

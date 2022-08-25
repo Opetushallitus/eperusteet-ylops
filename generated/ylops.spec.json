@@ -1942,6 +1942,16 @@
           "required" : false,
           "type" : "string"
         }, {
+          "name" : "jarjestys",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
+          "name" : "jarjestyssuunta",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
+        }, {
           "name" : "sivu",
           "in" : "query",
           "required" : false,
@@ -1953,6 +1963,11 @@
           "required" : false,
           "type" : "integer",
           "format" : "int32"
+        }, {
+          "name" : "kieli",
+          "in" : "query",
+          "required" : false,
+          "type" : "string"
         } ],
         "responses" : {
           "200" : {
@@ -7700,12 +7715,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -10520,13 +10535,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10534,12 +10549,12 @@
         "first" : {
           "type" : "boolean"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10560,13 +10575,13 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10574,12 +10589,12 @@
         "first" : {
           "type" : "boolean"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10600,13 +10615,13 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10614,12 +10629,12 @@
         "first" : {
           "type" : "boolean"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
