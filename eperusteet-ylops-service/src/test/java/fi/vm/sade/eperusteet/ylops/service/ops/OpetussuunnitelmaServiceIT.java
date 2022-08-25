@@ -42,8 +42,10 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -630,7 +632,11 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
             createOpetussuunnitelma((ops) -> {
                 ops.setKoulutustyyppi(KoulutusTyyppi.LUKIOKOULUTUS);
                 ops.setPohja(Reference.of(lukioPohjaDto.getId()));
-                ops.setNimi(LokalisoituTekstiDto.of("nimi" + lkm));
+
+                Map<Kieli, String> kielilla = new HashMap<>();
+                kielilla.put(Kieli.FI, "nimi" + lkm);
+                kielilla.put(Kieli.SV, "nimisv" + lkm);
+                ops.setNimi(new LokalisoituTekstiDto(null, kielilla));
             });
         });
 
@@ -669,5 +675,19 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, null, null, 2, 10);
         assertThat(opsit.getContent()).hasSize(6);
+
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, null, "nimi", "teksti.teksti", "ASC", "fi", 0, 10);
+        assertThat(opsit.getContent()).hasSize(10);
+        assertThat(opsit.getTotalElements()).isEqualTo(25);
+        assertThat(opsit.getTotalPages()).isEqualTo(3);
+        assertThat(opsit.getContent().get(0).getNimi().get(Kieli.FI)).isEqualTo("nimi1");
+
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, null, "nimi", "teksti.teksti", "DESC", "fi", 0, 10);
+        assertThat(opsit.getContent().get(0).getNimi().get(Kieli.FI)).isEqualTo("nimi9");
+
+        opsit = opetussuunnitelmaService.getSivutettu(Tyyppi.OPS, Tila.LUONNOS, null, null, "teksti.teksti", "ASC", "SV", 0, 10);
+        assertThat(opsit.getContent()).hasSize(10);
+        assertThat(opsit.getTotalElements()).isEqualTo(15);
+        assertThat(opsit.getTotalPages()).isEqualTo(2);
     }
 }

@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustieto;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import java.util.Collection;
@@ -87,29 +88,33 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
                     "   OR (o.tila = :tila AND o.julkaisut IS EMPTY)" +
                     " ) " +
                     "AND (coalesce(:nimi, null) IS NULL or LOWER(teksti.teksti) LIKE LOWER(CONCAT('%',:nimi,'%'))) " +
+                    "AND teksti.kieli = :kieli " +
                     "AND (:koulutustyyppi = '' or o.koulutustyyppi = :koulutustyyppi) ";
     String limitedPagedOpetussuunnitelmatOrganisaatiot = "AND org IS NOT NULL AND org IN (:organisaatiot)";
 
     @Query(
-            value = "SELECT DISTINCT o " + limitedPagedOpetussuunnitelmat + limitedPagedOpetussuunnitelmatOrganisaatiot,
-            countQuery = "SELECT COUNT(DISTINCT o) " + limitedPagedOpetussuunnitelmat + limitedPagedOpetussuunnitelmatOrganisaatiot)
-    Page<Opetussuunnitelma> findSivutettu(
+            value = "SELECT DISTINCT o, teksti.teksti " + limitedPagedOpetussuunnitelmat + limitedPagedOpetussuunnitelmatOrganisaatiot,
+            countQuery = "SELECT COUNT(distinct o) " + limitedPagedOpetussuunnitelmat + limitedPagedOpetussuunnitelmatOrganisaatiot)
+    Page<Object[]> findSivutettu(
             @Param("tyyppi") Tyyppi tyyppi,
             @Param("tila") String tila,
             @Param("nimi") String nimi,
             @Param("koulutustyyppi") String koulutusTyyppi,
             @Param("organisaatiot") Collection<String> organisaatiot,
+            @Param("kieli") Kieli kieli,
+
             Pageable pageable
     );
 
     @Query(
-            value = "SELECT DISTINCT o " + limitedPagedOpetussuunnitelmat,
-            countQuery = "SELECT COUNT(DISTINCT o) " + limitedPagedOpetussuunnitelmat)
-    Page<Opetussuunnitelma> findSivutettuAdmin(
+            value = "SELECT DISTINCT o, teksti.teksti " + limitedPagedOpetussuunnitelmat,
+            countQuery = "SELECT COUNT(distinct o) " + limitedPagedOpetussuunnitelmat)
+    Page<Object[]> findSivutettuAdmin(
             @Param("tyyppi") Tyyppi tyyppi,
             @Param("tila") String tila,
             @Param("nimi") String nimi,
             @Param("koulutustyyppi") String koulutusTyyppi,
+            @Param("kieli") Kieli kieli,
             Pageable pageable
     );
 
