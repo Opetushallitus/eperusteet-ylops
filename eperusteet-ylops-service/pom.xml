@@ -24,7 +24,7 @@
         <eperusteet-ylops.devdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.devdb.user}</eperusteet-ylops.devdb.jdbcurl>
         <eperusteet-ylops.ittestdb.jdbcurl>jdbc:postgresql://localhost:5432/${eperusteet-ylops.ittestdb.user}</eperusteet-ylops.ittestdb.jdbcurl>
         <buildhelper.skipAttach>true</buildhelper.skipAttach>
-        <jsoup.version>1.9.2</jsoup.version>
+        <jsoup.version>1.15.3</jsoup.version>
         <ehcache.version>2.6.11</ehcache.version>
         <slf4j.version>1.7.36</slf4j.version>
         <pdfbox.version>2.0.24</pdfbox.version>
