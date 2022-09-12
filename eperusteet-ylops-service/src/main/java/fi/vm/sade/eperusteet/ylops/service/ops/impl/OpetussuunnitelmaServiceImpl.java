@@ -72,17 +72,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaistuQuery;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaQuery;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -1554,12 +1544,38 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         validoiMuutokset(ops, opetussuunnitelmaDto);
 
+        if (ops.getKoulutustyyppi().equals(KoulutusTyyppi.PERUSOPETUS)) {
+            updateOpsPerusopetus(ops, opetussuunnitelmaDto);
+        }
+
         mapper.map(opetussuunnitelmaDto, ops);
         ops = opetussuunnitelmaRepository.save(ops);
 
         muokkaustietoService.addOpsMuokkausTieto(ops.getId(), ops, MuokkausTapahtuma.PAIVITYS);
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    private void updateOpsPerusopetus(Opetussuunnitelma ops, OpetussuunnitelmaDto opetussuunnitelmaDto) {
+        Opetussuunnitelma pohja = ops.getPohja();
+        Map<String, OpsVuosiluokkakokonaisuusDto> lisattavatVlk = pohja.getVuosiluokkakokonaisuudet().stream()
+                .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
+                        .noneMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste()
+                                .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste())))
+                .filter(ovlk -> opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream()
+                        .anyMatch(vk -> UUID.fromString(vk.getVuosiluokkakokonaisuus().getTunniste().get().toString())
+                                .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste().getId())))
+                .map(ovlk -> new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true))
+                .map(ovlk -> mapper.map(ovlk, OpsVuosiluokkakokonaisuusDto.class))
+                .collect(toMap(vlk -> vlk.getVuosiluokkakokonaisuus().getTunniste().get().toString(), vlk -> vlk));
+
+        opetussuunnitelmaDto.setVuosiluokkakokonaisuudet(opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream().map(vlk -> {
+            if(lisattavatVlk.containsKey(vlk.getVuosiluokkakokonaisuus().getTunniste().get().toString())) {
+                return lisattavatVlk.get(vlk.getVuosiluokkakokonaisuus().getTunniste().get().toString());
+            }
+
+            return vlk;
+        }).collect(Collectors.toSet()));
     }
 
     @Override
