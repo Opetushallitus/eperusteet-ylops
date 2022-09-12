@@ -335,9 +335,6 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -347,6 +344,9 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -375,9 +375,6 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -387,6 +384,9 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
