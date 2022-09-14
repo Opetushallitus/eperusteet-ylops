@@ -1560,8 +1560,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma pohja = ops.getPohja();
         Map<String, OpsVuosiluokkakokonaisuusDto> lisattavatVlk = pohja.getVuosiluokkakokonaisuudet().stream()
                 .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
-                        .noneMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste()
-                                .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste())))
+                        .noneMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste().getId()
+                                .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste().getId())))
                 .filter(ovlk -> opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream()
                         .anyMatch(vk -> UUID.fromString(vk.getVuosiluokkakokonaisuus().getTunniste().get().toString())
                                 .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste().getId())))
