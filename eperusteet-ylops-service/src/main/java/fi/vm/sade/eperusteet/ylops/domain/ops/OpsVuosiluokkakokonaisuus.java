@@ -39,7 +39,7 @@ public class OpsVuosiluokkakokonaisuus implements Serializable {
 
     @Getter
     @Setter
-    @ManyToOne(optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne(optional = false, cascade = {CascadeType.PERSIST})
     @NotNull
     private Vuosiluokkakokonaisuus vuosiluokkakokonaisuus;
 
