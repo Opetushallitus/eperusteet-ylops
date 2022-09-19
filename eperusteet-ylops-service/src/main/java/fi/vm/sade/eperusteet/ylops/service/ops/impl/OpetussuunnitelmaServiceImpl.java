@@ -96,6 +96,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaDataRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
@@ -303,6 +304,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Lazy
     @Autowired
     private OpetussuunnitelmaService self;
+
+    @Autowired
+    private VuosiluokkakokonaisuusRepository vuosiluokkakokonaisuusRepository;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -1546,9 +1550,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         if (ops.getKoulutustyyppi().equals(KoulutusTyyppi.PERUSOPETUS)) {
             updateOpsPerusopetus(ops, opetussuunnitelmaDto);
+        } else {
+            mapper.map(opetussuunnitelmaDto, ops);
         }
 
-        mapper.map(opetussuunnitelmaDto, ops);
         ops = opetussuunnitelmaRepository.save(ops);
 
         muokkaustietoService.addOpsMuokkausTieto(ops.getId(), ops, MuokkausTapahtuma.PAIVITYS);
@@ -1558,6 +1563,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private void updateOpsPerusopetus(Opetussuunnitelma ops, OpetussuunnitelmaDto opetussuunnitelmaDto) {
         Opetussuunnitelma pohja = ops.getPohja();
+        boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
         Map<String, OpsVuosiluokkakokonaisuusDto> lisattavatVlk = pohja.getVuosiluokkakokonaisuudet().stream()
                 .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
                         .noneMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste().getId()
@@ -1565,7 +1571,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .filter(ovlk -> opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream()
                         .anyMatch(vk -> UUID.fromString(vk.getVuosiluokkakokonaisuus().getTunniste().get().toString())
                                 .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste().getId())))
-                .map(ovlk -> new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true))
+                .map(ovlk -> teeKopio
+                        ? new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true)
+                        : new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
                 .map(ovlk -> mapper.map(ovlk, OpsVuosiluokkakokonaisuusDto.class))
                 .collect(toMap(vlk -> vlk.getVuosiluokkakokonaisuus().getTunniste().get().toString(), vlk -> vlk));
 
@@ -1576,6 +1584,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
             return vlk;
         }).collect(Collectors.toSet()));
+
+        mapper.map(opetussuunnitelmaDto, ops);
+
+        ops.getVuosiluokkakokonaisuudet().forEach(ovlk -> {
+            if (ovlk.getVuosiluokkakokonaisuus().getId() == null) {
+                vuosiluokkakokonaisuusRepository.save(ovlk.getVuosiluokkakokonaisuus());
+            }
+        });
     }
 
     @Override
