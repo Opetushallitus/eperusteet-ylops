@@ -40,46 +40,46 @@ jobs:
           path: eperusteet-ylops-service/target
           key: ${{ github.run_number }}-${{ github.run_attempt }}-service
 
-  generate-spec-file:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
+  # generate-spec-file:
+    # runs-on: ubuntu-latest
+    # steps:
+      # - uses: actions/checkout@v3
 
-      - name: Set up JDK 8
-        uses: actions/setup-java@v3
-        with:
-          java-version: '8'
-          distribution: 'temurin'
+      # - name: Set up JDK 8
+        # uses: actions/setup-java@v3
+        # with:
+          # java-version: '8'
+          # distribution: 'temurin'
 
-      - name: Cache Maven repository
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-cache-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+      # - name: Cache Maven repository
+        # uses: actions/cache@v3
+        # with:
+          # path: ~/.m2/repository
+          # key: ${{ runner.os }}-maven-cache-${{ hashFiles('**/pom.xml') }}
+          # restore-keys: |
+            # ${{ runner.os }}-maven-
 
-      - name: Generate api
-        run: |
-          if [ "${{ github.ref_name }}" != "master" ]
-          then
-            cd eperusteet-ylops-service
-            mvn clean compile -P generate-openapi
-            cp target/openapi/ylops.spec.json ../generated
+      # - name: Generate api
+        # run: |
+          # if [ "${{ github.ref_name }}" != "master" ]
+          # then
+            # cd eperusteet-ylops-service
+            # mvn clean compile -P generate-openapi
+            # cp target/openapi/ylops.spec.json ../generated
           
-            mvn clean compile -P generate-openapi-ext 
-            cp target/openapi/ylops-ext.spec.json ../generated
+            # mvn clean compile -P generate-openapi-ext 
+            # cp target/openapi/ylops-ext.spec.json ../generated
           
-            git config --global user.name "GitHub Actions runner"
-            git config --global user.email "<>"
-            git add ../generated/ylops-ext.spec.json
-            git add ../generated/ylops.spec.json
-            git commit -m "github actions generated spec files [skip actions]"
-            git push origin ${{ github.ref_name }}
-          fi
+            # git config --global user.name "GitHub Actions runner"
+            # git config --global user.email "<>"
+            # git add ../generated/ylops-ext.spec.json
+            # git add ../generated/ylops.spec.json
+            # git commit -m "github actions generated spec files [skip actions]"
+            # git push origin ${{ github.ref_name }}
+          # fi
 
   build-and-test-eperusteet-ylops-ui:
-    needs: [generate-spec-file]
+    # needs: [generate-spec-file]
     runs-on: ubuntu-latest
     env:
         EPERUSTEET_YLOPS_SPECFILE: https://raw.githubusercontent.com/Opetushallitus/eperusteet-ylops/${{ github.ref_name }}/generated/ylops.spec.json
