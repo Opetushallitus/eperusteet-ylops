@@ -93,6 +93,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("isAuthenticated()")
     List<OpetussuunnitelmaInfoDto> getOpetussuunnitelmaOpsPohjat();
 
+    @PreAuthorize("isAuthenticated()")
+    OpetussuunnitelmaKevytDto getOpetussuunnitelmaOrganisaatiotarkistuksella(@P("opsId") Long opsId);
+
     @PreAuthorize("hasPermission(#ops.id, 'opetussuunnitelma', 'LUKU')")
     void fetchKuntaNimet(@P("ops") OpetussuunnitelmaBaseDto opetussuunnitelmaDto);
 
