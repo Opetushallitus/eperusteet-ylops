@@ -666,6 +666,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public List<OpetussuunnitelmaInfoDto> getOpetussuunnitelmaOpsPohjat() {
+        Set<String> kaikki = kayttajanOrganisaatioOids();
+        return opetussuunnitelmaRepository.findOpsPohja(kaikki).stream()
+            .map(p -> mapper.map(p, OpetussuunnitelmaInfoDto.class))
+            .collect(toList());
+    }
+
+    private Set<String> kayttajanOrganisaatioOids() {
         Map<String, OrganisaatioLaajaDto> kayttajanOrganisaatiot = kayttajanTietoService.haeOrganisaatioOikeudet()
                 .stream()
                 .filter(Objects::nonNull)
@@ -678,9 +685,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .collect(toSet());
         kaikki.remove(SecurityUtil.OPH_OID);
         kaikki.addAll(kayttajanOrganisaatiot.keySet());
-        return opetussuunnitelmaRepository.findOpsPohja(kaikki).stream()
-            .map(p -> mapper.map(p, OpetussuunnitelmaInfoDto.class))
-            .collect(toList());
+        return kaikki;
+    }
+
+    @Override
+    public OpetussuunnitelmaKevytDto getOpetussuunnitelmaOrganisaatiotarkistuksella(Long opsId) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        if (ops.getTyyppi().equals(Tyyppi.POHJA) && ops.getTila().equals(Tila.VALMIS)) {
+            return self.getOpetussuunnitelma(opsId);
+        }
+
+        Set<String> kaikki = kayttajanOrganisaatioOids();
+        return mapper.map(opetussuunnitelmaRepository.findByOpsIdAndOrganisaatiot(opsId, kaikki), OpetussuunnitelmaKevytDto.class);
     }
 
     @Override
