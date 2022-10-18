@@ -2341,6 +2341,27 @@
         }
       }
     },
+    "/opetussuunnitelmat/{id}/organisaatiotarkistus" : {
+      "get" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "getOpetussuunnitelmaOrganisaatiotarkistuksella",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OpetussuunnitelmaKevytDto"
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/{id}/palauta" : {
       "post" : {
         "tags" : [ "Opetussuunnitelmat" ],
@@ -10546,10 +10567,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
@@ -10586,10 +10607,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
@@ -10626,10 +10647,10 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         },
-        "last" : {
+        "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
