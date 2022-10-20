@@ -9,10 +9,9 @@ import java.util.List;
 import java.util.Set;
 
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Lops2019PaikallinenOppiaineDto implements Lops2019SortablePaikallinenOppiaineDto {
     private Long id;

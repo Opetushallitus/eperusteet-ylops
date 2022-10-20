@@ -21,14 +21,18 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author nkala
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrganisaatioQueryDto {
     Set<String> kunta = new HashSet<>();
     Set<Integer> oppilaitostyyppi = Stream.of(11, 12, 15, 19, 21, 63, 64).collect(Collectors.toSet());

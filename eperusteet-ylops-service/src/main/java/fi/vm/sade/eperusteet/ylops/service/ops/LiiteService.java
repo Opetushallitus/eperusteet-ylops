@@ -22,7 +22,7 @@ import java.io.OutputStream;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.security.access.method.P;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**

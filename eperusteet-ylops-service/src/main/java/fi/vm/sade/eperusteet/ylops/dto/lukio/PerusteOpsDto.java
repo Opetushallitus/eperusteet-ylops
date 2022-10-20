@@ -17,20 +17,21 @@
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.PerusteenOsa;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Map;
 import java.util.UUID;
-
-import static java.util.stream.Collectors.toMap;
 
 /**
  * User: tommiratamaa
  * Date: 19.11.2015
  * Time: 14.26
  */
-@Getter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class PerusteOpsDto<T extends PerusteenOsa, OpsT extends PerusteeseenViittaava<T>>
         implements PerusteeseenViittaava<T>, PerusteenOsa {
     private T perusteen;

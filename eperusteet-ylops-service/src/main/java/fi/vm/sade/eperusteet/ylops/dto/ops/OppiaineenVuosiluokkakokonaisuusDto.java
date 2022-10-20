@@ -18,7 +18,10 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Set;
@@ -26,8 +29,9 @@ import java.util.Set;
 /**
  * @author mikkom
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
     private Long id;
     private Reference vuosiluokkakokonaisuus;

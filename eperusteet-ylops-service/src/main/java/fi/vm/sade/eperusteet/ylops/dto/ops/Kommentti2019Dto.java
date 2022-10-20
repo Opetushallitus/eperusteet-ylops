@@ -1,13 +1,17 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Kommentti2019Dto {
     private UUID thread;
     private UUID tunniste;

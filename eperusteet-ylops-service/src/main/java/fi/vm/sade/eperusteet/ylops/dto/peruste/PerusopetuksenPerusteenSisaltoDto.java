@@ -25,14 +25,18 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Stream;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author nkala
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PerusopetuksenPerusteenSisaltoDto {
 
     private Set<PerusteLaajaalainenosaaminenDto> laajaalaisetosaamiset;

@@ -1,10 +1,12 @@
 package fi.vm.sade.eperusteet.ylops.dto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class RevisionItemDto<T> {
     private RevisionDto revision;
     private String muokkaaja = "";

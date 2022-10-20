@@ -3,7 +3,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import java.util.function.Predicate;
-import org.springframework.security.access.method.P;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 public interface NavigationBuilder extends OpsToteutus {

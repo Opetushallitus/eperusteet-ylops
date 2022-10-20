@@ -17,7 +17,10 @@ package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -27,8 +30,9 @@ import java.util.UUID;
 /**
  * Created by jsikio.
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OpetuksenYleisetTavoitteetDto implements Serializable, PerusteenOsa {
     private OpetuksenYleisetTavoitteetDto parent;
     private UUID uuidTunniste;

@@ -2,22 +2,20 @@ package fi.vm.sade.eperusteet.ylops.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
-import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
-import java.util.List;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Getter
-@Setter
+import java.util.List;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-@NoArgsConstructor
-@AllArgsConstructor
 public class TekstiKappaleViiteExportDto {
 
     private TekstiKappaleViiteExportDto original;
@@ -34,8 +32,10 @@ public class TekstiKappaleViiteExportDto {
     private boolean piilotettu = false;
     private boolean liite = false;
 
-    @Getter
-    @Setter
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode(callSuper = true)
     public static class Puu extends TekstiKappaleViiteExportDto {
         private List<Puu> lapset;
     }

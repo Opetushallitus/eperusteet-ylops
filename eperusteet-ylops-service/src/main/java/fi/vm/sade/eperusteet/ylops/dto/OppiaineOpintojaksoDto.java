@@ -1,12 +1,16 @@
 package fi.vm.sade.eperusteet.ylops.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OppiaineOpintojaksoDto {
     Long id;
     List<OppiaineOpintojaksoDto> lapset;

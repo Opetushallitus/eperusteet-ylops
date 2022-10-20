@@ -17,7 +17,10 @@
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -27,8 +30,9 @@ import java.io.Serializable;
  * Date: 20.1.2016
  * Time: 11.06
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OpetuksenYleisetTavoitteetUpdateDto implements Serializable {
     private LokalisoituTekstiDto otsikko;
     private LokalisoituTekstiDto kuvaus;

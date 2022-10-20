@@ -35,8 +35,6 @@ public class OrganisaatioConverter extends BidirectionalConverter<OrganisaatioDt
     public OrganisaatioDto convertFrom(String source, Type<OrganisaatioDto> destinationType) {
         OrganisaatioDto organisaatioDto = new OrganisaatioDto();
         organisaatioDto.setOid(source);
-
-
         return organisaatioDto;
     }
 }

@@ -1,10 +1,12 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
+@EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
 public class OpsSisaltoViite {
@@ -12,6 +14,7 @@ public class OpsSisaltoViite {
     String koodi;
 
     @Getter
+    @EqualsAndHashCode(callSuper = true)
     @AllArgsConstructor
     @NoArgsConstructor
     public static class Opintojakso extends OpsSisaltoViite {

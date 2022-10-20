@@ -2,7 +2,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.ops.Kommentti2019Dto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KommenttiKahvaDto;
-import org.springframework.security.access.method.P;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;

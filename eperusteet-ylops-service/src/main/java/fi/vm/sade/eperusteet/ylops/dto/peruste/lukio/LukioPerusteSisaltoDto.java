@@ -15,7 +15,10 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -24,8 +27,9 @@ import java.util.List;
 /**
  * Created by jsikio.
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukioPerusteSisaltoDto implements Serializable {
     private Long id;
     private List<LukioPerusteTekstikappaleViiteDto> lapset;

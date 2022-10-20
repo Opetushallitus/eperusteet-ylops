@@ -27,11 +27,13 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import lombok.Data;
 import lombok.Getter;
 
 /**
  * @author jhyoty
  */
+@Data
 public class LokalisoituTekstiDto {
 
     @Getter

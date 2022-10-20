@@ -7,10 +7,9 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Setter
-@Getter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class OpsSisaltoQuery {
     private String query = "";
 }

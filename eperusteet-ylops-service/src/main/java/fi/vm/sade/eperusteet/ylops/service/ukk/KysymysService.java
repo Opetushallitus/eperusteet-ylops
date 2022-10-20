@@ -1,7 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ukk;
 
 import fi.vm.sade.eperusteet.ylops.dto.ukk.KysymysDto;
-import org.springframework.security.access.method.P;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;

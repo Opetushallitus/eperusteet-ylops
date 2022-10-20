@@ -16,14 +16,17 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
-import java.util.UUID;
 
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class OppiainePalautettuDto extends OppiaineBaseDto {
     private Long vlkId;
     private TekstiosaDto tehtava;

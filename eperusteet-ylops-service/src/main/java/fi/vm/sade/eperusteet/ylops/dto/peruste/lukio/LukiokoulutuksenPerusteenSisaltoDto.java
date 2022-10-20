@@ -16,7 +16,10 @@
 
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -24,8 +27,9 @@ import java.io.Serializable;
 /**
  * Created by jsikio.
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukiokoulutuksenPerusteenSisaltoDto {
     private LukioPerusteSisaltoDto sisalto;
     private LukioOpetussuunnitelmaRakenneDto rakenne;

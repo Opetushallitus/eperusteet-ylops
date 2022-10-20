@@ -17,7 +17,10 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
@@ -28,8 +31,9 @@ import java.util.UUID;
  * Date: 19.11.2015
  * Time: 14.43
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AihekokonaisuudetBaseDto {
     private UUID uuidTunniste;
     private Long id;

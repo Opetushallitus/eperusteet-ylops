@@ -17,7 +17,10 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -29,8 +32,9 @@ import java.util.stream.Stream;
 /**
  * User: jsikio
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukioOpetussuunnitelmaRakenneDto implements Serializable, PerusteenOsa {
     private Long perusteId;
     private Set<LukioPerusteOppiaineDto> oppiaineet = new HashSet<>();

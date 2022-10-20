@@ -21,10 +21,17 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.PerusteenOsa;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
-import lombok.Getter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -32,7 +39,10 @@ import java.util.stream.Stream;
  * Date: 12.1.2016
  * Time: 14.34
  */
-@Getter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukioOppiaineTiedotDto extends LukioOppiaineRakenneDto<LukioOppimaaraPerusTiedotDto, LukiokurssiOpsDto>
         implements PerusteeseenViittaava<LukioPerusteOppiaineDto> {
     private LukioPerusteOppiaineDto perusteen;

@@ -18,14 +18,18 @@ package fi.vm.sade.eperusteet.ylops.dto.liite;
 import java.util.Date;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LiiteDto {
     private UUID id;
     private String tyyppi;

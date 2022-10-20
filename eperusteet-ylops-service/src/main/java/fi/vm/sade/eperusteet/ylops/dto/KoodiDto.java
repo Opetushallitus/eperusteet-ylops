@@ -9,8 +9,7 @@ import java.util.Map;
  *
  * @author nkala
  */
-@Getter
-@Setter
+@Data
 @EqualsAndHashCode(of = {"koodisto", "uri", "versio"})
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AllArgsConstructor

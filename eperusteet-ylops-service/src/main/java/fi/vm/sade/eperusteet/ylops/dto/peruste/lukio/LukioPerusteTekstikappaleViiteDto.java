@@ -1,6 +1,9 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -8,8 +11,9 @@ import java.util.List;
 /**
  * Created by jsikio on 14.11.2015.
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukioPerusteTekstikappaleViiteDto {
     private Long id;
     private LukioPerusteenOsaDto perusteenOsa;

@@ -19,14 +19,18 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author nkala
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OpetussuunnitelmaStatistiikkaDto implements Serializable {
     private Map<String, Long> kielittain = new HashMap<>();
     private Map<String, Long> koulutustyypeittain = new HashMap<>();

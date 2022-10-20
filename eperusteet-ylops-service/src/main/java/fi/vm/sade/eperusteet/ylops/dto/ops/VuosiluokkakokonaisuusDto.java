@@ -24,14 +24,18 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import java.util.Optional;
 import java.util.Set;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class VuosiluokkakokonaisuusDto implements ReferenceableDto {
 
     private Long id;
@@ -43,9 +47,6 @@ public class VuosiluokkakokonaisuusDto implements ReferenceableDto {
     private Optional<TekstiosaDto> laajaalainenosaaminen;
     private Optional<Tila> tila;
     private Set<LaajaalainenosaaminenDto> laajaalaisetosaamiset;
-
-    public VuosiluokkakokonaisuusDto() {
-    }
 
     public VuosiluokkakokonaisuusDto(Reference tunniste) {
         this.tunniste = Optional.ofNullable(tunniste);

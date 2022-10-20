@@ -19,7 +19,10 @@ package fi.vm.sade.eperusteet.ylops.dto.lukio;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -32,8 +35,9 @@ import java.util.Optional;
  * Date: 3.12.2015
  * Time: 11.09
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukioOppiaineSaveDto implements Serializable {
     private Long oppiaineId;
     private LokalisoituTekstiDto nimi;

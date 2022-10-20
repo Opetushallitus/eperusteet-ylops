@@ -18,10 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
-
-import java.util.Collection;
-import java.util.Optional;
-
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MapperFactory;
@@ -31,6 +27,9 @@ import ma.glasnost.orika.NullFilter;
 import ma.glasnost.orika.metadata.Type;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
+
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Tuki Javan Optional-luokalle Orika mapperin yhteydessä.

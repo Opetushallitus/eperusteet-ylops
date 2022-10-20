@@ -15,7 +15,10 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.teksti;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Optional;
@@ -23,15 +26,13 @@ import java.util.Optional;
 /**
  * @author mikkom
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TekstiosaDto {
     private Optional<Long> id;
     private Optional<LokalisoituTekstiDto> otsikko;
     private Optional<LokalisoituTekstiDto> teksti;
-
-    public TekstiosaDto() {
-    }
 
     public TekstiosaDto(Optional<LokalisoituTekstiDto> otsikko, Optional<LokalisoituTekstiDto> teksti) {
         this.otsikko = otsikko;

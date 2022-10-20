@@ -17,7 +17,10 @@ package fi.vm.sade.eperusteet.ylops.dto.teksti;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
@@ -26,8 +29,9 @@ import java.util.UUID;
 /**
  * @author mikkom
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TekstiKappaleDto {
     private Long id;
     private Date luotu;
@@ -42,9 +46,6 @@ public class TekstiKappaleDto {
     private UUID tunniste;
     private Boolean pakollinen;
     private Boolean valmis;
-
-    public TekstiKappaleDto() {
-    }
 
     public TekstiKappaleDto(LokalisoituTekstiDto nimi, LokalisoituTekstiDto teksti, Tila tila) {
         this.nimi = nimi;
