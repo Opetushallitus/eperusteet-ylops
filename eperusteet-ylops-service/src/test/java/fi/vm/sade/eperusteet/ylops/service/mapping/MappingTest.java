@@ -16,26 +16,22 @@
 package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import com.google.common.collect.ImmutableMap;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
-
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-import java.util.Collections;
-import java.util.Set;
-
-import java.util.UUID;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.impl.DefaultMapperFactory;
-import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,12 +39,17 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.cache.CacheManager;
+
+import java.util.Collections;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * @author mikkom
@@ -174,6 +175,45 @@ public class MappingTest {
         assertThat(lokalisoituTeksti.getTunniste()).isNotEqualTo(lokalisoituTekstiDto.getTunniste());
 
         Mockito.verify(repository, Mockito.times(1)).findOne(lokalisoituTekstiDto.getId());
+    }
+
+    @Test
+    public void testOptionalImmutableMapping() {
+        DefaultMapperFactory factory = new DefaultMapperFactory.Builder()
+                .build();
+
+        OptionalSupport.register(factory);
+        MapperFacade mapper = factory.getMapperFacade();
+        B b = mapper.map(new A(), B.class);
+        A a = mapper.map(b, A.class);
+        assertEquals(new A(), a);
+        a.setL(null);
+        mapper.map(a, b);
+        assertEquals(Long.valueOf(42L), b.getL());
+        a.setL(Optional.empty());
+        mapper.map(a, b);
+        assertNull(b.getL());
+
+        B b2 = mapper.map(new A(), B.class);
+        assertEquals(Tila.LUONNOS, b2.tila);
+    }
+
+    @Getter
+    @Setter
+    @EqualsAndHashCode
+    @ToString
+    static public class A {
+        Optional<Long> l = Optional.of(42L);
+        Optional<String> t = Optional.of("Bar");
+        Optional<Tila> tila = Optional.of(Tila.LUONNOS);
+    }
+
+    @Getter
+    @Setter
+    static public class B {
+        Long l;
+        String t;
+        Tila tila;
     }
 
 }
