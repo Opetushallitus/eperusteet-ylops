@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.repository.koodisto.KoodistoKoodiRepository;
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,12 +34,12 @@ public class KoodistoKoodiConverter extends BidirectionalConverter<KoodistoKoodi
     private KoodistoKoodiRepository repository;
 
     @Override
-    public KoodistoDto convertTo(KoodistoKoodi source, Type<KoodistoDto> destinationType) {
+    public KoodistoDto convertTo(KoodistoKoodi source, Type<KoodistoDto> destinationType, MappingContext mappingContext) {
         return new KoodistoDto(source.getId(), source.getKoodiUri(), source.getKoodiArvo());
     }
 
     @Override
-    public KoodistoKoodi convertFrom(KoodistoDto source, Type<KoodistoKoodi> destinationType) {
+    public KoodistoKoodi convertFrom(KoodistoDto source, Type<KoodistoKoodi> destinationType, MappingContext mappingContext) {
         if (source.getId() != null) {
             return repository.findOne(source.getId());
         }

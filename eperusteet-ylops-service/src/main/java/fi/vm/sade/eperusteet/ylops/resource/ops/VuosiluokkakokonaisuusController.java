@@ -25,8 +25,6 @@ import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import io.swagger.annotations.Api;
-import java.util.Optional;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,6 +34,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Optional;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet")
@@ -73,7 +74,7 @@ public class VuosiluokkakokonaisuusController {
 
         Optional<PerusteVuosiluokkakokonaisuusDto> vkDto = peruste.getPerusopetus().getVuosiluokkakokonaisuudet()
                 .stream()
-                .filter(vk -> Reference.of(vk.getTunniste()).equals(v.getTunniste().get()))
+                .filter(vk -> Reference.of(vk.getTunniste()).equals(v.getTunniste()))
                 .findAny();
 
         return vkDto.orElse(null);

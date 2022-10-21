@@ -21,14 +21,11 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * User: tommiratamaa
@@ -48,5 +45,5 @@ public class LukioOppiaineSaveDto implements Serializable {
     private TekstiosaDto tehtava;
     private TekstiosaDto tavoitteet;
     private TekstiosaDto arviointi;
-    private Map<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kurssiTyyppiKuvaukset = new HashMap<>();
+    private Map<LukiokurssiTyyppi, LokalisoituTekstiDto> kurssiTyyppiKuvaukset = new HashMap<>();
 }

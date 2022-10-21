@@ -129,7 +129,7 @@ public final class OptionalSupport {
         }
 
         @Override
-        public Optional<?> convert(Object source, Type<? extends Optional<?>> destinationType) {
+        public Optional<?> convert(Object source, Type<? extends Optional<?>> destinationType, MappingContext mappingContext) {
             if (source != null) {
                 return Optional.of(mapperFacade.map(source, destinationType.getComponentType().getRawType()));
             }
@@ -146,7 +146,7 @@ public final class OptionalSupport {
         }
 
         @Override
-        public ReferenceableEntity convert(Optional<Reference> source, Type<? extends ReferenceableEntity> destinationType) {
+        public ReferenceableEntity convert(Optional<Reference> source, Type<? extends ReferenceableEntity> destinationType, MappingContext mappingContext) {
             if (source != null && source.isPresent()) {
                 return mapperFacade.map(source.get(), destinationType.getRawType());
             }
@@ -163,7 +163,7 @@ public final class OptionalSupport {
         }
 
         @Override
-        public Object convert(Optional<?> source, Type<? extends Object> destinationType) {
+        public Object convert(Optional<?> source, Type<? extends Object> destinationType, MappingContext mappingContext) {
             if (source != null && source.isPresent()) {
                 return mapperFacade.map(source.get(), destinationType.getRawType());
             }

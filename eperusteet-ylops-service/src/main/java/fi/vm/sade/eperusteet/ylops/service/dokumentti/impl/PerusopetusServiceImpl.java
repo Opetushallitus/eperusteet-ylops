@@ -45,6 +45,9 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiBase;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiRivi;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiTaulukko;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -53,8 +56,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addHeader;
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addLokalisoituteksti;
@@ -794,8 +795,8 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                 addLokalisoituteksti(docBase, perusteTekstiOsaDto.getTeksti(), "cite");
             }
 
-            if (pohjanTekstiosa != null && pohjanTekstiosa.getTeksti() != null && pohjanTekstiosa.getTeksti().isPresent()) {
-                addLokalisoituteksti(docBase, pohjanTekstiosa.getTeksti().get(), "div");
+            if (pohjanTekstiosa != null && pohjanTekstiosa.getTeksti() != null && pohjanTekstiosa.getTeksti() != null) {
+                addLokalisoituteksti(docBase, pohjanTekstiosa.getTeksti(), "div");
             }
 
             addLokalisoituteksti(docBase, tekstiosa.getTeksti(), "div");

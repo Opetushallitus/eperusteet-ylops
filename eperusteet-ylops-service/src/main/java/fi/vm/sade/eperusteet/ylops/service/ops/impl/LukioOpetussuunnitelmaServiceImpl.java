@@ -17,8 +17,13 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.lukio.*;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi.Paikallinen;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.OpsOppiaineParentView;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineOpsTunniste;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
@@ -26,14 +31,45 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
-import fi.vm.sade.eperusteet.ylops.dto.lukio.*;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.AihekokonaisuudetJarjestaDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.AihekokonaisuudetOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.AihekokonaisuudetPerusteOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.AihekokonaisuusJarjestysDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.AihekokonaisuusSaveDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.KurssinOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioKopioiOppimaaraDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioKurssiParentDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOpetussuunnitelmaRakenneOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineRakenneDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineRakenneListausDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineTiedotDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppimaaraPerusTiedotDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiListausOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiOppaineMuokkausDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiSaveDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiUpdateDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.OpetuksenYleisetTavoitteetOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.OpetuksenYleisetTavoitteetPerusteOpsDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.OpetuksenYleisetTavoitteetUpdateDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.OppaineKurssiTreeStructureDto;
+import fi.vm.sade.eperusteet.ylops.dto.lukio.OppiaineJarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuudetDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.AihekokonaisuusOpsDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.repository.ops.*;
+import fi.vm.sade.eperusteet.ylops.repository.ops.AihekokonaisuusRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.LukioOppiaineJarjestysRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.LukiokurssiRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetuksenYleisetTavoitteetRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineLukiokurssiRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpsOppiaineParentViewRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -41,13 +77,20 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -57,7 +100,11 @@ import static fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity.idEquals;
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static java.util.Comparator.comparing;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * User: tommiratamaa
@@ -318,9 +365,8 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
                 -> lukiokurssiTyyppi.oppiaineKuvausSetter().set(oppiaine, null));
 
         if (dto.getKurssiTyyppiKuvaukset() != null) {
-            for (Map.Entry<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kv : dto.getKurssiTyyppiKuvaukset().entrySet()) {
-                kv.getKey().oppiaineKuvausSetter().set(oppiaine, kv.getValue()
-                        .map(tekstiDto -> LokalisoituTeksti.of(tekstiDto.getTekstit())).orElse(null));
+            for (Map.Entry<LukiokurssiTyyppi, LokalisoituTekstiDto> kv : dto.getKurssiTyyppiKuvaukset().entrySet()) {
+                kv.getKey().oppiaineKuvausSetter().set(oppiaine, kv.getValue() != null ? LokalisoituTeksti.of(kv.getValue().getTekstit()) : null);
             }
         }
     }
@@ -405,9 +451,8 @@ public class LukioOpetussuunnitelmaServiceImpl implements LukioOpetussuunnitelma
 
         Oppiaine oppiaine = mapper.map(dto, new Oppiaine(OppiaineTyyppi.LUKIO));
         if (dto.getKurssiTyyppiKuvaukset() != null) {
-            for (Map.Entry<LukiokurssiTyyppi, Optional<LokalisoituTekstiDto>> kv : dto.getKurssiTyyppiKuvaukset().entrySet()) {
-                kv.getKey().oppiaineKuvausSetter().set(oppiaine, kv.getValue()
-                        .map(tekstiDto -> LokalisoituTeksti.of(tekstiDto.getTekstit())).orElse(null));
+            for (Map.Entry<LukiokurssiTyyppi, LokalisoituTekstiDto> kv : dto.getKurssiTyyppiKuvaukset().entrySet()) {
+                kv.getKey().oppiaineKuvausSetter().set(oppiaine, kv.getValue() != null ? LokalisoituTeksti.of(kv.getValue().getTekstit()) : null);
             }
         }
         if (dto.getOppiaineId() != null) {

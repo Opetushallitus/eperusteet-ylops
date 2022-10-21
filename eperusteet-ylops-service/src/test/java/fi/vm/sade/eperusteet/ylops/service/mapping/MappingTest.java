@@ -205,7 +205,7 @@ public class MappingTest {
     static public class A {
         Optional<Long> l = Optional.of(42L);
         Optional<String> t = Optional.of("Bar");
-        Optional<Tila> tila = Optional.of(Tila.LUONNOS);
+        Tila tila = Tila.LUONNOS;
     }
 
     @Getter

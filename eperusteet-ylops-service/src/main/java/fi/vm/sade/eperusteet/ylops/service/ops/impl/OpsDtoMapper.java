@@ -19,10 +19,6 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksenkohdealueDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.LaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKohdealueDto;
@@ -30,16 +26,18 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksenkohdealueDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @author mikkom
@@ -98,8 +96,8 @@ public class OpsDtoMapper {
     public static VuosiluokkakokonaisuusDto fromEperusteet(
             PerusteVuosiluokkakokonaisuusDto dto) {
         VuosiluokkakokonaisuusDto vk = new VuosiluokkakokonaisuusDto(new Reference(dto.getTunniste().toString()));
-        vk.setNimi(Optional.ofNullable(dto.getNimi()));
-        vk.setTunniste(Optional.ofNullable(Reference.of(dto.getTunniste())));
+        vk.setNimi(dto.getNimi());
+        vk.setTunniste(Reference.of(dto.getTunniste()));
         if (dto.getLaajaalaisetOsaamiset() != null) {
             vk.setLaajaalaisetosaamiset(new HashSet<>());
             dto.getLaajaalaisetOsaamiset().forEach(lo -> {

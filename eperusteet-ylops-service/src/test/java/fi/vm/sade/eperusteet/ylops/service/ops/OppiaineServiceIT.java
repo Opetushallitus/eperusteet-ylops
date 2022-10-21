@@ -48,7 +48,6 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
-import org.apache.xpath.axes.HasPositionalPredChecker;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,14 +55,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 /**
  * @author mikkom
@@ -208,7 +218,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
         ops.setVuosiluokkakokonaisuudet(pohjaOps.getVuosiluokkakokonaisuudet().stream().map(pohjaVlk -> {
             OpsVuosiluokkakokonaisuusDto ovlk = new OpsVuosiluokkakokonaisuusDto();
-            ovlk.setVuosiluokkakokonaisuus(new VuosiluokkakokonaisuusDto(pohjaVlk.getVuosiluokkakokonaisuus().getTunniste().get()));
+            ovlk.setVuosiluokkakokonaisuus(new VuosiluokkakokonaisuusDto(pohjaVlk.getVuosiluokkakokonaisuus().getTunniste()));
             return ovlk;
         }).collect(Collectors.toSet()));
 
@@ -299,7 +309,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
         OpsVuosiluokkakokonaisuusDto opsVlkDto = new OpsVuosiluokkakokonaisuusDto();
-        vlk.setNimi(Optional.of(lt("ykköskakkoset")));
+        vlk.setNimi(lt("ykköskakkoset"));
         vlk = vuosiluokkakokonaisuusService.add(ops.getId(), vlk);
         opsVlkDto.setVuosiluokkakokonaisuus(vlk);
         ops.setVuosiluokkakokonaisuudet(Collections.singleton(opsVlkDto));
@@ -322,7 +332,8 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
                 .get()
                 .getVuosiluokat().stream()
                 .findFirst()
-                .get();
+                .get()
+                ;
 
         List<TekstiosaDto> tavoitteet = new ArrayList<>();
         tavoitteet.add(TestUtils.createTekstiosa("hello", "world"));
@@ -344,7 +355,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
 
         VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
-        vlk.setNimi(Optional.of(lt("ykköskakkoset")));
+        vlk.setNimi(lt("ykköskakkoset"));
         vlk = vuosiluokkakokonaisuusService.add(ops.getId(), vlk);
         assertNotNull(vlk);
 
@@ -430,13 +441,13 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         ovk = oppiaineService.updateVuosiluokkakokonaisuudenSisalto(opsId, oppiaineDto.getId(), ovk);
         assertNotNull(ovk);
         final String TYOTAVAT_OTSIKKO = "otsikko_" + TYOTAVAT;
-        assertEquals(TYOTAVAT_OTSIKKO, ovk.getTyotavat().getOtsikko().get().get(Kieli.FI));
+        assertEquals(TYOTAVAT_OTSIKKO, ovk.getTyotavat().getOtsikko().get(Kieli.FI));
 
         opsOppiaineDto = oppiaineService.get(opsId, oppiaineDto.getId());
         assertNotNull(opsOppiaineDto);
         oppiaineDto = opsOppiaineDto.getOppiaine();
         ovk = oppiaineDto.getVuosiluokkakokonaisuudet().stream().findFirst().get();
-        assertEquals(TYOTAVAT_OTSIKKO, ovk.getTyotavat().getOtsikko().get().get(Kieli.FI));
+        assertEquals(TYOTAVAT_OTSIKKO, ovk.getTyotavat().getOtsikko().get(Kieli.FI));
 
         assertNotNull(oppiaineRepo.isOma(opsId, oppiaineDto.getId()));
         assertNull(oppiaineRepo.isOma(opsId, -1));
@@ -447,7 +458,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
 
         VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
-        vlk.setNimi(Optional.of(lt("ykköskakkoset")));
+        vlk.setNimi(lt("ykköskakkoset"));
         vlk = vuosiluokkakokonaisuusService.add(ops.getId(), vlk);
         assertNotNull(vlk);
 
@@ -552,47 +563,47 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
     @Test
     public void perustopetusOpsVlkPoistoJaLisaysTest() {
         VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
-        vlk.setNimi(Optional.of(lt("ykköskakkoset")));
+        vlk.setNimi(lt("ykköskakkoset"));
         vlk = vuosiluokkakokonaisuusService.add(opsId, vlk);
 
         VuosiluokkakokonaisuusDto vlk3456 = new VuosiluokkakokonaisuusDto(vlkViiteRef3456);
-        vlk3456.setNimi(Optional.of(lt("kolmoskutoset")));
+        vlk3456.setNimi(lt("kolmoskutoset"));
         vlk3456 = vuosiluokkakokonaisuusService.add(opsId, vlk3456);
 
 
         OpetussuunnitelmaDto pohjaOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
         OpetussuunnitelmaDto ops = createOpsBasedOnPohja();
         assertThat(ops.getVuosiluokkakokonaisuudet()).hasSize(2);
-        assertThat(ops.getVuosiluokkakokonaisuudet().stream().map(opsvlk -> opsvlk.getVuosiluokkakokonaisuus().getTunniste().get().toString()).collect(Collectors.toList()))
+        assertThat(ops.getVuosiluokkakokonaisuudet().stream().map(opsvlk -> opsvlk.getVuosiluokkakokonaisuus().getTunniste().toString()).collect(Collectors.toList()))
                 .containsExactlyInAnyOrder(vlkViiteRef.toString(), vlkViiteRef3456.toString());
 
         Map<String, Long> pohjanVlkTunnisteIdt = pohjaOps.getVuosiluokkakokonaisuudet().stream()
-                .collect(Collectors.toMap(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().get().toString(), ovlk -> ovlk.getVuosiluokkakokonaisuus().getId()));
+                .collect(Collectors.toMap(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().toString(), ovlk -> ovlk.getVuosiluokkakokonaisuus().getId()));
 
         ops.setVuosiluokkakokonaisuudet(ops.getVuosiluokkakokonaisuudet().stream()
-                .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().get().toString().equals(vlkViiteRef.toString()))
+                .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().toString().equals(vlkViiteRef.toString()))
                 .collect(Collectors.toSet()));
 
         ops = opetussuunnitelmaService.updateOpetussuunnitelma(ops);
         assertThat(ops.getVuosiluokkakokonaisuudet()).hasSize(1);
-        assertThat(ops.getVuosiluokkakokonaisuudet().stream().map(opsvlk -> opsvlk.getVuosiluokkakokonaisuus().getTunniste().get().toString()).collect(Collectors.toList()))
+        assertThat(ops.getVuosiluokkakokonaisuudet().stream().map(opsvlk -> opsvlk.getVuosiluokkakokonaisuus().getTunniste().toString()).collect(Collectors.toList()))
                 .containsExactlyInAnyOrder(vlkViiteRef.toString());
 
         ops.getVuosiluokkakokonaisuudet().addAll(pohjaOps.getVuosiluokkakokonaisuudet().stream()
-                .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().get().toString().equals(vlkViiteRef3456.toString())).collect(Collectors.toSet()));
+                .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().toString().equals(vlkViiteRef3456.toString())).collect(Collectors.toSet()));
 
         //tarkistetaan että uusi vlk on luotu uudella id:llä
         ops = opetussuunnitelmaService.updateOpetussuunnitelma(ops);
         assertThat(ops.getVuosiluokkakokonaisuudet()).hasSize(2);
-        assertThat(ops.getVuosiluokkakokonaisuudet().stream().map(opsvlk -> opsvlk.getVuosiluokkakokonaisuus().getTunniste().get().toString()).collect(Collectors.toList()))
+        assertThat(ops.getVuosiluokkakokonaisuudet().stream().map(opsvlk -> opsvlk.getVuosiluokkakokonaisuus().getTunniste().toString()).collect(Collectors.toList()))
                 .containsExactlyInAnyOrder(vlkViiteRef.toString(), vlkViiteRef3456.toString());
         assertThat(pohjanVlkTunnisteIdt.get(vlkViiteRef.toString()))
                 .isNotEqualTo(ops.getVuosiluokkakokonaisuudet().stream()
-                        .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().get().toString().equals(vlkViiteRef.toString())).findFirst().get()
+                        .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().toString().equals(vlkViiteRef.toString())).findFirst().get()
                         .getVuosiluokkakokonaisuus().getId());
         assertThat(pohjanVlkTunnisteIdt.get(vlkViiteRef3456.toString()))
                 .isNotEqualTo(ops.getVuosiluokkakokonaisuudet().stream()
-                        .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().get().toString().equals(vlkViiteRef3456.toString())).findFirst().get()
+                        .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().toString().equals(vlkViiteRef3456.toString())).findFirst().get()
                         .getVuosiluokkakokonaisuus().getId());
         assertThat(ops.getVuosiluokkakokonaisuudet()).extracting("oma").containsExactlyInAnyOrder(true,true);
     }
@@ -600,11 +611,11 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
     @Test
     public void testVlkOpsPohjana() {
         VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
-        vlk.setNimi(Optional.of(lt("ykköskakkoset")));
+        vlk.setNimi(lt("ykköskakkoset"));
         vlk = vuosiluokkakokonaisuusService.add(opsId, vlk);
 
         VuosiluokkakokonaisuusDto vlk3456 = new VuosiluokkakokonaisuusDto(vlkViiteRef3456);
-        vlk3456.setNimi(Optional.of(lt("kolmoskutoset")));
+        vlk3456.setNimi(lt("kolmoskutoset"));
         vlk3456 = vuosiluokkakokonaisuusService.add(opsId, vlk3456);
 
         OpetussuunnitelmaDto ops = createOpsBasedOnPohja();
@@ -612,13 +623,13 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops2 = opetussuunnitelmaService.addOpetussuunnitelma(newOps);
 
         ops2.setVuosiluokkakokonaisuudet(ops2.getVuosiluokkakokonaisuudet().stream()
-                .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().get().toString().equals(vlkViiteRef.toString()))
+                .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().toString().equals(vlkViiteRef.toString()))
                 .collect(Collectors.toSet()));
 
         // poistaminen ei poista pohjasta
         ops2 = opetussuunnitelmaService.updateOpetussuunnitelma(ops2);
         assertThat(ops2.getVuosiluokkakokonaisuudet()).hasSize(1);
-        assertThat(ops2.getVuosiluokkakokonaisuudet().stream().map(opsvlk -> opsvlk.getVuosiluokkakokonaisuus().getTunniste().get().toString()).collect(Collectors.toList()))
+        assertThat(ops2.getVuosiluokkakokonaisuudet().stream().map(opsvlk -> opsvlk.getVuosiluokkakokonaisuus().getTunniste().toString()).collect(Collectors.toList()))
                 .containsExactlyInAnyOrder(vlkViiteRef.toString());
 
         ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(ops.getId());
@@ -626,7 +637,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         // lisääminen lisää suoran viitteen koska pohja ei ole tyypiltaan pohja
         ops2.getVuosiluokkakokonaisuudet().addAll(ops.getVuosiluokkakokonaisuudet().stream()
-                .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().get().toString().equals(vlkViiteRef3456.toString()))
+                .filter(ovlk -> ovlk.getVuosiluokkakokonaisuus().getTunniste().toString().equals(vlkViiteRef3456.toString()))
                 .collect(Collectors.toSet()));
 
         ops2 = opetussuunnitelmaService.updateOpetussuunnitelma(ops2);
@@ -636,8 +647,8 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     private static TekstiosaDto getTekstiosa(String suffiksi) {
         TekstiosaDto dto = new TekstiosaDto();
-        dto.setOtsikko(Optional.of(lt("otsikko_" + suffiksi)));
-        dto.setTeksti(Optional.of(lt("teksti_" + suffiksi)));
+        dto.setOtsikko(lt("otsikko_" + suffiksi));
+        dto.setTeksti(lt("teksti_" + suffiksi));
         return dto;
     }
 

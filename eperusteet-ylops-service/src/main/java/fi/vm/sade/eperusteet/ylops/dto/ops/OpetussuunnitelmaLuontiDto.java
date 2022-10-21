@@ -22,7 +22,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -34,7 +33,7 @@ import java.util.Set;
 @NoArgsConstructor
 public class OpetussuunnitelmaLuontiDto extends OpetussuunnitelmaBaseDto {
     private Reference pohja;
-    private Optional<TekstiKappaleViiteDto.Puu> tekstit;
+    private TekstiKappaleViiteDto.Puu tekstit;
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineDto> oppiaineet;
     private boolean rakennePohjasta = false;

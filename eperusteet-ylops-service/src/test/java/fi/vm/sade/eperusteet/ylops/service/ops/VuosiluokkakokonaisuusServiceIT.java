@@ -22,20 +22,16 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
-import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Optional;
-import java.util.UUID;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.Rollback;
+
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.UUID;
 
 /**
  * @author hyoty
@@ -73,11 +69,11 @@ public class VuosiluokkakokonaisuusServiceIT extends AbstractIntegrationTest {
     public void crudTest() {
 
         VuosiluokkakokonaisuusDto dto = new VuosiluokkakokonaisuusDto();
-        dto.setTunniste(Optional.of(viite1Ref));
+        dto.setTunniste(viite1Ref);
 
         dto = service.add(opsId, dto);
         dto = service.get(opsId, dto.getId()).getVuosiluokkakokonaisuus();
-        dto.setTunniste(Optional.of(viite2Ref));
+        dto.setTunniste(viite2Ref);
         dto = service.update(opsId, dto).getVuosiluokkakokonaisuus();
         service.delete(opsId, dto.getId());
     }
