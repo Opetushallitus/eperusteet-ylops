@@ -23,14 +23,14 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.Set;
-
 import fi.vm.sade.eperusteet.ylops.service.ops.Identifiable;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsIdentifiable;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.Date;
+import java.util.Set;
 
 /**
  * @author jhyoty
@@ -67,4 +67,5 @@ public abstract class OpetussuunnitelmaBaseDto
     private boolean tuoPohjanOppimaarat;
     private Date perusteDataTuontiPvm = new Date();
     private Date viimeisinSyncPvm;
+    private Date viimeisinJulkaisuAika;
 }

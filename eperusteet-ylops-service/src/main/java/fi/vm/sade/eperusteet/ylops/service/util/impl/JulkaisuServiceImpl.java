@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.util.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
@@ -9,7 +10,6 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaistuOpetussuunnitelmaData;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaDataRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
@@ -29,22 +30,26 @@ import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpsExport;
 import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
+import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static java.util.stream.Collectors.toSet;
@@ -88,6 +93,11 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     @Autowired
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
 
+    @Autowired
+    private OpsDispatcher dispatcher;
+
+    private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
+
     @Override
     public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
@@ -127,8 +137,13 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
             Lops2019ValidointiDto validointi = validointiService.getValidointi(opsId);
             if (!validointi.isValid()) {
-                throw new BusinessRuleViolationException("julkaisu-ei-mahdollinen-keskeneraiselle");
+                throw new BusinessRuleViolationException("opetussuunnitelma-ei-validi");
             }
+        } else {
+            List<Validointi> validoinnit = opetussuunnitelmaService.validoiOpetussuunnitelma(opsId);
+            if (validoinnit.stream().anyMatch(validointi -> CollectionUtils.isNotEmpty(validointi.getVirheet()))) {
+                throw new BusinessRuleViolationException("opetussuunnitelma-ei-validi");
+            };
         }
 
         OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
@@ -139,11 +154,9 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         try {
             ObjectNode opsDataJson = (ObjectNode) jsonMapper.toJson(opsData);
             List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
-            if (!vanhatJulkaisut.isEmpty()) {
-                int lastHash = vanhatJulkaisut.get(vanhatJulkaisut.size() - 1).getData().getHash();
-                if (lastHash == opsDataJson.hashCode()) {
-                    throw new BusinessRuleViolationException("opetussuunnitelma-ei-muuttunut-viime-julkaisun-jalkeen");
-                }
+
+            if(vanhatJulkaisut.size() > 0 && !onkoMuutoksia(opsId)) {
+                throw new BusinessRuleViolationException("opetussuunnitelma-ei-muuttunut-viime-julkaisun-jalkeen");
             }
 
             Set<DokumenttiDto> dokumentit = ops.getJulkaisukielet().stream().map(kieli -> {
@@ -189,6 +202,33 @@ public class JulkaisuServiceImpl implements JulkaisuService {
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, opetussuunnitelma, MuokkausTapahtuma.JULKAISU);
         return taytaKayttajaTiedot(mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class));
+    }
+
+    @Override
+    public boolean onkoMuutoksia(long opsId) {
+        try {
+            Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
+            OpetussuunnitelmanJulkaisu viimeisinJulkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(opetussuunnitelma);
+
+            if (viimeisinJulkaisu == null) {
+                return false;
+            }
+
+            ObjectNode data = viimeisinJulkaisu.getData().getOpsData();
+            int julkaistavaHash = generoiOpetussuunnitelmaKaikkiDtoHash(objectMapper.treeToValue(data, dispatcher.get(opsId, OpsExport.class).getExportClass()));
+            int nykyinenHash = generoiOpetussuunnitelmaKaikkiDtoHash(opetussuunnitelmaService.getExportedOpetussuunnitelma(opsId));
+
+            return nykyinenHash != julkaistavaHash;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new BusinessRuleViolationException("onko-muutoksia-julkaisuun-verrattuna-tarkistus-epaonnistui");
+        }
+    }
+
+    private int generoiOpetussuunnitelmaKaikkiDtoHash(OpetussuunnitelmaExportDto opetussuunnitelmaExportDto) throws IOException {
+        opetussuunnitelmaExportDto.setViimeisinJulkaisuAika(null);
+        ObjectNode dataJson = (ObjectNode) jsonMapper.toJson(opetussuunnitelmaExportDto);
+        return dataJson.hashCode();
     }
 
     private OpetussuunnitelmanJulkaisuDto taytaKayttajaTiedot(OpetussuunnitelmanJulkaisuDto julkaisu) {

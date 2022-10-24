@@ -72,7 +72,18 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaistuQuery;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaQuery;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -136,6 +147,33 @@ import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -159,33 +197,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 import static java.util.Collections.emptyList;
@@ -1810,6 +1821,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         Set<Kieli> julkaisukielet = ops.getJulkaisukielet();
 
+        if (CollectionUtils.isEmpty(julkaisukielet)) {
+            validointi.virhe("vahintaan-yksi-julkaisukieli");
+        }
+
         validateOpetussuunnitelmaTiedot(ops, validointi);
         validoiPaikallisetOpintojaksot(ops, validointi);
         validateTextHierarchy(ops, julkaisukielet, validointi);
@@ -1959,22 +1974,22 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Validointi validointi = new Validointi();
 
         if (ops.getOppiaineet().isEmpty()) {
-            logger.error("lukio-ei-oppiaineita");
+            logger.debug("lukio-ei-oppiaineita");
             validointi.virhe("lukio-ei-oppiaineita", ops.getNimi());
         }
 
         if (ops.getAihekokonaisuudet() == null || ops.getAihekokonaisuudet().getAihekokonaisuudet().isEmpty()) {
-            logger.error("lukio-ei-aihekokonaisuuksia");
+            logger.debug("lukio-ei-aihekokonaisuuksia");
             validointi.virhe("lukio-ei-aihekokonaisuuksia", ops.getNimi());
         }
 
         ops.getOppiaineet().forEach(opsOppiaine -> {
             if (!opsOppiaine.getOppiaine().isKoosteinen() && !oppiaineHasKurssi(opsOppiaine.getOppiaine(), ops.getLukiokurssit())) {
-                logger.error("lukio-oppiaineessa-ei-kursseja");
+                logger.debug("lukio-oppiaineessa-ei-kursseja");
                 validointi.virhe("lukio-oppiaineessa-ei-kursseja", opsOppiaine.getOppiaine().getNimi());
             }
             if (opsOppiaine.getOppiaine().isKoosteinen() && opsOppiaine.getOppiaine().getOppimaarat().isEmpty()) {
-                logger.error("lukio-oppiaineessa-ei-oppimaaria");
+                logger.debug("lukio-oppiaineessa-ei-oppimaaria");
                 validointi.varoitus("lukio-oppiaineessa-ei-oppimaaria", opsOppiaine.getOppiaine().getNimi());
             }
         });
@@ -1985,7 +2000,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             }
         });
 
-        logger.error("lukio-opsin-validointi-epaonnistui", validointi.getVirheet().size());
+        logger.debug("lukio-opsin-validointi-epaonnistui", validointi.getVirheet().size());
         return validointi;
     }
 

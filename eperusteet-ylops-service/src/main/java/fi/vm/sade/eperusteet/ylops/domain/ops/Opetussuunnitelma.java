@@ -15,7 +15,15 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
-import fi.vm.sade.eperusteet.ylops.domain.*;
+import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
+import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
+import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.Validable;
+import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
@@ -31,29 +39,56 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
-import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
-
-import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import java.io.Serializable;
-import java.util.*;
-import static java.util.Comparator.comparing;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import static java.util.stream.Collectors.groupingBy;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiDto;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.service.ops.Identifiable;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsIdentifiable;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
 import org.springframework.util.StringUtils;
+
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.groupingBy;
 
 /**
  * @author mikkom
@@ -431,4 +466,15 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     public void setPerusteenVoimassaoloAlkaa() {}
 
     public void setPerusteenVoimassaoloLoppuu() {}
+
+    public Date getViimeisinJulkaisuAika() {
+        if (CollectionUtils.isNotEmpty(julkaisut)) {
+            return julkaisut.stream()
+                    .sorted(Comparator.comparing(OpetussuunnitelmanJulkaisu::getLuotu).reversed())
+                    .map(OpetussuunnitelmanJulkaisu::getLuotu)
+                    .findFirst().get();
+        }
+
+        return null;
+    }
 }
