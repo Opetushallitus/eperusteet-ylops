@@ -4,9 +4,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
-import java.util.List;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Profile("test")
@@ -34,5 +35,10 @@ public class JulkaisuServiceMock implements JulkaisuService {
     @Override
     public JsonNode queryOpetussuunnitelmaJulkaisu(Long opsId, String query) {
         return null;
+    }
+
+    @Override
+    public boolean onkoMuutoksia(long opsId) {
+        return false;
     }
 }

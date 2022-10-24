@@ -690,32 +690,33 @@
                                         <location>${eperusteet.resources}.dokumentti.*</location>
                                         <location>${eperusteet.resources}.external.*</location>
                                         <location>${eperusteet.resources}.julkinen.*</location>
-                                        <location>${eperusteet.resources}.lops2019.Lops2019Controller</location>
-                                        <location>${eperusteet.resources}.lops2019.Lops2019OpintojaksoController</location>
-                                        <location>${eperusteet.resources}.lops2019.Lops2019OppiaineController</location>
-                                        <location>${eperusteet.resources}.lops2019.Lops2019PerusteController</location>
-                                        <location>${eperusteet.resources}.ohje.*</location>
-                                        <location>${eperusteet.resources}.ops.KommenttiController</location>
-                                        <location>${eperusteet.resources}.ops.LiitetiedostoController</location>
-                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmanAikatauluController</location>
-                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmanMuokkausietoController</location>
-                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmaJulkisetController</location>
-                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmanSisaltoController</location>
                                         <location>${eperusteet.resources}.kommentointi.KommentointiController</location>
                                         <location>${eperusteet.resources}.lops2019.Lops2019Controller</location>
-                                        <location>${eperusteet.resources}.lops2019.Lops2019PerusteController</location>
+                                        <location>${eperusteet.resources}.lops2019.Lops2019Controller</location>
+                                        <location>${eperusteet.resources}.lops2019.Lops2019Controller</location>
+                                        <location>${eperusteet.resources}.lops2019.Lops2019OpintojaksoController</location>
                                         <location>${eperusteet.resources}.lops2019.Lops2019OpintojaksoController</location>
                                         <location>${eperusteet.resources}.lops2019.Lops2019OppiaineController</location>
-                                        <location>${eperusteet.resources}.lops2019.Lops2019Controller</location>
+                                        <location>${eperusteet.resources}.lops2019.Lops2019OppiaineController</location>
+                                        <location>${eperusteet.resources}.lops2019.Lops2019PerusteController</location>
+                                        <location>${eperusteet.resources}.lops2019.Lops2019PerusteController</location>
+                                        <location>${eperusteet.resources}.ohje.*</location>
+                                        <location>${eperusteet.resources}.ops.JulkaisuController</location>
+                                        <location>${eperusteet.resources}.ops.KommenttiController</location>
+                                        <location>${eperusteet.resources}.ops.LiitetiedostoController</location>
+                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmaController</location>
+                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmaJulkisetController</location>
+                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmanAikatauluController</location>
+                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmanMuokkausietoController</location>
+                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmanSisaltoController</location>
+                                        <location>${eperusteet.resources}.ops.OppiaineController</location>
+                                        <location>${eperusteet.resources}.ops.OppiaineenVuosiluokkaController</location>
+                                        <location>${eperusteet.resources}.ops.OppiaineenVuosiluokkakokonaisuusController</location>
                                         <location>${eperusteet.resources}.ops.TermistoController</location>
+                                        <location>${eperusteet.resources}.ops.VuosiluokkakokonaisuusController</location>
+                                        <location>${eperusteet.resources}.ops.lukio.LukioOpetussuunnitelmatController</location>
                                         <location>${eperusteet.resources}.ukk.*</location>
                                         <location>${eperusteet.resources}.util.KayttajaController</location>
-                                        <location>${eperusteet.resources}.ops.OpetussuunnitelmaController</location>
-                                        <location>${eperusteet.resources}.ops.VuosiluokkakokonaisuusController</location>
-                                        <location>${eperusteet.resources}.ops.OppiaineController</location>
-                                        <location>${eperusteet.resources}.ops.OppiaineenVuosiluokkakokonaisuusController</location>
-                                        <location>${eperusteet.resources}.ops.OppiaineenVuosiluokkaController</location>
-                                        <location>${eperusteet.resources}.ops.lukio.LukioOpetussuunnitelmatController</location>
                                     </locations>
                                     <modelSubstitute>/substitutes.map</modelSubstitute>
                                     <info>

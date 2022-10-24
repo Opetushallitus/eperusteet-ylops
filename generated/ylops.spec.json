@@ -10,6 +10,8 @@
   }, {
     "name" : "Dokumentit"
   }, {
+    "name" : "Julkaisut"
+  }, {
     "name" : "Julkinen"
   }, {
     "name" : "Kayttajat"
@@ -2595,6 +2597,27 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/OpetussuunnitelmanJulkaisuDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{opsId}/julkaisu/onkoMuutoksia" : {
+      "get" : {
+        "tags" : [ "Julkaisut" ],
+        "operationId" : "onkoMuutoksia",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "boolean"
             }
           }
         }
@@ -7736,12 +7759,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -9133,6 +9156,10 @@
         "viimeisinSyncPvm" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "viimeisinJulkaisuAika" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },
@@ -9252,6 +9279,10 @@
           "format" : "date-time"
         },
         "viimeisinSyncPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
         },
@@ -9396,6 +9427,10 @@
           "type" : "string",
           "format" : "date-time"
         },
+        "viimeisinJulkaisuAika" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
         "peruste" : {
           "$ref" : "#/definitions/PerusteInfoDto"
         },
@@ -9523,6 +9558,10 @@
           "format" : "date-time"
         },
         "viimeisinSyncPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
         },
@@ -9707,6 +9746,10 @@
           "type" : "string",
           "format" : "date-time"
         },
+        "viimeisinJulkaisuAika" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaBaseDto"
         },
@@ -9842,6 +9885,10 @@
           "format" : "date-time"
         },
         "viimeisinSyncPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
         },
@@ -10564,18 +10611,15 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10590,6 +10634,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },
@@ -10604,18 +10651,15 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10630,6 +10674,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },
@@ -10644,18 +10691,15 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10670,6 +10714,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },

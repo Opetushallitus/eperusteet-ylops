@@ -219,6 +219,10 @@
           "type" : "string",
           "format" : "date-time"
         },
+        "viimeisinJulkaisuAika" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
         "peruste" : {
           "$ref" : "#/definitions/PerusteInfoDto"
         },
@@ -327,13 +331,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -349,31 +353,31 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "first" : {
           "type" : "boolean"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "last" : {
+          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         }
       }
     },
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -389,18 +393,18 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
         "first" : {
           "type" : "boolean"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "last" : {
+          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         }
       }
     },

@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
@@ -38,6 +39,12 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.test.annotation.DirtiesContext;
+
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -49,11 +56,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.test.annotation.DirtiesContext;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
@@ -107,6 +109,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
         kouluDto.setOid("1.2.246.562.10.00000000001");
         ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+        ops.setJulkaisukielet(Sets.newHashSet(Kieli.FI));
         OpetussuunnitelmaDto createdOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
         this.opsId = createdOps.getId();
     }
