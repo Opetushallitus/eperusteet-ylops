@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.service.util.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
@@ -38,6 +39,9 @@ import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.json.JSONException;
+import org.skyscreamer.jsonassert.JSONCompare;
+import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Profile;
@@ -215,21 +219,20 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             }
 
             ObjectNode data = viimeisinJulkaisu.getData().getOpsData();
-            int julkaistavaHash = generoiOpetussuunnitelmaKaikkiDtoHash(objectMapper.treeToValue(data, dispatcher.get(opsId, OpsExport.class).getExportClass()));
-            int nykyinenHash = generoiOpetussuunnitelmaKaikkiDtoHash(opetussuunnitelmaService.getExportedOpetussuunnitelma(opsId));
+            String julkaistu = generoiOpetussuunnitelmaKaikkiDtAsString(objectMapper.treeToValue(data, dispatcher.get(opsId, OpsExport.class).getExportClass()));
+            String nykyinen = generoiOpetussuunnitelmaKaikkiDtAsString(opetussuunnitelmaService.getExportedOpetussuunnitelma(opsId));
 
-            return nykyinenHash != julkaistavaHash;
-        } catch (IOException e) {
-            e.printStackTrace();
+            return JSONCompare.compareJSON(julkaistu, nykyinen, JSONCompareMode.LENIENT).failed();
+        } catch (IOException|JSONException e) {
+            log.error(Throwables.getStackTraceAsString(e));
             throw new BusinessRuleViolationException("onko-muutoksia-julkaisuun-verrattuna-tarkistus-epaonnistui");
         }
     }
 
-    private int generoiOpetussuunnitelmaKaikkiDtoHash(OpetussuunnitelmaExportDto opetussuunnitelmaExportDto) throws IOException {
+    private String generoiOpetussuunnitelmaKaikkiDtAsString(OpetussuunnitelmaExportDto opetussuunnitelmaExportDto) throws IOException {
         opetussuunnitelmaExportDto.setViimeisinJulkaisuAika(null);
         opetussuunnitelmaExportDto.setTila(null);
-        ObjectNode dataJson = (ObjectNode) jsonMapper.toJson(opetussuunnitelmaExportDto);
-        return dataJson.hashCode();
+        return objectMapper.writeValueAsString(opetussuunnitelmaExportDto);
     }
 
     private OpetussuunnitelmanJulkaisuDto taytaKayttajaTiedot(OpetussuunnitelmanJulkaisuDto julkaisu) {
