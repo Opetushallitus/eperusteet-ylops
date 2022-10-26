@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
@@ -24,14 +23,21 @@ import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaistuQuery;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaQuery;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -126,7 +132,7 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'MUOKKAUS')")
     List<OpetussuunnitelmaInfoDto> getLapsiOpetussuunnitelmat(@P("id") Long id);
 
-    @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'MUOKKAUS')")
+    @PreAuthorize("hasPermission(#id, 'opetussuunnitelma', 'LUKU')")
     List<Validointi> validoiOpetussuunnitelma(@P("id") Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
