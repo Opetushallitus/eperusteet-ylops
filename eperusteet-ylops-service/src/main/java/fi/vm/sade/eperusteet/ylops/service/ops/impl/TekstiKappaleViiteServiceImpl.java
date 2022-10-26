@@ -25,7 +25,8 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
-import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.RevisionKayttajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
@@ -52,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -329,9 +331,16 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Override
     @Transactional(readOnly = true)
-    public List<RevisionDto> getVersions(Long opsId, long viiteId) {
-        List<Revision> versions = tekstiKappaleRepository.getRevisions(viiteId);
-        return mapper.mapAsList(versions, RevisionDto.class);
+    public List<RevisionKayttajaDto> getVersions(Long opsId, long viiteId) {
+        List<RevisionKayttajaDto> revisions = mapper.mapAsList(tekstiKappaleRepository.getRevisions(viiteId), RevisionKayttajaDto.class);
+
+        Map<String, KayttajanTietoDto> kayttajanTiedot = kayttajanTietoService.haeKayttajatiedot(revisions.stream()
+                        .map(RevisionKayttajaDto::getMuokkaajaOid)
+                        .collect(Collectors.toList())).stream()
+                .collect(Collectors.toMap(KayttajanTietoDto::getOidHenkilo, kayttajanTieto -> kayttajanTieto));
+
+        revisions.forEach(revision -> revision.setKayttajanTieto(kayttajanTiedot.get(revision.getMuokkaajaOid())));
+        return revisions;
     }
 
     @Override

@@ -16,7 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.RevisionKayttajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -64,7 +64,7 @@ public class OpetussuunnitelmanSisaltoController {
     }
 
     @RequestMapping(value = "/tekstit/{viiteId}/versiot", method = GET)
-    public ResponseEntity<List<RevisionDto>> getVersionsForTekstiKappaleViite(
+    public ResponseEntity<List<RevisionKayttajaDto>> getVersionsForTekstiKappaleViite(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final long viiteId) {
 
