@@ -227,6 +227,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
 
     private int generoiOpetussuunnitelmaKaikkiDtoHash(OpetussuunnitelmaExportDto opetussuunnitelmaExportDto) throws IOException {
         opetussuunnitelmaExportDto.setViimeisinJulkaisuAika(null);
+        opetussuunnitelmaExportDto.setTila(null);
         ObjectNode dataJson = (ObjectNode) jsonMapper.toJson(opetussuunnitelmaExportDto);
         return dataJson.hashCode();
     }
