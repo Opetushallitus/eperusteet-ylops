@@ -5346,7 +5346,7 @@
             "schema" : {
               "type" : "array",
               "items" : {
-                "$ref" : "#/definitions/RevisionDto"
+                "$ref" : "#/definitions/RevisionKayttajaDto"
               }
             }
           }
@@ -10618,9 +10618,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -10634,6 +10631,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10658,9 +10658,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -10674,6 +10671,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -10698,9 +10698,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -10714,6 +10711,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -11592,6 +11592,31 @@
         },
         "nimi" : {
           "type" : "string"
+        }
+      }
+    },
+    "RevisionKayttajaDto" : {
+      "type" : "object",
+      "properties" : {
+        "numero" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "pvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "muokkaajaOid" : {
+          "type" : "string"
+        },
+        "kommentti" : {
+          "type" : "string"
+        },
+        "nimi" : {
+          "type" : "string"
+        },
+        "kayttajanTieto" : {
+          "$ref" : "#/definitions/KayttajanTietoDto"
         }
       }
     },

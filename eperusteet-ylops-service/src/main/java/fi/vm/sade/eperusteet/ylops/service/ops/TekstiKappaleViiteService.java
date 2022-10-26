@@ -16,7 +16,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
-import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.RevisionKayttajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -65,7 +65,7 @@ public interface TekstiKappaleViiteService {
     <T> T kloonaaTekstiKappale(@P("opsId") Long opsId, Long viiteId, Class<T> t);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<RevisionDto> getVersions(@P("opsId") Long opsId, long viiteId);
+    List<RevisionKayttajaDto> getVersions(@P("opsId") Long opsId, long viiteId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     TekstiKappaleDto findTekstikappaleVersion(@P("opsId") long opsId, long viiteId, long versio);
