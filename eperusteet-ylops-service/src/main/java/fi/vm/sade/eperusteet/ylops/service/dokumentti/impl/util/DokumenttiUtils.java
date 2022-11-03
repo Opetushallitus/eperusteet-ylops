@@ -7,6 +7,7 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
 import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.apache.pdfbox.preflight.PreflightDocument;
 import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
@@ -177,8 +178,9 @@ public class DokumenttiUtils {
         if (string == null) {
             return "";
         }
+
         String cleanXmlString = Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL.getWhitelist());
-        return cleanXmlString.replace("&nbsp;", " ");
+        return StringEscapeUtils.unescapeHtml4(cleanXmlString.replace("&nbsp;", " "));
     }
 
     public static String stripNonValidXMLCharacters(String in) {
