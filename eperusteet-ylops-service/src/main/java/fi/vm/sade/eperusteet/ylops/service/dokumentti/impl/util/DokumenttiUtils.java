@@ -178,8 +178,7 @@ public class DokumenttiUtils {
         if (string == null) {
             return "";
         }
-
-        String cleanXmlString = Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL.getWhitelist());
+        String cleanXmlString = Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL_PDF.getWhitelist());
         return StringEscapeUtils.unescapeHtml4(cleanXmlString.replace("&nbsp;", " "));
     }
 
