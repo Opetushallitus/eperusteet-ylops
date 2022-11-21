@@ -31,8 +31,6 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
 import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
@@ -44,9 +42,6 @@ import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import io.swagger.annotations.Api;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -59,6 +54,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
@@ -220,32 +219,6 @@ public class OpetussuunnitelmaController {
             @PathVariable("id") final Long id) {
         Set<OpetussuunnitelmaInfoDto> opetussuunnitelmat = opetussuunnitelmaService.vaihdettavatPohjat(id);
         return ResponseEntity.ok(opetussuunnitelmat);
-    }
-
-    @RequestMapping(value = "/{opsId}/julkaise", method = RequestMethod.POST)
-    public OpetussuunnitelmanJulkaisuDto julkaise(
-            @PathVariable final Long opsId,
-            @RequestBody final UusiJulkaisuDto julkaisuDto) {
-        return julkaisuService.addJulkaisu(opsId, julkaisuDto);
-    }
-
-    @RequestMapping(value = "/{opsId}/aktivoi/{revision}", method = RequestMethod.POST)
-    public OpetussuunnitelmanJulkaisuDto aktivoiJulkaisu(
-            @PathVariable final Long opsId,
-            @PathVariable final int revision) {
-        return julkaisuService.aktivoiJulkaisu(opsId, revision);
-    }
-
-    @RequestMapping(value = "/{opsId}/julkaisut", method = RequestMethod.GET)
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(
-            @PathVariable final Long opsId) {
-        return julkaisuService.getJulkaisut(opsId);
-    }
-
-    @RequestMapping(value = "/{opsId}/julkaisut/kevyt", method = RequestMethod.GET)
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(
-            @PathVariable final Long opsId) {
-        return julkaisuService.getJulkaisutKevyt(opsId);
     }
 
     @RequestMapping(method = RequestMethod.POST)

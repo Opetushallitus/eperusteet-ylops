@@ -502,7 +502,7 @@
                     <httpConnector>
                         <port>8081</port>
                     </httpConnector>
-                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <scanIntervalSeconds>0</scanIntervalSeconds>
                     <webApp>
                         <contextPath>/eperusteet-ylops-service</contextPath>
                     </webApp>
