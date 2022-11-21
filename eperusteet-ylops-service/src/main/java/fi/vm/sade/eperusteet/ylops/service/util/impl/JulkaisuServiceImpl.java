@@ -206,12 +206,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             julkaisu.setTiedote(mapper.map(julkaisuDto.getJulkaisutiedote(), LokalisoituTeksti.class));
             OpetussuunnitelmaExportDto opsData = opetussuunnitelmaService.getExportedOpetussuunnitelma(opsId);
 
-            ObjectNode opsDataJson;
-            try {
-                opsDataJson = (ObjectNode) jsonMapper.toJson(opsData);
-            } catch(IOException e) {
-                throw new BusinessRuleViolationException("opetussuunnitelma-julkaisu-epaonnistui");
-            }
+            ObjectNode opsDataJson = (ObjectNode) jsonMapper.toJson(opsData);
             List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
 
             Set<DokumenttiDto> dokumentit = ops.getJulkaisukielet().stream().map(kieli -> {
@@ -238,7 +233,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             log.error(Throwables.getStackTraceAsString(e));
             julkaistuOpetussuunnitelmaTila.setJulkaisutila(JulkaisuTila.VIRHE);
             self.saveJulkaistuOpetussuunnitelmaTila(julkaistuOpetussuunnitelmaTila);
-            throw e;
+            throw new BusinessRuleViolationException("julkaisun-tallennus-epaonnistui");
         }
 
         julkaistuOpetussuunnitelmaTila.setJulkaisutila(JulkaisuTila.JULKAISTU);
