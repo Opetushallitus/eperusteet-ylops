@@ -1,15 +1,23 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaisuTila;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class OpetussuunnitelmanJulkaisuDto {
     private Long id;
     private OpetussuunnitelmaInfoDto opetussuunnitelma;
@@ -19,4 +27,5 @@ public class OpetussuunnitelmanJulkaisuDto {
     private Date luotu;
     private String luoja;
     private KayttajanTietoDto kayttajanTieto;
+    private JulkaisuTila tila = JulkaisuTila.JULKAISTU;
 }

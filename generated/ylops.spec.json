@@ -2549,7 +2549,7 @@
     },
     "/opetussuunnitelmat/{opsId}/aktivoi/{revision}" : {
       "post" : {
-        "tags" : [ "Opetussuunnitelmat" ],
+        "tags" : [ "Julkaisut" ],
         "operationId" : "aktivoiJulkaisu",
         "parameters" : [ {
           "name" : "opsId",
@@ -2576,7 +2576,7 @@
     },
     "/opetussuunnitelmat/{opsId}/julkaise" : {
       "post" : {
-        "tags" : [ "Opetussuunnitelmat" ],
+        "tags" : [ "Julkaisut" ],
         "operationId" : "julkaise",
         "parameters" : [ {
           "name" : "opsId",
@@ -2593,11 +2593,8 @@
           }
         } ],
         "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/OpetussuunnitelmanJulkaisuDto"
-            }
+          "default" : {
+            "description" : "successful operation"
           }
         }
       }
@@ -2625,7 +2622,7 @@
     },
     "/opetussuunnitelmat/{opsId}/julkaisut" : {
       "get" : {
-        "tags" : [ "Opetussuunnitelmat" ],
+        "tags" : [ "Julkaisut" ],
         "operationId" : "getJulkaisut",
         "parameters" : [ {
           "name" : "opsId",
@@ -2649,7 +2646,7 @@
     },
     "/opetussuunnitelmat/{opsId}/julkaisut/kevyt" : {
       "get" : {
-        "tags" : [ "Opetussuunnitelmat" ],
+        "tags" : [ "Julkaisut" ],
         "operationId" : "getJulkaisutKevyt",
         "parameters" : [ {
           "name" : "opsId",
@@ -5488,6 +5485,28 @@
         }
       }
     },
+    "/opetussuunnitelmat/{opsId}/viimeisinjulkaisutila" : {
+      "get" : {
+        "tags" : [ "Julkaisut" ],
+        "operationId" : "viimeisinJulkaisuTila",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string",
+              "enum" : [ "JULKAISEMATON", "KESKEN", "JULKAISTU", "VIRHE" ]
+            }
+          }
+        }
+      }
+    },
     "/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet" : {
       "post" : {
         "tags" : [ "Vuosiluokkakokonaisuudet" ],
@@ -7759,12 +7778,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -10032,6 +10051,10 @@
         },
         "kayttajanTieto" : {
           "$ref" : "#/definitions/KayttajanTietoDto"
+        },
+        "tila" : {
+          "type" : "string",
+          "enum" : [ "JULKAISEMATON", "KESKEN", "JULKAISTU", "VIRHE" ]
         }
       }
     },
@@ -10603,20 +10626,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
+        "totalElements" : {
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10632,31 +10648,31 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "first" : {
+          "type" : "boolean"
         }
       }
     },
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
+        "totalElements" : {
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10672,31 +10688,31 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "first" : {
+          "type" : "boolean"
         }
       }
     },
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
+        "totalElements" : {
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10712,11 +10728,18 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "first" : {
+          "type" : "boolean"
         }
       }
     },
