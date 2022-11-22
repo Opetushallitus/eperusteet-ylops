@@ -237,7 +237,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         }
 
         julkaistuOpetussuunnitelmaTila.setJulkaisutila(JulkaisuTila.JULKAISTU);
-        self.saveJulkaistuOpetussuunnitelmaTila(julkaistuOpetussuunnitelmaTila);
+        saveJulkaistuOpetussuunnitelmaTila(julkaistuOpetussuunnitelmaTila);
     }
 
     @Override
