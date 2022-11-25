@@ -56,6 +56,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -113,6 +114,8 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     @Autowired
     @Lazy
     private JulkaisuService self;
+
+    private static final int JULKAISUN_ODOTUSAIKA_SEKUNNEISSA = 5 * 60;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -289,6 +292,15 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     @Override
     public JulkaisuTila viimeisinJulkaisuTila(long opsId) {
         JulkaistuOpetussuunnitelmaTila julkaistuOpetussuunnitelmaTila = julkaistuOpetussuunnitelmaTilaRepository.findOne(opsId);
+
+        if (julkaistuOpetussuunnitelmaTila != null &&
+                julkaistuOpetussuunnitelmaTila.getJulkaisutila().equals(JulkaisuTila.KESKEN)
+                && (new Date().getTime() - julkaistuOpetussuunnitelmaTila.getMuokattu().getTime()) / 1000 > JULKAISUN_ODOTUSAIKA_SEKUNNEISSA) {
+            log.error("Julkaisu kesti yli {} sekuntia, opsilla {}", JULKAISUN_ODOTUSAIKA_SEKUNNEISSA, opsId);
+            julkaistuOpetussuunnitelmaTila.setJulkaisutila(JulkaisuTila.VIRHE);
+            saveJulkaistuOpetussuunnitelmaTila(julkaistuOpetussuunnitelmaTila);
+        }
+
         return julkaistuOpetussuunnitelmaTila != null ? julkaistuOpetussuunnitelmaTila.getJulkaisutila() : JulkaisuTila.JULKAISEMATON;
     }
 
