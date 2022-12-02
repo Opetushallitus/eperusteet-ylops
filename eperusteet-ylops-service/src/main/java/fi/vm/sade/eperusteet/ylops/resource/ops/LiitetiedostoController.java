@@ -17,23 +17,8 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
-import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
 import io.swagger.annotations.Api;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PushbackInputStream;
-import java.util.*;
-import java.util.List;
-import javax.activation.MimetypesFileTypeMap;
-import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.mime.MimeTypeException;
@@ -43,9 +28,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.ObjectUtils;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -55,6 +39,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PushbackInputStream;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author jhyoty
@@ -159,38 +160,25 @@ public class LiitetiedostoController {
             HttpServletResponse response
     ) throws IOException {
         UUID id = UUID.fromString(FilenameUtils.removeExtension(fileName));
-        String extension = FilenameUtils.getExtension(fileName);
-
         LiiteDto dto = liitteet.get(opsId, id);
 
-        boolean isCorrectExtension = true;
-
-        // Tarkistetaan tiedostopääte jos asetettu kutsuun
-        if (!ObjectUtils.isEmpty(extension)) {
-            isCorrectExtension = Objects.equals(dto.getTyyppi(), new MimetypesFileTypeMap().getContentType(fileName));
-        }
-
-        if (isCorrectExtension) {
-            if (id.toString().equals(etag)) {
-                response.setStatus(HttpStatus.NOT_MODIFIED.value());
-            } else if (dto != null) {
-                response.setHeader("Content-Type", dto.getTyyppi());
-                response.setHeader("ETag", id.toString());
-                try (OutputStream os = response.getOutputStream()) {
-                    liitteet.export(opsId, id, os);
-                    os.flush();
-                }
-            } else {
-                response.setHeader("ETag", id.toString());
-                try (OutputStream os = response.getOutputStream()) {
-                    liitteet.exportLiitePerusteelta(opsId, id, os);
-                    os.flush();
-                } catch (Exception e) {
-                    response.setStatus(HttpStatus.NOT_FOUND.value());
-                }
+        if (id.toString().equals(etag)) {
+            response.setStatus(HttpStatus.NOT_MODIFIED.value());
+        } else if (dto != null) {
+            response.setHeader("Content-Type", dto.getTyyppi());
+            response.setHeader("ETag", id.toString());
+            try (OutputStream os = response.getOutputStream()) {
+                liitteet.export(opsId, id, os);
+                os.flush();
             }
         } else {
-            response.setStatus(HttpStatus.NOT_FOUND.value());
+            response.setHeader("ETag", id.toString());
+            try (OutputStream os = response.getOutputStream()) {
+                liitteet.exportLiitePerusteelta(opsId, id, os);
+                os.flush();
+            } catch (Exception e) {
+                response.setStatus(HttpStatus.NOT_FOUND.value());
+            }
         }
 
     }
