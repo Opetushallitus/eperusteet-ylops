@@ -22,6 +22,8 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ValidointiDto<T extends ValidointiDto> {
+
+    @JsonIgnore
     private DtoMapper mapper;
 
     @Getter
