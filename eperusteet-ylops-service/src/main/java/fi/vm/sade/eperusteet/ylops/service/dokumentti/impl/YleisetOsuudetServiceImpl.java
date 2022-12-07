@@ -18,8 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
@@ -31,11 +29,12 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
-import java.util.List;
-import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addHeader;
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.addLokalisoituteksti;
@@ -97,37 +96,20 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
 
                     if (hasTekstiSisalto(docBase, lapsi) || hasTekstiSisaltoRecursive(docBase, lapsi)) {
 
-                        if (lapsi.getTekstiKappale().getNimi() != null) {
+                        TekstiKappaleDto perusteenTekstikappale = null;
+                        if (lapsi.getPerusteTekstikappaleId() != null) {
+                            perusteenTekstikappale = opetussuunnitelmaService.getPerusteTekstikappale(docBase.getOps().getId(), lapsi.getPerusteTekstikappaleId());
+                            addHeader(docBase, getTextString(docBase, perusteenTekstikappale.getNimi()));
+                        } else if(lapsi.getTekstiKappale().getNimi() != null)  {
                             addHeader(docBase, getTextString(docBase, lapsi.getTekstiKappale().getNimi()));
+
                         }
 
                         if (!opetussuunnitelmaVanhaaRakennetta(docBase)) {
 
                             // Perusteen teksti luvulle jos valittu esittäminen
-                            Long pTekstikappaleId = lapsi.getPerusteTekstikappaleId();
-                            if (lapsi.isNaytaPerusteenTeksti() && pTekstikappaleId != null) {
-                                try {
-                                    if (KoulutustyyppiToteutus.LOPS2019.equals(docBase.getOps().getToteutus())) {
-                                        PerusteTekstiKappaleViiteMatalaDto perusteTekstikappale = lopsService
-                                                .getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
-
-                                        if (perusteTekstikappale != null && perusteTekstikappale.getPerusteenOsa() != null) {
-                                            addLokalisoituteksti(docBase,
-                                                    perusteTekstikappale.getPerusteenOsa().getTeksti(),
-                                                    "cite");
-                                        }
-                                    } else {
-                                        TekstiKappaleDto tekstikappale = opetussuunnitelmaService.getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
-                                        if (tekstikappale != null) {
-                                            addLokalisoituteksti(docBase,
-                                                    tekstikappale.getTeksti(),
-                                                    "cite");
-                                        }
-                                    }
-
-                                } catch (BusinessRuleViolationException | NotExistsException e) {
-                                    // Ohitetaan. Voi olla toisen tyyppinen ops.
-                                }
+                            if (lapsi.isNaytaPerusteenTeksti() && perusteenTekstikappale != null) {
+                                addLokalisoituteksti(docBase, perusteenTekstikappale.getTeksti(),"cite");
                             }
 
                             if (lapsi.isNaytaPohjanTeksti()) {
@@ -169,10 +151,10 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
         if (viite.isNaytaPerusteenTeksti() && pTekstikappaleId != null) {
             try {
                 if (KoulutustyyppiToteutus.LOPS2019.equals(docBase.getOps().getToteutus())) {
-                    PerusteTekstiKappaleViiteMatalaDto perusteTekstikappale = lopsService
+                    fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto perusteTekstikappale = lopsService
                             .getPerusteTekstikappale(docBase.getOps().getId(), pTekstikappaleId);
 
-                    if (perusteTekstikappale != null && perusteTekstikappale.getPerusteenOsa() != null) {
+                    if (perusteTekstikappale != null && perusteTekstikappale.getTekstiKappale() != null) {
                         return true;
                     }
                 } else {

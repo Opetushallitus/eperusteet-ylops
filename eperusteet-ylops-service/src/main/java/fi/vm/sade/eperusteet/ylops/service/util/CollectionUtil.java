@@ -15,11 +15,13 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.util;
 
-import java.util.*;
-import java.util.function.Consumer;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -80,6 +82,20 @@ public class CollectionUtil {
             for (T next : getSource.apply(root)) {
                 R r = mapRecursive(next, getSource, getTarget, map);
                 getTarget.apply(result).add(r);
+            }
+        }
+        return result;
+    }
+
+    public static <T> T mapRecursive(
+            T root,
+            Function<T, Collection<T>> getSource,
+            Function<T, T> map) {
+        T result = map.apply(root);
+        Collection<T> children = getSource.apply(root);
+        if (children != null) {
+            for (T next : getSource.apply(root)) {
+                mapRecursive(next, getSource, map);
             }
         }
         return result;

@@ -11,8 +11,6 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
@@ -20,7 +18,6 @@ import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoReposi
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
-import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
@@ -31,15 +28,21 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -206,21 +209,21 @@ public class Lops2019ServiceImpl implements Lops2019Service {
     }
 
     @Override
-    public PerusteTekstiKappaleViiteDto getPerusteTekstikappaleet(Long opsId) {
+    public TekstiKappaleViiteDto getPerusteTekstikappaleet(Long opsId) {
         return getPerusteImpl(opsId).getLops2019().getSisalto();
     }
 
     @Override
     @Transactional(noRollbackFor = {NotExistsException.class})
-    public PerusteTekstiKappaleViiteMatalaDto getPerusteTekstikappale(Long opsId, Long tekstikappaleId) {
+    public TekstiKappaleViiteDto getPerusteTekstikappale(Long opsId, Long tekstikappaleId) {
         PerusteDto perusteDto = getPerusteImpl(opsId);
         if (perusteDto.getLops2019() != null) {
-            PerusteTekstiKappaleViiteDto sisalto = perusteDto.getLops2019().getSisalto();
+            TekstiKappaleViiteDto sisalto = perusteDto.getLops2019().getSisalto();
             return CollectionUtil.treeToStream(
                     sisalto,
-                    PerusteTekstiKappaleViiteDto::getLapset)
-                    .filter(viiteDto -> viiteDto.getPerusteenOsa() != null
-                            && Objects.equals(tekstikappaleId, viiteDto.getPerusteenOsa().getId()))
+                            TekstiKappaleViiteDto::getLapset)
+                    .filter(viiteDto -> viiteDto.getTekstiKappale() != null
+                            && Objects.equals(tekstikappaleId, viiteDto.getTekstiKappale().getId()))
                     .findFirst()
                     .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
         }

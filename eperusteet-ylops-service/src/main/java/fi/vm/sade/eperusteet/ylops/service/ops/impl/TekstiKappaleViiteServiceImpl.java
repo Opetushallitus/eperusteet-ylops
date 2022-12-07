@@ -49,6 +49,10 @@ import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -57,9 +61,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
@@ -137,8 +138,8 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             return CollectionUtil.treeToStream(
                     perusteDto.getTekstiKappaleViiteSisalto(),
                     fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
-                    .filter(viiteDto -> viiteDto.getTesktiKappale() != null && tekstiKappaleViite != null
-                            && Objects.equals(tekstiKappaleViite.getPerusteTekstikappaleId(), viiteDto.getTesktiKappale().getId()))
+                    .filter(viiteDto -> viiteDto.getTekstiKappale() != null && tekstiKappaleViite != null
+                            && Objects.equals(tekstiKappaleViite.getPerusteTekstikappaleId(), viiteDto.getTekstiKappale().getId()))
                     .findFirst()
                     .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
         }

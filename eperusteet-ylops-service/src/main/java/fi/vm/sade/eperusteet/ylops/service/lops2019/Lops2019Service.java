@@ -3,13 +3,11 @@ package fi.vm.sade.eperusteet.ylops.service.lops2019;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019LaajaAlainenOsaaminenDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto;
 import org.springframework.security.access.method.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -52,10 +50,10 @@ public interface Lops2019Service {
     List<Lops2019ModuuliDto> getPerusteOppiaineenModuulit(@P("opsId") Long opsId, String oppiaineUri);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    PerusteTekstiKappaleViiteDto getPerusteTekstikappaleet(@P("opsId") Long opsId);
+    TekstiKappaleViiteDto getPerusteTekstikappaleet(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    PerusteTekstiKappaleViiteMatalaDto getPerusteTekstikappale(@P("opsId") Long opsId, Long tekstikappaleId);
+    TekstiKappaleViiteDto getPerusteTekstikappale(@P("opsId") Long opsId, Long tekstikappaleId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Set<Lops2019ModuuliDto> getPerusteModuulit(Long opsId, Set<String> koodiUrit);

@@ -16,7 +16,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteVersionDto;
@@ -54,6 +53,10 @@ public class PerusteDto extends PerusteBaseDto {
 
         if (getAipe() != null) {
             return getAipe().getSisalto();
+        }
+
+        if (getLops2019() != null) {
+            return getLops2019().getSisalto();
         }
 
         return null;

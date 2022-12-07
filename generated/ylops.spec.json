@@ -4610,7 +4610,7 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "$ref" : "#/definitions/TekstiKappaleViiteKevytDto"
+              "$ref" : "#/definitions/TekstiKappaleViitePerusteTekstillaDto"
             }
           }
         }
@@ -4846,7 +4846,7 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "$ref" : "#/definitions/PerusteTekstiKappaleViiteMatalaDto"
+              "$ref" : "#/definitions/TekstiKappaleViiteDto"
             }
           }
         }
@@ -4873,7 +4873,7 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "$ref" : "#/definitions/PerusteTekstiKappaleViiteMatalaDto"
+              "$ref" : "#/definitions/TekstiKappaleViiteDto"
             }
           }
         }
@@ -7723,7 +7723,7 @@
           }
         },
         "sisalto" : {
-          "$ref" : "#/definitions/PerusteTekstiKappaleViiteDto"
+          "$ref" : "#/definitions/TekstiKappaleViiteDto"
         }
       }
     },
@@ -7778,12 +7778,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -10626,13 +10626,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10666,13 +10666,13 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10706,13 +10706,13 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -11241,88 +11241,6 @@
         }
       }
     },
-    "PerusteTekstiKappaleDto" : {
-      "type" : "object",
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "luotu" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "muokattu" : {
-          "type" : "string",
-          "format" : "date-time"
-        },
-        "nimi" : {
-          "$ref" : "#/definitions/PerusteenLokalisoituTekstiDto"
-        },
-        "teksti" : {
-          "$ref" : "#/definitions/PerusteenLokalisoituTekstiDto"
-        },
-        "tila" : {
-          "type" : "string",
-          "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
-        },
-        "tunniste" : {
-          "type" : "string"
-        },
-        "osanTyyppi" : {
-          "type" : "string"
-        },
-        "liite" : {
-          "type" : "boolean"
-        }
-      }
-    },
-    "PerusteTekstiKappaleViiteDto" : {
-      "type" : "object",
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "perusteenOsa" : {
-          "$ref" : "#/definitions/PerusteTekstiKappaleDto"
-        },
-        "perusteTekstikappaleId" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "omistussuhde" : {
-          "type" : "string",
-          "enum" : [ "OMA", "LAINATTU" ]
-        },
-        "lapset" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/PerusteTekstiKappaleViiteDto"
-          }
-        }
-      }
-    },
-    "PerusteTekstiKappaleViiteMatalaDto" : {
-      "type" : "object",
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "perusteenOsa" : {
-          "$ref" : "#/definitions/PerusteTekstiKappaleDto"
-        },
-        "perusteTekstikappaleId" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "omistussuhde" : {
-          "type" : "string",
-          "enum" : [ "OMA", "LAINATTU" ]
-        }
-      }
-    },
     "PerusteTekstiOsaDto" : {
       "type" : "object",
       "properties" : {
@@ -11836,7 +11754,7 @@
         }
       }
     },
-    "TekstiKappaleViiteKevytDto" : {
+    "TekstiKappaleViitePerusteTekstillaDto" : {
       "type" : "object",
       "properties" : {
         "id" : {
@@ -11859,11 +11777,18 @@
         "lapset" : {
           "type" : "array",
           "items" : {
-            "$ref" : "#/definitions/TekstiKappaleViiteKevytDto"
+            "$ref" : "#/definitions/TekstiKappaleViitePerusteTekstillaDto"
           }
         },
         "liite" : {
           "type" : "boolean"
+        },
+        "perusteTekstikappaleId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "perusteenTekstikappale" : {
+          "$ref" : "#/definitions/TekstiKappaleDto"
         },
         "_tekstiKappale" : {
           "$ref" : "#/definitions/Reference"

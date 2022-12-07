@@ -15,15 +15,20 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
-import java.util.Date;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.Date;
 
 /**
  * @author jhyoty
  */
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class TekstiKappaleDto {
     private Long id;
     private Date luotu;
