@@ -1,11 +1,16 @@
 package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
 import com.google.common.collect.Sets;
-import fi.vm.sade.eperusteet.ylops.domain.*;
-import fi.vm.sade.eperusteet.ylops.domain.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.Poistettu;
+import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
@@ -18,8 +23,6 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -31,21 +34,26 @@ import fi.vm.sade.eperusteet.ylops.repository.lops2019.PoistetutRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-
-import java.util.*;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
@@ -103,10 +111,10 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThat(peruste.getLops2019()).isNotNull();
         List<Lops2019ModuuliDto> moduulit = peruste.getLops2019().getOppiaineet().get(1).getOppimaarat().get(0).getModuulit();
         assertThat(moduulit.size()).isNotEqualTo(0);
-        PerusteTekstiKappaleDto viite = peruste.getLops2019().getSisalto().getLapset().get(1).getPerusteenOsa();
-        assertThat(viite.getNimi().get(Kieli.FI)).isEqualTo("Arvoperusta");
-        assertThat(viite.getTeksti().get(Kieli.FI)).isNotBlank();
-        assertThat(viite.getOsanTyyppi()).isEqualTo("tekstikappale");
+        TekstiKappaleDto tekstiKappale = peruste.getLops2019().getSisalto().getLapset().get(1).getTekstiKappale();
+        assertThat(tekstiKappale.getNimi().get(Kieli.FI)).isEqualTo("Arvoperusta");
+        assertThat(tekstiKappale.getTeksti().get(Kieli.FI)).isNotBlank();
+        assertThat(tekstiKappale.getOsanTyyppi()).isEqualTo("tekstikappale");
     }
 
     @Test
@@ -135,7 +143,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         assertThat(oppiaineet).isNotNull();
         assertThat(oppiaineet.size()).isNotEqualTo(0);
 
-        PerusteTekstiKappaleViiteDto tekstikappaleet = lopsService.getPerusteTekstikappaleet(opsDto.getId());
+        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto tekstikappaleet = lopsService.getPerusteTekstikappaleet(opsDto.getId());
         assertThat(tekstikappaleet).isNotNull();
 
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsDto.getId());

@@ -1,18 +1,22 @@
 package fi.vm.sade.eperusteet.ylops.resource.lops2019;
 
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiKappaleViiteMatalaDto;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import io.swagger.annotations.Api;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/opetussuunnitelmat/{opsId}/peruste")
@@ -81,13 +85,13 @@ public class Lops2019PerusteController {
     }
 
     @RequestMapping(value = "/tekstikappaleet", method = RequestMethod.GET)
-    public PerusteTekstiKappaleViiteMatalaDto getAllLops2019PerusteTekstikappaleet(
+    public TekstiKappaleViiteDto getAllLops2019PerusteTekstikappaleet(
             @PathVariable final Long opsId) {
         return lopsService.getPerusteTekstikappaleet(opsId);
     }
 
     @RequestMapping(value = "/tekstikappaleet/{tekstikappaleId}", method = RequestMethod.GET)
-    public PerusteTekstiKappaleViiteMatalaDto getAllLops2019PerusteTekstikappale(
+    public TekstiKappaleViiteDto getAllLops2019PerusteTekstikappale(
             @PathVariable final Long opsId,
             @PathVariable final Long tekstikappaleId) {
         return lopsService.getPerusteTekstikappale(opsId, tekstikappaleId);

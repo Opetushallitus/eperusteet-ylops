@@ -99,6 +99,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.OpetuksenYleisetTavoitteetD
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViitePerusteTekstillaDto;
 import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
@@ -160,6 +161,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.method.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
@@ -1438,8 +1440,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 viiteDto -> {
                     TekstiKappale kpl = new TekstiKappale();
                     TekstiKappaleViite result = new TekstiKappaleViite();
-                    if (viiteDto.getTesktiKappale() != null) {
-                        TekstiKappale tk = mapper.map(viiteDto.getTesktiKappale(), TekstiKappale.class);
+                    if (viiteDto.getTekstiKappale() != null) {
+                        TekstiKappale tk = mapper.map(viiteDto.getTekstiKappale(), TekstiKappale.class);
                         result.setPerusteTekstikappaleId(tk.getId());
                         kpl.setNimi(tk.getNimi());
                     }
@@ -1464,10 +1466,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 viiteDto -> {
                     TekstiKappale kpl = new TekstiKappale();
                     TekstiKappaleViite result = new TekstiKappaleViite();
-                    if (viiteDto.getTesktiKappale() != null) {
-                        result.setPerusteTekstikappaleId(viiteDto.getTesktiKappale().getId());
+                    if (viiteDto.getTekstiKappale() != null) {
+                        result.setPerusteTekstikappaleId(viiteDto.getTekstiKappale().getId());
 
-                        TekstiKappale tk = mapper.map(viiteDto.getTesktiKappale(), TekstiKappale.class);
+                        TekstiKappale tk = mapper.map(viiteDto.getTekstiKappale(), TekstiKappale.class);
                         kpl.setNimi(tk.getNimi());
                     }
                     kpl.setId(null);
@@ -2032,6 +2034,30 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public TekstiKappaleViitePerusteTekstillaDto getTekstitPerusteenTeksteilla(@P("opsId") final Long opsId) {
+        TekstiKappaleViitePerusteTekstillaDto tekstit = getTekstit(opsId, TekstiKappaleViitePerusteTekstillaDto.class);
+        PerusteDto perusteDto = getPeruste(opsId);
+
+        if (perusteDto.getTekstiKappaleViiteSisalto() != null) {
+            Map<Long, fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto> perusteenTekstikappaleet = CollectionUtil.treeToStream(
+                            perusteDto.getTekstiKappaleViiteSisalto(),
+                            fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
+                    .filter(viite -> viite.getTekstiKappale() != null)
+                    .collect(toMap(viite -> viite.getTekstiKappale().getId(), perusteenTekstikappale -> perusteenTekstikappale.getTekstiKappale()));
+
+            return CollectionUtil.mapRecursive(tekstit,
+                    TekstiKappaleViitePerusteTekstillaDto::getLapset,
+                    viiteDto -> {
+                        viiteDto.setPerusteenTekstikappale(perusteenTekstikappaleet.get(viiteDto.getPerusteTekstikappaleId()));
+                        return viiteDto;
+                    });
+        }
+
+        return null;
+    }
+
+    @Override
     public TekstiKappaleViiteDto.Matala addTekstiKappale(Long opsId, TekstiKappaleViiteDto.Matala viite) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
@@ -2058,7 +2084,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public void syncTekstitPohjasta(Long id) {
-        dispatcher.get(KoulutustyyppiToteutus.LOPS2019, OpsPohjaSynkronointi.class).syncTekstitPohjasta(id);
+        dispatcher.get(OpsPohjaSynkronointi.class).syncTekstitPohjasta(id);
     }
 
     @Override
@@ -2118,14 +2144,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto perusteenTekstikappaleViite = CollectionUtil.treeToStream(
                         sisalto,
                         fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
-                        .filter(viiteDto -> viiteDto.getTesktiKappale() != null
-                                && viiteDto.getTesktiKappale().getTeksti() != null
-                                && Objects.equals(tekstikappaleId, viiteDto.getTesktiKappale().getId()))
+                        .filter(viiteDto -> viiteDto.getTekstiKappale() != null
+                                && viiteDto.getTekstiKappale().getTeksti() != null
+                                && Objects.equals(tekstikappaleId, viiteDto.getTekstiKappale().getId()))
                         .findFirst()
                         .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
                 return new TekstiKappaleDto(
-                        new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTesktiKappale().getNimi().asMap()),
-                        new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTesktiKappale().getTeksti().asMap()),
+                        new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTekstiKappale().getNimi().asMap()),
+                        new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTekstiKappale().getTeksti().asMap()),
                         null);
             }
             throw new NotExistsException("tekstikappaletta-ei-ole");
