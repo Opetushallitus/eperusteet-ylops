@@ -1169,11 +1169,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private Opetussuunnitelma addPohjaLisaJaEsiopetus(Opetussuunnitelma ops, PerusteDto peruste, OpetussuunnitelmaLuontiDto pohjaDto) {
         ops.setKoulutustyyppi(peruste.getKoulutustyyppi());
-
-        if (pohjaDto != null && pohjaDto.isRakennePohjasta()) {
-            lisaaTekstipuuPerusteesta(peruste.getTekstiKappaleViiteSisalto(), ops);
-        }
-
+        lisaaTekstipuuPerusteesta(peruste.getTekstiKappaleViiteSisalto(), ops);
         return ops;
     }
 
@@ -1184,10 +1180,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     ) {
         Long opsId = ops.getId();
         PerusopetuksenPerusteenSisaltoDto sisalto = peruste.getPerusopetus();
-
-        if (pohjaDto != null && pohjaDto.isRakennePohjasta()) {
-            lisaaTekstipuuPerusteesta(sisalto.getSisalto(), ops);
-        }
+        lisaaTekstipuuPerusteesta(sisalto.getSisalto(), ops);
 
         if (sisalto.getVuosiluokkakokonaisuudet() != null) {
             sisalto.getVuosiluokkakokonaisuudet()
@@ -1419,10 +1412,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         lisaaTekstipuunJuuri(pohja);
         pohja = opetussuunnitelmaRepository.save(pohja);
 
-        if (!KoulutustyyppiToteutus.LOPS2019.equals(peruste.getToteutus()) && !pohjaDto.isRakennePohjasta()) {
-            lisaaTekstipuunLapset(pohja);
-        }
-
         pohja.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
         pohja.setKoulutustyyppi(peruste.getKoulutustyyppi() != null ? peruste.getKoulutustyyppi()
                 : KoulutusTyyppi.PERUSOPETUS);
@@ -1434,29 +1423,31 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto sisalto,
             Opetussuunnitelma pohja
     ) {
-        TekstiKappaleViite tekstiKappaleViite = CollectionUtil.mapRecursive(sisalto,
-                fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset,
-                TekstiKappaleViite::getLapset,
-                viiteDto -> {
-                    TekstiKappale kpl = new TekstiKappale();
-                    TekstiKappaleViite result = new TekstiKappaleViite();
-                    if (viiteDto.getTekstiKappale() != null) {
-                        TekstiKappale tk = mapper.map(viiteDto.getTekstiKappale(), TekstiKappale.class);
-                        result.setPerusteTekstikappaleId(tk.getId());
-                        kpl.setNimi(tk.getNimi());
-                    }
-                    kpl.setId(null);
-                    kpl.setTila(Tila.LUONNOS);
-                    kpl.setValmis(false);
-                    result.setTekstiKappale(tekstiKappaleRepository.save(kpl));
-                    result.setPakollinen(true);
-                    result.setOmistussuhde(Omistussuhde.OMA);
-                    result.setLapset(new ArrayList<>());
-                    return result;
-                });
-        tekstiKappaleViite.kiinnitaHierarkia(null);
-        TekstiKappaleViite viite = viiteRepository.saveAndFlush(tekstiKappaleViite);
-        pohja.setTekstit(viite);
+        if (sisalto != null) {
+            TekstiKappaleViite tekstiKappaleViite = CollectionUtil.mapRecursive(sisalto,
+                    fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset,
+                    TekstiKappaleViite::getLapset,
+                    viiteDto -> {
+                        TekstiKappale kpl = new TekstiKappale();
+                        TekstiKappaleViite result = new TekstiKappaleViite();
+                        if (viiteDto.getTekstiKappale() != null) {
+                            TekstiKappale tk = mapper.map(viiteDto.getTekstiKappale(), TekstiKappale.class);
+                            result.setPerusteTekstikappaleId(tk.getId());
+                            kpl.setNimi(tk.getNimi());
+                        }
+                        kpl.setId(null);
+                        kpl.setTila(Tila.LUONNOS);
+                        kpl.setValmis(false);
+                        result.setTekstiKappale(tekstiKappaleRepository.save(kpl));
+                        result.setPakollinen(true);
+                        result.setOmistussuhde(Omistussuhde.OMA);
+                        result.setLapset(new ArrayList<>());
+                        return result;
+                    });
+            tekstiKappaleViite.kiinnitaHierarkia(null);
+            TekstiKappaleViite viite = viiteRepository.saveAndFlush(tekstiKappaleViite);
+            pohja.setTekstit(viite);
+        }
     }
 
     private TekstiKappaleViite tekstikappaleViiteRootSisallosta(fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto sisalto) {
@@ -1519,6 +1510,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         ops.setTekstit(juuri);
     }
 
+    @Deprecated
     private void lisaaTekstipuunLapset(Opetussuunnitelma ops) {
         LokalisoituTekstiDto nimi, teksti;
         nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI, "Opetuksen järjestäminen"));
@@ -2090,6 +2082,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public boolean opetussuunnitelmanPohjallaUusiaTeksteja(Long id) {
         return dispatcher.get(id, OpsPohjaSynkronointi.class).opetussuunnitelmanPohjallaUusiaTeksteja(id);
+    }
+
+    @Override
+    public boolean pohjanPerustePaivittynyt(Long opsId) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+
+        if (!ops.getTyyppi().equals(Tyyppi.POHJA)) {
+            throw new BusinessRuleViolationException("Tarkistus sallittu vain oph pohjilla");
+        }
+
+        Date perusteenJulkaisuaika = eperusteetService.viimeisinPerusteenJulkaisuaika(ops.getCachedPeruste().getPerusteId());
+        return perusteenJulkaisuaika.compareTo(ops.getViimeisinSyncPvm() != null ? ops.getViimeisinSyncPvm() : new Date(0l)) > 0;
     }
 
     @Override

@@ -126,7 +126,7 @@ public abstract class TestUtils {
         OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
-        ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
+        ops.setPerusteenDiaarinumero(EperusteetServiceMock.PERUSOPETUS_DIAARINUMERO);
         ops.setTila(Tila.LUONNOS);
         ops.setTyyppi(Tyyppi.OPS);
         ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
@@ -142,7 +142,7 @@ public abstract class TestUtils {
 
     public static OpetussuunnitelmaLuontiDto createOpsPohja() {
         OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
-        ops.setPerusteenDiaarinumero(EperusteetServiceMock.DIAARINUMERO);
+        ops.setPerusteenDiaarinumero(EperusteetServiceMock.PERUSOPETUS_DIAARINUMERO);
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTyyppi(Tyyppi.POHJA);
