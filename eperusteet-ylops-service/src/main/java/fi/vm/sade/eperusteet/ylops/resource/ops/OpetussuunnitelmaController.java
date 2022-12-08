@@ -213,6 +213,13 @@ public class OpetussuunnitelmaController {
         return ResponseEntity.ok(opetussuunnitelmaService.opetussuunnitelmanPohjallaUusiaTeksteja(id));
     }
 
+    @RequestMapping(value = "/{id}/pohjanperustepaivittynyt", method = RequestMethod.GET)
+    @Timed
+    public ResponseEntity<Boolean> pohjanperustepaivittynyt(
+            @PathVariable("id") final Long id) {
+        return ResponseEntity.ok(opetussuunnitelmaService.pohjanPerustePaivittynyt(id));
+    }
+
     @RequestMapping(value = "/{id}/pohjavaihtoehdot", method = RequestMethod.GET)
     @Timed
     public ResponseEntity<Set<OpetussuunnitelmaInfoDto>> haePohjavaihtoehdot(

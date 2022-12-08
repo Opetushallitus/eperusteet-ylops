@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -72,4 +73,7 @@ public interface EperusteetService {
 
     @PreAuthorize("permitAll()")
     TermiDto getTermi(final Long perusteId, String avain);
+
+    @PreAuthorize("permitAll()")
+    Date viimeisinPerusteenJulkaisuaika(Long perusteId);
 }

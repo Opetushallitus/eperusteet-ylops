@@ -198,6 +198,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     boolean opetussuunnitelmanPohjallaUusiaTeksteja(@P("opsId") Long opsId);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    boolean pohjanPerustePaivittynyt(@P("opsId") Long opsId);
+
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     Set<OpetussuunnitelmaInfoDto> vaihdettavatPohjat(@P("opsId") Long id);
 
