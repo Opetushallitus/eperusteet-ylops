@@ -2046,7 +2046,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     });
         }
 
-        return null;
+        return tekstit;
     }
 
     @Override
