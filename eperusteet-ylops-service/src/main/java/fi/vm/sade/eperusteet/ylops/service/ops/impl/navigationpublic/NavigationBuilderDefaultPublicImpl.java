@@ -36,13 +36,13 @@ public class NavigationBuilderDefaultPublicImpl implements NavigationBuilderPubl
         LokalisoituTekstiDto nimi = null;
 
         if (root.getPerusteTekstikappaleId() != null) {
-            try {
-                perusteenTekstikappale = opetussuunnitelmaService.getPerusteTekstikappale(opsId, root.getPerusteTekstikappaleId());
+            perusteenTekstikappale = opetussuunnitelmaService.getPerusteTekstikappale(opsId, root.getPerusteTekstikappaleId());
+            if (perusteenTekstikappale != null) {
                 nimi = perusteenTekstikappale.getNimi();
-            } catch(Exception e) {
-                nimi = root.getTekstiKappale().getNimi();
             }
-        } else if (root.getTekstiKappale() != null) {
+        }
+
+        if (perusteenTekstikappale == null && root.getTekstiKappale() != null) {
             nimi = root.getTekstiKappale().getNimi();
         }
 

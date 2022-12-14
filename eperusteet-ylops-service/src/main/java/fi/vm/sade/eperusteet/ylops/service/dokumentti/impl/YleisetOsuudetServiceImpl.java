@@ -99,8 +99,12 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                         TekstiKappaleDto perusteenTekstikappale = null;
                         if (lapsi.getPerusteTekstikappaleId() != null) {
                             perusteenTekstikappale = opetussuunnitelmaService.getPerusteTekstikappale(docBase.getOps().getId(), lapsi.getPerusteTekstikappaleId());
-                            addHeader(docBase, getTextString(docBase, perusteenTekstikappale.getNimi()));
-                        } else if(lapsi.getTekstiKappale().getNimi() != null)  {
+                            if (perusteenTekstikappale != null) {
+                                addHeader(docBase, getTextString(docBase, perusteenTekstikappale.getNimi()));
+                            }
+                        }
+
+                        if(perusteenTekstikappale == null && lapsi.getTekstiKappale().getNimi() != null)  {
                             addHeader(docBase, getTextString(docBase, lapsi.getTekstiKappale().getNimi()));
 
                         }

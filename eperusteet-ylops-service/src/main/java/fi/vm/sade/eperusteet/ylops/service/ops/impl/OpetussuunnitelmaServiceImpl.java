@@ -2146,19 +2146,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
             if (sisalto != null) {
                 fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto perusteenTekstikappaleViite = CollectionUtil.treeToStream(
-                        sisalto,
-                        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
+                                sisalto,
+                                fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
                         .filter(viiteDto -> viiteDto.getTekstiKappale() != null
                                 && viiteDto.getTekstiKappale().getTeksti() != null
                                 && Objects.equals(tekstikappaleId, viiteDto.getTekstiKappale().getId()))
                         .findFirst()
-                        .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
-                return new TekstiKappaleDto(
-                        new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTekstiKappale().getNimi().asMap()),
-                        new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTekstiKappale().getTeksti().asMap()),
-                        null);
+                        .orElse(null);
+                if (perusteenTekstikappaleViite != null) {
+                    return new TekstiKappaleDto(
+                            new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTekstiKappale().getNimi().asMap()),
+                            new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTekstiKappale().getTeksti().asMap()),
+                            null);
+                }
             }
-            throw new NotExistsException("tekstikappaletta-ei-ole");
         }
 
         return null;
