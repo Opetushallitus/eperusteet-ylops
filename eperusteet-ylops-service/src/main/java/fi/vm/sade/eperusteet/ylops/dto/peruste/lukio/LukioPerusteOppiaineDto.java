@@ -19,7 +19,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteTekstiOsaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.*;
@@ -28,8 +31,9 @@ import java.util.stream.Stream;
 /**
  * Created by jsikio.
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukioPerusteOppiaineDto implements PerusteenOsa {
     private Long id;
     private UUID tunniste;

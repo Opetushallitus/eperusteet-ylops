@@ -18,21 +18,20 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-
-import java.util.Optional;
-
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LaajaalainenosaaminenDto implements ReferenceableDto {
 
     private Long id;
     private Reference laajaalainenosaaminen;
-    private Optional<LokalisoituTekstiDto> kuvaus;
+    private LokalisoituTekstiDto kuvaus;
 
 }

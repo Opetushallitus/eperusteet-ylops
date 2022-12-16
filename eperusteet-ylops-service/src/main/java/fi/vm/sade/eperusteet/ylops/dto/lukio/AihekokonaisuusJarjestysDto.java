@@ -16,7 +16,10 @@
 
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
@@ -26,8 +29,9 @@ import javax.validation.constraints.NotNull;
  * Date: 15.12.2015
  * Time: 16.16
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AihekokonaisuusJarjestysDto {
     @NotNull
     private Long id;

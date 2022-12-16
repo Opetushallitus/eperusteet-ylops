@@ -28,14 +28,18 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PerusteOppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
 
     private Long id;

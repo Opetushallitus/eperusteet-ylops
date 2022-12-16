@@ -25,9 +25,11 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
-import java.util.HashSet;
-import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -37,11 +39,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author jhyoty
@@ -131,7 +130,9 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity i
     }
 
     public void setTila(Tila tila) {
-        if (this.tila == null || this.tila == Tila.LUONNOS) {
+        if (tila == null) {
+            this.tila = Tila.LUONNOS;
+        } else if (this.tila == Tila.LUONNOS) {
             this.tila = tila;
         }
     }

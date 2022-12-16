@@ -18,10 +18,6 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
-
-import java.util.Collection;
-import java.util.Optional;
-
 import ma.glasnost.orika.CustomConverter;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MapperFactory;
@@ -31,6 +27,9 @@ import ma.glasnost.orika.NullFilter;
 import ma.glasnost.orika.metadata.Type;
 import org.hibernate.Hibernate;
 import org.hibernate.proxy.HibernateProxy;
+
+import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Tuki Javan Optional-luokalle Orika mapperin yhteydessä.
@@ -130,7 +129,7 @@ public final class OptionalSupport {
         }
 
         @Override
-        public Optional<?> convert(Object source, Type<? extends Optional<?>> destinationType) {
+        public Optional<?> convert(Object source, Type<? extends Optional<?>> destinationType, MappingContext mappingContext) {
             if (source != null) {
                 return Optional.of(mapperFacade.map(source, destinationType.getComponentType().getRawType()));
             }
@@ -147,7 +146,7 @@ public final class OptionalSupport {
         }
 
         @Override
-        public ReferenceableEntity convert(Optional<Reference> source, Type<? extends ReferenceableEntity> destinationType) {
+        public ReferenceableEntity convert(Optional<Reference> source, Type<? extends ReferenceableEntity> destinationType, MappingContext mappingContext) {
             if (source != null && source.isPresent()) {
                 return mapperFacade.map(source.get(), destinationType.getRawType());
             }
@@ -164,7 +163,7 @@ public final class OptionalSupport {
         }
 
         @Override
-        public Object convert(Optional<?> source, Type<? extends Object> destinationType) {
+        public Object convert(Optional<?> source, Type<? extends Object> destinationType, MappingContext mappingContext) {
             if (source != null && source.isPresent()) {
                 return mapperFacade.map(source.get(), destinationType.getRawType());
             }

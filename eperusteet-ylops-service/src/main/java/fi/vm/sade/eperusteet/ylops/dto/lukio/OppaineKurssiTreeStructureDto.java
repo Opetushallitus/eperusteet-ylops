@@ -16,7 +16,10 @@
 
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -27,8 +30,9 @@ import java.util.List;
  * Date: 12.10.15
  * Time: 18.51
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OppaineKurssiTreeStructureDto {
     private String kommentti;
     private List<LukiokurssiOppaineMuokkausDto> kurssit = new ArrayList<>();

@@ -1,14 +1,18 @@
 package fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class ValidointiContext {
     private Set<Kieli> kielet = new HashSet<>();
 }

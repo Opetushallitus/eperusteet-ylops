@@ -19,15 +19,19 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author mikkom
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TekstiKappaleViiteDto {
     private Long id;
@@ -47,28 +51,26 @@ public class TekstiKappaleViiteDto {
     private boolean piilotettu = false;
     private boolean liite = false;
 
-    public TekstiKappaleViiteDto() {
-    }
-
     public TekstiKappaleViiteDto(TekstiKappaleDto tekstiKappale) {
         this.tekstiKappale = tekstiKappale;
     }
 
-    @Getter
-    @Setter
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode(callSuper = true)
     public static class Matala extends TekstiKappaleViiteDto {
         private List<Reference> lapset;
-
-        public Matala() {
-        }
 
         public Matala(TekstiKappaleDto tekstiKappale) {
             super(tekstiKappale);
         }
     }
 
-    @Getter
-    @Setter
+    @Data
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @EqualsAndHashCode(callSuper = true)
     public static class Puu extends TekstiKappaleViiteDto {
         private List<Puu> lapset;
     }

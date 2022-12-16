@@ -20,7 +20,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ohje.OhjeDto;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.security.access.method.P;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 /**

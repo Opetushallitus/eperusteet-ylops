@@ -21,14 +21,18 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import java.util.Date;
 import java.util.UUID;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author nkala
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TekstiKappaleKevytDto {
     private Long id;
     private Date luotu;

@@ -18,7 +18,10 @@ package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -31,8 +34,9 @@ import java.util.UUID;
  * Date: 12.1.2016
  * Time: 14.36
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukiokurssiListausOpsDto implements Serializable {
     private Long id;
     private Date muokattu;

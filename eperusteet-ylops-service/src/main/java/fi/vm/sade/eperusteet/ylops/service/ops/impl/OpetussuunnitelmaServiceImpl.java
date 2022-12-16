@@ -1590,17 +1590,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         .noneMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste().getId()
                                 .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste().getId())))
                 .filter(ovlk -> opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream()
-                        .anyMatch(vk -> UUID.fromString(vk.getVuosiluokkakokonaisuus().getTunniste().get().toString())
+                        .anyMatch(vk -> UUID.fromString(vk.getVuosiluokkakokonaisuus().getTunniste().toString())
                                 .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste().getId())))
                 .map(ovlk -> teeKopio
                         ? new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true)
                         : new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
                 .map(ovlk -> mapper.map(ovlk, OpsVuosiluokkakokonaisuusDto.class))
-                .collect(toMap(vlk -> vlk.getVuosiluokkakokonaisuus().getTunniste().get().toString(), vlk -> vlk));
+                .collect(toMap(vlk -> vlk.getVuosiluokkakokonaisuus().getTunniste().toString(), vlk -> vlk));
 
         opetussuunnitelmaDto.setVuosiluokkakokonaisuudet(opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream().map(vlk -> {
-            if(lisattavatVlk.containsKey(vlk.getVuosiluokkakokonaisuus().getTunniste().get().toString())) {
-                return lisattavatVlk.get(vlk.getVuosiluokkakokonaisuus().getTunniste().get().toString());
+            if(lisattavatVlk.containsKey(vlk.getVuosiluokkakokonaisuus().getTunniste().toString())) {
+                return lisattavatVlk.get(vlk.getVuosiluokkakokonaisuus().getTunniste().toString());
             }
 
             return vlk;

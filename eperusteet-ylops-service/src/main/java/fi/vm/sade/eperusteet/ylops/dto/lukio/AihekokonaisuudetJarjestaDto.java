@@ -16,7 +16,10 @@
 
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.Valid;
@@ -30,8 +33,9 @@ import java.util.List;
  * Date: 15.12.2015
  * Time: 16.15
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class AihekokonaisuudetJarjestaDto implements Serializable {
     @NotNull
     @Valid

@@ -17,7 +17,10 @@
 package fi.vm.sade.eperusteet.ylops.dto.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
@@ -29,8 +32,9 @@ import java.util.UUID;
  * Date: 14.12.2015
  * Time: 16.42
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukioKopioiOppimaaraDto {
     @NotNull
     private LokalisoituTekstiDto nimi;

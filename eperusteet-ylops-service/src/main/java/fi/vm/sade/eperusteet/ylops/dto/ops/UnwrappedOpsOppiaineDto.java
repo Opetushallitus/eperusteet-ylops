@@ -16,14 +16,18 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author mikkom
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UnwrappedOpsOppiaineDto {
     private boolean oma;
     @JsonUnwrapped

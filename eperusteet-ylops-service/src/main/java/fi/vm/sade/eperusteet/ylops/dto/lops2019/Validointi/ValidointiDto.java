@@ -6,14 +6,24 @@ import fi.vm.sade.eperusteet.ylops.domain.Validable;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+@Data
+@AllArgsConstructor
 @NoArgsConstructor
 public class ValidointiDto<T extends ValidointiDto> {
+
+    @JsonIgnore
     private DtoMapper mapper;
 
     @Getter

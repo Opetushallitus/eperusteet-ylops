@@ -17,21 +17,23 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
-import java.util.Optional;
 import java.util.Set;
-
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author nkala
  */
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class OpetussuunnitelmaLuontiDto extends OpetussuunnitelmaBaseDto {
     private Reference pohja;
-    private Optional<TekstiKappaleViiteDto.Puu> tekstit;
+    private TekstiKappaleViiteDto.Puu tekstit;
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineDto> oppiaineet;
     private boolean rakennePohjasta = false;

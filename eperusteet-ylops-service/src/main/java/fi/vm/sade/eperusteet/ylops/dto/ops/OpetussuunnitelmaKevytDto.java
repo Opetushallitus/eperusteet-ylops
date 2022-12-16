@@ -15,15 +15,20 @@
  */
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
 import java.util.Set;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author nkala
  */
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class OpetussuunnitelmaKevytDto extends OpetussuunnitelmaBaseDto {
     private OpetussuunnitelmaBaseDto pohja;
     private Set<OpsVuosiluokkakokonaisuusKevytDto> vuosiluokkakokonaisuudet;

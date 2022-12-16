@@ -4,10 +4,9 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @SuperBuilder
 public class Lops2019OpintojaksoBaseDto {
     private boolean tuotu = false;

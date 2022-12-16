@@ -105,8 +105,8 @@ public abstract class TestUtils {
 
     public static TekstiosaDto createTekstiosa(String nimi, String otsikko) {
         TekstiosaDto result = new TekstiosaDto();
-        result.setTeksti(Optional.of(lt(nimi)));
-        result.setOtsikko(Optional.of(lt(otsikko)));
+        result.setTeksti(lt(nimi));
+        result.setOtsikko(lt(otsikko));
         return result;
     }
 

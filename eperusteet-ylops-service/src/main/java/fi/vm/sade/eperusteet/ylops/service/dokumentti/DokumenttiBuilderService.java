@@ -23,7 +23,6 @@ import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.xml.sax.SAXException;
 
-import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
@@ -36,6 +35,6 @@ public interface DokumenttiBuilderService {
 
     @PreAuthorize("isAuthenticated()")
     byte[] generatePdf(Opetussuunnitelma ops, Dokumentti dokumentti, Kieli kieli)
-            throws TransformerException, IOException, SAXException, JAXBException,
+            throws TransformerException, IOException, SAXException,
             ParserConfigurationException, NullPointerException, DokumenttiException;
 }

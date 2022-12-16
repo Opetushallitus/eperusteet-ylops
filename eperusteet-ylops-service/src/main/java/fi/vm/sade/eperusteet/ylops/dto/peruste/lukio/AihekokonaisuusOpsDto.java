@@ -17,16 +17,20 @@
 package fi.vm.sade.eperusteet.ylops.dto.peruste.lukio;
 
 import fi.vm.sade.eperusteet.ylops.dto.lukio.PerusteeseenViittaava;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * User: tommiratamaa
  * Date: 19.11.2015
  * Time: 14.41
  */
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class AihekokonaisuusOpsDto extends AihekokonaisuusDto
         implements PerusteeseenViittaava<AihekokonaisuusDto> {
     private AihekokonaisuusDto perusteen;

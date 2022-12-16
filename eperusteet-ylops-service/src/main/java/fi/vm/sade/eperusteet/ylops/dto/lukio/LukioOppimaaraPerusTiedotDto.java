@@ -19,7 +19,10 @@ package fi.vm.sade.eperusteet.ylops.dto.lukio;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -31,8 +34,9 @@ import java.util.UUID;
  * Date: 12.1.2016
  * Time: 17.45
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukioOppimaaraPerusTiedotDto implements Serializable {
     private Long id;
     private Long oppiaineId;

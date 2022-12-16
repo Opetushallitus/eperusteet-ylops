@@ -22,15 +22,9 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.Kommentti2019Repository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.KommenttiKahvaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository;
-
-import java.security.Principal;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
-import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 import org.apache.commons.lang.StringUtils;
@@ -42,6 +36,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * @author jhyoty
@@ -65,7 +71,7 @@ public class LokalisoituTekstiConverter extends BidirectionalConverter<Lokalisoi
 //    private KayttajanTietoService kayttajanTietoService;
 
     @Override
-    public LokalisoituTekstiDto convertTo(LokalisoituTeksti tekstiPalanen, Type<LokalisoituTekstiDto> type) {
+    public LokalisoituTekstiDto convertTo(LokalisoituTeksti tekstiPalanen, Type<LokalisoituTekstiDto> type, MappingContext mappingContext) {
         return new LokalisoituTekstiDto(tekstiPalanen.getId(), tekstiPalanen.getTunniste(), tekstitWithKommentit(tekstiPalanen));
     }
 
@@ -176,7 +182,7 @@ public class LokalisoituTekstiConverter extends BidirectionalConverter<Lokalisoi
     }
 
     @Override
-    public LokalisoituTeksti convertFrom(LokalisoituTekstiDto dto, Type<LokalisoituTeksti> type) {
+    public LokalisoituTeksti convertFrom(LokalisoituTekstiDto dto, Type<LokalisoituTeksti> type, MappingContext mappingContext) {
 
         if (dto.getId() != null) {
             /*

@@ -16,7 +16,10 @@
 package fi.vm.sade.eperusteet.ylops.dto.teksti;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
@@ -24,8 +27,9 @@ import java.util.Date;
 /**
  * @author mikkom
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class KommenttiDto {
     private String nimi;

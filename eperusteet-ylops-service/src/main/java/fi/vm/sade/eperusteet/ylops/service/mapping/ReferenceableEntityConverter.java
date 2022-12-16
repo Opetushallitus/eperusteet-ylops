@@ -17,21 +17,21 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
+import ma.glasnost.orika.ConverterException;
+import ma.glasnost.orika.MappingContext;
+import ma.glasnost.orika.converter.BidirectionalConverter;
+import ma.glasnost.orika.metadata.Type;
+import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.metamodel.IdentifiableType;
+import javax.persistence.metamodel.ManagedType;
 import java.io.Serializable;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.metamodel.IdentifiableType;
-import javax.persistence.metamodel.ManagedType;
-
-import ma.glasnost.orika.ConverterException;
-import ma.glasnost.orika.converter.BidirectionalConverter;
-import ma.glasnost.orika.metadata.Type;
-import org.springframework.stereotype.Component;
 
 /**
  * @author teele1
@@ -49,12 +49,12 @@ public class ReferenceableEntityConverter extends BidirectionalConverter<Referen
     }
 
     @Override
-    public Reference convertTo(ReferenceableEntity s, Type<Reference> type) {
+    public Reference convertTo(ReferenceableEntity s, Type<Reference> type, MappingContext mappingContext) {
         return Reference.of(s);
     }
 
     @Override
-    public ReferenceableEntity convertFrom(Reference reference, Type<ReferenceableEntity> type) {
+    public ReferenceableEntity convertFrom(Reference reference, Type<ReferenceableEntity> type, MappingContext mappingContext) {
         ManagedType<ReferenceableEntity> managedType = em.getMetamodel().managedType(type.getRawType());
         if (managedType instanceof IdentifiableType) {
             final Class<?> idType = ((IdentifiableType<?>) managedType).getIdType().getJavaType();

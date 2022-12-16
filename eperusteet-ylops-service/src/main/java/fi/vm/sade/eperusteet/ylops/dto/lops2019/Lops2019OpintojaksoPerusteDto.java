@@ -6,10 +6,9 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Lops2019OpintojaksoPerusteDto {
     @Builder.Default

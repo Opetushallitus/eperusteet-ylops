@@ -25,7 +25,10 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.Identifiable;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsIdentifiable;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
@@ -35,8 +38,9 @@ import java.util.Set;
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class OpetussuunnitelmaBaseDto
         implements Serializable, Identifiable, OpsIdentifiable {
     private Long id;

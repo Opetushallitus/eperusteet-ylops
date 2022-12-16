@@ -24,14 +24,18 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public abstract class PerusteBaseDto implements Serializable {
     private Long id;
     private LokalisoituTekstiDto nimi;

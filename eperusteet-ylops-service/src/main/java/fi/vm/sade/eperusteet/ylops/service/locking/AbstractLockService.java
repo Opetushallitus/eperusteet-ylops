@@ -18,7 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.locking;
 import fi.vm.sade.eperusteet.ylops.domain.Lukko;
 import fi.vm.sade.eperusteet.ylops.dto.LukkoDto;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 

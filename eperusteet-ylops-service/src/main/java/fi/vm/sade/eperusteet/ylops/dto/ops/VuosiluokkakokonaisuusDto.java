@@ -20,35 +20,32 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Optional;
 import java.util.Set;
-
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class VuosiluokkakokonaisuusDto implements ReferenceableDto {
 
     private Long id;
-    private Optional<Reference> tunniste;
-    private Optional<LokalisoituTekstiDto> nimi;
-    private Optional<TekstiosaDto> siirtymaEdellisesta;
-    private Optional<TekstiosaDto> tehtava;
-    private Optional<TekstiosaDto> siirtymaSeuraavaan;
-    private Optional<TekstiosaDto> laajaalainenosaaminen;
-    private Optional<Tila> tila;
+    private Reference tunniste;
+    private LokalisoituTekstiDto nimi;
+    private TekstiosaDto siirtymaEdellisesta;
+    private TekstiosaDto tehtava;
+    private TekstiosaDto siirtymaSeuraavaan;
+    private TekstiosaDto laajaalainenosaaminen;
+    private Tila tila;
     private Set<LaajaalainenosaaminenDto> laajaalaisetosaamiset;
 
-    public VuosiluokkakokonaisuusDto() {
-    }
-
     public VuosiluokkakokonaisuusDto(Reference tunniste) {
-        this.tunniste = Optional.ofNullable(tunniste);
+        this.tunniste = tunniste;
     }
 
 }

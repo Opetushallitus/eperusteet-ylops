@@ -21,14 +21,18 @@ import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 
 import java.util.List;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
  * @author nkala
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OpetussuunnitelmaExcelDto {
     private String koodi;
     private LokalisoituTekstiDto nimi;
