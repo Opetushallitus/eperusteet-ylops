@@ -1615,11 +1615,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         });
     }
 
+    @Deprecated
     @Override
     public OpetussuunnitelmaDto importPerusteTekstit(Long id) {
         return importPerusteTekstit(id, false);
     }
 
+    @Deprecated
     @Override
     public OpetussuunnitelmaDto importPerusteTekstit(Long id, boolean skip) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
