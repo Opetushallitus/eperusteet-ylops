@@ -27,9 +27,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.Identifiable;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsIdentifiable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -41,7 +39,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public abstract class OpetussuunnitelmaBaseDto
+public class OpetussuunnitelmaBaseDto
         implements Serializable, Identifiable, OpsIdentifiable {
     private Long id;
     private Set<Kieli> julkaisukielet;
