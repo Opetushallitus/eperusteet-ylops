@@ -2118,6 +2118,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(Long opsId, boolean esikatselu) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        if (ops == null || ops.getTila().equals(Tila.POISTETTU)) {
+            throw new NotExistsException("");
+        }
+
         if (esikatselu) {
             return getExportedOpetussuunnitelma(opsId);
         }
