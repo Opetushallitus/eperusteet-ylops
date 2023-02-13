@@ -1,19 +1,3 @@
-/*
- * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
- *
- * This program is free software: Licensed under the EUPL, Version 1.1 or - as
- * soon as they will be approved by the European Commission - subsequent versions
- * of the EUPL (the "Licence");
- *
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * European Union Public Licence for more details.
- */
-
 package fi.vm.sade.eperusteet.ylops.resource.dokumentti;
 
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
@@ -38,7 +22,6 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,9 +33,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-/**
- * @author iSaul
- */
 @Slf4j
 @Api("Dokumentit")
 @RestController
@@ -230,22 +210,17 @@ public class DokumenttiController {
     }
 
     @RequestMapping(value = "/kuva", method = RequestMethod.GET)
-    public ResponseEntity<Object> getImage(
+    public ResponseEntity<byte[]> getImage(
             @RequestParam Long opsId,
             @RequestParam String tyyppi,
             @RequestParam(defaultValue = "fi") String kieli
-    ) {
+) {
         Kieli k = Kieli.of(kieli);
         byte[] image = service.getImage(opsId, tyyppi, k);
         if (image == null) {
             return ResponseEntity.notFound().build();
         }
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-        headers.setContentLength(image.length);
-
-        return new ResponseEntity<>(image, headers, HttpStatus.OK);
+        return new ResponseEntity<>(image, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/kuva", method = RequestMethod.DELETE)
