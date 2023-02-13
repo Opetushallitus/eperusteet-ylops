@@ -35,6 +35,7 @@ import org.springframework.web.servlet.config.annotation.*;
 
 import javax.persistence.EntityManagerFactory;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -94,7 +95,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
     @Bean
     ByteArrayHttpMessageConverter byteArrayConverter() {
         ByteArrayHttpMessageConverter converter = new ByteArrayHttpMessageConverter();
-        converter.setSupportedMediaTypes(MediaType.parseMediaTypes("application/pdf"));
+        converter.setSupportedMediaTypes(MediaType.parseMediaTypes(Arrays.asList("application/pdf", "image/jpeg", "image/png")));
         return converter;
     }
 
