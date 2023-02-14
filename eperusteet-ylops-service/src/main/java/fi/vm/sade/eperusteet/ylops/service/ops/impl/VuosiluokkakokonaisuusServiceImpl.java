@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuusLisatieto;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
@@ -30,7 +31,6 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,7 +45,7 @@ import java.util.stream.Collectors;
 public class VuosiluokkakokonaisuusServiceImpl implements VuosiluokkakokonaisuusService {
 
     @Autowired
-    private OpetussuunnitelmaRepository suunnitelmat;
+    private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Autowired
     private VuosiluokkakokonaisuusRepository kokonaisuudet;
@@ -61,7 +61,7 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
 
     @Override
     public VuosiluokkakokonaisuusDto add(Long opsId, VuosiluokkakokonaisuusDto dto) {
-        Opetussuunnitelma ops = suunnitelmat.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         if (ops == null) {
             throw new BusinessRuleViolationException("Opetussuunnitelmaa ei löydy");
         }
@@ -95,7 +95,7 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
     public void delete(Long opsId, Long kokonaisuusId) {
         Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, kokonaisuusId);
         if (vk != null) {
-            Opetussuunnitelma ops = suunnitelmat.findOne(opsId);
+            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
             ops.removeVuosiluokkakokonaisuus(vk);
             if (!kokonaisuudet.isInUse(kokonaisuusId)) {
                 kokonaisuudet.delete(vk);
@@ -154,7 +154,7 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
             throw new BusinessRuleViolationException("Päivitettävää vuosiluokkakokonaisuutta ei ole olemassa");
         }
 
-        Opetussuunnitelma ops = suunnitelmat.findOne(opsId);
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
         Set<OpsVuosiluokkakokonaisuus> opsVlkt =
                 ops.getVuosiluokkakokonaisuudet().stream()
@@ -169,5 +169,24 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
         ops.setVuosiluokkakokonaisuudet(opsVlkt);
 
         return mapper.map(kopio, OpsVuosiluokkakokonaisuusDto.class);
+    }
+
+    @Override
+    public void piilotaOppiaine(Long opsId, Long oppiaineId, Long vuosiluokkakokonaisuusId, boolean piilota) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        OpsVuosiluokkakokonaisuus opsVuosiluokkakokonaisuus = ops.getVuosiluokkakokonaisuudet().stream()
+                .filter(vlk -> vlk.getVuosiluokkakokonaisuus().getId().equals(vuosiluokkakokonaisuusId))
+                .findFirst()
+                .orElseThrow(() -> new BusinessRuleViolationException("Pyydettyä oppiaineen vuosiluokkakokonaisuutta ei löydy"));
+
+        if (opsVuosiluokkakokonaisuus.getLisatieto() == null) {
+            opsVuosiluokkakokonaisuus.setLisatieto(new OpsVuosiluokkakokonaisuusLisatieto());
+        }
+
+        if (piilota) {
+            opsVuosiluokkakokonaisuus.getLisatieto().getPiilotetutOppiaineet().add(oppiaineId);
+        } else {
+            opsVuosiluokkakokonaisuus.getLisatieto().getPiilotetutOppiaineet().remove(oppiaineId);
+        }
     }
 }

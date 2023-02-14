@@ -228,7 +228,11 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "type" : "object"
+              "type" : "array",
+              "items" : {
+                "type" : "string",
+                "format" : "byte"
+              }
             }
           }
         }
@@ -5722,6 +5726,66 @@
         }
       }
     },
+    "/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet/{vuosiluokkakokonaisuusId}/{oppiaineId}/palauta" : {
+      "post" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "palautaOppiaine",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "oppiaineId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "vuosiluokkakokonaisuusId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet/{vuosiluokkakokonaisuusId}/{oppiaineId}/piilota" : {
+      "post" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "piilotaOppiaine",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "oppiaineId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "vuosiluokkakokonaisuusId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "successful operation"
+          }
+        }
+      }
+    },
     "/palaute" : {
       "post" : {
         "tags" : [ "Palautteet" ],
@@ -10556,6 +10620,9 @@
         },
         "vuosiluokkakokonaisuus" : {
           "$ref" : "#/definitions/VuosiluokkakokonaisuusDto"
+        },
+        "lisatieto" : {
+          "$ref" : "#/definitions/OpsVuosiluokkakokonaisuusLisatietoDto"
         }
       }
     },
@@ -10567,6 +10634,22 @@
         },
         "vuosiluokkakokonaisuus" : {
           "$ref" : "#/definitions/VuosiluokkakokonaisuusSuppeaDto"
+        },
+        "lisatieto" : {
+          "$ref" : "#/definitions/OpsVuosiluokkakokonaisuusLisatietoDto"
+        }
+      }
+    },
+    "OpsVuosiluokkakokonaisuusLisatietoDto" : {
+      "type" : "object",
+      "properties" : {
+        "piilotetutOppiaineet" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
         }
       }
     },
@@ -10669,13 +10752,13 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
         "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
@@ -10709,13 +10792,13 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
         "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
@@ -10749,13 +10832,13 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
         "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
