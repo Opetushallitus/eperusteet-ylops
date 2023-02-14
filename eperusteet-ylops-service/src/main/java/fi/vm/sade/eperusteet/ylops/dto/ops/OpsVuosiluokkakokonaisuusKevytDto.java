@@ -17,9 +17,7 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * @author nkala
@@ -30,4 +28,5 @@ import lombok.Setter;
 public class OpsVuosiluokkakokonaisuusKevytDto {
     private boolean oma;
     private VuosiluokkakokonaisuusSuppeaDto vuosiluokkakokonaisuus;
+    private OpsVuosiluokkakokonaisuusLisatietoDto lisatieto;
 }

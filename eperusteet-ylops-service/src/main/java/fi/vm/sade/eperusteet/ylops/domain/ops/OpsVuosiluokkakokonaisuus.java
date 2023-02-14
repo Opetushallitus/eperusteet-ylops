@@ -16,17 +16,19 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
-import java.io.Serializable;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import java.io.Serializable;
 
 /**
  * Opetussuunnitelman oppiaine
@@ -52,6 +54,12 @@ public class OpsVuosiluokkakokonaisuus implements Serializable {
     @Setter
     @Column(updatable = false)
     private boolean oma;
+
+    @Getter
+    @Setter
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private OpsVuosiluokkakokonaisuusLisatieto lisatieto;
 
     protected OpsVuosiluokkakokonaisuus() {
         //JPA

@@ -113,4 +113,20 @@ public class VuosiluokkakokonaisuusController {
             @PathVariable final Long id) {
         vuosiluokkakokonaisuudet.delete(opsId, id);
     }
+
+    @RequestMapping(value = "/{vuosiluokkakokonaisuusId}/{oppiaineId}/piilota", method = RequestMethod.POST)
+    public void piilotaOppiaine(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("oppiaineId") final Long oppiaineId,
+            @PathVariable("vuosiluokkakokonaisuusId") final Long vuosiluokkakokonaisuusId) {
+        vuosiluokkakokonaisuudet.piilotaOppiaine(opsId, oppiaineId, vuosiluokkakokonaisuusId, true);
+    }
+
+    @RequestMapping(value = "/{vuosiluokkakokonaisuusId}/{oppiaineId}/palauta", method = RequestMethod.POST)
+    public void palautaOppiaine(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("oppiaineId") final Long oppiaineId,
+            @PathVariable("vuosiluokkakokonaisuusId") final Long vuosiluokkakokonaisuusId) {
+        vuosiluokkakokonaisuudet.piilotaOppiaine(opsId, oppiaineId, vuosiluokkakokonaisuusId, false);
+    }
 }
