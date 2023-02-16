@@ -35,19 +35,25 @@ import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.*;
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 /**
  * @author mikkom
@@ -156,7 +162,7 @@ public class UlkopuolisetController {
     @ResponseBody
     @ApiImplicitParams({
             @ApiImplicitParam(name = "kunta", dataType = "string", allowMultiple = true, paramType = "query"),
-            @ApiImplicitParam(name = "oppilaitostyyppi", dataType = "integer", allowMultiple = true, paramType = "query")
+            @ApiImplicitParam(name = "oppilaitostyyppi", dataType = "string", allowMultiple = true, paramType = "query")
     })
     public ResponseEntity<List<OrganisaatioLaajaDto>> getKoulutustoimijat(
             OrganisaatioQueryDto query) {
