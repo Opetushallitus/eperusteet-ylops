@@ -20,24 +20,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import fi.vm.sade.eperusteet.ylops.dto.VirkailijaCriteriaDto;
 import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
+import fi.vm.sade.eperusteet.ylops.dto.VirkailijaCriteriaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.javautils.http.OphHttpClient;
-import fi.vm.sade.javautils.http.OphHttpRequest;
-import java.io.IOException;
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
-import javax.annotation.PostConstruct;
-
 import fi.vm.sade.javautils.http.OphHttpEntity;
+import fi.vm.sade.javautils.http.OphHttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +38,24 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.*;
+import javax.annotation.PostConstruct;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.ADMIN;
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.CRUD;
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.READ;
+import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.READ_UPDATE;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 /**
