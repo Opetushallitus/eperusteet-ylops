@@ -1,19 +1,3 @@
-/*
- * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
- *
- * This program is free software: Licensed under the EUPL, Version 1.1 or - as
- * soon as they will be approved by the European Commission - subsequent versions
- * of the EUPL (the "Licence");
- *
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * European Union Public Licence for more details.
- */
-
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
@@ -25,14 +9,28 @@ import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
-import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiStateService;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.ExternalPdfService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -40,27 +38,10 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import javax.imageio.ImageIO;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-/**
- * @author iSaul
- */
 @Service
 @Transactional
 public class DokumenttiServiceImpl implements DokumenttiService {
-    private static final Logger LOG = LoggerFactory.getLogger(DokumenttiServiceImpl.class);
-
     @Autowired
     private DokumenttiRepository dokumenttiRepository;
 
@@ -71,14 +52,17 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Autowired
-    private DokumenttiBuilderService builder;
-
-    @Autowired
     private DokumenttiStateService dokumenttiStateService;
 
     @Lazy
     @Autowired
     private DokumenttiService self;
+
+    @Autowired
+    private ExternalPdfService externalPdfService;
+
+    @Autowired
+    HttpEntity httpEntity;
 
     @Override
     @Transactional
@@ -137,17 +121,15 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         dokumentti.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
         dokumentti.setKieli(kieli);
         dokumentti.setOpsId(id);
+        dokumenttiRepository.save(dokumentti);
 
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         if (ops != null) {
             try {
-                dokumentti.setData(builder.generatePdf(ops, dokumentti, kieli));
-                dokumentti.setTila(DokumenttiTila.VALMIS);
-                dokumentti.setValmistumisaika(new Date());
-                dokumentti.setVirhekoodi("");
-                dokumenttiRepository.save(dokumentti);
+                externalPdfService.generatePdf(mapper.map(dokumentti, DokumenttiDto.class));
             } catch (Exception ex) {
                 dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
+                dokumentti.setValmistumisaika(new Date());
                 dokumentti.setVirhekoodi(ExceptionUtils.getStackTrace(ex));
                 dokumenttiRepository.save(dokumentti);
 
@@ -173,22 +155,14 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Async(value = "docTaskExecutor")
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         dto.setTila(DokumenttiTila.LUODAAN);
-        Dokumentti dokumentti = dokumenttiStateService.save(dto);
+        dokumenttiStateService.save(dto);
 
         try {
-            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
-            if (ops != null) {
-                dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
-            }
-            dokumentti.setTila(DokumenttiTila.VALMIS);
-            dokumentti.setValmistumisaika(new Date());
-            dokumentti.setVirhekoodi(null);
-
-            dokumenttiRepository.save(dokumentti);
+            externalPdfService.generatePdf(dto);
         } catch (Exception ex) {
             dto.setTila(DokumenttiTila.EPAONNISTUI);
+            dto.setValmistumisaika(new Date());
             dto.setVirhekoodi(ex.getLocalizedMessage());
-
             dokumenttiStateService.save(dto);
 
             throw new DokumenttiException(ex.getMessage(), ex);
@@ -385,5 +359,20 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         }
 
         return null;
+    }
+
+    public void updateDokumenttiPdfData(byte[] data, Long dokumenttiId) {
+        Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId);
+        dokumentti.setData(data);
+        dokumentti.setVirhekoodi(null);
+        dokumentti.setTila(DokumenttiTila.VALMIS);
+        dokumentti.setValmistumisaika(new Date());
+        dokumenttiRepository.save(dokumentti);
+    }
+
+    public void updateDokumenttiTila(DokumenttiTila tila, Long dokumenttiId) {
+        Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId);
+        dokumentti.setTila(tila);
+        dokumenttiRepository.save(dokumentti);
     }
 }

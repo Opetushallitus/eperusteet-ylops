@@ -22,9 +22,12 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -233,5 +236,21 @@ public class DokumenttiController {
         service.deleteImage(opsId, tyyppi, k);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(path = "/pdf/data/{dokumenttiId}", consumes = MediaType.APPLICATION_PDF_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> savePdfData(@PathVariable("dokumenttiId") Long dokumenttiId,
+                                              @RequestBody byte[] pdfData) {
+        service.updateDokumenttiPdfData(pdfData, dokumenttiId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/pdf/tila/{dokumenttiId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<String> updateDokumenttiTila(@PathVariable("dokumenttiId") Long dokumenttiId,
+                                                       @RequestBody DokumenttiTila tila) {
+        service.updateDokumenttiTila(tila, dokumenttiId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
