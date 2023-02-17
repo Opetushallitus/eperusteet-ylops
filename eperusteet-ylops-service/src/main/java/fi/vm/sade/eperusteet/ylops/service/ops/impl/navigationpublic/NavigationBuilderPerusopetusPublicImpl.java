@@ -113,7 +113,7 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
             return null;
         }
 
-        return NavigationNodeDto.of(NavigationType.valinnaisetoppiaineet).meta("vlkId", opsVlk.getVuosiluokkakokonaisuus().getId())
+        return NavigationNodeDto.of(NavigationType.valinnaisetoppiaineet).meta("vlkId", opsVlk != null && opsVlk.getVuosiluokkakokonaisuus() != null ? opsVlk.getVuosiluokkakokonaisuus().getId() : null)
                 .addAll(perusopetusOppiaine(valinnaiset, kieli, opsVlk));
     }
 
