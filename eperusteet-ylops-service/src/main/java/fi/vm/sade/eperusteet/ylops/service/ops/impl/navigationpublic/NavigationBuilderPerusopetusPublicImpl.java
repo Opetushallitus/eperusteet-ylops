@@ -96,7 +96,7 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
     public boolean naytetaanOppiaine(OppiaineExportDto oppiaine, OpsVuosiluokkakokonaisuusDto opsVlk) {
         return oppiaine.getVuosiluokkakokonaisuudet().stream()
                 .anyMatch(vlk -> vlk.getVuosiluokkakokonaisuus().equals(opsVlk.getVuosiluokkakokonaisuus().getTunniste())
-                        && !vlk.getPiilotettu()
+                        && (vlk.getPiilotettu() == null || !vlk.getPiilotettu())
                         && (opsVlk.getLisatieto() == null || !opsVlk.getLisatieto().getPiilotetutOppiaineet().contains(oppiaine.getId())));
     }
 
