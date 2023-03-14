@@ -83,6 +83,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaQuery;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
@@ -649,6 +650,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         fetchKuntaNimet(dto);
         fetchOrganisaatioNimet(dto);
         return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<OpsVuosiluokkakokonaisuusKevytDto> getOpetussuunnitelmanPohjanVuosiluokkakokonaisuudet(Long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        assertExists(ops.getPohja(), "Pyydettyä opetussuunnitlman pohjaa ei ole olemassa");
+        OpetussuunnitelmaKevytDto dto = mapper.map(ops.getPohja(), OpetussuunnitelmaKevytDto.class);
+        return dto.getVuosiluokkakokonaisuudet();
     }
 
     private void fetchLapsiOpetussuunnitelmat(Long id, Set<Opetussuunnitelma> opsit) {
