@@ -15,18 +15,20 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
@@ -50,6 +52,9 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
     @Autowired
     private OpsPohjaSynkronointi opsPohjaSynkronointi;
+
+    @Autowired
+    private TekstikappaleviiteRepository tekstikappaleviiteRepository;
 
     private Long pohjaOpsId;
     private Long ops1Id;
@@ -117,6 +122,8 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
             TekstiKappaleViiteDto.Matala tk3 = addTekstikappale(ops1Id);
             TekstiKappaleViiteDto.Matala tk4 = addTekstikappale(ops1Id);
+            setTekstikappaleOriginal(ops1Id, tk4.getId(), tk3.getId());
+
             TekstiKappaleViiteDto.Matala tk31 = addTekstikappaleLapsi(ops1Id, tk3.getId());
 
             assertThat(tkViitteet(ops1)).hasSize(20);
@@ -125,6 +132,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
             assertThat(tkViitteet(ops1)).hasSize(26);
             assertThat(perusteTekstikappaleIdt(ops1)).hasSize(17);
+            assertThat(tekstikappaleviiteRepository.findOne(tk4.getId()).getOriginal().getId()).isEqualTo(tk3.getId());
         }
 
         {
@@ -323,5 +331,12 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         viiteDto.setPakollinen(true);
         viiteDto.setTekstiKappale(tekstiKappale);
         return viiteDto;
+    }
+
+    private void setTekstikappaleOriginal(Long opsId, Long tkId, Long originalId) {
+        TekstiKappaleViite viite = tekstikappaleviiteRepository.findOne(tkId);
+        TekstiKappaleViite original = tekstikappaleviiteRepository.findOne(originalId);
+        viite.updateOriginal(original);
+        tekstikappaleviiteRepository.save(viite);
     }
 }

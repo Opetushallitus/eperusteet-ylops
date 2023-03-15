@@ -7,16 +7,15 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaHierarkiaKopiointiService;
-import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -65,7 +64,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
                                 Map<Long, TekstiKappaleViite> perusteen,
                                 List<TekstiKappaleViite> perusteettomat) {
         if (viite.getTekstiKappale() != null) {
-            if (viite.getPerusteTekstikappaleId() == null && viite.getOriginal() == null) {
+            if (viite.getPerusteTekstikappaleId() == null) {
                 Long perusteenTekstiId = findPerusteenTekstiId(viite);
                 if (perusteenTekstiId != null) {
                     if (omat.get(perusteenTekstiId) == null) {
@@ -132,7 +131,6 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
         oma.setLapset(new ArrayList<>());
         oma.getLapset().addAll(vanhaOma.getLapset().stream().map(vanhaLapsi -> tekstiKappaleViiteRec(vanhaLapsi)).collect(Collectors.toList()));
         oma.getLapset().forEach(lapsi -> lapsi.setVanhempi(oma));
-        oma.updateOriginal(null);
         oma.setTekstiKappale(tekstiKappaleRepository.save(vanhaOma.getTekstiKappale()));
         return oma;
     }
