@@ -18,6 +18,7 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
@@ -112,8 +113,23 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                         if (!opetussuunnitelmaVanhaaRakennetta(docBase)) {
 
                             // Perusteen teksti luvulle jos valittu esittäminen
-                            if (lapsi.isNaytaPerusteenTeksti() && perusteenTekstikappale != null) {
-                                addLokalisoituteksti(docBase, perusteenTekstikappale.getTeksti(),"cite");
+                            if (lapsi.isNaytaPerusteenTeksti()) {
+                                if (perusteenTekstikappale != null) {
+                                    addLokalisoituteksti(docBase, perusteenTekstikappale.getTeksti(),"cite");
+                                }
+
+                                fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto perusteTekstikappaleViite
+                                        = tekstiKappaleViiteService.getPerusteTekstikappale(docBase.getOps().getId(), lapsi.getId());
+
+                                if (perusteTekstikappaleViite.getTekstiKappale().getTunniste() != null && perusteTekstikappaleViite.getTekstiKappale().getTunniste().equals("laajaalainenosaaminen")) {
+                                    PerusteDto peruste = opetussuunnitelmaService.getPeruste(docBase.getOps().getId());
+                                    if (peruste.getAipe() != null && peruste.getAipe().getLaajaalaisetosaamiset() != null) {
+                                        peruste.getAipe().getLaajaalaisetosaamiset().forEach(lao -> {
+                                            addLokalisoituteksti(docBase, lao.getNimi(),"h5i");
+                                            addLokalisoituteksti(docBase, lao.getKuvaus(),"cite");
+                                        });
+                                    }
+                                }
                             }
 
                             if (lapsi.isNaytaPohjanTeksti()) {

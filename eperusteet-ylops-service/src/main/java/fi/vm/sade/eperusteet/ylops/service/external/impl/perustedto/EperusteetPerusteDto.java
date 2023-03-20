@@ -17,14 +17,18 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisaltoDto;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * @author nkala
  */
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class EperusteetPerusteDto extends PerusteDto {
     private Long id;
     private PerusteVersionDto globalVersion;

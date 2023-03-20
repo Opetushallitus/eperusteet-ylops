@@ -15,16 +15,19 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.Set;
 import java.util.UUID;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OppiaineDto {
 
     private Long id;
