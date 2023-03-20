@@ -16,14 +16,16 @@
 
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author harrik
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class KoulutusDto {
     private PerusteenLokalisoituTekstiDto nimi;
     private String koulutuskoodiArvo;

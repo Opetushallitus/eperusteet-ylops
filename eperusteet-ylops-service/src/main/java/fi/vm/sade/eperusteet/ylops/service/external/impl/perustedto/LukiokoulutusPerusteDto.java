@@ -16,14 +16,18 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisaltoDto;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 /**
  * Created by jsikio.
  */
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class LukiokoulutusPerusteDto extends PerusteDto {
     private LukiokoulutuksenPerusteenSisaltoDto lukiokoulutus;
 }

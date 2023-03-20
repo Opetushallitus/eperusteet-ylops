@@ -16,14 +16,16 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class TavoitteenArviointiDto implements ReferenceableDto {
     private Long id;
     private PerusteenLokalisoituTekstiDto arvioinninKohde;

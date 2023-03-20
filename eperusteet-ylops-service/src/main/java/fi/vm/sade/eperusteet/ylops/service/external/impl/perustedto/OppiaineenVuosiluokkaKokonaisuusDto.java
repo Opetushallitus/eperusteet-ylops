@@ -18,17 +18,18 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
-
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OppiaineenVuosiluokkaKokonaisuusDto implements ReferenceableDto {
     private Long id;
     @JsonIdentityReference(alwaysAsId = true)

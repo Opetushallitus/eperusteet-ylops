@@ -425,6 +425,23 @@
         </fo:block>
     </xsl:template>
 
+    <xsl:template match="h5i">
+        <fo:block font-size="12pt" line-height="1.25em" font-weight="bold" font-style="italic"
+                  keep-with-next="always" space-after="10pt" color="#007EC5">
+            <xsl:attribute name="id">
+                <xsl:choose>
+                    <xsl:when test="@id">
+                        <xsl:value-of select="@id"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="generate-id()"/>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
+            <xsl:apply-templates select="*|text()"/>
+        </fo:block>
+    </xsl:template>
+
     <xsl:template match="h6">
         <fo:block font-size="10pt" line-height="1.25em" font-weight="bold"
                   keep-with-next="always" space-after="10pt" color="#000000">

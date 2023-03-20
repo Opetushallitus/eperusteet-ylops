@@ -17,19 +17,17 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.List;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class TekstiKappaleViiteDto {
     private Long id;
     @JsonProperty(value = "perusteenOsa")
