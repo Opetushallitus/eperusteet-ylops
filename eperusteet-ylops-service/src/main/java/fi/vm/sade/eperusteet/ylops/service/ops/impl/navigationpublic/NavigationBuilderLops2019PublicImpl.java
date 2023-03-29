@@ -52,7 +52,7 @@ public class NavigationBuilderLops2019PublicImpl implements NavigationBuilderPub
     @Override
     public NavigationNodeDto buildNavigation(Long opsId, boolean esikatselu) {
         return NavigationNodeDto.of(NavigationType.root)
-                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId).getChildren())
+                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, esikatselu).getChildren())
                 .add(oppiaineet(opsId, esikatselu));
     }
 
@@ -143,10 +143,7 @@ public class NavigationBuilderLops2019PublicImpl implements NavigationBuilderPub
     }
 
     protected List<Lops2019PaikallinenOppiaineExportDto> getPaikallisetOppiaineet(OpetussuunnitelmaExportLops2019Dto opetussuunnitelmaDto, Map<String, Set<Lops2019OpintojaksoExportDto>> opintojaksotMap) {
-        return opetussuunnitelmaDto.getPaikallisetOppiaineet().stream()
-//                .filter(poa -> opintojaksotMap.containsKey(poa.getKoodi()))
-//                .filter(poa -> StringUtils.isEmpty(poa.getPerusteenOppiaineUri()))
-                .collect(Collectors.toList());
+        return new ArrayList<>(opetussuunnitelmaDto.getPaikallisetOppiaineet());
     }
 
     protected Predicate<Lops2019PaikallinenOppiaineExportDto> getPaikallinenFilter(Map<String, Set<Lops2019OpintojaksoExportDto>> opintojaksotMap) {
