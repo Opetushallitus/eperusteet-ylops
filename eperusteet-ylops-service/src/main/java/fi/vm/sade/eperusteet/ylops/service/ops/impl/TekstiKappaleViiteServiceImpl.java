@@ -37,7 +37,6 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.PoistettuTekstiKappaleRepos
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
-import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockManager;
@@ -141,9 +140,10 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                     .filter(viiteDto -> viiteDto.getTekstiKappale() != null && tekstiKappaleViite != null
                             && Objects.equals(tekstiKappaleViite.getPerusteTekstikappaleId(), viiteDto.getTekstiKappale().getId()))
                     .findFirst()
-                    .orElseThrow(() -> new NotExistsException("tekstikappaletta-ei-ole"));
+                    .orElse(null);
         }
-        throw new NotExistsException("tekstikappaletta-ei-ole");
+
+        return null;
     }
 
     @Override

@@ -118,10 +118,12 @@ public class YleisetOsuudetServiceImpl implements YleisetOsuudetService {
                                     addLokalisoituteksti(docBase, perusteenTekstikappale.getTeksti(),"cite");
                                 }
 
-                                fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto perusteTekstikappaleViite
-                                        = tekstiKappaleViiteService.getPerusteTekstikappale(docBase.getOps().getId(), lapsi.getId());
+                                fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto perusteTekstikappaleViite = tekstiKappaleViiteService.getPerusteTekstikappale(docBase.getOps().getId(), lapsi.getId());
 
-                                if (perusteTekstikappaleViite.getTekstiKappale().getTunniste() != null && perusteTekstikappaleViite.getTekstiKappale().getTunniste().equals("laajaalainenosaaminen")) {
+                                if (perusteTekstikappaleViite != null
+                                        && perusteTekstikappaleViite.getTekstiKappale() != null
+                                        && perusteTekstikappaleViite.getTekstiKappale().getTunniste() != null
+                                        && perusteTekstikappaleViite.getTekstiKappale().getTunniste().equals("laajaalainenosaaminen")) {
                                     PerusteDto peruste = opetussuunnitelmaService.getPeruste(docBase.getOps().getId());
                                     if (peruste.getAipe() != null && peruste.getAipe().getLaajaalaisetosaamiset() != null) {
                                         peruste.getAipe().getLaajaalaisetosaamiset().forEach(lao -> {
