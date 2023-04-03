@@ -63,7 +63,7 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
                 .collect(Collectors.toList());
 
         return NavigationNodeDto.of(NavigationType.root)
-                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId).getChildren())
+                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, esikatselu).getChildren())
                 .addAll(vuosiluokkakokonaisuudet(vuosiluokkakokonaisuudet, oppiaineet, kieli))
                 .add(perusopetusOppiaineet(oppiaineet, kieli));
     }

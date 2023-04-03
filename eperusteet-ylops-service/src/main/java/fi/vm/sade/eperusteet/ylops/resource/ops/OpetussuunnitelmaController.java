@@ -56,6 +56,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -186,7 +187,7 @@ public class OpetussuunnitelmaController {
     @RequestMapping(value = "/{id}/laajaalaisetosaamiset", method = RequestMethod.GET)
     @ResponseBody
     @Timed
-    public Set<PerusteLaajaalainenosaaminenDto> getLaajalaisetosamiset(@PathVariable("id") final Long id) {
+    public Collection<PerusteLaajaalainenosaaminenDto> getLaajalaisetosamiset(@PathVariable("id") final Long id) {
         return opetussuunnitelmaService.getLaajaalaisetosaamiset(id);
     }
 

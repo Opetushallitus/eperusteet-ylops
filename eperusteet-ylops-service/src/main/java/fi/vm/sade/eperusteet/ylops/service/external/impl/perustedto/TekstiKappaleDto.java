@@ -16,19 +16,17 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.Date;
 
 /**
  * @author jhyoty
  */
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class TekstiKappaleDto {
     private Long id;
     private Date luotu;

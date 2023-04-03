@@ -11,12 +11,13 @@ import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
-import java.util.Optional;
-import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+
+import java.util.Optional;
+import java.util.Set;
 
 @Component
 @Transactional
@@ -36,7 +37,7 @@ public class NavigationBuilderLopsPublicImpl implements NavigationBuilderPublic 
     @Override
     public NavigationNodeDto buildNavigation(Long opsId, boolean esikatselu) {
         return NavigationNodeDto.of(NavigationType.root)
-                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId).getChildren())
+                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, esikatselu).getChildren())
                 .add(oppiaineet(opsId, esikatselu));
     }
 

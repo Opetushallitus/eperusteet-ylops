@@ -16,8 +16,9 @@
 
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -26,15 +27,9 @@ import java.util.Date;
  * Date: 16.11.2015
  * Time: 14.58
  */
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class PerusteVersionDto {
     private Date aikaleima;
-
-    public PerusteVersionDto() {
-    }
-
-    public PerusteVersionDto(Date aikaleima) {
-        this.aikaleima = aikaleima;
-    }
 }

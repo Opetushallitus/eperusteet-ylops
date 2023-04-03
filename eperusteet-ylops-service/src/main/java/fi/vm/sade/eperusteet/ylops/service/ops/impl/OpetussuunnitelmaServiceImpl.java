@@ -725,11 +725,21 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public Set<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(Long id) {
+    public Collection<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        return eperusteetService.getPeruste(ops.getPerusteenDiaarinumero()).getPerusopetus()
-                .getLaajaalaisetosaamiset();
+
+        PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
+
+        if (peruste.getPerusopetus() != null) {
+            return peruste.getPerusopetus().getLaajaalaisetosaamiset();
+        }
+
+        if (peruste.getAipe() != null) {
+            return peruste.getAipe().getLaajaalaisetosaamiset();
+        }
+
+        throw new BusinessRuleViolationException("perusteen-laaja-alaisia-osaamisia-ei-loydy");
     }
 
     @Override

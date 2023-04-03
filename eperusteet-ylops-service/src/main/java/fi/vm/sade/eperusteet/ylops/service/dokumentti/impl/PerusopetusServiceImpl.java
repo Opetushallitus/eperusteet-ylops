@@ -216,11 +216,9 @@ public class PerusopetusServiceImpl implements PerusopetusService {
                             && oa.getOppiaine().getNimi().getTeksti() != null
                             && oa.getOppiaine().getNimi().getTeksti().get(docBase.getKieli()) != null)
                     .sorted((oa1, oa2) -> {
-                        if (oa1.getJnro() != null && oa2.getJnro() != null) {
-                            return oa1.getJnro().compareTo(oa2.getJnro());
-                        } else {
-                            return 1;
-                        }
+                        Integer jarj1 = oa1.getJnro() != null ? oa1.getJnro() : 1;
+                        Integer jarj2 = oa2.getJnro() != null ? oa2.getJnro() : 1;
+                        return jarj1.compareTo(jarj2);
                     })
                     .collect(Collectors.toCollection(ArrayList::new));
 

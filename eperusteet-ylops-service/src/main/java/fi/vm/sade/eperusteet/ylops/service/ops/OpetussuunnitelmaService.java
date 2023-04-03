@@ -44,6 +44,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -54,7 +55,7 @@ import java.util.Set;
 public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    Set<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(@P("opsId") Long opsId);
+    Collection<PerusteLaajaalainenosaaminenDto> getLaajaalaisetosaamiset(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(null, 'tarkastelu', 'HALLINTA') ||" +
             "(#tyyppi == T(fi.vm.sade.eperusteet.ylops.domain.Tyyppi).OPS and (hasPermission(null, 'opetussuunnitelma', 'LUKU'))) || " +
