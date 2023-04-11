@@ -16,12 +16,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-
 @Service
 public class ExternalPdfServiceImpl implements ExternalPdfService {
 
-    @Value("${fi.vm.sade.eperusteet.eperusteet.pdf-service:''}")
+    @Value("${fi.vm.sade.eperusteet.ylops.pdf-service:''}")
     private String pdfServiceUrl;
 
     @Autowired
