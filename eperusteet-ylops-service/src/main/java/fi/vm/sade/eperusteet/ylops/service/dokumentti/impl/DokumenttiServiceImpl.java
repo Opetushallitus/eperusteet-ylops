@@ -1,19 +1,3 @@
-/*
- * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
- *
- * This program is free software: Licensed under the EUPL, Version 1.1 or - as
- * soon as they will be approved by the European Commission - subsequent versions
- * of the EUPL (the "Licence");
- *
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * European Union Public Licence for more details.
- */
-
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
@@ -30,17 +14,11 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiStateService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
-import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
-import javax.imageio.ImageIO;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,11 +29,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-/**
- * @author iSaul
- */
 @Service
 @Transactional
 public class DokumenttiServiceImpl implements DokumenttiService {
@@ -200,125 +174,6 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     public DokumenttiDto getDto(Long id) {
         Dokumentti dokumentti = dokumenttiRepository.findOne(id);
         return mapper.map(dokumentti, DokumenttiDto.class);
-    }
-
-    @Override
-    public DokumenttiDto addImage(Long opsId, DokumenttiDto dto, String tyyppi, Kieli kieli, MultipartFile file) throws IOException {
-
-        if (!file.isEmpty()) {
-
-            BufferedImage bufferedImage = ImageIO.read(file.getInputStream());
-
-            int width = bufferedImage.getWidth();
-            int height = bufferedImage.getHeight();
-
-            // Muutetaan kaikkien kuvien väriavaruus RGB:ksi jotta PDF/A validointi menee läpi
-            // Asetetaan lisäksi läpinäkyvien kuvien taustaksi valkoinen väri
-            BufferedImage tempImage = new BufferedImage(bufferedImage.getWidth(), bufferedImage.getHeight(),
-                    BufferedImage.TYPE_3BYTE_BGR);
-            tempImage.getGraphics().setColor(new Color(255, 255, 255, 0));
-            tempImage.getGraphics().fillRect(0, 0, width, height);
-            tempImage.getGraphics().drawImage(bufferedImage, 0, 0, null);
-
-            bufferedImage = tempImage;
-
-            // Muutetaan kuva PNG:ksi
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(bufferedImage, "jpg", baos);
-            baos.flush();
-            byte[] image = baos.toByteArray();
-            baos.close();
-
-            // Haetaan domain dokumentti
-            Dokumentti dokumentti = getLatestDokumentti(dto.getOpsId(), kieli);
-
-            if (dokumentti == null) {
-                return null;
-            }
-
-            switch (tyyppi) {
-                case "kansikuva":
-                    dokumentti.setKansikuva(image);
-                    break;
-                case "ylatunniste":
-                    dokumentti.setYlatunniste(image);
-                    break;
-                case "alatunniste":
-                    dokumentti.setAlatunniste(image);
-                    break;
-                default:
-                    mapper.map(dokumentti, DokumenttiDto.class);
-            }
-
-            return mapper.map(dokumenttiRepository.save(dokumentti), DokumenttiDto.class);
-        }
-
-        return null;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public byte[] getImage(Long opsId, String tyyppi, Kieli kieli) {
-
-        // Haetaan kuva
-        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
-        if (dokumentit.isEmpty()) {
-            throw new NotExistsException("Dokumentti ei löytynyt");
-        }
-
-        Dokumentti dokumentti = dokumentit.get(0);
-
-        byte[] image;
-
-        switch (tyyppi) {
-            case "kansikuva":
-                image = dokumentti.getKansikuva();
-                break;
-            case "ylatunniste":
-                image = dokumentti.getYlatunniste();
-                break;
-            case "alatunniste":
-                image = dokumentti.getAlatunniste();
-                break;
-            default:
-                throw new IllegalArgumentException(tyyppi + " ei ole kelvollinen tyyppi");
-        }
-
-        return image;
-    }
-
-    @Override
-    public void deleteImage(Long opsId, String tyyppi, Kieli kieli) {
-
-        // Tehdään DokumenttiDto jos ei löydy jo valmiina
-        DokumenttiDto dokumenttiDto = getDto(opsId, kieli);
-
-        if (dokumenttiDto == null) {
-            return;
-        }
-
-        // Haetaan kuva
-        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
-        Dokumentti dokumentti = dokumentit.isEmpty() ? null : dokumentit.get(0);
-        if (dokumentti == null) {
-            return;
-        }
-
-        switch (tyyppi) {
-            case "kansikuva":
-                dokumentti.setKansikuva(null);
-                break;
-            case "ylatunniste":
-                dokumentti.setYlatunniste(null);
-                break;
-            case "alatunniste":
-                dokumentti.setAlatunniste(null);
-                break;
-            default:
-                return;
-        }
-
-        dokumenttiRepository.save(dokumentti);
     }
 
     private Dokumentti getLatestDokumentti(Long opsId, Kieli kieli) {

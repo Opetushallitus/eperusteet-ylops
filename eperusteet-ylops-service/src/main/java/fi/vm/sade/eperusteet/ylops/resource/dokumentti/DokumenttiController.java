@@ -3,11 +3,14 @@ package fi.vm.sade.eperusteet.ylops.resource.dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiKuvaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiKuvaService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
+import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -41,7 +44,13 @@ public class DokumenttiController {
     private static final int MAX_TIME_IN_MINUTES = 2;
 
     @Autowired
-    DokumenttiService service;
+    private DtoMapper mapper;
+
+    @Autowired
+    DokumenttiService dokumenttiService;
+
+    @Autowired
+    DokumenttiKuvaService dokumenttiKuvaService;
 
     @Autowired
     OpetussuunnitelmaService opetussuunnitelmaService;
@@ -51,7 +60,7 @@ public class DokumenttiController {
             @RequestParam final long opsId,
             @RequestParam(defaultValue = "fi") final String kieli
     ) throws DokumenttiException {
-        DokumenttiDto dto = service.getDto(opsId, Kieli.of(kieli));
+        DokumenttiDto dto = dokumenttiService.getDto(opsId, Kieli.of(kieli));
         if (dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -59,26 +68,15 @@ public class DokumenttiController {
         // Aloitetaan luonti jos luonti ei ole jo päällä tai maksimi luontiaika ylitetty
         if (isTimePass(dto) || dto.getTila() != DokumenttiTila.LUODAAN) {
             // Vaihdetaan dokumentin tila luonniksi
-            service.setStarted(dto);
+            dokumenttiService.setStarted(dto);
 
             // Luodaan dokumentin sisältö
-            service.generateWithDto(dto);
+            dokumenttiService.generateWithDto(dto);
 
-            return new ResponseEntity<>(service.getDto(dto.getId()), HttpStatus.CREATED);
+            return new ResponseEntity<>(dokumenttiService.getDto(dto.getId()), HttpStatus.CREATED);
         } else {
             throw new BusinessRuleViolationException("Luonti on jo käynissä");
         }
-
-    }
-
-    private boolean isTimePass(DokumenttiDto dokumenttiDto) {
-        Date date = dokumenttiDto.getAloitusaika();
-        if (date == null) {
-            return true;
-        }
-
-        Date newDate = DateUtils.addMinutes(date, MAX_TIME_IN_MINUTES);
-        return newDate.before(new Date());
     }
 
     @RequestMapping(value = "/{fileName}", method = RequestMethod.GET, produces = "application/pdf")
@@ -88,7 +86,7 @@ public class DokumenttiController {
         Long dokumenttiId = Long.valueOf(FilenameUtils.removeExtension(fileName));
         String extension = FilenameUtils.getExtension(fileName);
 
-        byte[] pdfdata = service.get(dokumenttiId);
+        byte[] pdfdata = dokumenttiService.get(dokumenttiId);
 
         // Tarkistetaan tiedostopääte jos asetettu kutsuun
         if (!ObjectUtils.isEmpty(extension) && !Objects.equals(extension, "pdf")) {
@@ -100,13 +98,13 @@ public class DokumenttiController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
-        if (!service.hasPermission(dokumenttiId)) {
+        if (!dokumenttiService.hasPermission(dokumenttiId)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
-        DokumenttiDto dokumenttiDto = service.getDto(dokumenttiId);
+        DokumenttiDto dokumenttiDto = dokumenttiService.getDto(dokumenttiId);
         if (dokumenttiDto != null) {
             OpetussuunnitelmaKevytDto opsDto = opetussuunnitelmaService.getOpetussuunnitelma(dokumenttiDto.getOpsId());
             if (opsDto != null) {
@@ -127,7 +125,7 @@ public class DokumenttiController {
             @RequestParam final Long opsId,
             @RequestParam(defaultValue = "fi") final String kieli
     ) {
-        Long dokumenttiId = service.getDokumenttiId(opsId, Kieli.of(kieli));
+        Long dokumenttiId = dokumenttiService.getDokumenttiId(opsId, Kieli.of(kieli));
         return ResponseEntity.ok(dokumenttiId);
     }
 
@@ -137,11 +135,11 @@ public class DokumenttiController {
             @RequestParam(defaultValue = "fi") final String kieli
     ) {
         Kieli k = Kieli.of(kieli);
-        DokumenttiDto dto = service.getDto(opsId, k);
+        DokumenttiDto dto = dokumenttiService.getDto(opsId, k);
 
         // Jos dokumentti ei löydy valmiiksi niin koitetaan tehdä uusi
         if (dto == null) {
-            return ResponseEntity.ok(service.createDtoFor(opsId, Kieli.of(kieli)));
+            return ResponseEntity.ok(dokumenttiService.createDtoFor(opsId, k));
         } else {
             return ResponseEntity.ok(dto);
         }
@@ -152,7 +150,7 @@ public class DokumenttiController {
     })
     @RequestMapping(value = "/{dokumenttiId}/dokumentti", method = RequestMethod.GET)
     public ResponseEntity<DokumenttiDto> query(@PathVariable final Long dokumenttiId) {
-        DokumenttiDto dto = service.query(dokumenttiId);
+        DokumenttiDto dto = dokumenttiService.query(dokumenttiId);
         if (dto == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
@@ -169,7 +167,7 @@ public class DokumenttiController {
             @RequestParam(defaultValue = "fi") final String kieli
     ) {
         Kieli k = Kieli.of(kieli);
-        DokumenttiTila tila = service.getTila(opsId, k);
+        DokumenttiTila tila = dokumenttiService.getTila(opsId, k);
         if (tila == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
@@ -177,30 +175,26 @@ public class DokumenttiController {
         }
     }
 
+    @RequestMapping(value = "/dokumenttikuva", method = RequestMethod.GET)
+    public ResponseEntity<DokumenttiKuvaDto> getDokumenttiKuva(@RequestParam Long opsId,
+                                                               @RequestParam(defaultValue = "fi") String kieli) {
+
+        DokumenttiKuvaDto dto = dokumenttiKuvaService.getDto(opsId, Kieli.of(kieli));
+
+        if (dto == null) {
+            dto = mapper.map(dokumenttiKuvaService.createDtoFor(opsId, Kieli.of(kieli)), DokumenttiKuvaDto.class);
+        }
+        return ResponseEntity.ok(dto);
+    }
+
     @RequestMapping(value = "/kuva", method = RequestMethod.POST)
-    public ResponseEntity<DokumenttiDto> addImage(
+    public ResponseEntity<DokumenttiKuvaDto> addImage(
             @RequestParam Long opsId,
             @RequestParam String tyyppi,
             @RequestParam(defaultValue = "fi") String kieli,
-            @RequestPart MultipartFile file
-    ) throws IOException {
+            @RequestPart MultipartFile file) throws IOException {
 
-        Kieli k = Kieli.of(kieli);
-
-        DokumenttiDto dokumenttiDto = service.getDto(opsId, Kieli.of(kieli));
-
-        // Jos dokumentti ei löydy valmiiksi niin koitetaan tehdä uusi
-        if (dokumenttiDto == null) {
-            dokumenttiDto = service.createDtoFor(opsId, Kieli.of(kieli));
-        }
-
-        // Jos tila epäonnistunut, opsia ei löytynyt
-        if (dokumenttiDto == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        // Lisää kuva dokumenttiin
-        DokumenttiDto dto = service.addImage(opsId, dokumenttiDto, tyyppi, k, file);
+        DokumenttiKuvaDto dto = dokumenttiKuvaService.addImage(opsId, tyyppi, Kieli.of(kieli), file);
 
         if (dto != null) {
             return ResponseEntity.ok(dto);
@@ -213,10 +207,9 @@ public class DokumenttiController {
     public ResponseEntity<byte[]> getImage(
             @RequestParam Long opsId,
             @RequestParam String tyyppi,
-            @RequestParam(defaultValue = "fi") String kieli
-) {
-        Kieli k = Kieli.of(kieli);
-        byte[] image = service.getImage(opsId, tyyppi, k);
+            @RequestParam(defaultValue = "fi") String kieli) {
+
+        byte[] image = dokumenttiKuvaService.getImage(opsId, tyyppi, Kieli.of(kieli));
         if (image == null) {
             return ResponseEntity.notFound().build();
         }
@@ -227,11 +220,19 @@ public class DokumenttiController {
     public ResponseEntity<Object> deleteImage(
             @RequestParam Long opsId,
             @RequestParam String tyyppi,
-            @RequestParam(defaultValue = "fi") String kieli
-    ) {
-        Kieli k = Kieli.of(kieli);
-        service.deleteImage(opsId, tyyppi, k);
+            @RequestParam(defaultValue = "fi") String kieli) {
 
+        dokumenttiKuvaService.deleteImage(opsId, tyyppi, Kieli.of(kieli));
         return ResponseEntity.noContent().build();
+    }
+
+    private boolean isTimePass(DokumenttiDto dokumenttiDto) {
+        Date date = dokumenttiDto.getAloitusaika();
+        if (date == null) {
+            return true;
+        }
+
+        Date newDate = DateUtils.addMinutes(date, MAX_TIME_IN_MINUTES);
+        return newDate.before(new Date());
     }
 }
