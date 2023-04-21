@@ -31,7 +31,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface DokumenttiRepository extends JpaRepository<Dokumentti, Long> {
-    List<Dokumentti> findByOpsIdAndKieli(Long opsId, Kieli kieli);
+    List<Dokumentti> findByOpsIdAndKieli(Long opsId, Kieli kieli, Sort sort);
 
     List<Dokumentti> findByOpsIdAndKieliAndTila(Long opsId, Kieli kieli, DokumenttiTila tila, Sort sort);
 }

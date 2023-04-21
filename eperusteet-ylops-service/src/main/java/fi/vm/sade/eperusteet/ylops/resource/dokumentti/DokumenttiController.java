@@ -8,7 +8,6 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiKuvaService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
-import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -16,12 +15,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import java.io.IOException;
-import java.util.Date;
 import java.util.Objects;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -41,8 +38,6 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/dokumentit")
 public class DokumenttiController {
-    private static final int MAX_TIME_IN_MINUTES = 2;
-
     @Autowired
     private DtoMapper mapper;
 
@@ -56,27 +51,18 @@ public class DokumenttiController {
     OpetussuunnitelmaService opetussuunnitelmaService;
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<DokumenttiDto> create(
-            @RequestParam final long opsId,
-            @RequestParam(defaultValue = "fi") final String kieli
-    ) throws DokumenttiException {
-        DokumenttiDto dto = dokumenttiService.getDto(opsId, Kieli.of(kieli));
-        if (dto == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<DokumenttiDto> create(@RequestParam final long opsId,
+                                                @RequestParam(defaultValue = "fi") final String kieli) throws DokumenttiException {
 
-        // Aloitetaan luonti jos luonti ei ole jo päällä tai maksimi luontiaika ylitetty
-        if (isTimePass(dto) || dto.getTila() != DokumenttiTila.LUODAAN) {
-            // Vaihdetaan dokumentin tila luonniksi
+        DokumenttiDto dto = dokumenttiService.createDtoFor(opsId, Kieli.of(kieli));
+
+        if (dto != null && dto.getTila() != DokumenttiTila.EPAONNISTUI) {
             dokumenttiService.setStarted(dto);
-
-            // Luodaan dokumentin sisältö
             dokumenttiService.generateWithDto(dto);
-
-            return new ResponseEntity<>(dokumenttiService.getDto(dto.getId()), HttpStatus.CREATED);
-        } else {
-            throw new BusinessRuleViolationException("Luonti on jo käynissä");
+            return new ResponseEntity<>(dto, HttpStatus.CREATED);
         }
+
+        return new ResponseEntity<>(dto, HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(value = "/{fileName}", method = RequestMethod.GET, produces = "application/pdf")
@@ -115,34 +101,31 @@ public class DokumenttiController {
                 }
             }
         }
-
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/ops", method = RequestMethod.GET)
     @ResponseBody
-    public ResponseEntity<Long> getDokumenttiId(
-            @RequestParam final Long opsId,
-            @RequestParam(defaultValue = "fi") final String kieli
-    ) {
-        Long dokumenttiId = dokumenttiService.getDokumenttiId(opsId, Kieli.of(kieli));
-        return ResponseEntity.ok(dokumenttiId);
+    public ResponseEntity<Long> getLatestDokumenttiId(@RequestParam final Long opsId,
+                                                @RequestParam(defaultValue = "fi") final String kieli) {
+        DokumenttiDto dto = mapper.map(dokumenttiService.getLatestValmisDokumentti(opsId, Kieli.of(kieli)), DokumenttiDto.class);
+        return ResponseEntity.ok(dto.getId());
     }
 
-    @RequestMapping(method = RequestMethod.GET, params = "opsId")
-    public ResponseEntity<DokumenttiDto> getDokumentti(
-            @RequestParam final Long opsId,
-            @RequestParam(defaultValue = "fi") final String kieli
-    ) {
-        Kieli k = Kieli.of(kieli);
-        DokumenttiDto dto = dokumenttiService.getDto(opsId, k);
+    @RequestMapping(value = "/latest", method = RequestMethod.GET, params = "opsId")
+    public ResponseEntity<DokumenttiDto> getLatestDokumentti(@RequestParam("opsId") final Long opsId,
+                                                             @RequestParam(defaultValue = "fi") final String kieli) {
+        DokumenttiDto dto = dokumenttiService.getLatestValmisDokumentti(opsId, Kieli.of(kieli));
+        return new ResponseEntity<>(dto, HttpStatus.OK);
+    }
 
-        // Jos dokumentti ei löydy valmiiksi niin koitetaan tehdä uusi
-        if (dto == null) {
-            return ResponseEntity.ok(dokumenttiService.createDtoFor(opsId, k));
-        } else {
-            return ResponseEntity.ok(dto);
-        }
+    @RequestMapping(value = "/julkaistu", method = RequestMethod.GET)
+    public ResponseEntity<Long> getJulkaistuDokumenttiId(
+            @RequestParam() final Long opsId,
+            @RequestParam() final String kieli,
+            @RequestParam(required = false) final Integer revision
+    ) {
+        return ResponseEntity.ok(dokumenttiService.getJulkaistuDokumenttiId(opsId, Kieli.of(kieli), revision));
     }
 
     @ApiImplicitParams({
@@ -155,23 +138,6 @@ public class DokumenttiController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
             return new ResponseEntity<>(dto, HttpStatus.OK);
-        }
-    }
-
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "dokumenttiId", dataType = "string", paramType = "path", required = true)
-    })
-    @RequestMapping(value = "/{dokumenttiId}/tila", method = RequestMethod.GET)
-    public ResponseEntity<DokumenttiTila> exist(
-            @RequestParam final Long opsId,
-            @RequestParam(defaultValue = "fi") final String kieli
-    ) {
-        Kieli k = Kieli.of(kieli);
-        DokumenttiTila tila = dokumenttiService.getTila(opsId, k);
-        if (tila == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            return ResponseEntity.ok(tila);
         }
     }
 
@@ -224,15 +190,5 @@ public class DokumenttiController {
 
         dokumenttiKuvaService.deleteImage(opsId, tyyppi, Kieli.of(kieli));
         return ResponseEntity.noContent().build();
-    }
-
-    private boolean isTimePass(DokumenttiDto dokumenttiDto) {
-        Date date = dokumenttiDto.getAloitusaika();
-        if (date == null) {
-            return true;
-        }
-
-        Date newDate = DateUtils.addMinutes(date, MAX_TIME_IN_MINUTES);
-        return newDate.before(new Date());
     }
 }

@@ -220,7 +220,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
 
             Set<DokumenttiDto> dokumentit = ops.getJulkaisukielet().stream().map(kieli -> {
-                DokumenttiDto dokumenttiDto = dokumenttiService.getDto(opsId, kieli);
+                DokumenttiDto dokumenttiDto = dokumenttiService.createDtoFor(opsId, kieli);
                 try {
                     dokumenttiService.setStarted(dokumenttiDto);
                     dokumenttiService.generateWithDto(dokumenttiDto);
