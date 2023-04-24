@@ -1,24 +1,6 @@
-/*
- * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
- *
- * This program is free software: Licensed under the EUPL, Version 1.1 or - as
- * soon as they will be approved by the European Commission - subsequent versions
- * of the EUPL (the "Licence");
- *
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * European Union Public Licence for more details.
- */
-
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.exc.MismatchedInputException;
-import com.google.common.base.Throwables;
 import fi.vm.sade.eperusteet.utils.dto.dokumentti.DokumenttiMetaDto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
@@ -32,7 +14,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
-import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiStateService;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiKuvaService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LocalizedMessagesService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.Lops2019DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.LukioService;
@@ -77,7 +59,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jsoup.Jsoup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +67,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestClientException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -95,9 +75,6 @@ import org.xml.sax.SAXException;
 
 import static fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils.getTextString;
 
-/**
- * @author iSaul
- */
 @Service
 public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
 
@@ -139,7 +116,7 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
     private DtoMapper mapper;
 
     @Autowired
-    private DokumenttiStateService dokumenttiStateService;
+    private DokumenttiKuvaService dokumenttiKuvaService;
 
     @Autowired
     private LocalizedMessagesService messages;
@@ -222,9 +199,9 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
             LOG.error(ex.getLocalizedMessage());
         }
 
-        buildKuva(docBase, "kansikuva", dokumentti.getKansikuva());
-        buildKuva(docBase, "ylatunniste", dokumentti.getYlatunniste());
-        buildKuva(docBase, "alatunniste", dokumentti.getAlatunniste());
+        buildKuva(docBase, "kansikuva", ops.getId(), kieli);
+        buildKuva(docBase, "ylatunniste", ops.getId(), kieli);
+        buildKuva(docBase, "alatunniste", ops.getId(), kieli);
 
         LOG.info("Generate PDF (opsId=" + docBase.getOps().getId() + ")");
 
@@ -478,14 +455,16 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         }
     }
 
-    private void buildKuva(DokumenttiBase docBase, String elementName, byte[] kuva) {
-        Element head = docBase.getHeadElement();
-        Element element = docBase.getDocument().createElement(elementName);
-        Element img = docBase.getDocument().createElement("img");
+    private void buildKuva(DokumenttiBase docBase, String elementName, Long opsId, Kieli kieli) {
+        byte[] kuva = dokumenttiKuvaService.getImage(opsId, elementName, kieli);
 
         if (kuva == null) {
             return;
         }
+
+        Element head = docBase.getHeadElement();
+        Element element = docBase.getDocument().createElement(elementName);
+        Element img = docBase.getDocument().createElement("img");
 
         String base64 = Base64.getEncoder().encodeToString(kuva);
         img.setAttribute("src", "data:image/jpg;base64," + base64);
@@ -493,5 +472,4 @@ public class DokumenttiBuilderServiceImpl implements DokumenttiBuilderService {
         element.appendChild(img);
         head.appendChild(element);
     }
-
 }

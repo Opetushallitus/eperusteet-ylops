@@ -18,6 +18,8 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiKuva;
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiKuva_;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti_;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
@@ -29,6 +31,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale_;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiKuvaDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineRakenneListausDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
@@ -65,7 +68,7 @@ import org.springframework.context.annotation.Configuration;
 public class DtoMapperConfig {
     @Autowired
     private LokalisoituTekstiRepository lokalisoituTekstiRepository;
-    
+
     @Bean
     public DtoMapper dtoMapper(
             ReferenceableEntityConverter referenceableEntityConverter,
@@ -160,19 +163,19 @@ public class DtoMapperConfig {
                 .byDefault()
                 .register();
 
-        factory.classMap(Dokumentti.class, DokumenttiDto.class)
-                .exclude(Dokumentti_.kansikuva.getName())
-                .exclude(Dokumentti_.ylatunniste.getName())
-                .exclude(Dokumentti_.alatunniste.getName())
+        factory.classMap(DokumenttiKuva.class, DokumenttiKuvaDto.class)
+                .exclude(DokumenttiKuva_.kansikuva.getName())
+                .exclude(DokumenttiKuva_.ylatunniste.getName())
+                .exclude(DokumenttiKuva_.alatunniste.getName())
                 .byDefault()
                 .favorExtension(true)
-                .customize(new CustomMapper<Dokumentti, DokumenttiDto>() {
+                .customize(new CustomMapper<DokumenttiKuva, DokumenttiKuvaDto>() {
                     @Override
-                    public void mapAtoB(Dokumentti dokumentti, DokumenttiDto dokumenttiDto, MappingContext context) {
-                        super.mapAtoB(dokumentti, dokumenttiDto, context);
-                        dokumenttiDto.setKansikuva(dokumentti.getKansikuva() != null);
-                        dokumenttiDto.setYlatunniste(dokumentti.getYlatunniste() != null);
-                        dokumenttiDto.setAlatunniste(dokumentti.getAlatunniste() != null);
+                    public void mapAtoB(DokumenttiKuva dokumenttiKuva, DokumenttiKuvaDto dokumenttiKuvaDto, MappingContext context) {
+                        super.mapAtoB(dokumenttiKuva, dokumenttiKuvaDto, context);
+                        dokumenttiKuvaDto.setKansikuva(dokumenttiKuva.getKansikuva() != null);
+                        dokumenttiKuvaDto.setYlatunniste(dokumenttiKuva.getYlatunniste() != null);
+                        dokumenttiKuvaDto.setAlatunniste(dokumenttiKuva.getAlatunniste() != null);
                     }
                 })
                 .register();
