@@ -4,10 +4,12 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
@@ -19,9 +21,8 @@ import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
@@ -32,8 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class DokumenttiServiceImpl implements DokumenttiService {
-    private static final Logger LOG = LoggerFactory.getLogger(DokumenttiServiceImpl.class);
-
     @Autowired
     private DokumenttiRepository dokumenttiRepository;
 
@@ -48,6 +47,9 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Autowired
     private DokumenttiStateService dokumenttiStateService;
+
+    @Autowired
+    private JulkaisuRepository julkaisuRepository;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -135,7 +137,11 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         if (!dokumentit.isEmpty()) {
             return mapper.map(dokumentit.get(0), DokumenttiDto.class);
         } else {
-            return null;
+            DokumenttiDto dto = new DokumenttiDto();
+            dto.setOpsId(opsId);
+            dto.setKieli(kieli);
+            dto.setTila(DokumenttiTila.EI_OLE);
+            return dto;
         }
     }
 
@@ -148,19 +154,19 @@ public class DokumenttiServiceImpl implements DokumenttiService {
             return null;
         }
 
-//        JulkaistuPeruste julkaisu = null;
-//        if (revision != null) {
-//            julkaisu = julkaisutRepository.findFirstByPerusteAndRevisionOrderByIdDesc(peruste, revision);
-//        } else {
-//            julkaisu = julkaisutRepository.findFirstByPerusteIdOrderByRevisionDesc(peruste.getId());
-//        }
-//
-//        if (julkaisu != null && CollectionUtils.isNotEmpty(julkaisu.getDokumentit())) {
-//            Dokumentti dokumentti = dokumenttiRepository.findByIdInAndKieli(julkaisu.getDokumentit(), kieli);
-//            if (dokumentti != null) {
-//                return dokumentti.getId();
-//            }
-//        }
+        OpetussuunnitelmanJulkaisu julkaisu;
+        if (revision != null) {
+            julkaisu = julkaisuRepository.findByOpetussuunnitelmaAndRevision(ops, revision);
+        } else {
+            julkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(ops);
+        }
+
+        if (julkaisu != null && CollectionUtils.isNotEmpty(julkaisu.getDokumentit())) {
+            Dokumentti dokumentti = dokumenttiRepository.findByIdInAndKieli(julkaisu.getDokumentit(), kieli);
+            if (dokumentti != null) {
+                return dokumentti.getId();
+            }
+        }
 
         return null;
     }
