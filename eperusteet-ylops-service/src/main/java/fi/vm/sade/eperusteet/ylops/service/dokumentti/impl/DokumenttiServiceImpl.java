@@ -4,26 +4,26 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiStateService;
-import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
-import java.util.Comparator;
+
 import java.util.Date;
 import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -33,8 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class DokumenttiServiceImpl implements DokumenttiService {
-    private static final Logger LOG = LoggerFactory.getLogger(DokumenttiServiceImpl.class);
-
     @Autowired
     private DokumenttiRepository dokumenttiRepository;
 
@@ -50,30 +48,8 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Autowired
     private DokumenttiStateService dokumenttiStateService;
 
-    @Lazy
     @Autowired
-    private DokumenttiService self;
-
-    @Override
-    @Transactional
-    public DokumenttiDto getDto(Long opsId, Kieli kieli) {
-        Dokumentti dokumentti = getLatestDokumentti(opsId, kieli);
-
-        if (dokumentti != null) {
-
-            // Jos aloitusajasta on kulunut liian kauan, on luonti epäonnistunut
-            if (dokumentti.getTila() != DokumenttiTila.VALMIS && dokumentti.getTila() != DokumenttiTila.EI_OLE) {
-                if (DokumenttiUtils.isTimePass(dokumentti)) {
-                    dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
-                    dokumentti = dokumenttiRepository.save(dokumentti);
-                }
-            }
-
-            return mapper.map(dokumentti, DokumenttiDto.class);
-        } else {
-            return self.createDtoFor(opsId, kieli);
-        }
-    }
+    private JulkaisuRepository julkaisuRepository;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -81,12 +57,13 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         Dokumentti dokumentti = new Dokumentti();
         dokumentti.setTila(DokumenttiTila.EI_OLE);
         dokumentti.setKieli(kieli);
+        dokumentti.setAloitusaika(new Date());
+        dokumentti.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
 
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         if (ops != null) {
             dokumentti.setOpsId(id);
             Dokumentti saved = dokumenttiRepository.save(dokumentti);
-
             return mapper.map(saved, DokumenttiDto.class);
         }
 
@@ -97,15 +74,8 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Transactional(noRollbackFor = DokumenttiException.class)
     @Async(value = "docTaskExecutor")
     public void autogenerate(Long id, Kieli kieli) throws DokumenttiException {
-        Dokumentti dokumentti;
-        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(id, kieli);
-        if (!dokumentit.isEmpty()) {
-            dokumentit.sort(Comparator.comparingLong(Dokumentti::getId));
-            dokumentti = dokumentit.get(0);
-        } else {
-            dokumentti = new Dokumentti();
-        }
-
+        // TODO: käytetäänkö tätä vielä? Jos, niin varmistettava toimivuus myöhemmin.
+        Dokumentti dokumentti = new Dokumentti();
         dokumentti.setTila(DokumenttiTila.LUODAAN);
         dokumentti.setAloitusaika(new Date());
         dokumentti.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
@@ -134,15 +104,6 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
-    @Transactional
-    public void setStarted(DokumenttiDto dto) {
-        dto.setAloitusaika(new Date());
-        dto.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
-        dto.setTila(DokumenttiTila.JONOSSA);
-        dokumenttiStateService.save(dto);
-    }
-
-    @Override
     @Transactional(noRollbackFor = DokumenttiException.class)
     @Async(value = "docTaskExecutor")
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
@@ -162,52 +123,52 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         } catch (Exception ex) {
             dto.setTila(DokumenttiTila.EPAONNISTUI);
             dto.setVirhekoodi(ex.getLocalizedMessage());
-
             dokumenttiStateService.save(dto);
-
             throw new DokumenttiException(ex.getMessage(), ex);
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public DokumenttiDto getDto(Long id) {
-        Dokumentti dokumentti = dokumenttiRepository.findOne(id);
-        return mapper.map(dokumentti, DokumenttiDto.class);
-    }
-
-    private Dokumentti getLatestDokumentti(Long opsId, Kieli kieli) {
-        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli);
-        if (dokumentit.isEmpty()) {
-            return null;
-        } else {
-            return dokumentit.get(0);
-        }
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public byte[] get(Long id) {
-        Dokumentti dokumentti = dokumenttiRepository.findOne(id);
-        if (dokumentti == null) {
-            return null;
-        }
-
-        return dokumentti.getData();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Long getDokumenttiId(Long opsId, Kieli kieli) {
+    public DokumenttiDto getLatestValmisDokumentti(Long opsId, Kieli kieli) {
         Sort sort = new Sort(Sort.Direction.DESC, "valmistumisaika");
-        List<Dokumentti> documents = dokumenttiRepository
-                .findByOpsIdAndKieliAndTila(opsId, kieli, DokumenttiTila.VALMIS, sort);
+        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieliAndTila(opsId, kieli, DokumenttiTila.VALMIS, sort);
 
-        if (!documents.isEmpty()) {
-            return documents.get(0).getId();
+        if (!dokumentit.isEmpty()) {
+            return mapper.map(dokumentit.get(0), DokumenttiDto.class);
         } else {
+            DokumenttiDto dto = new DokumenttiDto();
+            dto.setOpsId(opsId);
+            dto.setKieli(kieli);
+            dto.setTila(DokumenttiTila.EI_OLE);
+            return dto;
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Long getJulkaistuDokumenttiId(Long opsId, Kieli kieli, Integer revision) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+
+        if (ops == null) {
             return null;
         }
+
+        OpetussuunnitelmanJulkaisu julkaisu;
+        if (revision != null) {
+            julkaisu = julkaisuRepository.findByOpetussuunnitelmaAndRevision(ops, revision);
+        } else {
+            julkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(ops);
+        }
+
+        if (julkaisu != null && CollectionUtils.isNotEmpty(julkaisu.getDokumentit())) {
+            Dokumentti dokumentti = dokumenttiRepository.findByIdInAndKieli(julkaisu.getDokumentit(), kieli);
+            if (dokumentti != null) {
+                return dokumentti.getId();
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -232,13 +193,28 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public DokumenttiTila getTila(Long opsId, Kieli kieli) {
-        DokumenttiDto dokumentti = getDto(opsId, kieli);
-        if (dokumentti != null) {
-            return dokumentti.getTila();
-        }
+    @Transactional
+    public void setStarted(DokumenttiDto dto) {
+        dto.setAloitusaika(new Date());
+        dto.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
+        dto.setTila(DokumenttiTila.JONOSSA);
+        dokumenttiStateService.save(dto);
+    }
 
-        return null;
+    @Override
+    @Transactional(readOnly = true)
+    public DokumenttiDto getDto(Long id) {
+        Dokumentti dokumentti = dokumenttiRepository.findOne(id);
+        return mapper.map(dokumentti, DokumenttiDto.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public byte[] get(Long id) {
+        Dokumentti dokumentti = dokumenttiRepository.findOne(id);
+        if (dokumentti == null) {
+            return null;
+        }
+        return dokumentti.getData();
     }
 }

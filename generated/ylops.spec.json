@@ -154,30 +154,6 @@
       }
     },
     "/dokumentit" : {
-      "get" : {
-        "tags" : [ "Dokumentit" ],
-        "operationId" : "getDokumentti",
-        "parameters" : [ {
-          "name" : "opsId",
-          "in" : "query",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        }, {
-          "name" : "kieli",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/DokumenttiDto"
-            }
-          }
-        }
-      },
       "post" : {
         "tags" : [ "Dokumentit" ],
         "operationId" : "create",
@@ -224,6 +200,39 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/DokumenttiKuvaDto"
+            }
+          }
+        }
+      }
+    },
+    "/dokumentit/julkaistu" : {
+      "get" : {
+        "tags" : [ "Dokumentit" ],
+        "operationId" : "getJulkaistuDokumenttiId",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "query",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "kieli",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "revision",
+          "in" : "query",
+          "required" : false,
+          "type" : "integer",
+          "format" : "int32"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "integer",
+              "format" : "int64"
             }
           }
         }
@@ -327,10 +336,36 @@
         }
       }
     },
+    "/dokumentit/latest" : {
+      "get" : {
+        "tags" : [ "Dokumentit" ],
+        "operationId" : "getLatestDokumentti",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "query",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "kieli",
+          "in" : "query",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/DokumenttiDto"
+            }
+          }
+        }
+      }
+    },
     "/dokumentit/ops" : {
       "get" : {
         "tags" : [ "Dokumentit" ],
-        "operationId" : "getDokumenttiId",
+        "operationId" : "getLatestDokumenttiId",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "query",
@@ -375,38 +410,6 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/DokumenttiDto"
-            }
-          }
-        }
-      }
-    },
-    "/dokumentit/{dokumenttiId}/tila" : {
-      "get" : {
-        "tags" : [ "Dokumentit" ],
-        "operationId" : "exist",
-        "parameters" : [ {
-          "name" : "opsId",
-          "in" : "query",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        }, {
-          "name" : "kieli",
-          "in" : "query",
-          "required" : true,
-          "type" : "string"
-        }, {
-          "name" : "dokumenttiId",
-          "in" : "path",
-          "required" : true,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "string",
-              "enum" : [ "EI_OLE", "JONOSSA", "LUODAAN", "EPAONNISTUI", "VALMIS" ]
             }
           }
         }
@@ -10811,6 +10814,9 @@
           "type" : "integer",
           "format" : "int64"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -10828,15 +10834,12 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "first" : {
           "type" : "boolean"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -10850,6 +10853,9 @@
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10868,15 +10874,12 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "first" : {
           "type" : "boolean"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -10890,6 +10893,9 @@
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10908,15 +10914,12 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "first" : {
           "type" : "boolean"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
