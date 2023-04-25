@@ -135,7 +135,13 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieliAndTila(opsId, kieli, DokumenttiTila.VALMIS, sort);
 
         if (!dokumentit.isEmpty()) {
-            return mapper.map(dokumentit.get(0), DokumenttiDto.class);
+            DokumenttiDto dokumentti = mapper.map(dokumentit.get(0), DokumenttiDto.class);
+            Long julkaisuDokumenttiId = getJulkaistuDokumenttiId(opsId, kieli, null);
+            if (dokumentti.getId().equals(julkaisuDokumenttiId)) {
+                dokumentti.setJulkaisuDokumentti(true);
+            }
+            return dokumentti;
+
         } else {
             DokumenttiDto dto = new DokumenttiDto();
             dto.setOpsId(opsId);
