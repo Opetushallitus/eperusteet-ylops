@@ -19,13 +19,16 @@ public interface DokumenttiService {
     @PreAuthorize("isAuthenticated()")
     void generateWithDto(DokumenttiDto dto) throws DokumenttiException;
 
+    @PreAuthorize("permitAll()")
     DokumenttiDto getDto(Long id);
 
     @PreAuthorize("permitAll()")
     byte[] get(Long id);
 
+    @PreAuthorize("permitAll()")
     DokumenttiDto getLatestValmisDokumentti(Long opsId, Kieli kieli);
 
+    @PreAuthorize("permitAll()")
     Long getJulkaistuDokumenttiId(Long opsId, Kieli kieli, Integer revision);
 
     @PreAuthorize("permitAll()")

@@ -22,4 +22,5 @@ public class DokumenttiDto {
     private Date valmistumisaika;
     private DokumenttiTila tila = DokumenttiTila.EI_OLE;
     private String virhekoodi = "";
+    private Boolean julkaisuDokumentti = false;
 }

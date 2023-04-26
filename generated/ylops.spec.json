@@ -6808,6 +6808,9 @@
         },
         "virhekoodi" : {
           "type" : "string"
+        },
+        "julkaisuDokumentti" : {
+          "type" : "boolean"
         }
       }
     },
@@ -7939,12 +7942,12 @@
             "$ref" : "#/definitions/ModuuliLiitosDto"
           }
         },
-        "kaikkiValidoinnit" : {
+        "onnistuneetValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
         },
-        "onnistuneetValidoinnit" : {
+        "kaikkiValidoinnit" : {
           "type" : "integer",
           "format" : "int64",
           "readOnly" : true
@@ -10814,9 +10817,6 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -10837,6 +10837,9 @@
         "first" : {
           "type" : "boolean"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
@@ -10853,9 +10856,6 @@
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10877,6 +10877,9 @@
         "first" : {
           "type" : "boolean"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
@@ -10893,9 +10896,6 @@
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10915,6 +10915,9 @@
           "$ref" : "#/definitions/Sort"
         },
         "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
