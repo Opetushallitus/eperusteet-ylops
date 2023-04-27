@@ -285,7 +285,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             throw new BusinessRuleViolationException("sisallolla-on-lapsia-ei-voida-poistaa");
         }
 
-        if (viite.isPakollinen()) {
+        if (getPerusteTekstikappale(opsId, viiteId) != null) {
             throw new BusinessRuleViolationException("pakollista-tekstikappaletta-ei-voi-poistaa");
         }
 
