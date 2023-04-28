@@ -29,6 +29,9 @@ public interface DokumenttiService {
     DokumenttiDto getLatestValmisDokumentti(Long opsId, Kieli kieli);
 
     @PreAuthorize("permitAll()")
+    DokumenttiDto getLatestDokumentti(Long opsId, Kieli kieli);
+
+    @PreAuthorize("permitAll()")
     Long getJulkaistuDokumenttiId(Long opsId, Kieli kieli, Integer revision);
 
     @PreAuthorize("permitAll()")
