@@ -161,9 +161,17 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         Opetussuunnitelma ops2 = opetussuunnitelmaRepository.getOne(ops2Id);
 
         TekstiKappaleViiteDto.Matala perusteenTekstiDto = tekstiKappaleViiteService.getTekstiKappaleViite(ops1Id, findTkNimi(ops1, "Uudistuva lukiokoulutus").getId());
-        perusteenTekstiDto.setPakollinen(false);
-        tekstiKappaleViiteService.updateTekstiKappaleViite(ops1Id, perusteenTekstiDto.getId(), perusteenTekstiDto);
-        tekstiKappaleViiteService.removeTekstiKappaleViite(ops1Id, perusteenTekstiDto.getId());
+
+        TekstiKappaleViite viite = tekstikappaleviiteRepository.findOne(perusteenTekstiDto.getId());
+
+        List<TekstiKappaleViite> viittaavat = tekstikappaleviiteRepository.findAllByOriginalId(perusteenTekstiDto.getId());
+        viittaavat.forEach(vierasViite -> {
+            vierasViite.updateOriginal(null);
+        });
+        viite.setTekstiKappale(null);
+        viite.setVanhempi(null);
+        tekstikappaleviiteRepository.delete(viite);
+
         assertThat(tkViitteet(ops1)).hasSize(16);
 
         addTekstikappaleLapsi("perustetekstin alla oleva teksti", ops2Id, findTkNimi(ops2, "Uudistuva lukiokoulutus").getId());
