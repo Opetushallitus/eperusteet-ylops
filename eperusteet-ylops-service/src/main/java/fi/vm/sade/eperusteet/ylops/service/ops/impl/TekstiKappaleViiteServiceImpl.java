@@ -134,15 +134,18 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         TekstiKappaleViiteDto.Matala tekstiKappaleViite = getTekstiKappaleViite(opsId, viiteId);
 
         if (perusteDto.getTekstiKappaleViiteSisalto() != null) {
-            return CollectionUtil.treeToStream(
-                    perusteDto.getTekstiKappaleViiteSisalto(),
-                    fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
-                    .filter(viiteDto -> viiteDto.getTekstiKappale() != null && tekstiKappaleViite != null
-                            && Objects.equals(tekstiKappaleViite.getPerusteTekstikappaleId(), viiteDto.getTekstiKappale().getId()))
-                    .findFirst()
-                    .orElse(null);
+            try {
+                return CollectionUtil.treeToStream(
+                                perusteDto.getTekstiKappaleViiteSisalto(),
+                                fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
+                        .filter(viiteDto -> viiteDto.getTekstiKappale() != null && tekstiKappaleViite != null
+                                && Objects.equals(tekstiKappaleViite.getPerusteTekstikappaleId(), viiteDto.getTekstiKappale().getId()))
+                        .findFirst()
+                        .orElse(null);
+            } catch (Exception e) {
+                // filtteröinti voi palauttaa null ja findFirst heittää poikkeuksen
+            }
         }
-
         return null;
     }
 
