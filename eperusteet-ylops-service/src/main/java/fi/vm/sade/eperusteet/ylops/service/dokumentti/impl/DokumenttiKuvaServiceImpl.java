@@ -8,7 +8,6 @@ import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiKuvaRepositor
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiKuvaService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
-import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -115,7 +114,7 @@ public class DokumenttiKuvaServiceImpl implements DokumenttiKuvaService {
         DokumenttiKuva dokumenttiKuva = dokumenttiKuvaRepository.findFirstByOpsIdAndKieli(opsId, kieli);
 
         if (dokumenttiKuva == null) {
-            throw new NotExistsException("Dokumenttikuvaa ei löytynyt");
+            return null;
         }
 
         byte[] image;
