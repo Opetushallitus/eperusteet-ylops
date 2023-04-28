@@ -155,7 +155,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Transactional(readOnly = true)
     public DokumenttiDto getLatestDokumentti(Long opsId, Kieli kieli) {
         Sort sort = new Sort(Sort.Direction.DESC, "valmistumisaika");
-        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieli(opsId, kieli, sort);
+        List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieliAndValmistumisaikaIsNotNull(opsId, kieli, sort);
 
         if (!dokumentit.isEmpty()) {
             return mapper.map(dokumentit.get(0), DokumenttiDto.class);
