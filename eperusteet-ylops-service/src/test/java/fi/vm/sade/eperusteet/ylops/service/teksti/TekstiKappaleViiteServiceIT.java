@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.service.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -9,17 +10,17 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
+import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import javax.persistence.EntityManager;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -114,5 +115,22 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
                     .hasMessage("paatasolle-ei-sallita-muutoksia");
         }
 
+    }
+
+    @Test
+    public void testPerusteenTekstinPoisto() {
+        OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
+        TekstiKappaleViiteDto.Matala perusteenTekstiDto = tekstiKappaleViiteService.getTekstiKappaleViite(ops.getId(), findTkNimi(ops.getId(), "Uudistuva lukiokoulutus").getId());
+        assertThatThrownBy(() ->tekstiKappaleViiteService.removeTekstiKappaleViite(ops.getId(), perusteenTekstiDto.getId()))
+                .hasMessage("pakollista-tekstikappaletta-ei-voi-poistaa");
+    }
+
+    private TekstiKappaleViite findTkNimi(Long opsId, String nimi) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        return CollectionUtil.treeToStream(ops.getTekstit(), TekstiKappaleViite::getLapset)
+                .filter(viite -> viite.getVanhempi() != null)
+                .filter(viite -> viite.getTekstiKappale().getNimi().getTeksti().get(Kieli.FI).equals(nimi))
+                .findFirst()
+                .orElse(null);
     }
 }

@@ -183,7 +183,6 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         assertThat(findTkNimi(ops1, "Uudistuva lukiokoulutus")).isNull();
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus")).isNull();
         assertThat(findTkNimi(ops2, "perustetekstin alla oleva teksti")).isNotNull();
-
     }
 
     @Test
