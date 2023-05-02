@@ -135,14 +135,13 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
         if (perusteDto.getTekstiKappaleViiteSisalto() != null) {
             return CollectionUtil.treeToStream(
-                    perusteDto.getTekstiKappaleViiteSisalto(),
-                    fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
-                    .filter(viiteDto -> viiteDto.getTekstiKappale() != null && tekstiKappaleViite != null
-                            && Objects.equals(tekstiKappaleViite.getPerusteTekstikappaleId(), viiteDto.getTekstiKappale().getId()))
-                    .findFirst()
-                    .orElse(null);
+                        perusteDto.getTekstiKappaleViiteSisalto(),
+                        fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
+                .filter(viiteDto -> viiteDto.getTekstiKappale() != null && tekstiKappaleViite != null
+                        && Objects.equals(tekstiKappaleViite.getPerusteTekstikappaleId(), viiteDto.getTekstiKappale().getId()))
+                .findFirst()
+                .orElse(null);
         }
-
         return null;
     }
 
@@ -285,7 +284,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             throw new BusinessRuleViolationException("sisallolla-on-lapsia-ei-voida-poistaa");
         }
 
-        if (viite.isPakollinen()) {
+        if (getPerusteTekstikappale(opsId, viiteId) != null) {
             throw new BusinessRuleViolationException("pakollista-tekstikappaletta-ei-voi-poistaa");
         }
 
