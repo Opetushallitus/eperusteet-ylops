@@ -12,8 +12,6 @@ import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import java.io.IOException;
 import java.util.Objects;
 
@@ -128,9 +126,6 @@ public class DokumenttiController {
         return ResponseEntity.ok(dokumenttiService.getJulkaistuDokumenttiId(opsId, Kieli.of(kieli), revision));
     }
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "dokumenttiId", dataType = "string", paramType = "path", required = true)
-    })
     @RequestMapping(value = "/{dokumenttiId}/dokumentti", method = RequestMethod.GET)
     public ResponseEntity<DokumenttiDto> query(@PathVariable final Long dokumenttiId) {
         DokumenttiDto dto = dokumenttiService.query(dokumenttiId);
