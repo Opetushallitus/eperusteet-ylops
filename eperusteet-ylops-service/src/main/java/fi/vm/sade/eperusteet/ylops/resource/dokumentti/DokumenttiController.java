@@ -106,8 +106,7 @@ public class DokumenttiController {
     @ResponseBody
     public ResponseEntity<Long> getLatestDokumenttiId(@RequestParam final Long opsId,
                                                 @RequestParam(defaultValue = "fi") final String kieli) {
-        DokumenttiDto dto = mapper.map(dokumenttiService.getLatestValmisDokumentti(opsId, Kieli.of(kieli)), DokumenttiDto.class);
-        return ResponseEntity.ok(dto.getId());
+        return ResponseEntity.ok(dokumenttiService.getLatestValmisDokumenttiId(opsId, Kieli.of(kieli)));
     }
 
     @RequestMapping(value = "/latest", method = RequestMethod.GET, params = "opsId")

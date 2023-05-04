@@ -130,25 +130,14 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Override
     @Transactional(readOnly = true)
-    public DokumenttiDto getLatestValmisDokumentti(Long opsId, Kieli kieli) {
+    public Long getLatestValmisDokumenttiId(Long opsId, Kieli kieli) {
         Sort sort = new Sort(Sort.Direction.DESC, "valmistumisaika");
         List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieliAndTila(opsId, kieli, DokumenttiTila.VALMIS, sort);
 
         if (!dokumentit.isEmpty()) {
-            DokumenttiDto dokumentti = mapper.map(dokumentit.get(0), DokumenttiDto.class);
-            Long julkaisuDokumenttiId = getJulkaistuDokumenttiId(opsId, kieli, null);
-            if (dokumentti.getId().equals(julkaisuDokumenttiId)) {
-                dokumentti.setJulkaisuDokumentti(true);
-            }
-            return dokumentti;
-
-        } else {
-            DokumenttiDto dto = new DokumenttiDto();
-            dto.setOpsId(opsId);
-            dto.setKieli(kieli);
-            dto.setTila(DokumenttiTila.EI_OLE);
-            return dto;
+            return dokumentit.get(0).getId();
         }
+        return null;
     }
 
     @Override
@@ -158,7 +147,12 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieliAndValmistumisaikaIsNotNull(opsId, kieli, sort);
 
         if (!dokumentit.isEmpty()) {
-            return mapper.map(dokumentit.get(0), DokumenttiDto.class);
+            DokumenttiDto dokumentti = mapper.map(dokumentit.get(0), DokumenttiDto.class);
+            Long julkaisuDokumenttiId = getJulkaistuDokumenttiId(opsId, kieli, null);
+            if (dokumentti.getId().equals(julkaisuDokumenttiId)) {
+                dokumentti.setJulkaisuDokumentti(true);
+            }
+            return dokumentti;
 
         } else {
             DokumenttiDto dto = new DokumenttiDto();
