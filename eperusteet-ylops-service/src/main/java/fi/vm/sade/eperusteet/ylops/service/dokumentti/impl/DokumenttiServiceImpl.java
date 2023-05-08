@@ -136,8 +136,8 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
         if (!dokumentit.isEmpty()) {
             DokumenttiDto dokumentti = mapper.map(dokumentit.get(0), DokumenttiDto.class);
-            Long julkaisuDokumenttiId = getJulkaistuDokumenttiId(opsId, kieli, null);
-            if (dokumentti.getId().equals(julkaisuDokumenttiId)) {
+            DokumenttiDto julkaisuDokumentti = getJulkaistuDokumentti(opsId, kieli, null);
+            if (julkaisuDokumentti != null && dokumentti.getId().equals(julkaisuDokumentti.getId())) {
                 dokumentti.setJulkaisuDokumentti(true);
             }
             return dokumentti;
@@ -171,7 +171,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Override
     @Transactional(readOnly = true)
-    public Long getJulkaistuDokumenttiId(Long opsId, Kieli kieli, Integer revision) {
+    public DokumenttiDto getJulkaistuDokumentti(Long opsId, Kieli kieli, Integer revision) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
         if (ops == null) {
@@ -188,10 +188,11 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         if (julkaisu != null && CollectionUtils.isNotEmpty(julkaisu.getDokumentit())) {
             Dokumentti dokumentti = dokumenttiRepository.findByIdInAndKieli(julkaisu.getDokumentit(), kieli);
             if (dokumentti != null) {
-                return dokumentti.getId();
+                DokumenttiDto dokumenttiDto = mapper.map(dokumentti, DokumenttiDto.class);
+                dokumenttiDto.setJulkaisuDokumentti(true);
+                return dokumenttiDto;
             }
         }
-
         return null;
     }
 

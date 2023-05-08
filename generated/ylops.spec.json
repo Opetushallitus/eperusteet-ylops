@@ -208,7 +208,7 @@
     "/dokumentit/julkaistu" : {
       "get" : {
         "tags" : [ "Dokumentit" ],
-        "operationId" : "getJulkaistuDokumenttiId",
+        "operationId" : "getJulkaistuDokumentti",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "query",
@@ -231,8 +231,7 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "type" : "integer",
-              "format" : "int64"
+              "$ref" : "#/definitions/DokumenttiDto"
             }
           }
         }
@@ -10812,6 +10811,10 @@
           "type" : "integer",
           "format" : "int64"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -10832,10 +10835,6 @@
         "first" : {
           "type" : "boolean"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "last" : {
           "type" : "boolean"
         }
@@ -10851,6 +10850,10 @@
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10872,10 +10875,6 @@
         "first" : {
           "type" : "boolean"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "last" : {
           "type" : "boolean"
         }
@@ -10891,6 +10890,10 @@
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10911,10 +10914,6 @@
         },
         "first" : {
           "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "last" : {
           "type" : "boolean"
