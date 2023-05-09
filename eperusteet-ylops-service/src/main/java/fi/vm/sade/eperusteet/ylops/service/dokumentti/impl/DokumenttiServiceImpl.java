@@ -130,25 +130,14 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Override
     @Transactional(readOnly = true)
-    public DokumenttiDto getLatestValmisDokumentti(Long opsId, Kieli kieli) {
+    public Long getLatestValmisDokumenttiId(Long opsId, Kieli kieli) {
         Sort sort = new Sort(Sort.Direction.DESC, "valmistumisaika");
         List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieliAndTila(opsId, kieli, DokumenttiTila.VALMIS, sort);
 
         if (!dokumentit.isEmpty()) {
-            DokumenttiDto dokumentti = mapper.map(dokumentit.get(0), DokumenttiDto.class);
-            DokumenttiDto julkaisuDokumentti = getJulkaistuDokumentti(opsId, kieli, null);
-            if (julkaisuDokumentti != null && dokumentti.getId().equals(julkaisuDokumentti.getId())) {
-                dokumentti.setJulkaisuDokumentti(true);
-            }
-            return dokumentti;
-
-        } else {
-            DokumenttiDto dto = new DokumenttiDto();
-            dto.setOpsId(opsId);
-            dto.setKieli(kieli);
-            dto.setTila(DokumenttiTila.EI_OLE);
-            return dto;
+            return dokumentit.get(0).getId();
         }
+        return null;
     }
 
     @Override
