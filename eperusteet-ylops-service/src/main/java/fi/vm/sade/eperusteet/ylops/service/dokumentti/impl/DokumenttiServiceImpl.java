@@ -158,7 +158,12 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieliAndValmistumisaikaIsNotNull(opsId, kieli, sort);
 
         if (!dokumentit.isEmpty()) {
-            return mapper.map(dokumentit.get(0), DokumenttiDto.class);
+            DokumenttiDto dokumentti = mapper.map(dokumentit.get(0), DokumenttiDto.class);
+            DokumenttiDto julkaisuDokumentti = getJulkaistuDokumentti(opsId, kieli, null);
+            if (julkaisuDokumentti != null && dokumentti.getId().equals(julkaisuDokumentti.getId())) {
+                dokumentti.setJulkaisuDokumentti(true);
+            }
+            return dokumentti;
 
         } else {
             DokumenttiDto dto = new DokumenttiDto();
@@ -193,6 +198,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
                 return dokumenttiDto;
             }
         }
+
         return null;
     }
 

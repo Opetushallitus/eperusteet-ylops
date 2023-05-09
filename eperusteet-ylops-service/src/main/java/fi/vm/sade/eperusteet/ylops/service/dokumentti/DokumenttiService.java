@@ -26,7 +26,7 @@ public interface DokumenttiService {
     byte[] get(Long id);
 
     @PreAuthorize("permitAll()")
-    DokumenttiDto getLatestValmisDokumentti(Long opsId, Kieli kieli);
+    Long getLatestValmisDokumenttiId(Long opsId, Kieli kieli);
 
     @PreAuthorize("permitAll()")
     DokumenttiDto getLatestDokumentti(Long opsId, Kieli kieli);
