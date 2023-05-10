@@ -32,7 +32,7 @@ public interface DokumenttiService {
     DokumenttiDto getLatestDokumentti(Long opsId, Kieli kieli);
 
     @PreAuthorize("permitAll()")
-    Long getJulkaistuDokumenttiId(Long opsId, Kieli kieli, Integer revision);
+    DokumenttiDto getJulkaistuDokumentti(Long opsId, Kieli kieli, Integer revision);
 
     @PreAuthorize("permitAll()")
     boolean hasPermission(Long id);
