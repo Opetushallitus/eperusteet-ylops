@@ -99,6 +99,8 @@ public class DokumenttiController {
                 }
             }
         }
+        // estetään googlea indeksoimasta pdf:iä
+        headers.set("X-Robots-Tag", "noindex");
         return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
     }
 
