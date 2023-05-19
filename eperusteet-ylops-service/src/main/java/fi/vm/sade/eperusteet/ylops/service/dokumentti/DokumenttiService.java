@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti;
 
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
@@ -39,4 +40,10 @@ public interface DokumenttiService {
 
     @PreAuthorize("isAuthenticated()")
     DokumenttiDto query(Long id);
+
+    @PreAuthorize("isAuthenticated()")
+    void updateDokumenttiTila(DokumenttiTila tila, Long dokumenttiId);
+
+    @PreAuthorize("isAuthenticated()")
+    void updateDokumenttiPdfData(String pdfData, Long dokumenttiId);
 }
