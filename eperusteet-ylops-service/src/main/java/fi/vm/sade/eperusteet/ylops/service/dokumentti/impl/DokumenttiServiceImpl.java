@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -239,9 +238,9 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
-    public void updateDokumenttiPdfData(String pdfData, Long dokumenttiId) {
+    public void updateDokumenttiPdfData(byte[] pdfData, Long dokumenttiId) {
         Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId);
-        dokumentti.setData(Base64.getDecoder().decode(pdfData));
+        dokumentti.setData(pdfData);
         dokumentti.setVirhekoodi(null);
         dokumentti.setTila(DokumenttiTila.VALMIS);
         dokumentti.setValmistumisaika(new Date());

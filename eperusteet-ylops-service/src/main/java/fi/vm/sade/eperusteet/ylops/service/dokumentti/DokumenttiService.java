@@ -45,5 +45,5 @@ public interface DokumenttiService {
     void updateDokumenttiTila(DokumenttiTila tila, Long dokumenttiId);
 
     @PreAuthorize("isAuthenticated()")
-    void updateDokumenttiPdfData(String pdfData, Long dokumenttiId);
+    void updateDokumenttiPdfData(byte[] pdfData, Long dokumenttiId);
 }
