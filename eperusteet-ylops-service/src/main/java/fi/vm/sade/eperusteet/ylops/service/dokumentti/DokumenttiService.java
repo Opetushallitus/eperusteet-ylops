@@ -41,9 +41,7 @@ public interface DokumenttiService {
     @PreAuthorize("isAuthenticated()")
     DokumenttiDto query(Long id);
 
-    @PreAuthorize("isAuthenticated()")
     void updateDokumenttiTila(DokumenttiTila tila, Long dokumenttiId);
 
-    @PreAuthorize("isAuthenticated()")
     void updateDokumenttiPdfData(byte[] pdfData, Long dokumenttiId);
 }
