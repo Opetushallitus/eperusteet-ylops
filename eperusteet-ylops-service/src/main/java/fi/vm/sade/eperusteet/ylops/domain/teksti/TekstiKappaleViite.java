@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
- *
- * This program is free software: Licensed under the EUPL, Version 1.1 or - as
- * soon as they will be approved by the European Commission - subsequent versions
- * of the EUPL (the "Licence");
- *
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * European Union Public Licence for more details.
- */
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
@@ -35,9 +20,6 @@ import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 
-/**
- * @author mikkom
- */
 @Entity
 @Audited
 @Table(name = "tekstikappaleviite")
@@ -192,22 +174,20 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable, Hi
         return root;
     }
 
-    static public void validoi(Validointi validointi, TekstiKappaleViite viite, Set<Kieli> julkaisukielet) {
-        if (viite == null || viite.getLapset() == null) {
+    static public void validoi(Validointi validointi, List<TekstiKappaleViite> viitteet, Set<Kieli> julkaisukielet) {
+        if (viitteet == null || viitteet.isEmpty()) {
             return;
         }
 
-        LokalisoituTeksti teksti = viite.getTekstiKappale() != null ? viite.getTekstiKappale().getNimi() : null;
+        for (TekstiKappaleViite lapsi : viitteet) {
+            LokalisoituTeksti teksti = lapsi.getTekstiKappale() != null ? lapsi.getTekstiKappale().getNimi() : null;
 
-        for (TekstiKappaleViite lapsi : viite.getLapset()) {
-            if (lapsi.pakollinen) {
-                if (lapsi.getTekstiKappale() != null) {
-                    LokalisoituTeksti.validoi(validointi, julkaisukielet, lapsi.getTekstiKappale().getNimi(), teksti);
-                } else {
-                    validointi.virhe("tekstikappaleella-ei-lainkaan-sisaltoa", teksti);
-                }
+            if (lapsi.getTekstiKappale() != null) {
+                LokalisoituTeksti.validoi(validointi, julkaisukielet, lapsi.getTekstiKappale().getNimi(), teksti);
+            } else {
+                validointi.virhe("tekstikappaleella-ei-lainkaan-sisaltoa", teksti);
             }
-            validoi(validointi, lapsi, julkaisukielet);
+            validoi(validointi, lapsi.getLapset(), julkaisukielet);
         }
     }
 
