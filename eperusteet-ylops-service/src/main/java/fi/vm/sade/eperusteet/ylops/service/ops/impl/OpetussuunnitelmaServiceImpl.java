@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
- *
- * This program is free software: Licensed under the EUPL, Version 1.1 or - as
- * soon as they will be approved by the European Commission - subsequent versions
- * of the EUPL (the "Licence");
- *
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * European Union Public Licence for more details.
- */
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -209,9 +194,6 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
-/**
- * @author mikkom
- */
 @Service
 @Transactional
 @Slf4j
@@ -232,16 +214,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private TekstiKappaleRepository tekstiKappaleRepository;
 
     @Autowired
-    private ValidointiService validointiService;
-
-    @Autowired
     private TekstiKappaleViiteService tekstiKappaleViiteService;
 
     @Autowired
     private OppiaineService oppiaineService;
-
-    @Autowired
-    private JulkaisuRepositoryCustom julkaisuRepositoryCustom;
 
     @Autowired
     private KoodistoService koodistoService;
@@ -251,12 +227,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private JulkaisuRepository julkaisuRepository;
-
-    @Autowired
-    private JulkaistuOpetussuunnitelmaDataRepository julkaistuOpetussuunnitelmaDataRepository;
-
-    @Autowired
-    private KommenttiService kommenttiService;
 
     @Autowired
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuudet;
@@ -277,12 +247,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private LukioOpetussuunnitelmaService lukioOpetussuunnitelmaService;
 
     @Autowired
-    private DokumenttiService dokumenttiService;
-
-    @Autowired
-    private JsonMapper jsonMapper;
-
-    @Autowired
     private OpsDispatcher dispatcher;
 
     @Autowired
@@ -293,9 +257,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private Lops2019OpintojaksoRepository opintojaksoRepository;
-
-    @Autowired
-    private Lops2019OppiaineJarjestysRepository lops2019OppiaineJarjestysRepository;
 
     @Autowired
     private Lops2019OppiaineService lops2019OppiaineService;
@@ -1779,7 +1740,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (CollectionUtils.isNotEmpty(ops.getOrganisaatiot()) && CollectionUtils.isEmpty(opetussuunnitelmaDto.getOrganisaatiot())) {
             throw new BusinessRuleViolationException("Organisaatioita ei voi poistaa");
         }
-        
+
         // Käyttäjällä ei oikeutta tulevassa organisaatiossa
         Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD,
                 RolePermission.ADMIN));
@@ -1892,9 +1853,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private void validateTextHierarchy(Opetussuunnitelma ops, Set<Kieli> julkaisukielet, Validointi validointi) {
         if (ops.getTekstit() != null && ops.getTekstit().getLapset() != null) {
-            for (TekstiKappaleViite teksti : ops.getTekstit().getLapset()) {
-                TekstiKappaleViite.validoi(validointi, teksti, julkaisukielet);
-            }
+            TekstiKappaleViite.validoi(validointi, ops.getTekstit().getLapset(), julkaisukielet);
         }
     }
 
@@ -1945,7 +1904,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 Validointi validointi = validoiPohja(ops);
                 validointi.tuomitse();
             }
-            
+
             if (tila == Tila.VALMIS && ops.getTila() == Tila.LUONNOS && ops.getTyyppi() != Tyyppi.POHJA &&
                     ops.getKoulutustyyppi().isLukio()) {
                 Validointi validointi = validoiLukioPohja(ops);
