@@ -24,7 +24,16 @@ import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.*;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OpetuksenKeskeinensisaltoalue;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksenkohdealue;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineOpsTunniste;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Tavoitteenarviointi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
@@ -36,14 +45,30 @@ import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakoko
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.dto.ops.*;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KeskeinenSisaltoalueDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiainePalautettuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOpetuksentavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteOppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.PoistetutRepository;
-import fi.vm.sade.eperusteet.ylops.repository.ops.*;
+import fi.vm.sade.eperusteet.ylops.repository.ops.LukioOppiaineJarjestysRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetuksenkeskeinenSisaltoalueRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetuksenkohdealueRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineLukiokurssiRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineenvuosiluokkaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineenvuosiluokkakokonaisuusRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.LockingException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -54,20 +79,33 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
-import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.ofNullable;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
+import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.ofNullable;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * @author mikkom
@@ -895,11 +933,16 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         // Aseta oppiaineen vuosiluokan sisällöstä vain sisaltoalueiden ja tavoitteiden kuvaukset,
         // noin muutoin sisältöön ei pidä kajoaman
         for (KeskeinenSisaltoalueDto sisaltoalueDto : dto.getSisaltoalueet()) {
-            oppiaineenVuosiluokka.getSisaltoalue(sisaltoalueDto.getTunniste()).ifPresent(sa -> {
-                sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class));
-                sa.setPiilotettu(sisaltoalueDto.getPiilotettu());
-            });
+            oppiaineenVuosiluokka.getSisaltoalueet().stream()
+                .filter(sa -> sa.getTunniste().equals(sisaltoalueDto.getTunniste()))
+                .forEach(sa -> {
+                    sa.setKuvaus(mapper.map(sisaltoalueDto.getKuvaus(), LokalisoituTeksti.class));
+                    sa.setPiilotettu(sisaltoalueDto.getPiilotettu());
+                });
         }
+
+        // Tuplasisältöfix
+        oppiaineenVuosiluokka.setSisaltoalueet(new ArrayList(oppiaineenVuosiluokka.getSisaltoalueet().stream().collect(Collectors.toMap(Keskeinensisaltoalue::getTunniste, o -> o, (o1, o2) -> o1)).values()));
 
         dto.getTavoitteet().forEach(tavoiteDto -> oppiaineenVuosiluokka
                 .getTavoite(tavoiteDto.getTunniste()).ifPresent(t -> t
