@@ -22,15 +22,13 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -43,12 +41,14 @@ import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * @author jhyoty
@@ -133,20 +133,11 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity im
     static Oppiaineenvuosiluokka copyOf(final Oppiaineenvuosiluokka other, final Map<Long, Opetuksenkohdealue> kohdealueet) {
         Oppiaineenvuosiluokka ovl = new Oppiaineenvuosiluokka();
         ovl.setVuosiluokka(other.getVuosiluokka());
-
-        Map<Long, Keskeinensisaltoalue> sisaltoalueet = other.getSisaltoalueet().stream()
-                .collect(Collectors.toMap(s -> s.getId(), s -> Keskeinensisaltoalue.copyOf(s), (u, v) -> u, LinkedHashMap::new));
         ovl.setTavoitteet(
                 other.tavoitteet.stream()
-                        .map(t -> Opetuksentavoite.copyOf(t, kohdealueet, sisaltoalueet))
+                        .map(t -> Opetuksentavoite.copyOf(t, kohdealueet))
                         .collect(Collectors.toList()));
-
-        List<Keskeinensisaltoalue> keskeisetSisaltoalueet = ovl.getTavoitteet().stream()
-                .map(Opetuksentavoite::getSisaltoalueet)
-                .flatMap(x -> x.stream())
-                .map(OpetuksenKeskeinensisaltoalue::getSisaltoalueet)
-                .collect(Collectors.toList());
-        ovl.setSisaltoalueet(keskeisetSisaltoalueet);
+        ovl.setSisaltoalueet(other.getSisaltoalueet().stream().map(Keskeinensisaltoalue::copyOf).collect(Collectors.toList()));
 
         if (other.getVapaaTeksti() != null) {
             ovl.setVapaaTeksti(LokalisoituTeksti.of(other.getVapaaTeksti().getTeksti()));
