@@ -180,12 +180,15 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable, Hi
         }
 
         for (TekstiKappaleViite lapsi : viitteet) {
-            LokalisoituTeksti teksti = lapsi.getTekstiKappale() != null ? lapsi.getTekstiKappale().getNimi() : null;
+            LokalisoituTeksti tekstiNimi = lapsi.getTekstiKappale() != null ? lapsi.getTekstiKappale().getNimi() : null;
 
             if (lapsi.getTekstiKappale() != null) {
-                LokalisoituTeksti.validoi(validointi, julkaisukielet, lapsi.getTekstiKappale().getNimi(), teksti);
+                LokalisoituTeksti.validoi(validointi, julkaisukielet, lapsi.getTekstiKappale().getNimi(), tekstiNimi);
+                if (lapsi.getTekstiKappale().getTeksti() != null) {
+                    LokalisoituTeksti.validoi(validointi, julkaisukielet, lapsi.getTekstiKappale().getTeksti(), tekstiNimi);
+                }
             } else {
-                validointi.virhe("tekstikappaleella-ei-lainkaan-sisaltoa", teksti);
+                validointi.virhe("tekstikappaleella-ei-lainkaan-sisaltoa", tekstiNimi);
             }
             validoi(validointi, lapsi.getLapset(), julkaisukielet);
         }
