@@ -13,7 +13,9 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaistuOpetussuunnitelmaTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaisuTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
@@ -21,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaisuKevyt;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaDataRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaTilaRepository;
@@ -43,6 +46,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.JSONException;
+import org.jsoup.Jsoup;
 import org.skyscreamer.jsonassert.JSONCompare;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -168,6 +173,10 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
         if(vanhatJulkaisut.size() > 0 && !onkoMuutoksia(opsId)) {
             throw new BusinessRuleViolationException("opetussuunnitelma-ei-muuttunut-viime-julkaisun-jalkeen");
+        }
+
+        if (!isValidTiedote(julkaisuDto.getJulkaisutiedote())) {
+            throw new BusinessRuleViolationException("tiedote-sisaltaa-kiellettyja-merkkeja");
         }
 
         JulkaistuOpetussuunnitelmaTila julkaistuOpetussuunnitelmaTila = getOrCreateTila(opsId);
@@ -326,5 +335,15 @@ public class JulkaisuServiceImpl implements JulkaisuService {
                 .stream().collect(Collectors.toMap(kayttajanTieto -> kayttajanTieto.getOidHenkilo(), kayttajanTieto -> kayttajanTieto));
         julkaisut.forEach(julkaisu -> julkaisu.setKayttajanTieto(kayttajatiedot.get(julkaisu.getLuoja())));
         return julkaisut;
+    }
+
+    private boolean isValidTiedote(LokalisoituTekstiDto tiedote) {
+        Set<Kieli> kielet = new HashSet<>(Arrays.asList(Kieli.FI, Kieli.SV, Kieli.EN));
+        for (Kieli kieli : kielet) {
+            if (tiedote.get(kieli) != null && !Jsoup.isValid(tiedote.get(kieli), ValidHtml.WhitelistType.SIMPLIFIED.getWhitelist())) {
+                return false;
+            }
+        }
+        return true;
     }
 }
