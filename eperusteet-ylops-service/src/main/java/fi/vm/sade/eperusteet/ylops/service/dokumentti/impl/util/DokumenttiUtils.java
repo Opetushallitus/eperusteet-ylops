@@ -29,9 +29,6 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-/**
- * @author isaul
- */
 public class DokumenttiUtils {
     private static final int MAX_TIME_IN_MINUTES = 5;
 
@@ -178,6 +175,9 @@ public class DokumenttiUtils {
         if (string == null) {
             return "";
         }
+        if (string.contains("routenode")) {
+            string = removeInternalLink(string);
+        }
         String cleanXmlString = Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL_PDF.getWhitelist());
         return StringEscapeUtils.unescapeHtml4(cleanXmlString.replace("&nbsp;", " "));
     }
@@ -238,5 +238,23 @@ public class DokumenttiUtils {
 
     public static void addPlaceholder(DokumenttiBase docBase) {
         docBase.getBodyElement().appendChild(docBase.getDocument().createElement("br"));
+    }
+
+    private static String removeInternalLink(String text) {
+        String[] stringList = text.split("(?=<a)|(?<=a>)");
+
+        if (stringList.length > 0) {
+            StringBuilder builder = new StringBuilder();
+
+            for (String str : stringList) {
+                if (str.contains("routenode")) {
+                    builder.append(Jsoup.clean(str, ValidHtml.WhitelistType.PDF_NO_LINKS.getWhitelist()));
+                } else {
+                    builder.append(str);
+                }
+            }
+            return String.valueOf(builder);
+        }
+        return text;
     }
 }
