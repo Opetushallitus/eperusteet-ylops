@@ -1,10 +1,10 @@
 {
   "swagger" : "2.0",
   "info" : {
-    "version" : "v1",
-    "title" : "ePerusteet lukio api"
+    "version" : "1",
+    "title" : "ePerusteet ylops api"
   },
-  "basePath" : "/api",
+  "basePath" : "https://eperusteet.opintopolku.fi/eperusteet-ylops-service/api",
   "tags" : [ {
     "name" : "Julkinen"
   } ],
@@ -339,10 +339,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -353,18 +349,22 @@
             "type" : "object"
           }
         },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         }
       }
     },
@@ -379,10 +379,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -393,18 +389,22 @@
             "$ref" : "#/definitions/OpetussuunnitelmaJulkinenDto"
           }
         },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         }
       }
     },
