@@ -6,6 +6,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.text.StringEscapeUtils;
 import org.apache.pdfbox.preflight.PreflightDocument;
@@ -29,6 +30,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class DokumenttiUtils {
     private static final int MAX_TIME_IN_MINUTES = 5;
 
@@ -50,13 +52,19 @@ public class DokumenttiUtils {
 
     public static void addLokalisoituteksti(DokumenttiBase docBase, LokalisoituTeksti lTeksti, String tagi) {
         if (lTeksti != null && lTeksti.getTeksti() != null && lTeksti.getTeksti().get(docBase.getKieli()) != null) {
-            String teksti = lTeksti.getTeksti().get(docBase.getKieli());
-            teksti = "<" + tagi + ">" + cleanHtml(teksti) + "</" + tagi + ">";
+            try {
+                String teksti = lTeksti.getTeksti().get(docBase.getKieli());
+                teksti = "<" + tagi + ">" + cleanHtml(teksti) + "</" + tagi + ">";
 
-            Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teksti));
-            Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
+                Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teksti));
+                Node node = tempDoc.getDocumentElement().getChildNodes().item(1).getFirstChild();
 
-            docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
+                docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
+            } catch (Exception e) {
+                log.error(e.getMessage());
+                log.error("lokalisoituteksti id: {} ", lTeksti.getId());
+                throw e;
+            }
         }
     }
 
@@ -178,7 +186,7 @@ public class DokumenttiUtils {
         if (string.contains("routenode")) {
             string = removeInternalLink(string);
         }
-        String cleanXmlString = Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL_PDF.getWhitelist());
+        String cleanXmlString = Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL_PDF.getWhitelist()).replaceAll("&quot;", "”");
         return StringEscapeUtils.unescapeHtml4(cleanXmlString.replace("&nbsp;", " "));
     }
 
