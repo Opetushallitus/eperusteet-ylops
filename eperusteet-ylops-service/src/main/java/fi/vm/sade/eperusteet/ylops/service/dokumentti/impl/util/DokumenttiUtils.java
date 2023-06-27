@@ -183,11 +183,9 @@ public class DokumenttiUtils {
         if (string == null) {
             return "";
         }
-        if (string.contains("routenode")) {
-            string = removeInternalLink(string);
-        }
-        String cleanXmlString = Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL_PDF.getWhitelist()).replaceAll("&quot;", "”");
-        return StringEscapeUtils.unescapeHtml4(cleanXmlString.replace("&nbsp;", " "));
+        string = removeInternalLink(string);
+        string = Jsoup.clean(stripNonValidXMLCharacters(string), ValidHtml.WhitelistType.NORMAL_PDF.getWhitelist()).replaceAll("&quot;", "”");
+        return StringEscapeUtils.unescapeHtml4(string.replace("&nbsp;", " "));
     }
 
     public static String stripNonValidXMLCharacters(String in) {
@@ -249,20 +247,8 @@ public class DokumenttiUtils {
     }
 
     private static String removeInternalLink(String text) {
-        String[] stringList = text.split("(?=<a)|(?<=a>)");
-
-        if (stringList.length > 0) {
-            StringBuilder builder = new StringBuilder();
-
-            for (String str : stringList) {
-                if (str.contains("routenode")) {
-                    builder.append(Jsoup.clean(str, ValidHtml.WhitelistType.PDF_NO_LINKS.getWhitelist()));
-                } else {
-                    builder.append(str);
-                }
-            }
-            return String.valueOf(builder);
-        }
-        return text;
+        org.jsoup.nodes.Document stringRoutenodeCleaned = Jsoup.parse(text, "", Parser.xmlParser());
+        stringRoutenodeCleaned.select("a[routenode]").forEach(org.jsoup.nodes.Node::unwrap);
+        return stringRoutenodeCleaned.toString();
     }
 }
