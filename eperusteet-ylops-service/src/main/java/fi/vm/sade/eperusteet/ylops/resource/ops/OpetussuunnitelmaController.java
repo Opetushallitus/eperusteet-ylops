@@ -54,6 +54,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
@@ -377,5 +378,12 @@ public class OpetussuunnitelmaController {
             @RequestParam(value = "esikatselu", required = false) final boolean esikatselu
     ) {
         return opetussuunnitelmaService.buildNavigationPublic(id, kieli, esikatselu);
+    }
+
+    @InternalApi
+    @RequestMapping(value = "/{id}/palauteTekstirakenne", method = GET)
+    @ResponseStatus(HttpStatus.OK)
+    public void palautaTekstirakenne(@PathVariable final Long id) {
+        opetussuunnitelmaService.palautaTekstirakenne(id);
     }
 }

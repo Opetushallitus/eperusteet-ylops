@@ -19,21 +19,18 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustieto;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.CollectionUtils;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author mikkom
@@ -185,4 +182,11 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
             "AND tila != 'POISTETTU' " +
             "AND (o.julkaisut IS NOT EMPTY OR o.tila = 'JULKAISTU')")
     List<Opetussuunnitelma> findJulkaistutByTyyppi(@Param("tyyppi") Tyyppi tyyppi);
+
+    @Query(nativeQuery = true, value = "SELECT tekstit_id FROM opetussuunnitelma_aud aud " +
+            "WHERE id = :opetussuunnitelmaId " +
+            "AND tekstit_id != (SELECT tekstit_id FROM opetussuunnitelma WHERE id = aud.id) " +
+            "ORDER BY muokattu DESC " +
+            "LIMIT 1")
+    Long findEdellinenTekstitId(@Param("opetussuunnitelmaId") Long id);
 }
