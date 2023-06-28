@@ -125,7 +125,7 @@ public class PermissionManagerImpl extends AbstractPermissionManager {
                     return !CollectionUtil.intersect(opsOrganisaatiot, kayttajaOrganisaatiot).isEmpty();
                 } else {
                     return hasAnyRole(authentication, RolePrefix.ROLE_APP_EPERUSTEET_YLOPS,
-                            permissions, Organization.ANY);
+                            permissions, target.equals(TargetType.POHJA) ? Organization.OPH : Organization.ANY );
                 }
             case KYSYMYS:
                 Set<String> kayttajaOrganisaatiot = SecurityUtil.getOrganizations(authentication, permissions);
