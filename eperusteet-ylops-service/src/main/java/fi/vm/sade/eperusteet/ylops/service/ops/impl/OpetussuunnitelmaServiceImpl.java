@@ -86,12 +86,9 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViitePerusteTekstillaDto;
-import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
-import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineJarjestysRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
-import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaDataRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusRepository;
@@ -99,7 +96,6 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRep
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
-import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -121,14 +117,11 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsExport;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjaSynkronointi;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjanVaihto;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
-import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
-import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
-import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
@@ -2150,5 +2143,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         return null;
+    }
+
+    @Override
+    public void palautaTekstirakenne(Long id) {
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(id);
+        Long edellinenId = opetussuunnitelmaRepository.findEdellinenTekstitId(id);
+        TekstiKappaleViite tekstiKappaleViite = viiteRepository.findOne(edellinenId);
+        opetussuunnitelma.setTekstit(tekstiKappaleViite);
     }
 }

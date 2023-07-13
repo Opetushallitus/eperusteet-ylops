@@ -224,4 +224,6 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     TekstiKappaleDto getPerusteTekstikappale(Long opsId, Long tekstikappaleId);
 
+    @PreAuthorize("hasPermission(null, 'pohja', 'HALLINTA')")
+    void palautaTekstirakenne(@P("opsId") Long id);
 }

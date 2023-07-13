@@ -457,6 +457,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     @Override
     public OppiaineDto updateYksinkertainen(Long opsId, OppiaineDto oppiaineDto, Long vlkId,
                                          Set<Vuosiluokka> vuosiluokat, List<TekstiosaDto> tavoitteetDto) {
+        Boolean isOma = oppiaineet.isOma(opsId, oppiaineDto.getId());
+        if (isOma == null) {
+            throw new BusinessRuleViolationException("Päivitettävää oppiainetta ei ole olemassa");
+        } else if (!isOma) {
+            throw new BusinessRuleViolationException("Lainattua oppiainetta ei voi muokata");
+        }
+
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineDto.getId());
         assertExists(oppiaine, "Päivitettävää oppiainetta ei ole olemassa");
 

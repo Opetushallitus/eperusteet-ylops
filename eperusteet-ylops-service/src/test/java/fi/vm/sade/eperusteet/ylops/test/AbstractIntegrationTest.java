@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.test;
 
-import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
@@ -24,9 +23,6 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +34,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * @author mikkom
  */
@@ -48,7 +48,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 public class AbstractIntegrationTest {
 
     @Autowired
-    private OpetussuunnitelmaService opetussuunnitelmaService;
+    protected OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Before
     public void setUpSecurityContext() {

@@ -20,8 +20,10 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.utils.KoodistoUtils;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
@@ -36,6 +38,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
@@ -44,6 +47,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Calendar;
 import java.util.Collections;
@@ -73,13 +78,13 @@ import static org.junit.Assert.assertTrue;
 public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Autowired
-    OpetussuunnitelmaService opetussuunnitelmaService;
-
-    @Autowired
     TekstiKappaleViiteService tekstiKappaleViiteService;
 
     @Autowired
     OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
+    @Autowired
+    TekstikappaleviiteRepository tekstikappaleviiteRepository;
 
     private Long opsId;
 
@@ -683,5 +688,40 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertThat(opsit.getContent()).hasSize(10);
         assertThat(opsit.getTotalElements()).isEqualTo(15);
         assertThat(opsit.getTotalPages()).isEqualTo(2);
+    }
+
+    @Test
+    @Transactional
+    public void testPalautaVanhaTekstirakenne() {
+
+        TestTransaction.end();
+        TestTransaction.start();
+        TestTransaction.flagForCommit();
+
+        setUp();
+
+        TestTransaction.end();
+        TestTransaction.start();
+        TestTransaction.flagForCommit();
+
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
+        TekstiKappaleViite edellinenTeksti = tekstikappaleviiteRepository.findOne(opetussuunnitelma.getTekstit().getId());
+        TekstiKappaleViite uusi = new TekstiKappaleViite();
+        tekstikappaleviiteRepository.saveAndFlush(uusi);
+        opetussuunnitelma.setTekstit(uusi);
+        opetussuunnitelma = opetussuunnitelmaRepository.saveAndFlush(opetussuunnitelma);
+        assertThat(opetussuunnitelma.getTekstit().getId()).isNotNull();
+        assertThat(opetussuunnitelma.getTekstit().getId()).isNotEqualTo(edellinenTeksti.getId());
+
+        TestTransaction.end();
+        TestTransaction.start();
+
+        setUser("testAdmin");
+        opetussuunnitelmaService.palautaTekstirakenne(opetussuunnitelma.getId());
+        opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
+        assertThat(opetussuunnitelma.getTekstit().getId()).isEqualTo(edellinenTeksti.getId());
+
+        TestTransaction.flagForRollback();
+        TestTransaction.end();
     }
 }
