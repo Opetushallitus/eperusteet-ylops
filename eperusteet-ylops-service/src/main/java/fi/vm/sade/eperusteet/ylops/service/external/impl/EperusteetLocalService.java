@@ -10,6 +10,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.PalauteDto;
+import fi.vm.sade.eperusteet.ylops.dto.YllapitoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -218,6 +219,11 @@ public class EperusteetLocalService implements EperusteetService {
 
     @Override
     public Date viimeisinPerusteenJulkaisuaika(Long perusteId) {
+        return null;
+    }
+
+    @Override
+    public List<YllapitoDto> getYllapitoAsetukset() {
         return null;
     }
 }

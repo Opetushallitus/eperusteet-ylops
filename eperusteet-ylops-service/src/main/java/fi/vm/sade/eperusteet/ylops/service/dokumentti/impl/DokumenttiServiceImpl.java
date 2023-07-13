@@ -6,6 +6,7 @@ import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.YllapitoDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
@@ -16,6 +17,7 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiStateService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.ExternalPdfService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
+import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.apache.commons.collections.CollectionUtils;
@@ -50,6 +52,9 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Autowired
     private JulkaisuRepository julkaisuRepository;
+
+    @Autowired
+    private EperusteetService eperusteetService;
 
     @Autowired
     private ExternalPdfService externalPdfService;
@@ -111,10 +116,20 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Async(value = "docTaskExecutor")
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         dto.setTila(DokumenttiTila.LUODAAN);
-        dokumenttiStateService.save(dto);
+        Dokumentti dokumentti = dokumenttiStateService.save(dto);
 
         try {
             externalPdfService.generatePdf(dto);
+
+            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
+            if (ops != null) {
+                dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
+            }
+            dokumentti.setTila(DokumenttiTila.VALMIS);
+            dokumentti.setValmistumisaika(new Date());
+            dokumentti.setVirhekoodi(null);
+
+            dokumenttiRepository.save(dokumentti);
         } catch (Exception ex) {
             dto.setTila(DokumenttiTila.EPAONNISTUI);
             dto.setVirhekoodi(ex.getLocalizedMessage());
@@ -248,5 +263,13 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId);
         dokumentti.setTila(tila);
         dokumenttiRepository.save(dokumentti);
+    }
+
+    public String getYllapitoValueByKey(String key) {
+        return eperusteetService.getYllapitoAsetukset().stream()
+                .filter(yp -> key.equals(yp.getKey()))
+                .findFirst()
+                .map(YllapitoDto::getValue)
+                .orElse(null);
     }
 }
