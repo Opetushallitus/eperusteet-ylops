@@ -119,17 +119,21 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         Dokumentti dokumentti = dokumenttiStateService.save(dto);
 
         try {
-            externalPdfService.generatePdf(dto);
+            boolean isPdfServiceUsed = Boolean.parseBoolean(getYllapitoValueByKey("use-pdf-service-ylops"));
 
-            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
-            if (ops != null) {
-                dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
+            if (isPdfServiceUsed) {
+                externalPdfService.generatePdf(dto);
+            } else {
+                Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
+                if (ops != null) {
+                    dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
+                }
+                dokumentti.setTila(DokumenttiTila.VALMIS);
+                dokumentti.setValmistumisaika(new Date());
+                dokumentti.setVirhekoodi(null);
+
+                dokumenttiRepository.save(dokumentti);
             }
-            dokumentti.setTila(DokumenttiTila.VALMIS);
-            dokumentti.setValmistumisaika(new Date());
-            dokumentti.setVirhekoodi(null);
-
-            dokumenttiRepository.save(dokumentti);
         } catch (Exception ex) {
             dto.setTila(DokumenttiTila.EPAONNISTUI);
             dto.setVirhekoodi(ex.getLocalizedMessage());
