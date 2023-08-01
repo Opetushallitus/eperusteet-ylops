@@ -285,6 +285,7 @@ public class EperusteetServiceImpl implements EperusteetService {
         try {
             return client.getForObject(eperusteetServiceUrl + "/api/maintenance/yllapito/" + key, String.class);
         } catch (Exception e) {
+            log.error(e.getMessage());
             throw new BusinessRuleViolationException("yllapitoasetuksia-ei-saatu-haettu-eperusteista");
         }
     }
