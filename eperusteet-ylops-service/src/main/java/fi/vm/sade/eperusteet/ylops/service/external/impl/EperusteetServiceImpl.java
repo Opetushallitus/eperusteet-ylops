@@ -9,7 +9,6 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.PalauteDto;
-import fi.vm.sade.eperusteet.ylops.dto.YllapitoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -282,11 +281,9 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     @Override
-    @Cacheable("yllapito")
-    public List<YllapitoDto> getYllapitoAsetukset() {
+    public String getYllapitoAsetus(String key) {
         try {
-            YllapitoDto[] yllapito = client.getForObject(eperusteetServiceUrl + "/api/maintenance/yllapito/", YllapitoDto[].class);
-            return yllapito != null ? Arrays.asList(yllapito) : null;
+            return client.getForObject(eperusteetServiceUrl + "/api/maintenance/yllapito/" + key, String.class);
         } catch (Exception e) {
             throw new BusinessRuleViolationException("yllapitoasetuksia-ei-saatu-haettu-eperusteista");
         }

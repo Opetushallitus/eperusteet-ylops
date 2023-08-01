@@ -6,7 +6,6 @@ import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.dto.YllapitoDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
@@ -19,10 +18,6 @@ import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
-
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +26,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 @Transactional
@@ -243,11 +241,4 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         return dokumentti.getData();
     }
 
-    public String getYllapitoValueByKey(String key) {
-        return eperusteetService.getYllapitoAsetukset().stream()
-                .filter(yp -> key.equals(yp.getKey()))
-                .findFirst()
-                .map(YllapitoDto::getValue)
-                .orElse(null);
-    }
 }
