@@ -5,6 +5,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiKuvaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
+import fi.vm.sade.eperusteet.ylops.dto.pdf.PdfData;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiKuvaService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
@@ -12,9 +13,6 @@ import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import io.swagger.annotations.Api;
-import java.io.IOException;
-import java.util.Objects;
-
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +21,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,6 +30,10 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Base64;
+import java.util.Objects;
 
 @Slf4j
 @Api("Dokumentit")
@@ -185,5 +189,21 @@ public class DokumenttiController {
 
         dokumenttiKuvaService.deleteImage(opsId, tyyppi, Kieli.of(kieli));
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(path = "/pdf/data/{dokumenttiId}")
+    @ResponseBody
+    public ResponseEntity<String> savePdfData(@PathVariable("dokumenttiId") Long dokumenttiId,
+                                              @RequestBody PdfData pdfData) {
+        dokumenttiService.updateDokumenttiPdfData(Base64.getDecoder().decode(pdfData.getData()), dokumenttiId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(path = "/pdf/tila/{dokumenttiId}")
+    @ResponseBody
+    public ResponseEntity<String> updateDokumenttiTila(@PathVariable("dokumenttiId") Long dokumenttiId,
+                                                       @RequestBody PdfData pdfData) {
+        dokumenttiService.updateDokumenttiTila(DokumenttiTila.of(pdfData.getTila()), dokumenttiId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

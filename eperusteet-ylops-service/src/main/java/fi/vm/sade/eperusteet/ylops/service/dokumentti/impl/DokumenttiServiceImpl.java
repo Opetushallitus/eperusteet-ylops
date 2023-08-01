@@ -14,6 +14,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiStateService;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.ExternalPdfService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
@@ -53,6 +54,9 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Autowired
     private EperusteetService eperusteetService;
+
+    @Autowired
+    private ExternalPdfService externalPdfService;
 
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
@@ -111,18 +115,10 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Async(value = "docTaskExecutor")
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         dto.setTila(DokumenttiTila.LUODAAN);
-        Dokumentti dokumentti = dokumenttiStateService.save(dto);
+        dokumenttiStateService.save(dto);
 
         try {
-            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
-            if (ops != null) {
-                dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
-            }
-            dokumentti.setTila(DokumenttiTila.VALMIS);
-            dokumentti.setValmistumisaika(new Date());
-            dokumentti.setVirhekoodi(null);
-
-            dokumenttiRepository.save(dokumentti);
+            externalPdfService.generatePdf(dto);
         } catch (Exception ex) {
             dto.setTila(DokumenttiTila.EPAONNISTUI);
             dto.setVirhekoodi(ex.getLocalizedMessage());
@@ -241,4 +237,20 @@ public class DokumenttiServiceImpl implements DokumenttiService {
         return dokumentti.getData();
     }
 
+    @Override
+    public void updateDokumenttiPdfData(byte[] pdfData, Long dokumenttiId) {
+        Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId);
+        dokumentti.setData(pdfData);
+        dokumentti.setVirhekoodi(null);
+        dokumentti.setTila(DokumenttiTila.VALMIS);
+        dokumentti.setValmistumisaika(new Date());
+        dokumenttiRepository.save(dokumentti);
+    }
+
+    @Override
+    public void updateDokumenttiTila(DokumenttiTila tila, Long dokumenttiId) {
+        Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId);
+        dokumentti.setTila(tila);
+        dokumenttiRepository.save(dokumentti);
+    }
 }
