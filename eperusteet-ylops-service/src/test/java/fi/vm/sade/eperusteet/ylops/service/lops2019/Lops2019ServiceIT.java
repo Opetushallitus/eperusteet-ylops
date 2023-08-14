@@ -39,6 +39,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
+import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import org.junit.Test;
@@ -102,6 +103,9 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private PoistoService poistoService;
+
+    @Autowired
+    private ValidointiService validointiService;
 
     @Test
     public void convertTestJsonToDto() {
@@ -552,7 +556,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         opintojaksoDto.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDtoPaikallinen1, opintojaksoDtoPaikallinen2));
         opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
 
-        assertThat(opintojaksoService.tarkistaOpintojaksot(ops.getId())).isTrue();
+        assertThat(validointiService.tarkistaOpintojaksot(ops.getId())).isEmpty();
 
     }
 
@@ -661,13 +665,13 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
         opintojaksoDto2.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDtoPaikallinen1));
         opintojaksoDto2 = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto2);
 
-        assertThat(opintojaksoService.tarkistaOpintojaksot(ops.getId())).isTrue();
+        assertThat(validointiService.tarkistaOpintojaksot(ops.getId())).isEmpty();
 
         opintojaksoDto2.setPaikallisetOpintojaksot(Arrays.asList(opintojaksoDto));
 
         Lops2019Opintojakso opintojakso = opintojaksoRepository.save(mapper.map(opintojaksoDto2, Lops2019Opintojakso.class));
 
-        assertThat(opintojaksoService.tarkistaOpintojaksot(ops.getId())).isFalse();
+        assertThat(validointiService.tarkistaOpintojaksot(ops.getId())).isNotEmpty();
 
     }
 

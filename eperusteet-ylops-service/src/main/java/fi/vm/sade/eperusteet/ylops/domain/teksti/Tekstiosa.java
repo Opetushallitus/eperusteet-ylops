@@ -16,10 +16,11 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
-import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
-import java.io.Serializable;
-import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -28,11 +29,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
+import java.io.Serializable;
 
 /**
  * @author jhyoty
@@ -78,36 +75,4 @@ public class Tekstiosa implements Serializable {
         return new Tekstiosa(other);
     }
 
-    public static void validoi(Validointi validointi, Tekstiosa osa, Set<Kieli> kielet, LokalisoituTeksti parent) {
-        validoiOtsikko(validointi, osa, kielet, parent);
-        validoiTeksti(validointi, osa, kielet, parent);
-    }
-
-
-    public static void validoiOtsikko(
-            Validointi validointi,
-            Tekstiosa osa, Set<Kieli> kielet,
-            LokalisoituTeksti parent
-    ) {
-        LokalisoituTeksti otsikko = osa.getOtsikko();
-        if (otsikko != null) {
-            LokalisoituTeksti.validoi(validointi, kielet, otsikko, parent);
-        } else {
-            validointi.varoitus("tekstisisalto-puuttuu", parent);
-        }
-    }
-
-    public static void validoiTeksti(
-            Validointi validointi,
-            Tekstiosa osa,
-            Set<Kieli> kielet,
-            LokalisoituTeksti parent
-    ) {
-        LokalisoituTeksti teksti = osa.getTeksti();
-        if (teksti != null) {
-            LokalisoituTeksti.validoi(validointi, kielet, teksti, parent);
-        } else {
-            validointi.varoitus("tekstisisalto-puuttuu", parent);
-        }
-    }
 }

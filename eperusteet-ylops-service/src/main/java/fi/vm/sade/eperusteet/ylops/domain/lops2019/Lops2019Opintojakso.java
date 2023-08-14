@@ -3,23 +3,28 @@ package fi.vm.sade.eperusteet.ylops.domain.lops2019;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Poistettava;
-import fi.vm.sade.eperusteet.ylops.domain.Validable;
-import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 import org.hibernate.validator.constraints.NotEmpty;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -29,7 +34,7 @@ import java.util.stream.Collectors;
 @Entity
 @Audited
 @Table(name = "lops2019_opintojakso")
-public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity implements Validable, HistoriaTapahtuma, Poistettava {
+public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity implements HistoriaTapahtuma, Poistettava {
 
     @Getter
     @Setter
@@ -145,19 +150,6 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
         this.paikallisetOpintojaksot.clear();
         this.paikallisetOpintojaksot.addAll(paikallisetOpintojaksot);
     }
-
-    @Override
-    public void validate(ValidointiDto validointi, ValidointiContext ctx) {
-        validointi.virhe("koodi-puuttuu", this, StringUtils.isEmpty(getKoodi()));
-        validointi.virhe("nimi-oltava-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
-        validointi.varoitus("kuvausta-ei-ole-kirjoitettu-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
-    }
-
-    @Override
-    public ValidationCategory category() {
-        return ValidationCategory.OPINTOJAKSO;
-    }
-
 
     static public Lops2019Opintojakso copy(Lops2019Opintojakso original) {
         if (original != null) {

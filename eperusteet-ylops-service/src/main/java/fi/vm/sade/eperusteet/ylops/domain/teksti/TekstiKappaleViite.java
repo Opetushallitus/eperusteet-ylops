@@ -3,22 +3,32 @@ package fi.vm.sade.eperusteet.ylops.domain.teksti;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.envers.Audited;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.BatchSize;
-import org.hibernate.envers.Audited;
 
 @Entity
 @Audited
@@ -172,26 +182,6 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable, Hi
             root = root.getVanhempi();
         }
         return root;
-    }
-
-    static public void validoi(Validointi validointi, List<TekstiKappaleViite> viitteet, Set<Kieli> julkaisukielet) {
-        if (viitteet == null || viitteet.isEmpty()) {
-            return;
-        }
-
-        for (TekstiKappaleViite lapsi : viitteet) {
-            LokalisoituTeksti tekstiNimi = lapsi.getTekstiKappale() != null ? lapsi.getTekstiKappale().getNimi() : null;
-
-            if (lapsi.getTekstiKappale() != null) {
-                LokalisoituTeksti.validoi(validointi, julkaisukielet, lapsi.getTekstiKappale().getNimi(), tekstiNimi);
-                if (lapsi.getTekstiKappale().getTeksti() != null) {
-                    LokalisoituTeksti.validoi(validointi, julkaisukielet, lapsi.getTekstiKappale().getTeksti(), tekstiNimi);
-                }
-            } else {
-                validointi.virhe("tekstikappaleella-ei-lainkaan-sisaltoa", tekstiNimi);
-            }
-            validoi(validointi, lapsi.getLapset(), julkaisukielet);
-        }
     }
 
     public void setPerusteTekstikappaleId(Long perusteTekstikappaleId) {

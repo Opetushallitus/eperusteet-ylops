@@ -24,18 +24,34 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml.WhitelistType;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioKurssiParentDto;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
-import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-
-import java.math.BigDecimal;
-import java.util.*;
-import javax.persistence.*;
-import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.ColumnResult;
+import javax.persistence.ConstructorResult;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.SqlResultSetMapping;
+import javax.persistence.SqlResultSetMappings;
+import javax.persistence.Table;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * User: tommiratamaa
@@ -155,27 +171,4 @@ public class Lukiokurssi extends Kurssi implements Copyable<Lukiokurssi> {
         return lukiokurssi;
     }
 
-    public void validoiTavoitteetJaKeskeinenSisalto(Validointi validointi, Set<Kieli> julkaisukielet) {
-        if (tavoitteetJaKeskeinenSisalto != null) {
-            if (lokalisoituKoodi != null) {
-                Tekstiosa.validoi(validointi, tavoitteetJaKeskeinenSisalto, julkaisukielet,
-                        LokalisoituTeksti.concat(this.getNimi(), " (", lokalisoituKoodi, ")"));
-            } else {
-                Tekstiosa.validoi(validointi, tavoitteetJaKeskeinenSisalto, julkaisukielet, this.getNimi());
-            }
-            return;
-        } else if (keskeinenSisalto != null && tavoitteet != null) {
-            if (lokalisoituKoodi != null) {
-                Tekstiosa.validoi(validointi, keskeinenSisalto, julkaisukielet,
-                        LokalisoituTeksti.concat(this.getNimi(), " (", lokalisoituKoodi, ")"));
-                Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet,
-                        LokalisoituTeksti.concat(this.getNimi(), " (", lokalisoituKoodi, ")"));
-            } else {
-                Tekstiosa.validoi(validointi, keskeinenSisalto, julkaisukielet, this.getNimi());
-                Tekstiosa.validoi(validointi, tavoitteet, julkaisukielet, this.getNimi());
-            }
-            return;
-        }
-        validointi.varoitus("lukio-kurssi-tavoitteet-keskeinensisalto-puuttuvat", this.getNimi());
-    }
 }

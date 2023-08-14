@@ -25,11 +25,8 @@ import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.OpetuksenYleisetTavoitteet;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.OppiaineLukiokurssi;
-import fi.vm.sade.eperusteet.ylops.domain.ohje.Ohje;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
@@ -117,6 +114,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsExport;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjaSynkronointi;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsPohjanVaihto;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
+import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
@@ -275,6 +273,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private VuosiluokkakokonaisuusRepository vuosiluokkakokonaisuusRepository;
+
+    @Autowired
+    private ValidointiService validointiService;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -1787,88 +1788,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    private Validointi validoiOpetussuunnitelma(Opetussuunnitelma ops) {
-        Validointi validointi = new Validointi();
-
-        Set<Kieli> julkaisukielet = ops.getJulkaisukielet();
-
-        if (CollectionUtils.isEmpty(julkaisukielet)) {
-            validointi.virhe("vahintaan-yksi-julkaisukieli");
-        }
-
-        validateOpetussuunnitelmaTiedot(ops, validointi);
-        validoiPaikallisetOpintojaksot(ops, validointi);
-        validateTextHierarchy(ops, julkaisukielet, validointi);
-
-        ops.getVuosiluokkakokonaisuudet().stream()
-                .filter(OpsVuosiluokkakokonaisuus::isOma)
-                .map(OpsVuosiluokkakokonaisuus::getVuosiluokkakokonaisuus)
-                .forEach(vlk -> Vuosiluokkakokonaisuus.validoi(validointi, vlk, julkaisukielet));
-
-        //TODO Should we use same version of Peruste for with the Opetuusuunnitelma was based on if available?
-        PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
-        if (peruste.getPerusopetus() != null) {
-            ops.getOppiaineet().stream()
-                    .filter(OpsOppiaine::isOma)
-                    .map(OpsOppiaine::getOppiaine)
-                    .forEach(oa -> peruste.getPerusopetus().getOppiaine(oa.getTunniste()).ifPresent(poppiaine -> {
-                        Oppiaine.validoi(validointi, oa, julkaisukielet);
-                        Set<UUID> PerusteenTavoitteet = new HashSet<>();
-
-                        poppiaine.getVuosiluokkakokonaisuudet()
-                                .forEach(vlk -> vlk.getTavoitteet()
-                                        .forEach(tavoite -> PerusteenTavoitteet.add(tavoite.getTunniste())));
-
-                        Set<UUID> OpsinTavoitteet = oa.getVuosiluokkakokonaisuudet().stream()
-                                .flatMap(vlk -> vlk.getVuosiluokat().stream())
-                                .map(Oppiaineenvuosiluokka::getTavoitteet)
-                                .flatMap(Collection::stream)
-                                .map(Opetuksentavoite::getTunniste)
-                                .collect(Collectors.toSet());
-
-                    }));
-        }
-
-        return validointi;
-    }
-
-    private void validoiPaikallisetOpintojaksot(Opetussuunnitelma ops, Validointi validointi) {
-        if(KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus()) && !lops2019OpintojaksoService.tarkistaOpintojaksot(ops.getId())){
-            validointi.virhe("ops-paikallinen-opintojakso-rakennevirhe");
-        }
-    }
-
-    private void validateOpetussuunnitelmaTiedot(Opetussuunnitelma ops, Validointi validointi) {
-        if (ops.getPerusteenDiaarinumero().isEmpty()) {
-            validointi.virhe("opsilla-ei-perusteen-diaarinumeroa");
-        }
-    }
-
-    private void validateTextHierarchy(Opetussuunnitelma ops, Set<Kieli> julkaisukielet, Validointi validointi) {
-        if (ops.getTekstit() != null && ops.getTekstit().getLapset() != null) {
-            TekstiKappaleViite.validoi(validointi, ops.getTekstit().getLapset(), julkaisukielet);
-        }
-    }
-
-    private void validoiOhjeistus(TekstiKappaleViite tkv, Set<Kieli> kielet) {
-        Validointi validointi = new Validointi();
-        for (TekstiKappaleViite lapsi : tkv.getLapset()) {
-            Ohje ohje = ohjeRepository.findFirstByKohde(lapsi.getTekstiKappale().getTunniste());
-
-            if (ohje != null && (ohje.getTeksti() == null || !ohje.getTeksti().hasKielet(kielet))) {
-                validointi.virhe("ops-pohja-ohjeistus-puuttuu", tkv.getTekstiKappale().getNimi(), tkv.getTekstiKappale().getNimi());
-            } else {
-                validointi.virhe("ops-pohja-ohjeistus-puuttuu");
-            }
-            validoiOhjeistus(lapsi, kielet);
-        }
-        validointi.tuomitse();
-    }
-
-    private Validointi validoiPohja(Opetussuunnitelma ops) {
-        return new Validointi();
-    }
-
     @Override
     public OpetussuunnitelmaDto updateTila(Long id, Tila tila) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
@@ -1886,23 +1805,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (tila != ops.getTila() && ops.getTila().mahdollisetSiirtymat(ops.getTyyppi()
                 == Tyyppi.POHJA).contains(tila)) {
             if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU)) {
-                Validointi validointi = validoiOpetussuunnitelma(ops);
-                validointi.tuomitse();
+                validointiService.validoiOpetussuunnitelma(id).forEach(Validointi::tuomitse);
                 julkaisuService.addJulkaisu(id,
                         UusiJulkaisuDto
                                 .builder()
                                 .julkaisutiedote(LokalisoituTekstiDto.of("Julkaisu"))
                                 .build());
             } else if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.VALMIS) {
-                Validointi validointi = validoiPohja(ops);
-                validointi.tuomitse();
+                validointiService.validoiOpetussuunnitelma(id).forEach(Validointi::tuomitse);
             }
 
-            if (tila == Tila.VALMIS && ops.getTila() == Tila.LUONNOS && ops.getTyyppi() != Tyyppi.POHJA &&
-                    ops.getKoulutustyyppi().isLukio()) {
-                Validointi validointi = validoiLukioPohja(ops);
-                validointi.tuomitse();
-            }
             ops.setTila(tila);
             ops = opetussuunnitelmaRepository.save(ops);
 
@@ -1914,63 +1826,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public List<Validointi> validoiOpetussuunnitelma(Long id) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
-        assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
-
-        List<Validointi> result = new ArrayList<>();
-
-        switch (ops.getTyyppi()) {
-            case OPS:
-                result.add(validoiOpetussuunnitelma(ops));
-                break;
-            default:
-                result.add(validoiPohja(ops));
-                break;
-        }
-
-        switch (ops.getKoulutustyyppi()) {
-            case LUKIOKOULUTUS:
-            case LUKIOVALMISTAVAKOULUTUS:
-                result.add(validoiLukioPohja(ops));
-                break;
-            default:
-                break;
-        }
-        return result;
-    }
-
-    private Validointi validoiLukioPohja(Opetussuunnitelma ops) {
-        Validointi validointi = new Validointi();
-
-        if (ops.getOppiaineet().isEmpty()) {
-            logger.debug("lukio-ei-oppiaineita");
-            validointi.virhe("lukio-ei-oppiaineita", ops.getNimi());
-        }
-
-        if (ops.getAihekokonaisuudet() == null || ops.getAihekokonaisuudet().getAihekokonaisuudet().isEmpty()) {
-            logger.debug("lukio-ei-aihekokonaisuuksia");
-            validointi.virhe("lukio-ei-aihekokonaisuuksia", ops.getNimi());
-        }
-
-        ops.getOppiaineet().forEach(opsOppiaine -> {
-            if (!opsOppiaine.getOppiaine().isKoosteinen() && !oppiaineHasKurssi(opsOppiaine.getOppiaine(), ops.getLukiokurssit())) {
-                logger.debug("lukio-oppiaineessa-ei-kursseja");
-                validointi.virhe("lukio-oppiaineessa-ei-kursseja", opsOppiaine.getOppiaine().getNimi());
-            }
-            if (opsOppiaine.getOppiaine().isKoosteinen() && opsOppiaine.getOppiaine().getOppimaarat().isEmpty()) {
-                logger.debug("lukio-oppiaineessa-ei-oppimaaria");
-                validointi.varoitus("lukio-oppiaineessa-ei-oppimaaria", opsOppiaine.getOppiaine().getNimi());
-            }
-        });
-
-        ops.getLukiokurssit().forEach(oppiaineLukiokurssi -> {
-            if (oppiaineLukiokurssi.getKurssi().getTyyppi().isPaikallinen()) {
-                oppiaineLukiokurssi.getKurssi().validoiTavoitteetJaKeskeinenSisalto(validointi, ops.getJulkaisukielet());
-            }
-        });
-
-        logger.debug("lukio-opsin-validointi-epaonnistui", validointi.getVirheet().size());
-        return validointi;
+        return validointiService.validoiOpetussuunnitelma(id);
     }
 
     private boolean oppiaineHasKurssi(Oppiaine oppiaine, Set<OppiaineLukiokurssi> lukiokurssit) {

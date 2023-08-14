@@ -20,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonValue;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import lombok.Data;
+import lombok.Getter;
 
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
-
-import lombok.Data;
-import lombok.Getter;
 
 /**
  * @author jhyoty
@@ -127,5 +127,29 @@ public class LokalisoituTekstiDto {
             result.put(kv.getKey(), kv.getValue().map(teksti -> new LokalisoituTekstiDto(teksti.getId(), teksti.getTunniste(), teksti.getTeksti())));
         }
         return result;
+    }
+
+    public boolean hasKielet(Set<Kieli> kielet) {
+        boolean hasSomething = false;
+        Map<Kieli, String> mteksti = getTekstit();
+
+        for (Kieli kieli : kielet) {
+            String str = mteksti.get(kieli);
+            if (str != null && !str.isEmpty()) {
+                hasSomething = true;
+                break;
+            }
+        }
+
+        if (hasSomething) {
+            for (Kieli kieli : kielet) {
+                String sisalto = mteksti.get(kieli);
+                if (sisalto == null || sisalto.isEmpty()) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 }

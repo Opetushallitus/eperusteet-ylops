@@ -16,17 +16,33 @@
 package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.KommenttiKahva;
-import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-
-import java.io.Serializable;
-import java.text.Normalizer;
-import java.util.*;
-import javax.persistence.*;
-
 import lombok.Getter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
+
+import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.io.Serializable;
+import java.text.Normalizer;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * @author jhyoty
@@ -197,16 +213,6 @@ public class LokalisoituTeksti implements Serializable {
         }
 
         return true;
-    }
-
-    static public void validoi(Validointi validointi, Set<Kieli> kielet, LokalisoituTeksti teksti, LokalisoituTeksti... parents) {
-        validoi("kielisisaltoa-ei-loytynyt-opsin-kielilla", validointi, kielet, teksti, parents);
-    }
-
-    static public void validoi(String syy, Validointi validointi, Set<Kieli> kielet, LokalisoituTeksti teksti, LokalisoituTeksti... parents) {
-        if (teksti == null || !teksti.hasKielet(kielet)) {
-            validointi.virhe(syy, parents);
-        }
     }
 
     public Optional<String> firstByKieliOrder() {

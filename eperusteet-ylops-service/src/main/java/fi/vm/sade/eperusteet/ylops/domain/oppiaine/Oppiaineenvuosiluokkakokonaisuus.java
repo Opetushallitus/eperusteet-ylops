@@ -18,11 +18,7 @@ package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
-import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,9 +26,23 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * Kuvaa oppimäärän yhteen vuosiluokkakokonaisuuteen osalta.
@@ -165,20 +175,4 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
         return ovk;
     }
 
-    public static void validoi(Validointi validointi, Oppiaineenvuosiluokkakokonaisuus ovlk, Set<Kieli> kielet) {
-        Tekstiosa.validoiTeksti(validointi, ovlk.getArviointi(), kielet, ovlk.getOppiaine().getNimi());
-        Tekstiosa.validoiTeksti(validointi, ovlk.getOhjaus(), kielet, ovlk.getOppiaine().getNimi());
-        Tekstiosa.validoiTeksti(validointi, ovlk.getTehtava(), kielet, ovlk.getOppiaine().getNimi());
-        Tekstiosa.validoiTeksti(validointi, ovlk.getTyotavat(), kielet, ovlk.getOppiaine().getNimi());
-
-        for (Oppiaineenvuosiluokka ovl : ovlk.getVuosiluokat()) {
-            for (Opetuksentavoite tavoite : ovl.getTavoitteet()) {
-                LokalisoituTeksti.validoi("oppiaineen-vuosiluokan-tavoite-" + ovl.getVuosiluokka().toString(), validointi, kielet, tavoite.getTavoite(), ovlk.getOppiaine().getNimi());
-            }
-
-            for (Keskeinensisaltoalue sisaltoalue : ovl.getSisaltoalueet()) {
-                LokalisoituTeksti.validoi("oppiaineen-vuosiluokan-sisaltoalueen-kuvaus-" + ovl.getVuosiluokka().toString(), validointi, kielet, sisaltoalue.getKuvaus(), ovlk.getOppiaine().getNimi());
-            }
-        }
-    }
 }

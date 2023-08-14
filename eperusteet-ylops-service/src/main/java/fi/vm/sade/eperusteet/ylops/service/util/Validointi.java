@@ -1,67 +1,57 @@
 package fi.vm.sade.eperusteet.ylops.service.util;
 
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
+import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import lombok.Getter;
 
 @Getter
+@NoArgsConstructor
 public class Validointi {
-    @Getter
-    static public class Virhe {
-        private String syy;
-        private Map<Kieli, String> nimi;
 
-        Virhe(String syy) {
-            this.syy = syy;
-            this.nimi = null;
-        }
-
-        Virhe(String syy, LokalisoituTeksti t) {
-            this.syy = syy;
-            if (t != null) {
-                this.nimi = t.getTeksti();
-            }
-        }
-    }
-
+    @Setter
+    private ValidationCategory kategoria;
     private List<Virhe> virheet = new ArrayList<>();
-    private List<Virhe> varoitukset = new ArrayList<>();
+    private List<Virhe> huomautukset = new ArrayList<>();
     private List<Virhe> huomiot = new ArrayList<>();
 
-    public void virhe(String syy) {
-        virheet.add(new Virhe(syy));
+    public Validointi(ValidationCategory kategoria) {
+        this.kategoria = kategoria;
     }
 
-    public void virhe(String syy, LokalisoituTeksti... args) {
-        for (LokalisoituTeksti arg : args) {
-            virheet.add(new Virhe(syy, arg));
-        }
+    @Getter
+    @AllArgsConstructor
+    @Builder
+    static public class Virhe {
+        private String kuvaus;
+        private NavigationNodeDto navigationNode;
     }
 
-    public void varoitus(String syy) {
-        varoitukset.add(new Virhe(syy));
+    public Validointi addAll(List<Virhe> virheet) {
+        this.virheet.addAll(virheet);
+        return this;
     }
 
-    public void varoitus(String syy, LokalisoituTeksti... args) {
-        for (LokalisoituTeksti arg : args) {
-            varoitukset.add(new Virhe(syy, arg));
-        }
+    public Validointi addVirhe(Virhe virhe) {
+        this.virheet.add(virhe);
+        return this;
     }
 
-    public void huomio(String syy) {
-        huomiot.add(new Virhe(syy));
+    public Validointi addHuomautus(Virhe huomautukset) {
+        this.huomautukset.add(huomautukset);
+        return this;
     }
 
-    public void huomio(String syy, LokalisoituTeksti... args) {
-        for (LokalisoituTeksti arg : args) {
-            huomiot.add(new Virhe(syy, arg));
-        }
+    public Validointi virhe(String kuvaus, NavigationNodeDto navigationNode) {
+        virheet.add(new Virhe(kuvaus, navigationNode));
+        return this;
     }
 
     public void tuomitse() {

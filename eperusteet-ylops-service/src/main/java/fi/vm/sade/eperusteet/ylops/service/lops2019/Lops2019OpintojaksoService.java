@@ -6,9 +6,10 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
-import java.util.List;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
+
+import java.util.List;
 
 public interface Lops2019OpintojaksoService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
@@ -66,9 +67,6 @@ public interface Lops2019OpintojaksoService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     long getOpintojaksonLaajuus(@P("opsId") Long opsId, Lops2019OpintojaksoDto opintojakso);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    boolean tarkistaOpintojaksot(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaDto getOpintojaksonOpetussuunnitelma(@P("opsId") Long opsId, Long opintojaksoId);
