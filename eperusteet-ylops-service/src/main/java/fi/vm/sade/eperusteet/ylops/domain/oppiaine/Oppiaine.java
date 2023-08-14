@@ -15,7 +15,6 @@
  */
 package fi.vm.sade.eperusteet.ylops.domain.oppiaine;
 
-import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
@@ -23,8 +22,6 @@ import fi.vm.sade.eperusteet.ylops.domain.Poistettava;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukiokurssiTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -32,18 +29,35 @@ import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copyable;
-import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -469,20 +483,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
                         .forEach((om -> o.addOppimaara(with.copy(om))));
             }
         };
-    }
-
-    static public void validoi(Validointi validointi, Oppiaine oa, Set<Kieli> kielet) {
-        LokalisoituTeksti.validoi(validointi, kielet, oa.getNimi());
-
-        /*for (Oppiaineenvuosiluokkakokonaisuus ovlk : oa.getVuosiluokkakokonaisuudet()) {
-            Oppiaineenvuosiluokkakokonaisuus.validoi(validointi, ovlk, kielet);
-        }*/
-
-        if (oa.getOppimaarat() != null) {
-            for (Oppiaine om : oa.getOppimaarat()) {
-                validoi(validointi, om, kielet);
-            }
-        }
     }
 
     public Stream<Oppiaine> maarineen() {

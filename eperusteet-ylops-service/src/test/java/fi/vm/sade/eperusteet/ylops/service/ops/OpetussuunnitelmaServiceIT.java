@@ -115,6 +115,8 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         kouluDto.setOid("1.2.246.562.10.00000000001");
         ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
         ops.setJulkaisukielet(Sets.newHashSet(Kieli.FI));
+        ops.setPaatospaivamaara(new Date());
+        ops.setHyvaksyjataho("hyvaksyja");
         OpetussuunnitelmaDto createdOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
         this.opsId = createdOps.getId();
     }

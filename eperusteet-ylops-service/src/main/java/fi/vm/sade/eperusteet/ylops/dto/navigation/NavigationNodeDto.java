@@ -2,18 +2,22 @@ package fi.vm.sade.eperusteet.ylops.dto.navigation;
 
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class NavigationNodeDto {
     private Long id;
     private LokalisoituTekstiDto label;

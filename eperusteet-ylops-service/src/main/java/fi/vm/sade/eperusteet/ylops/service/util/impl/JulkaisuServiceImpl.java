@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
-import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaistuOpetussuunnitelmaData;
@@ -19,7 +18,6 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.Lops2019ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaisuKevyt;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
@@ -208,17 +206,10 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         try {
             Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
-            if (KoulutustyyppiToteutus.LOPS2019.equals(ops.getToteutus())) {
-                Lops2019ValidointiDto validointi = validointiService.getValidointi(opsId);
-                if (!validointi.isValid()) {
-                    throw new BusinessRuleViolationException("opetussuunnitelma-ei-validi");
-                }
-            } else {
-                List<Validointi> validoinnit = opetussuunnitelmaService.validoiOpetussuunnitelma(opsId);
-                if (validoinnit.stream().anyMatch(validointi -> CollectionUtils.isNotEmpty(validointi.getVirheet()))) {
-                    throw new BusinessRuleViolationException("opetussuunnitelma-ei-validi");
-                };
-            }
+            List<Validointi> validoinnit = validointiService.validoiOpetussuunnitelma(opsId);
+            if (validoinnit.stream().anyMatch(validointi -> CollectionUtils.isNotEmpty(validointi.getVirheet()))) {
+                throw new BusinessRuleViolationException("opetussuunnitelma-ei-validi");
+            };
 
             OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
             julkaisu.setOpetussuunnitelma(ops);

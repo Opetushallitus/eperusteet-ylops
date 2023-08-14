@@ -388,6 +388,62 @@
         }
       }
     },
+    "/dokumentit/pdf/data/{dokumenttiId}" : {
+      "post" : {
+        "tags" : [ "Dokumentit" ],
+        "operationId" : "savePdfData",
+        "parameters" : [ {
+          "name" : "dokumenttiId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PdfData"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/dokumentit/pdf/tila/{dokumenttiId}" : {
+      "post" : {
+        "tags" : [ "Dokumentit" ],
+        "operationId" : "updateDokumenttiTila",
+        "parameters" : [ {
+          "name" : "dokumenttiId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "in" : "body",
+          "name" : "body",
+          "required" : false,
+          "schema" : {
+            "$ref" : "#/definitions/PdfData"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
     "/dokumentit/{dokumenttiId}/dokumentti" : {
       "get" : {
         "tags" : [ "Dokumentit" ],
@@ -3621,27 +3677,6 @@
               "items" : {
                 "$ref" : "#/definitions/Lops2019PoistettuDto"
               }
-            }
-          }
-        }
-      }
-    },
-    "/opetussuunnitelmat/{opsId}/lops2019/validointi" : {
-      "get" : {
-        "tags" : [ "Lops2019" ],
-        "operationId" : "getValidointi",
-        "parameters" : [ {
-          "name" : "opsId",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/Lops2019ValidointiDto"
             }
           }
         }
@@ -7432,31 +7467,6 @@
         }
       }
     },
-    "Lops2019OpintojaksoBaseDto" : {
-      "type" : "object",
-      "properties" : {
-        "tuotu" : {
-          "type" : "boolean"
-        },
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "koodi" : {
-          "type" : "string"
-        },
-        "laajuus" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "nimi" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "string"
-          }
-        }
-      }
-    },
     "Lops2019OpintojaksoDto" : {
       "type" : "object",
       "properties" : {
@@ -7922,47 +7932,6 @@
           "additionalProperties" : {
             "type" : "string"
           }
-        }
-      }
-    },
-    "Lops2019ValidointiDto" : {
-      "type" : "object",
-      "properties" : {
-        "validoinnit" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/definitions/ValidoinninKohdeDto"
-            }
-          }
-        },
-        "valid" : {
-          "type" : "boolean"
-        },
-        "kaikkiModuulit" : {
-          "type" : "array",
-          "uniqueItems" : true,
-          "items" : {
-            "$ref" : "#/definitions/KoodiDto"
-          }
-        },
-        "liitetytModuulit" : {
-          "type" : "array",
-          "uniqueItems" : true,
-          "items" : {
-            "$ref" : "#/definitions/ModuuliLiitosDto"
-          }
-        },
-        "kaikkiValidoinnit" : {
-          "type" : "integer",
-          "format" : "int64",
-          "readOnly" : true
-        },
-        "onnistuneetValidoinnit" : {
-          "type" : "integer",
-          "format" : "int64",
-          "readOnly" : true
         }
       }
     },
@@ -8888,20 +8857,6 @@
         },
         "_tekstiKappale" : {
           "$ref" : "#/definitions/Reference"
-        }
-      }
-    },
-    "ModuuliLiitosDto" : {
-      "type" : "object",
-      "properties" : {
-        "moduuliKoodiUri" : {
-          "type" : "string"
-        },
-        "opintojaksot" : {
-          "type" : "array",
-          "items" : {
-            "$ref" : "#/definitions/Lops2019OpintojaksoBaseDto"
-          }
         }
       }
     },
@@ -10821,13 +10776,17 @@
     "Page" : {
       "type" : "object",
       "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "totalElements" : {
+        "number" : {
           "type" : "integer",
-          "format" : "int64"
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10839,19 +10798,15 @@
             "type" : "object"
           }
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
@@ -10861,13 +10816,17 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "totalElements" : {
+        "number" : {
           "type" : "integer",
-          "format" : "int64"
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10879,19 +10838,15 @@
             "$ref" : "#/definitions/OpetussuunnitelmaInfoDto"
           }
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
@@ -10901,13 +10856,17 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "totalElements" : {
+        "number" : {
           "type" : "integer",
-          "format" : "int64"
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10919,19 +10878,15 @@
             "$ref" : "#/definitions/OpetussuunnitelmaJulkinenDto"
           }
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "last" : {
           "type" : "boolean"
@@ -10960,6 +10915,17 @@
         "created-at" : {
           "type" : "string",
           "format" : "date-time"
+        }
+      }
+    },
+    "PdfData" : {
+      "type" : "object",
+      "properties" : {
+        "data" : {
+          "type" : "string"
+        },
+        "tila" : {
+          "type" : "string"
         }
       }
     },
@@ -12337,50 +12303,20 @@
         }
       }
     },
-    "ValidoinninKohdeDto" : {
-      "type" : "object",
-      "properties" : {
-        "id" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-        "nimi" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "string"
-          }
-        },
-        "kuvaus" : {
-          "type" : "string"
-        },
-        "targetClass" : {
-          "type" : "string",
-          "enum" : [ "OPINTOJAKSO", "OPPIAINE", "MODUULI", "OPETUSSUUNNITELMA" ]
-        },
-        "failed" : {
-          "type" : "boolean"
-        },
-        "meta" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "object"
-          }
-        },
-        "fatal" : {
-          "type" : "boolean"
-        }
-      }
-    },
     "Validointi" : {
       "type" : "object",
       "properties" : {
+        "kategoria" : {
+          "type" : "string",
+          "enum" : [ "OPINTOJAKSO", "OPPIAINE", "MODUULI", "OPETUSSUUNNITELMA" ]
+        },
         "virheet" : {
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/Virhe"
           }
         },
-        "varoitukset" : {
+        "huomautukset" : {
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/Virhe"
@@ -12397,14 +12333,11 @@
     "Virhe" : {
       "type" : "object",
       "properties" : {
-        "syy" : {
+        "kuvaus" : {
           "type" : "string"
         },
-        "nimi" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "string"
-          }
+        "navigationNode" : {
+          "$ref" : "#/definitions/NavigationNodeDto"
         }
       }
     },

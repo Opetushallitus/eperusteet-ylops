@@ -22,8 +22,6 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.Validable;
-import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
@@ -39,8 +37,6 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiContext;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Validointi.ValidointiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.service.ops.Identifiable;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsIdentifiable;
@@ -50,7 +46,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
-import org.springframework.util.StringUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -97,7 +92,7 @@ import static java.util.stream.Collectors.groupingBy;
 @Audited
 @Table(name = "opetussuunnitelma")
 public class Opetussuunnitelma extends AbstractAuditedEntity
-        implements Serializable, ReferenceableEntity, Validable, OpsIdentifiable, Identifiable, HistoriaTapahtuma {
+        implements Serializable, ReferenceableEntity, OpsIdentifiable, Identifiable, HistoriaTapahtuma {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Getter
@@ -430,24 +425,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
         if (this.toteutus == null) {
             this.toteutus = toteutus;
         }
-    }
-
-    @Override
-    public void validate(ValidointiDto validointi, ValidointiContext ctx) {
-        validointi.virhe("vahintaan-yksi-julkaisukieli", this, getJulkaisukielet().isEmpty());
-        validointi.virhe("perusteen-diaarinumero-puuttuu", this, getPerusteenDiaarinumero().isEmpty());
-        validointi.virhe("nimi-oltava-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
-        validointi.varoitus("kuvausta-ei-ole-kirjoitettu-kaikilla-julkaisukielilla", this, getNimi() == null || !getNimi().hasKielet(ctx.getKielet()));
-
-        if (getTyyppi() == Tyyppi.OPS) {
-            validointi.virhe("hyvaksyjataho-puuttuu", this, StringUtils.isEmpty(getHyvaksyjataho()));
-            validointi.virhe("paatospaivamaaraa-ei-ole-asetettu", this, getPaatospaivamaara() == null);
-        }
-    }
-
-    @Override
-    public ValidationCategory category() {
-        return ValidationCategory.OPETUSSUUNNITELMA;
     }
 
     @Override
