@@ -21,14 +21,11 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineValinnainenTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-
-import java.util.UUID;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import java.util.UUID;
 
 /**
  * @author mikkom
@@ -44,7 +41,6 @@ public abstract class OppiaineBaseDto {
     private OppiaineValinnainenTyyppi valinnainenTyyppi = OppiaineValinnainenTyyppi.EI_MAARITETTY;
     @JsonProperty("_liittyvaOppiaine")
     private Reference liittyvaOppiaine;
-    private Long jnro;
     private String laajuus;
     private boolean koosteinen;
     private LokalisoituTekstiDto nimi;
