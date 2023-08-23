@@ -15,16 +15,17 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
+import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.apache.commons.collections.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 @Component
 @Transactional
@@ -57,9 +58,9 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
                 .collect(Collectors.toList());
 
         List<OppiaineSuppeaDto> oppiaineet = ops.getOppiaineet().stream()
-                .map(OpsOppiaineKevytDto::getOppiaine)
-                .sorted(Comparator.comparing(o -> o.getNimi().getOrDefault(Kieli.of(kieli))))
+                .sorted(Comparator.comparing(o -> o.getOppiaine().getNimi().getOrDefault(Kieli.of(kieli))))
                 .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : Long.MAX_VALUE))
+                .map(OpsOppiaineKevytDto::getOppiaine)
                 .collect(Collectors.toList());
 
         return NavigationNodeDto.of(NavigationType.root)
@@ -129,7 +130,6 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
                         oppiaineNavigationNode.add(NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-subtype", true)
                                 .addAll(perusopetusOppiaine(oppiaine.getOppimaarat().stream()
                                                 .sorted(Comparator.comparing(o -> o.getNimi().getOrDefault(Kieli.of(kieli))))
-                                                .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : Long.MAX_VALUE))
                                                 .collect(Collectors.toList()),
                                         kieli,
                                         vlkId)));

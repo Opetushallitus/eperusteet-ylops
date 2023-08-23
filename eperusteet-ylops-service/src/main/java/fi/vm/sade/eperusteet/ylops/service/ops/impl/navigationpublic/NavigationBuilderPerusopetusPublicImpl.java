@@ -57,9 +57,9 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
                 .collect(Collectors.toList());
 
         List<OppiaineExportDto> oppiaineet = opetussuunnitelmaDto.getOppiaineet().stream()
-                .map(OpsOppiaineExportDto::getOppiaine)
-                .sorted(Comparator.comparing(o -> o.getNimi().getOrDefault(Kieli.of(kieli))))
+                .sorted(Comparator.comparing(o -> o.getOppiaine().getNimi().getOrDefault(Kieli.of(kieli))))
                 .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : Long.MAX_VALUE))
+                .map(OpsOppiaineExportDto::getOppiaine)
                 .collect(Collectors.toList());
 
         return NavigationNodeDto.of(NavigationType.root)
@@ -133,7 +133,6 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
                         oppiaineNavigationNode.add(NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-subtype", true)
                                 .addAll(perusopetusOppiaine(oppimaarat.stream()
                                                 .sorted(Comparator.comparing(o -> o.getNimi().getOrDefault(Kieli.of(kieli))))
-                                                .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : Long.MAX_VALUE))
                                                 .collect(Collectors.toList()),
                                         kieli,
                                         opsVlk)));
