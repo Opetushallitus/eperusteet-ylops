@@ -58,7 +58,7 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
 
         List<OppiaineExportDto> oppiaineet = opetussuunnitelmaDto.getOppiaineet().stream()
                 .sorted(Comparator.comparing(o -> o.getOppiaine().getNimi().getOrDefault(Kieli.of(kieli))))
-                .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : Long.MAX_VALUE))
+                .sorted(Comparator.comparing(o -> o.getJnro() != null ? o.getJnro() : Integer.MAX_VALUE))
                 .map(OpsOppiaineExportDto::getOppiaine)
                 .collect(Collectors.toList());
 
