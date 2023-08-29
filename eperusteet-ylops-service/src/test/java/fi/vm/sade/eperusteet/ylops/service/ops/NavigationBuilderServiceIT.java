@@ -15,10 +15,9 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
-import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
-import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractH2IntegrationTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,7 +30,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
-public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
+public class NavigationBuilderServiceIT extends AbstractH2IntegrationTest {
     @Autowired
     private OpsDispatcher dispatcher;
 
@@ -46,9 +45,6 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private Lops2019OpintojaksoService opintojaksoService;
-
-    @Autowired
-    private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     private OpetussuunnitelmaDto createOpetussuunnitelma(KoulutustyyppiToteutus koulutustyyppiToteutus) {
         OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
@@ -73,7 +69,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         TekstiKappaleViiteDto.Matala tk = tekstiKappaleViiteService.getTekstiKappaleViite(ops.getId(), ops.getTekstit().getLapset().get(1).getId());
         tk.setPiilotettu(true);
         tekstiKappaleViiteService.updateTekstiKappaleViite(ops.getId(), tk.getId(), tk);
-        
+
         return ops;
     }
 

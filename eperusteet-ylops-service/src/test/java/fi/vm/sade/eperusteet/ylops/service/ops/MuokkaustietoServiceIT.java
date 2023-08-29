@@ -13,23 +13,25 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractH2IntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 @Transactional
-public class MuokkaustietoServiceIT extends AbstractIntegrationTest {
+public class MuokkaustietoServiceIT extends AbstractH2IntegrationTest {
 
     private final String TAPAHTUMA_TEKSTI = "tapahtuma tapahtui";
     private OpetussuunnitelmaDto dto;

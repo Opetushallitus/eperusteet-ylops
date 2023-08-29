@@ -11,14 +11,13 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
-import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractH2IntegrationTest;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
+public class TekstiKappaleViiteServiceIT extends AbstractH2IntegrationTest {
 
     @Autowired
     private TekstiKappaleViiteService tekstiKappaleViiteService;
@@ -38,9 +37,6 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
-
-    @Autowired
-    private EntityManager em;
 
     @Test
     public void testOpintojaksojenHallinta() {

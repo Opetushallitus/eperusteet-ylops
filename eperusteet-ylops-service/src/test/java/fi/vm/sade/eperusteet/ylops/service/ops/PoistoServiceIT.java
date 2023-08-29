@@ -12,19 +12,20 @@ import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OppiaineRepositor
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
-import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-import java.util.Collections;
-import java.util.List;
+import fi.vm.sade.eperusteet.ylops.test.AbstractH2IntegrationTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_CLASS)
-public class PoistoServiceIT extends AbstractIntegrationTest {
+public class PoistoServiceIT extends AbstractH2IntegrationTest {
 
     @Autowired
     private Lops2019OppiaineService lops2019oppiaineService;

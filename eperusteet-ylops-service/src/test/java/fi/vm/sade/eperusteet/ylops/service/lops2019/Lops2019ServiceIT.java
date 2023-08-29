@@ -36,15 +36,13 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import fi.vm.sade.eperusteet.ylops.service.util.UpdateWrapperDto;
-import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractH2IntegrationTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,16 +58,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class Lops2019ServiceIT extends AbstractIntegrationTest {
+public class Lops2019ServiceIT extends AbstractH2IntegrationTest {
 
     @Autowired
     private DtoMapper mapper;
 
     @Autowired
     private EperusteetService eperusteetService;
-
-    @Autowired
-    private ApplicationContext applicationContext;
 
     @Autowired
     private Lops2019OpintojaksoService opintojaksoService;
@@ -91,9 +86,6 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private Lops2019OpintojaksoRepository opintojaksoRepository;
-
-    @Autowired
-    private Kommentti2019Service kommenttiService;
 
     @Autowired
     private Lops2019OpintojaksonOppiaineRepository opintojaksonOppiaineRepository;
@@ -319,7 +311,7 @@ public class Lops2019ServiceIT extends AbstractIntegrationTest {
                     .isInstanceOf(BusinessRuleViolationException.class)
                     .hasMessage("koodi-virheellinen");
         }
-        
+
         {
             opintojaksoDto.setKoodi("vali_di.12-3");
             assertThat(opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto)).isNotNull();

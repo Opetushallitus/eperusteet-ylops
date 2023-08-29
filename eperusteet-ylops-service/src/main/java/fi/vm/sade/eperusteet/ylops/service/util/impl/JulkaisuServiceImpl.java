@@ -64,6 +64,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
@@ -160,7 +161,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     }
 
     @Override
-    public void addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
+    public CompletableFuture<Void> addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
@@ -181,7 +182,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         julkaistuOpetussuunnitelmaTila.setJulkaisutila(JulkaisuTila.KESKEN);
         saveJulkaistuOpetussuunnitelmaTila(julkaistuOpetussuunnitelmaTila);
 
-        self.addJulkaisuAsync(opsId, julkaisuDto);
+        return self.addJulkaisuAsync(opsId, julkaisuDto);
     }
 
     private JulkaistuOpetussuunnitelmaTila getOrCreateTila(Long opsId) {
@@ -198,7 +199,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     @Override
     @CacheEvict(value = "ops-julkaisu", key = "#opsId")
     @Async("julkaisuTaskExecutor")
-    public void addJulkaisuAsync(Long opsId, UusiJulkaisuDto julkaisuDto) {
+    public CompletableFuture<Void> addJulkaisuAsync(Long opsId, UusiJulkaisuDto julkaisuDto) {
         log.debug("teeJulkaisu: {}", opsId);
 
         JulkaistuOpetussuunnitelmaTila julkaistuOpetussuunnitelmaTila = getOrCreateTila(opsId);
@@ -248,6 +249,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
 
         julkaistuOpetussuunnitelmaTila.setJulkaisutila(JulkaisuTila.JULKAISTU);
         saveJulkaistuOpetussuunnitelmaTila(julkaistuOpetussuunnitelmaTila);
+        return null;
     }
 
     @Override

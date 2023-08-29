@@ -5,11 +5,9 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KommenttiKahvaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.repository.ops.Kommentti2019Repository;
-import fi.vm.sade.eperusteet.ylops.repository.teksti.KommenttiKahvaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
-import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractH2IntegrationTest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Test;
@@ -18,8 +16,10 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class KommentointiIT extends AbstractIntegrationTest {
+public class KommentointiIT extends AbstractH2IntegrationTest {
 
     @Autowired
     private DtoMapper mapper;
@@ -40,12 +40,6 @@ public class KommentointiIT extends AbstractIntegrationTest {
 
     @Autowired
     private LokalisoituTekstiRepository lokalisoituTekstiRepository;
-
-    @Autowired
-    private Kommentti2019Repository kommentti2019Repository;
-
-    @Autowired
-    private KommenttiKahvaRepository kommenttiKahvaRepository;
 
     @Test
     public void kommenttikahvanTallennus() {

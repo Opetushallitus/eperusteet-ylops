@@ -9,6 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public interface JulkaisuService {
 
@@ -19,10 +20,10 @@ public interface JulkaisuService {
     List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'TILANVAIHTO')")
-    void addJulkaisu(@P("opsId") Long opsId, UusiJulkaisuDto julkaisuDto);
+    CompletableFuture<Void> addJulkaisu(@P("opsId") Long opsId, UusiJulkaisuDto julkaisuDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'TILANVAIHTO')")
-    void addJulkaisuAsync(@P("opsId") Long opsId, UusiJulkaisuDto julkaisuDto);
+    CompletableFuture<Void> addJulkaisuAsync(@P("opsId") Long opsId, UusiJulkaisuDto julkaisuDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'TILANVAIHTO')")
     OpetussuunnitelmanJulkaisuDto aktivoiJulkaisu(@P("opsId") Long opsId, int revision);

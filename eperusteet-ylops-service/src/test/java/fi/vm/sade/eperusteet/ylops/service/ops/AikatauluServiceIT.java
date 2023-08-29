@@ -7,20 +7,21 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanAikatauluDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractH2IntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
-import java.util.Date;
-import java.util.List;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
-public class AikatauluServiceIT extends AbstractIntegrationTest {
+public class AikatauluServiceIT extends AbstractH2IntegrationTest {
 
     private final String TAPAHTUMA_TEKSTI = "tapahtuma tapahtui";
     private OpetussuunnitelmaDto opsDto;

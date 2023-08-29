@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
-
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
@@ -18,7 +17,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
-import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.AbstractH2IntegrationTest;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Transactional
-public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegrationTest {
-
-    @Autowired
-    private OpetussuunnitelmaHierarkiaKopiointiService hierarkiaKopiointiService;
+public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractH2IntegrationTest {
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;

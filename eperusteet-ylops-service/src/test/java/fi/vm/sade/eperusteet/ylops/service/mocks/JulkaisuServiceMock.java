@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @Profile("test")
@@ -25,13 +26,13 @@ public class JulkaisuServiceMock implements JulkaisuService {
     }
 
     @Override
-    public void addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
-
+    public CompletableFuture<Void> addJulkaisu(Long opsId, UusiJulkaisuDto julkaisuDto) {
+        return null;
     }
 
     @Override
-    public void addJulkaisuAsync(Long opsId, UusiJulkaisuDto julkaisuDto) {
-
+    public CompletableFuture<Void> addJulkaisuAsync(Long opsId, UusiJulkaisuDto julkaisuDto) {
+        return null;
     }
 
     @Override
