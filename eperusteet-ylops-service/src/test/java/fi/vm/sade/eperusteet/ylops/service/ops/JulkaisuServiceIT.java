@@ -136,13 +136,12 @@ public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
         asyncResult.get();
 
         OpetussuunnitelmaJulkaistuQuery query = new OpetussuunnitelmaJulkaistuQuery();
-        query.setNimi("");
+        query.setNimi(ops.getNimi().get(Kieli.FI));
         query.setKieli("fi");
         query.setPerusteenDiaarinumero(EperusteetServiceMock.PERUSOPETUS_DIAARINUMERO);
         query.setSivu(0);
 
         Page<OpetussuunnitelmaJulkinenDto> julkiset = opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query);
-        System.out.println("HUOM " + julkiset.getSize());
         assertThat(julkiset).hasSize(1);
     }
 
