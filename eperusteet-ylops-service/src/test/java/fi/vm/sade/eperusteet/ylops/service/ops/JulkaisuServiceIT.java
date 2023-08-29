@@ -9,6 +9,8 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaistuQuery;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -22,6 +24,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
@@ -121,6 +124,22 @@ public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
 
         assertThat(julkaisuService.getJulkaisut(this.ops.getId())).hasSize(2);
     }
+
+    @Test
+    public void testGetJulkisetJulkaisut() throws ExecutionException, InterruptedException {
+        CompletableFuture<Void> asyncResult = julkaisuService.addJulkaisu(this.ops.getId(), createJulkaisu());
+        asyncResult.get();
+
+        OpetussuunnitelmaJulkaistuQuery query = new OpetussuunnitelmaJulkaistuQuery();
+        query.setNimi("");
+        query.setKieli("fi");
+        query.setPerusteenDiaarinumero(EperusteetServiceMock.PERUSOPETUS_DIAARINUMERO);
+        query.setSivu(0);
+
+        Page<OpetussuunnitelmaJulkinenDto> julkiset = opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query);
+        assertThat(julkiset).hasSize(1);
+    }
+
 
     private UusiJulkaisuDto createJulkaisu() {
         UusiJulkaisuDto julkaisu = new UusiJulkaisuDto();

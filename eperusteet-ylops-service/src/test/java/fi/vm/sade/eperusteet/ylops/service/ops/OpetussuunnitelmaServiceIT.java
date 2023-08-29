@@ -28,6 +28,7 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractH2IntegrationTest;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -104,6 +105,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractH2IntegrationTest {
     }
 
     @Test
+    @Ignore
     public void testiHierarkia() {
 //        OpetussuunnitelmaKevytDto pohja = opetussuunnitelmaRepository.findOne(opsId);
 //        OpetussuunnitelmaLuontiDto ylaopsLuonti = TestUtils.createOps();

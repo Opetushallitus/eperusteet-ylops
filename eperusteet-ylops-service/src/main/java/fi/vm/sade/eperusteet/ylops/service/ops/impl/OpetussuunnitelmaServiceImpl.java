@@ -419,7 +419,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         if (ops.getTila() != Tila.JULKAISTU) {
-            throw new NotExistsException("Pyydettyä opetussuunnitelmaa ei ole olemassa");
+            throw new NotExistsException("Pyydettyä opetussuunnitelmaa ei ole julkaistu");
         }
         return mapper.map(ops, OpetussuunnitelmaJulkinenDto.class);
     }
