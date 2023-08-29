@@ -58,7 +58,7 @@ public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
 
     @Before
     public void setUp() {
-        // Oma transaction, jotta löytyy teeJulkaisuAsyncin haussa
+        // Oma transaction, jotta löytyy addJulkaisuAsyncin haussa
         TestTransaction.end();
         TestTransaction.start();
         TestTransaction.flagForCommit();
@@ -146,7 +146,6 @@ public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
         //Löytää nyt kaikki samalla diaarilla olevat opsit.
 //        assertThat(julkiset).hasSize(1);
     }
-
 
     private UusiJulkaisuDto createJulkaisu() {
         UusiJulkaisuDto julkaisu = new UusiJulkaisuDto();

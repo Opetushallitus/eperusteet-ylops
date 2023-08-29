@@ -197,7 +197,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     }
 
     @Override
-    @CacheEvict(value = "ops-julkaisu", key = "#opsId")
+//    @CacheEvict(value = "ops-julkaisu", key = "#opsId") TODO: palauta
     @Async("julkaisuTaskExecutor")
     public CompletableFuture<Void> addJulkaisuAsync(Long opsId, UusiJulkaisuDto julkaisuDto) {
         log.debug("teeJulkaisu: {}", opsId);
