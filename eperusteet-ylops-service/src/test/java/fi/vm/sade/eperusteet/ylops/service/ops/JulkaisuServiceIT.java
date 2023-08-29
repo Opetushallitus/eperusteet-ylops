@@ -12,7 +12,6 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaistuQuery;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -35,7 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -43,7 +41,7 @@ import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DirtiesContext
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Transactional
 public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
 
@@ -129,8 +127,6 @@ public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
         CompletableFuture<Void> asyncResult2 = julkaisuService.addJulkaisu(this.ops.getId(), createJulkaisu());
         asyncResult2.get();
 
-        List<OpetussuunnitelmanJulkaisuDto> julkaisut = julkaisuService.getJulkaisut(this.ops.getId());
-        System.out.println("MÄÄRÄ " + julkaisut.size());
         assertThat(julkaisuService.getJulkaisut(this.ops.getId())).hasSize(2);
     }
 

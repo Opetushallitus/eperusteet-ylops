@@ -85,7 +85,7 @@
                 <entry key="hibernate.dialect" value="fi.vm.sade.eperusteet.utils.repository.dialect.CustomPostgreSqlDialect"/>
                 <entry key="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.DefaultAuditStrategy"/>
                 <entry key="hibernate.cache.use_second_level_cache" value="false"/>
-                <entry key="org.hibernate.envers.allow_identifier_reuse" value="true"/>
+                <entry key="org.hibernate.envers.allow_identifier_reuse" value="false"/>
                 <entry key="javax.persistence.validation.factory" value-ref="validator"/>
                 <entry key="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory"/>
             </map>
