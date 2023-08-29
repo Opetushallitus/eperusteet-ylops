@@ -26,6 +26,7 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,6 +95,7 @@ public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
     }
 
     @Test
+    @Rollback
     public void testJulkaise() throws ExecutionException, InterruptedException {
         assertThat(julkaisuService.getJulkaisut(this.ops.getId())).hasSize(0);
         CompletableFuture<Void> asyncResult = julkaisuService.addJulkaisu(this.ops.getId(), createJulkaisu());
@@ -102,6 +104,7 @@ public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
     }
 
     @Test
+    @Rollback
     public void testJulkaiseIlmanMuutoksia() throws ExecutionException, InterruptedException {
         expectedEx.expect(BusinessRuleViolationException.class);
         expectedEx.expectMessage("opetussuunnitelma-ei-muuttunut-viime-julkaisun-jalkeen");
@@ -112,6 +115,7 @@ public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
     }
 
     @Test
+    @Rollback
     public void testJulkaiseUudelleen() throws ExecutionException, InterruptedException {
         CompletableFuture<Void> asyncResult = julkaisuService.addJulkaisu(this.ops.getId(), createJulkaisu());
         asyncResult.get();
@@ -126,6 +130,7 @@ public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
     }
 
     @Test
+    @Rollback
     public void testGetJulkisetJulkaisut() throws ExecutionException, InterruptedException {
         CompletableFuture<Void> asyncResult = julkaisuService.addJulkaisu(this.ops.getId(), createJulkaisu());
         asyncResult.get();
@@ -137,6 +142,7 @@ public class JulkaisuServiceIT extends AbstractDockerIntegrationTest {
         query.setSivu(0);
 
         Page<OpetussuunnitelmaJulkinenDto> julkiset = opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query);
+        System.out.println("HUOM " + julkiset.getSize());
         assertThat(julkiset).hasSize(1);
     }
 
