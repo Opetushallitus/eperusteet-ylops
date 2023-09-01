@@ -156,6 +156,7 @@ import javax.persistence.criteria.Subquery;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -398,10 +399,17 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public Page<OpetussuunnitelmaJulkinenDto> getAllJulkaistutOpetussuunnitelmat(OpetussuunnitelmaJulkaistuQuery query) {
         Pageable pageable = new PageRequest(query.getSivu(), query.getSivukoko());
+
+        List<String> koulutustyypit = query.getKoulutustyypit();
+        if (CollectionUtils.isEmpty(koulutustyypit)) {
+            koulutustyypit = Arrays.asList("");
+        }
+
         return julkaisuRepository.findAllJulkisetJulkaisut(
                 query.getNimi(),
                 query.getKieli(),
                 query.getPerusteenDiaarinumero(),
+                koulutustyypit,
                 pageable)
                 .map(obj -> {
                     try {
