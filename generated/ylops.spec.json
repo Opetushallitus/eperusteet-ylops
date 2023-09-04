@@ -1327,6 +1327,16 @@
         "tags" : [ "Opetussuunnitelmat julkiset" ],
         "operationId" : "getAllJulkaistutOpetussuunnitelmat",
         "parameters" : [ {
+          "name" : "koulutustyypit",
+          "in" : "query",
+          "description" : "koulutustyypit",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
+        }, {
           "name" : "nimi",
           "in" : "query",
           "description" : "nimi",
@@ -10245,10 +10255,6 @@
           "type" : "string",
           "enum" : [ "SYVENTAVA", "SOVELTAVA", "EI_MAARITETTY" ]
         },
-        "jnro" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "laajuus" : {
           "type" : "string"
         },
@@ -10360,10 +10366,6 @@
           "type" : "string",
           "enum" : [ "SYVENTAVA", "SOVELTAVA", "EI_MAARITETTY" ]
         },
-        "jnro" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "laajuus" : {
           "type" : "string"
         },
@@ -10440,10 +10442,6 @@
         "valinnainenTyyppi" : {
           "type" : "string",
           "enum" : [ "SYVENTAVA", "SOVELTAVA", "EI_MAARITETTY" ]
-        },
-        "jnro" : {
-          "type" : "integer",
-          "format" : "int64"
         },
         "laajuus" : {
           "type" : "string"
@@ -10776,15 +10774,21 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "number" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -10798,33 +10802,33 @@
             "type" : "object"
           }
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
+        "number" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "number" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -10838,33 +10842,33 @@
             "$ref" : "#/definitions/OpetussuunnitelmaInfoDto"
           }
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
+        "number" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "number" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -10878,18 +10882,12 @@
             "$ref" : "#/definitions/OpetussuunnitelmaJulkinenDto"
           }
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
+        "number" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         }
       }
     },
@@ -12044,10 +12042,6 @@
         "valinnainenTyyppi" : {
           "type" : "string",
           "enum" : [ "SYVENTAVA", "SOVELTAVA", "EI_MAARITETTY" ]
-        },
-        "jnro" : {
-          "type" : "integer",
-          "format" : "int64"
         },
         "laajuus" : {
           "type" : "string"
