@@ -277,7 +277,7 @@ public class ValidointiServiceImpl implements ValidointiService {
                         new ArrayList<>());
 
                 // - Moduuli vähintään yhdessä opintojaksossa
-                validoiVirhe(validointi, "moduuli-kuuluttava-vahintaan-yhteen-opintojaksoon", moduuliNavigationNode(moduuli), moduulinOpintojaksot.isEmpty());
+                validoiHuomautus(validointi, "moduuli-kuuluttava-vahintaan-yhteen-opintojaksoon", moduuliNavigationNode(moduuli), moduulinOpintojaksot.isEmpty());
 
                 // - Pakollinen moduuli vähintään yhdessä opintojaksossa missä on vain muita saman oppiaineen pakollisia
                 validoiHuomautus(validointi, "pakollinen-moduuli-mahdollista-suorittaa-erillaan", moduuliNavigationNode(moduuli), moduulinOpintojaksot.stream()
