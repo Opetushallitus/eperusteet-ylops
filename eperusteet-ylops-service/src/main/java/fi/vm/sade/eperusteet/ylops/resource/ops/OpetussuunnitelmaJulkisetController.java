@@ -11,7 +11,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +23,6 @@ import java.util.List;
 public class OpetussuunnitelmaJulkisetController {
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
-
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
@@ -51,6 +49,7 @@ public class OpetussuunnitelmaJulkisetController {
     @ResponseBody
     @Timed
     @ApiImplicitParams({
+            @ApiImplicitParam(name = "koulutustyypit", dataType = "string", paramType = "query", allowMultiple = true, value = "koulutustyypit"),
             @ApiImplicitParam(name = "nimi", dataType = "string", paramType = "query", value = "nimi"),
             @ApiImplicitParam(name = "kieli", dataType = "string", paramType = "query"),
             @ApiImplicitParam(name = "perusteenDiaarinumero", dataType = "string", paramType = "query", value = "perusteenDiaarinumero"),

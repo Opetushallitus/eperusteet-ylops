@@ -31,6 +31,7 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
             "   WHERE 1 = 1 " +
             "   AND (:nimi LIKE '' OR LOWER(nimi->>:kieli) LIKE LOWER(CONCAT('%',:nimi,'%'))) " +
             "   AND (:perusteenDiaarinumero = '' OR peruste->>'diaarinumero' = :perusteenDiaarinumero) " +
+            "   AND (COALESCE(:koulutustyypit, NULL) = '' OR koulutustyyppi IN (:koulutustyypit)) " +
             "   order by nimi->>:kieli asc, ?#{#pageable} " +
             ") t";
 
@@ -42,5 +43,6 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
             @Param("nimi") String nimi,
             @Param("kieli") String kieli,
             @Param("perusteenDiaarinumero") String perusteenDiaarinumero,
+            @Param("koulutustyypit") List<String> koulutustyypit,
             Pageable pageable);
 }
