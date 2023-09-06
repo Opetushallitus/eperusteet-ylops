@@ -390,7 +390,7 @@ public class ValidointiServiceImpl implements ValidointiService {
                         return null;
                     } catch(BusinessRuleViolationException ex) {
                         return Validointi.Virhe.builder()
-                                .kuvaus("ops-paikallinen-opintojakso-rakennevirhe")
+                                .kuvaus(Optional.ofNullable(ex.getMessage()).orElse("ops-paikallinen-opintojakso-rakennevirhe"))
                                 .navigationNode(NavigationNodeDto.of(NavigationType.opintojakso, opintojakso.getNimi(), opintojakso.getId()))
                                 .build();
                     }
