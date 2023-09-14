@@ -45,6 +45,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.JSONException;
 import org.jsoup.Jsoup;
+import org.skyscreamer.jsonassert.FieldComparisonFailure;
 import org.skyscreamer.jsonassert.JSONCompare;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -169,7 +171,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         }
 
         List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
-        if(vanhatJulkaisut.size() > 0 && !onkoMuutoksia(opsId)) {
+        if(vanhatJulkaisut.size() > 0 && julkaisuversioMuutokset(opsId).isEmpty()) {
             throw new BusinessRuleViolationException("opetussuunnitelma-ei-muuttunut-viime-julkaisun-jalkeen");
         }
 
@@ -269,20 +271,20 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     }
 
     @Override
-    public boolean onkoMuutoksia(long opsId) {
+    public List<FieldComparisonFailure> julkaisuversioMuutokset(long opsId) {
         try {
             Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
             OpetussuunnitelmanJulkaisu viimeisinJulkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(opetussuunnitelma);
 
             if (viimeisinJulkaisu == null) {
-                return false;
+                return Collections.emptyList();
             }
 
             ObjectNode data = viimeisinJulkaisu.getData().getOpsData();
             String julkaistu = generoiOpetussuunnitelmaKaikkiDtAsString(objectMapper.treeToValue(data, dispatcher.get(opsId, OpsExport.class).getExportClass()));
             String nykyinen = generoiOpetussuunnitelmaKaikkiDtAsString(opetussuunnitelmaService.getExportedOpetussuunnitelma(opsId));
 
-            return JSONCompare.compareJSON(julkaistu, nykyinen, JSONCompareMode.LENIENT).failed();
+            return JSONCompare.compareJSON(julkaistu, nykyinen, JSONCompareMode.LENIENT).getFieldFailures();
         } catch (IOException|JSONException e) {
             log.error(Throwables.getStackTraceAsString(e));
             throw new BusinessRuleViolationException("onko-muutoksia-julkaisuun-verrattuna-tarkistus-epaonnistui");
@@ -313,6 +315,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     private String generoiOpetussuunnitelmaKaikkiDtAsString(OpetussuunnitelmaExportDto opetussuunnitelmaExportDto) throws IOException {
         opetussuunnitelmaExportDto.setViimeisinJulkaisuAika(null);
         opetussuunnitelmaExportDto.setTila(null);
+        opetussuunnitelmaExportDto.setOrganisaatiot(opetussuunnitelmaExportDto.getOrganisaatiot().stream().peek(org -> org.setNimi(null)).collect(Collectors.toSet()));
         return objectMapper.writeValueAsString(opetussuunnitelmaExportDto);
     }
 

@@ -1312,6 +1312,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         pohja.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
         cacheManager.getCache("perusteet").evict(peruste.getId());
         lisaaPerusteenSisalto(pohja, peruste, null);
+
+        opetussuunnitelmaRepository.findByPerusteId(pohja.getCachedPeruste().getPerusteId()).forEach(opetussuunnitelma -> {
+            muokkaustietoService.addOpsMuokkausTieto(opetussuunnitelma.getId(), opetussuunnitelma, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-peruste-paivitys");
+        });
     }
 
     private Opetussuunnitelma lisaaPerusteenSisalto(

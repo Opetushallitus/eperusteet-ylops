@@ -5,6 +5,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import io.swagger.annotations.Api;
+import org.skyscreamer.jsonassert.FieldComparisonFailure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,10 +27,10 @@ public class JulkaisuController {
     @Autowired
     private JulkaisuService julkaisuService;
 
-    @RequestMapping(method = GET, value = "/julkaisu/onkoMuutoksia")
-    public boolean onkoMuutoksia(
+    @RequestMapping(method = GET, value = "/julkaisu/muutokset")
+    public List<FieldComparisonFailure> julkaisuversioMuutokset(
             @PathVariable("opsId") final long opsId) {
-        return julkaisuService.onkoMuutoksia(opsId);
+        return julkaisuService.julkaisuversioMuutokset(opsId);
     }
 
     @RequestMapping(method = GET, value = "/viimeisinjulkaisutila")
