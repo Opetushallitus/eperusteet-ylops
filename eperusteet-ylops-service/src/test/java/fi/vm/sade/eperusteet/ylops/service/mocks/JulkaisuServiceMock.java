@@ -6,9 +6,11 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaisuTila;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
+import org.skyscreamer.jsonassert.FieldComparisonFailure;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -45,8 +47,8 @@ public class JulkaisuServiceMock implements JulkaisuService {
     }
 
     @Override
-    public boolean onkoMuutoksia(long opsId) {
-        return false;
+    public List<FieldComparisonFailure> julkaisuversioMuutokset(long opsId) {
+        return Collections.emptyList();
     }
 
     @Override

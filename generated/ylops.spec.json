@@ -2755,10 +2755,10 @@
         }
       }
     },
-    "/opetussuunnitelmat/{opsId}/julkaisu/onkoMuutoksia" : {
+    "/opetussuunnitelmat/{opsId}/julkaisu/muutokset" : {
       "get" : {
         "tags" : [ "Julkaisut" ],
-        "operationId" : "onkoMuutoksia",
+        "operationId" : "julkaisuversioMuutokset",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "path",
@@ -2770,7 +2770,10 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "type" : "boolean"
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/FieldComparisonFailure"
+              }
             }
           }
         }
@@ -6926,6 +6929,20 @@
         }
       }
     },
+    "FieldComparisonFailure" : {
+      "type" : "object",
+      "properties" : {
+        "field" : {
+          "type" : "string"
+        },
+        "expected" : {
+          "type" : "object"
+        },
+        "actual" : {
+          "type" : "object"
+        }
+      }
+    },
     "JarjestysDto" : {
       "type" : "object",
       "properties" : {
@@ -10782,16 +10799,6 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "first" : {
-          "type" : "boolean"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -10808,6 +10815,16 @@
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         }
       }
     },
@@ -10821,16 +10838,6 @@
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10848,6 +10855,16 @@
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         }
       }
     },
@@ -10861,16 +10878,6 @@
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10888,6 +10895,16 @@
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
         }
       }
     },

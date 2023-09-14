@@ -42,7 +42,7 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     List<String> findOrganisaatiot(long id);
 
     @Query(value = "SELECT o from Opetussuunnitelma o where o.cachedPeruste.perusteId = ?1")
-    Set<Opetussuunnitelma> findByPerusteIdAndOrganisaatio(long id);
+    Set<Opetussuunnitelma> findByPerusteId(long perusteId);
 
     @Query(value = "SELECT NEW fi.vm.sade.eperusteet.ylops.service.util.Pair(o.tyyppi, o.tila) from Opetussuunnitelma o where o.id = ?1")
     Pair<Tyyppi, Tila> findTyyppiAndTila(long id);
