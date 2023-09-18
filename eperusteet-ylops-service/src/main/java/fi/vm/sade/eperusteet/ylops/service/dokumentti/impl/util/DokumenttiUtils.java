@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util;
 
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -27,6 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -40,20 +42,26 @@ public class DokumenttiUtils {
 
     public static void addLokalisoituteksti(DokumenttiBase docBase, LokalisoituTekstiDto lTekstiDto, String tagi) {
         if (lTekstiDto != null) {
-            addLokalisoituteksti(docBase, docBase.getMapper().map(lTekstiDto, LokalisoituTeksti.class), tagi);
+            addLokalisoituteksti(docBase, lTekstiDto.getTekstit(), tagi);
         }
     }
 
     public static void addLokalisoituteksti(DokumenttiBase docBase, PerusteenLokalisoituTekstiDto lTekstiDto, String tagi) {
         if (lTekstiDto != null) {
-            addLokalisoituteksti(docBase, docBase.getMapper().map(lTekstiDto, LokalisoituTeksti.class), tagi);
+            addLokalisoituteksti(docBase, lTekstiDto.getTekstit(), tagi);
         }
     }
 
     public static void addLokalisoituteksti(DokumenttiBase docBase, LokalisoituTeksti lTeksti, String tagi) {
-        if (lTeksti != null && lTeksti.getTeksti() != null && lTeksti.getTeksti().get(docBase.getKieli()) != null) {
+        if (lTeksti != null) {
+            addLokalisoituteksti(docBase, lTeksti.getTeksti(), tagi);
+        }
+    }
+
+    public static void addLokalisoituteksti(DokumenttiBase docBase, Map<Kieli, String> tekstit, String tagi) {
+        if (tekstit != null && tekstit.get(docBase.getKieli()) != null) {
             try {
-                String teksti = lTeksti.getTeksti().get(docBase.getKieli());
+                String teksti = tekstit.get(docBase.getKieli());
                 teksti = "<" + tagi + ">" + cleanHtml(teksti) + "</" + tagi + ">";
 
                 Document tempDoc = new W3CDom().fromJsoup(Jsoup.parseBodyFragment(teksti));
@@ -62,7 +70,6 @@ public class DokumenttiUtils {
                 docBase.getBodyElement().appendChild(docBase.getDocument().importNode(node, true));
             } catch (Exception e) {
                 log.error(e.getMessage());
-                log.error("lokalisoituteksti id: {} ", lTeksti.getId());
                 throw e;
             }
         }
@@ -166,16 +173,22 @@ public class DokumenttiUtils {
     }
 
     public static String getTextString(DokumenttiBase docBase, LokalisoituTekstiDto lokalisoituTekstiDto) {
-        LokalisoituTeksti lokalisoituTeksti = docBase.getMapper().map(lokalisoituTekstiDto, LokalisoituTeksti.class);
-        return getTextString(docBase, lokalisoituTeksti);
+        return getTextString(docBase, lokalisoituTekstiDto.getTekstit());
     }
 
     public static String getTextString(DokumenttiBase docBase, LokalisoituTeksti lokalisoituTeksti) {
-        if (lokalisoituTeksti == null || lokalisoituTeksti.getTeksti() == null
-                || lokalisoituTeksti.getTeksti().get(docBase.getKieli()) == null) {
+        if (lokalisoituTeksti == null) {
             return "";
         } else {
-            return cleanHtml(lokalisoituTeksti.getTeksti().get(docBase.getKieli()));
+            return getTextString(docBase, lokalisoituTeksti.getTeksti());
+        }
+    }
+
+    public static String getTextString(DokumenttiBase docBase, Map<Kieli, String> tekstit) {
+        if (tekstit == null || tekstit.get(docBase.getKieli()) == null) {
+            return "";
+        } else {
+            return cleanHtml(tekstit.get(docBase.getKieli()));
         }
     }
 
