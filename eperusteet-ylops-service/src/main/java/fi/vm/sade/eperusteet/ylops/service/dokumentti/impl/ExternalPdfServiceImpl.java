@@ -44,7 +44,7 @@ public class ExternalPdfServiceImpl implements ExternalPdfService {
 
     @Override
     public void generatePdf(DokumenttiDto dto) throws JsonProcessingException {
-        OpetussuunnitelmaExportDto ops = opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(dto.getOpsId());
+        OpetussuunnitelmaExportDto ops = opetussuunnitelmaService.getExportedOpetussuunnitelma(dto.getOpsId());
         String json = mapper.writeValueAsString(ops);
         OphHttpClient client = restClientFactory.get(pdfServiceUrl, true);
         String url = pdfServiceUrl + "/api/pdf/generate/ylops/" + dto.getId() + "/" + dto.getKieli().name();

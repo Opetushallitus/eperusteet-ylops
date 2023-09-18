@@ -4,7 +4,9 @@ import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.*;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineJarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.Lops2019OpintojaksoExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.Lops2019OppiaineExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.Lops2019PaikallinenOppiaineExportDto;
@@ -24,7 +26,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
@@ -104,7 +111,7 @@ public class OpsExportLops2019Impl implements OpsExport {
         result.setOpintojaksot(opintojaksot);
         result.setValtakunnallisetOppiaineet(oppiaineet);
         result.setPaikallisetOppiaineet(paikallisetOppiaineet);
-        result.setOppiaineJarjestykset(new HashSet<>(mapper.mapAsList(ops.getOppiaineJarjestykset(), Lops2019OppiaineJarjestysDto.class)));
+        result.setOppiaineJarjestykset(new HashSet<>(mapper.mapAsList(ops.getLops2019().getOppiaineJarjestykset(), Lops2019OppiaineJarjestysDto.class)));
 
         opetussuunnitelmaService.fetchKuntaNimet(result);
         opetussuunnitelmaService.fetchOrganisaatioNimet(result);
