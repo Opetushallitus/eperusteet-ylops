@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaisuKevyt;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.dto.util.FieldComparisonFailureDto;
 import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaDataRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaTilaRepository;
@@ -45,7 +46,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.JSONException;
 import org.jsoup.Jsoup;
-import org.skyscreamer.jsonassert.FieldComparisonFailure;
 import org.skyscreamer.jsonassert.JSONCompare;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -271,7 +271,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     }
 
     @Override
-    public List<FieldComparisonFailure> julkaisuversioMuutokset(long opsId) {
+    public List<FieldComparisonFailureDto> julkaisuversioMuutokset(long opsId) {
         try {
             Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
             OpetussuunnitelmanJulkaisu viimeisinJulkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(opetussuunnitelma);
@@ -284,7 +284,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             String julkaistu = generoiOpetussuunnitelmaKaikkiDtAsString(objectMapper.treeToValue(data, dispatcher.get(opsId, OpsExport.class).getExportClass()));
             String nykyinen = generoiOpetussuunnitelmaKaikkiDtAsString(opetussuunnitelmaService.getExportedOpetussuunnitelma(opsId));
 
-            return JSONCompare.compareJSON(julkaistu, nykyinen, JSONCompareMode.LENIENT).getFieldFailures();
+            return mapper.mapAsList(JSONCompare.compareJSON(julkaistu, nykyinen, JSONCompareMode.LENIENT).getFieldFailures(), FieldComparisonFailureDto.class);
         } catch (IOException|JSONException e) {
             log.error(Throwables.getStackTraceAsString(e));
             throw new BusinessRuleViolationException("onko-muutoksia-julkaisuun-verrattuna-tarkistus-epaonnistui");
