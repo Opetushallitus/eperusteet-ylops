@@ -121,7 +121,6 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     private JulkaisuService self;
 
     private static final int JULKAISUN_ODOTUSAIKA_SEKUNNEISSA = 5 * 60;
-
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
     @Override
@@ -309,7 +308,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void saveJulkaistuOpetussuunnitelmaTila(JulkaistuOpetussuunnitelmaTila julkaistuOpetussuunnitelmaTila) {
-        julkaistuOpetussuunnitelmaTilaRepository.save(julkaistuOpetussuunnitelmaTila);
+        julkaistuOpetussuunnitelmaTilaRepository.saveAndFlush(julkaistuOpetussuunnitelmaTila);
     }
 
     private String generoiOpetussuunnitelmaKaikkiDtAsString(OpetussuunnitelmaExportDto opetussuunnitelmaExportDto) throws IOException {
