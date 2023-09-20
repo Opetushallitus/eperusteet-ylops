@@ -17,9 +17,6 @@ public class AsyncConfig  {
     @Bean(name = "julkaisuTaskExecutor")
     public Executor julkaisuTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(1);
-        executor.setMaxPoolSize(1);
-        executor.setQueueCapacity(100);
         executor.initialize();
 
         return new DelegatingSecurityContextAsyncTaskExecutor(executor);
