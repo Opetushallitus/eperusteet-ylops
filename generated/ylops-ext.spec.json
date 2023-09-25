@@ -1,8 +1,9 @@
 {
   "swagger" : "2.0",
   "info" : {
+    "description" : "Yleissivistävien opetussuunnitelmien rajapintakuvaukset",
     "version" : "1",
-    "title" : "ePerusteet ylops api"
+    "title" : "OPS-työkalu API"
   },
   "basePath" : "https://eperusteet.opintopolku.fi/eperusteet-ylops-service/api",
   "tags" : [ {
@@ -331,11 +332,25 @@
     "Page" : {
       "type" : "object",
       "properties" : {
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
         },
-        "totalPages" : {
+        "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "number" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -349,12 +364,21 @@
             "type" : "object"
           }
         },
-        "number" : {
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        }
+      }
+    },
+    "PageOpetussuunnitelmaJulkinenDto" : {
+      "type" : "object",
+      "properties" : {
+        "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "first" : {
           "type" : "boolean"
@@ -365,17 +389,8 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        }
-      }
-    },
-    "PageOpetussuunnitelmaJulkinenDto" : {
-      "type" : "object",
-      "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
         },
-        "totalPages" : {
+        "number" : {
           "type" : "integer",
           "format" : "int32"
         },
@@ -389,22 +404,8 @@
             "$ref" : "#/definitions/OpetussuunnitelmaJulkinenDto"
           }
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },

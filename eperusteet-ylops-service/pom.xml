@@ -808,9 +808,9 @@
                                     </locations>
                                     <modelSubstitute>/substitutes.map</modelSubstitute>
                                     <info>
-                                        <title>ePerusteet ylops api</title>
+                                        <title>OPS-työkalu API</title>
                                         <version>1</version>
-                                        <description></description>
+                                        <description>Yleissivistävien opetussuunnitelmien rajapintakuvaukset</description>
                                     </info>
                                     <swaggerFileName>ylops-ext.spec</swaggerFileName>
                                     <swaggerDirectory>target/openapi</swaggerDirectory>
