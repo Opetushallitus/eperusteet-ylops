@@ -16,10 +16,12 @@ import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiStateService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.ExternalPdfService;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 
+@Slf4j
 @Service
 @Transactional
 public class DokumenttiServiceImpl implements DokumenttiService {
@@ -222,7 +225,15 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Transactional(readOnly = true)
     public DokumenttiDto query(Long id) {
         Dokumentti dokumentti = dokumenttiRepository.findOne(id);
-        return mapper.map(dokumentti, DokumenttiDto.class);
+        DokumenttiDto dto = mapper.map(dokumentti, DokumenttiDto.class);
+        if (dokumentti != null && DokumenttiUtils.isTimePass(dokumentti)) {
+            log.error("dokumentin valmistus kesti yli {} minuuttia, opetussuunnitelma {}", DokumenttiUtils.MAX_TIME_IN_MINUTES, dto.getOpsId());
+            dto.setTila(DokumenttiTila.EPAONNISTUI);
+            dto.setVirhekoodi("tuntematon");
+            dto.setValmistumisaika(new Date());
+            dokumenttiStateService.save(dto);
+        }
+        return dto;
     }
 
     @Override
