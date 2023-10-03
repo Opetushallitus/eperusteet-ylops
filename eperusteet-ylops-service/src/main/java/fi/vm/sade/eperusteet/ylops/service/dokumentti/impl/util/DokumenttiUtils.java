@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util;
 
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class DokumenttiUtils {
-    private static final int MAX_TIME_IN_MINUTES = 5;
+    public static final int MAX_TIME_IN_MINUTES = 60;
 
     public static boolean hasLokalisoituteksti(DokumenttiBase docBase, LokalisoituTeksti lTeksti) {
         return lTeksti != null && lTeksti.getTeksti() != null && lTeksti.getTeksti().get(docBase.getKieli()) != null;
@@ -221,7 +222,7 @@ public class DokumenttiUtils {
     }
 
     public static boolean isTimePass(Dokumentti dokumentti) {
-        return isTimePass(dokumentti.getAloitusaika());
+        return dokumentti.getTila().equals(DokumenttiTila.LUODAAN) && isTimePass(dokumentti.getAloitusaika());
     }
 
     public static boolean isTimePass(Date date) {
