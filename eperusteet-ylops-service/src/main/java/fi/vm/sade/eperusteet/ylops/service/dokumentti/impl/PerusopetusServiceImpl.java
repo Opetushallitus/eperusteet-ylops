@@ -788,7 +788,7 @@ public class PerusopetusServiceImpl implements PerusopetusService {
             LokalisoituTeksti otsikko = tekstiosa.getOtsikko();
             if (otsikko != null) {
                 addHeader(docBase, getTextString(docBase, otsikko));
-            } else if (perusteTekstiOsaDto != null) {
+            } else if (perusteTekstiOsaDto != null && perusteTekstiOsaDto.getOtsikko() != null && perusteTekstiOsaDto.getTeksti() != null) {
                 addHeader(docBase, getTextString(docBase, perusteTekstiOsaDto.getOtsikko()));
                 addLokalisoituteksti(docBase, perusteTekstiOsaDto.getTeksti(), "cite");
             }
