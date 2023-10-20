@@ -121,7 +121,7 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
     public void testPerusteenTekstinPoisto() {
         OpetussuunnitelmaDto ops = createLukioOpetussuunnitelma();
         TekstiKappaleViiteDto.Matala perusteenTekstiDto = tekstiKappaleViiteService.getTekstiKappaleViite(ops.getId(), findTkNimi(ops.getId(), "Uudistuva lukiokoulutus").getId());
-        assertThatThrownBy(() ->tekstiKappaleViiteService.removeTekstiKappaleViite(ops.getId(), perusteenTekstiDto.getId()))
+        assertThatThrownBy(() ->tekstiKappaleViiteService.removeTekstiKappaleViite(ops.getId(), perusteenTekstiDto.getId(), false))
                 .hasMessage("pakollista-tekstikappaletta-ei-voi-poistaa");
     }
 

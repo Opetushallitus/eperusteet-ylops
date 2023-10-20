@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
- *
- * This program is free software: Licensed under the EUPL, Version 1.1 or - as
- * soon as they will be approved by the European Commission - subsequent versions
- * of the EUPL (the "Licence");
- *
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * European Union Public Licence for more details.
- */
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtumaAuditointitiedoilla;
@@ -63,9 +48,6 @@ import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
-/**
- * @author mikkom
- */
 @Service
 @Transactional(readOnly = true)
 public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService {
@@ -271,17 +253,17 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
 
     @Override
-    @Transactional(readOnly = false)
-    public void removeTekstiKappaleViite(Long opsId, Long viiteId) {
+    @Transactional
+    public void removeTekstiKappaleViite(Long opsId, Long viiteId, boolean isChild) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
         if (viite.getVanhempi() == null) {
             throw new BusinessRuleViolationException("sisallon-juurielementtia-ei-voi-poistaa");
         }
 
         if (viite.getLapset() != null && !viite.getLapset().isEmpty()) {
-            throw new BusinessRuleViolationException("sisallolla-on-lapsia-ei-voida-poistaa");
+            viite.getLapset().forEach(lapsi -> removeTekstiKappaleViite(opsId, lapsi.getId(), true));
+            viite.getLapset().removeAll(viite.getLapset());
         }
 
         if (getPerusteTekstikappale(opsId, viiteId) != null) {
@@ -290,9 +272,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
         // Poistetaan viittaus poistettavaan tekstikappale viitteeseen
         List<TekstiKappaleViite> viittaavat = tekstikappaleviiteRepository.findAllByOriginalId(viiteId);
-        viittaavat.forEach(vierasViite -> {
-            vierasViite.updateOriginal(null);
-        });
+        viittaavat.forEach(vierasViite -> vierasViite.updateOriginal(null));
 
         tekstikappaleviiteRepository.lock(viite.getRoot());
         TekstiKappale tekstiKappale = viite.getTekstiKappale();
@@ -303,9 +283,12 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
 
+        if (!isChild) {
+            viite.getVanhempi().getLapset().remove(viite);
+            viite.setVanhempi(null);
+        }
         viite.setTekstiKappale(null);
-        viite.getVanhempi().getLapset().remove(viite);
-        viite.setVanhempi(null);
+
         tekstikappaleviiteRepository.delete(viite);
     }
 
