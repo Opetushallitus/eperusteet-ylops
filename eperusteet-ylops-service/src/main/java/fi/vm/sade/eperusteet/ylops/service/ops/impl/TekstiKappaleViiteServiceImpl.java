@@ -1,20 +1,6 @@
-/*
- * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
- *
- * This program is free software: Licensed under the EUPL, Version 1.1 or - as
- * soon as they will be approved by the European Commission - subsequent versions
- * of the EUPL (the "Licence");
- *
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * European Union Public Licence for more details.
- */
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
+import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtumaAuditointitiedoilla;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
@@ -63,9 +49,6 @@ import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
-/**
- * @author mikkom
- */
 @Service
 @Transactional(readOnly = true)
 public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService {
@@ -271,21 +254,20 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void removeTekstiKappaleViite(Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
         if (viite.getVanhempi() == null) {
             throw new BusinessRuleViolationException("sisallon-juurielementtia-ei-voi-poistaa");
         }
 
-        if (viite.getLapset() != null && !viite.getLapset().isEmpty()) {
-            throw new BusinessRuleViolationException("sisallolla-on-lapsia-ei-voida-poistaa");
-        }
-
         if (getPerusteTekstikappale(opsId, viiteId) != null) {
             throw new BusinessRuleViolationException("pakollista-tekstikappaletta-ei-voi-poistaa");
+        }
+
+        if (viite.getLapset() != null && !viite.getLapset().isEmpty()) {
+            Sets.newHashSet(viite.getLapset()).forEach(lapsi -> removeTekstiKappaleViite(opsId, lapsi.getId()));
         }
 
         // Poistetaan viittaus poistettavaan tekstikappale viitteeseen
