@@ -1,24 +1,48 @@
 package fi.vm.sade.eperusteet.ylops.resource.util;
 
 import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
-import fi.vm.sade.eperusteet.ylops.service.util.LogoutService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.servlet.View;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.util.Optional;
 
+@RestController
+@RequestMapping
+@Api("Logout")
 @InternalApi
-@Controller
 public class LogoutController {
 
-    @Autowired
-    private LogoutService logoutService;
+    @PostMapping(value = "/logout")
+    public void logoutPOST(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        deleteCookies(request, response);
+    }
 
-    @GetMapping("/logout")
-    public View logout(HttpServletRequest request) {
-        return new RedirectView(logoutService.logout(request));
+    @GetMapping(value = "/logout")
+    public void logoutGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        deleteCookies(request, response);
+
+        String url = request.getRequestURL().toString().replace(request.getRequestURI(),"");
+        response.sendRedirect(url + "/service-provider-app/saml/logout");
+    }
+
+    private static void deleteCookies(HttpServletRequest request, HttpServletResponse response) {
+        Optional.ofNullable(request.getSession(false)).ifPresent(HttpSession::invalidate);
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                cookie.setValue("");
+                cookie.setPath("/");
+                cookie.setMaxAge(0);
+                response.addCookie(cookie);
+            }
+        }
     }
 }
