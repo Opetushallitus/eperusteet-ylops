@@ -53,4 +53,5 @@ public class KayttajaController {
     public EtusivuDto getKayttajanEtusivu() {
         return kayttajat.haeKayttajanEtusivu();
     }
+
 }
