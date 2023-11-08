@@ -322,6 +322,11 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
         }
     }
 
+    public void addOppimaaraWithPohja(Oppiaine oppimaara, Oppiaine originalOppimaara) {
+        oppimaara.asetaPohjanOppiaine(originalOppimaara);
+        addOppimaara(oppimaara);
+    }
+
     public void removeOppimaara(Oppiaine aine) {
         if (!koosteinen) {
             throw new IllegalStateException("Oppiaine ei ole koosteinen eikä tue oppimääriä");
@@ -480,7 +485,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
             if (other.isKoosteinen() && other.getOppiaine() == null) {
                 other.getOppimaarat().stream()
                         .filter(oppimaaraFilter)
-                        .forEach((om -> o.addOppimaara(with.copy(om))));
+                        .forEach((om -> o.addOppimaaraWithPohja(with.copy(om), om)));
             }
         };
     }
