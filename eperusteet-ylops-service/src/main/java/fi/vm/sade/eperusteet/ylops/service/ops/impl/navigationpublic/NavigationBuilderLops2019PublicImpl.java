@@ -10,13 +10,16 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.Lops2019PaikallinenOppiai
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.OpetussuunnitelmaExportLops2019Dto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
+import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.impl.Lops2019Utils;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +47,9 @@ public class NavigationBuilderLops2019PublicImpl implements NavigationBuilderPub
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
+    @Autowired
+    private EperusteetService eperusteetService;
+
     @Override
     public Set<KoulutustyyppiToteutus> getTyypit() {
         return Sets.newHashSet(KoulutustyyppiToteutus.LOPS2019);
@@ -69,9 +75,7 @@ public class NavigationBuilderLops2019PublicImpl implements NavigationBuilderPub
 
         List<Lops2019OppiaineExportDto> oppiaineet = getOppiaineet(opetussuunnitelmaDto, opintojaksotMap);
         List<Lops2019PaikallinenOppiaineExportDto> paikallisetOppiaineet = getPaikallisetOppiaineet(opetussuunnitelmaDto, opintojaksotMap);
-
         Set<Lops2019OppiaineJarjestysDto> oppiaineJarjestykset = opetussuunnitelmaDto.getOppiaineJarjestykset();
-
         List<NavigationNodeDto> navigationOppiaineet = new ArrayList<>();
 
         Lops2019Utils.sortOppiaineet(
@@ -123,7 +127,7 @@ public class NavigationBuilderLops2019PublicImpl implements NavigationBuilderPub
                     return paikallisetOppiaineet.stream()
                             .anyMatch(poa -> {
                                 String parentKoodi = poa.getPerusteenOppiaineUri();
-                                Optional<Lops2019OppiaineExportDto> perusteOppiaine = perusteOppiaineet.stream()
+                                Optional<Lops2019OppiaineKaikkiDto> perusteOppiaine = eperusteetService.getPerusteById(opetussuunnitelmaDto.getPerusteenId()).getLops2019().getOppiaineet().stream()
                                         .filter(oaOrg -> oaOrg.getId().equals(oa.getId()))
                                         .findAny();
                                 if (parentKoodi != null) {
@@ -143,7 +147,10 @@ public class NavigationBuilderLops2019PublicImpl implements NavigationBuilderPub
     }
 
     protected List<Lops2019PaikallinenOppiaineExportDto> getPaikallisetOppiaineet(OpetussuunnitelmaExportLops2019Dto opetussuunnitelmaDto, Map<String, Set<Lops2019OpintojaksoExportDto>> opintojaksotMap) {
-        return new ArrayList<>(opetussuunnitelmaDto.getPaikallisetOppiaineet());
+        return opetussuunnitelmaDto.getPaikallisetOppiaineet().stream()
+                .filter(oppiaine -> opintojaksotMap.containsKey(oppiaine.getKoodi()))
+                .filter(poa -> StringUtils.isEmpty(poa.getPerusteenOppiaineUri()))
+                .collect(Collectors.toList());
     }
 
     protected Predicate<Lops2019PaikallinenOppiaineExportDto> getPaikallinenFilter(Map<String, Set<Lops2019OpintojaksoExportDto>> opintojaksotMap) {
@@ -164,7 +171,7 @@ public class NavigationBuilderLops2019PublicImpl implements NavigationBuilderPub
         List<Lops2019PaikallinenOppiaineExportDto> paikallisetOppimaarat = opetussuunnitelmaDto.getPaikallisetOppiaineet().stream()
                 .filter(poa -> {
                     String parentKoodi = poa.getPerusteenOppiaineUri();
-                    Optional<Lops2019OppiaineExportDto> orgOaOpt = opetussuunnitelmaDto.getValtakunnallisetOppiaineet().stream()
+                    Optional<Lops2019OppiaineKaikkiDto> orgOaOpt = eperusteetService.getPerusteById(opetussuunnitelmaDto.getPerusteenId()).getLops2019().getOppiaineet().stream()
                             .filter(oaOrg -> oaOrg.getId().equals(oa.getId()))
                             .findAny();
                     if (parentKoodi != null) {
