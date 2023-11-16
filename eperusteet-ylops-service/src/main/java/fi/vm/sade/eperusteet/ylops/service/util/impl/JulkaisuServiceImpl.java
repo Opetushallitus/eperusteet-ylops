@@ -211,6 +211,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             julkaisu.setOpetussuunnitelma(ops);
             julkaisu.setTiedote(mapper.map(julkaisuDto.getJulkaisutiedote(), LokalisoituTeksti.class));
             OpetussuunnitelmaExportDto opsData = opetussuunnitelmaService.getExportedOpetussuunnitelma(opsId);
+            opsData.setViimeisinJulkaisuAika(new Date());
 
             ObjectNode opsDataJson = (ObjectNode) jsonMapper.toJson(opsData);
             List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
