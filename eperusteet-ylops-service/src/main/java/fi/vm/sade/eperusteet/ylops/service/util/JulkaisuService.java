@@ -5,7 +5,6 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaistuOpetussuunnitelmaTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaisuTila;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
-import fi.vm.sade.eperusteet.ylops.dto.util.FieldComparisonFailureDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 
@@ -32,7 +31,7 @@ public interface JulkaisuService {
     JsonNode queryOpetussuunnitelmaJulkaisu(@P("opsId") Long opsId, String query);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<FieldComparisonFailureDto> julkaisuversioMuutokset(long opsId);
+    boolean julkaisemattomiaMuutoksia(long opetussuunnitelmaId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     JulkaisuTila viimeisinJulkaisuTila(long opsId);
