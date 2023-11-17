@@ -1951,10 +1951,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         OpetussuunnitelmanJulkaisu julkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(ops);
 
         if (julkaisu != null) {
-            return self.getOpetussuunnitelmanJulkaisuWithData(opsId, julkaisu);
-        } else {
-            return getExportedOpetussuunnitelma(opsId);
+            OpetussuunnitelmaExportDto julkaistuDto = self.getOpetussuunnitelmanJulkaisuWithData(opsId, julkaisu);
+            julkaistuDto.setViimeisinJulkaisuAika(julkaisu.getLuotu());
+            return julkaistuDto;
         }
+
+        return null;
     }
 
     @Override
@@ -1965,7 +1967,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         if (esikatselu) {
-            return getExportedOpetussuunnitelma(opsId);
+            OpetussuunnitelmaExportDto esikatseluDto = getExportedOpetussuunnitelma(opsId);
+            esikatseluDto.setViimeisinJulkaisuAika(null);
+            return esikatseluDto;
         }
 
         return getOpetussuunnitelmaJulkaistuSisalto(opsId);
