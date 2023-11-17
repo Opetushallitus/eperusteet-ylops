@@ -18,11 +18,11 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaisuKevyt;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.dto.util.FieldComparisonFailureDto;
 import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaDataRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaistuOpetussuunnitelmaTilaRepository;
@@ -37,17 +37,13 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
-import fi.vm.sade.eperusteet.ylops.service.ops.OpsExport;
 import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.json.JSONException;
 import org.jsoup.Jsoup;
-import org.skyscreamer.jsonassert.JSONCompare;
-import org.skyscreamer.jsonassert.JSONCompareMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
@@ -59,7 +55,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -266,24 +261,11 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     }
 
     @Override
-    public List<FieldComparisonFailureDto> julkaisuversioMuutokset(long opsId) {
-        try {
-            Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
-            OpetussuunnitelmanJulkaisu viimeisinJulkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(opetussuunnitelma);
-
-            if (viimeisinJulkaisu == null) {
-                return Collections.emptyList();
-            }
-
-            ObjectNode data = viimeisinJulkaisu.getData().getOpsData();
-            String julkaistu = generoiOpetussuunnitelmaKaikkiDtAsString(objectMapper.treeToValue(data, dispatcher.get(opsId, OpsExport.class).getExportClass()));
-            String nykyinen = generoiOpetussuunnitelmaKaikkiDtAsString(opetussuunnitelmaService.getExportedOpetussuunnitelma(opsId));
-
-            return mapper.mapAsList(JSONCompare.compareJSON(julkaistu, nykyinen, JSONCompareMode.LENIENT).getFieldFailures(), FieldComparisonFailureDto.class);
-        } catch (IOException|JSONException e) {
-            log.error(Throwables.getStackTraceAsString(e));
-            throw new BusinessRuleViolationException("onko-muutoksia-julkaisuun-verrattuna-tarkistus-epaonnistui");
-        }
+    public boolean julkaisemattomiaMuutoksia(long opetussuunnitelmaId) {
+        List<MuokkaustietoKayttajallaDto> muokkaustiedot = muokkaustietoService.getOpsMuokkausTietos(opetussuunnitelmaId, new Date(), 1);
+        return julkaisuRepository.countByOpetussuunnitelmaId(opetussuunnitelmaId) > 0
+                && !muokkaustiedot.isEmpty()
+                && muokkaustiedot.stream().noneMatch(muokkaustieto -> muokkaustieto.getTapahtuma().equals(MuokkausTapahtuma.JULKAISU));
     }
 
     @Override

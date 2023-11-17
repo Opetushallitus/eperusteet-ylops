@@ -3,7 +3,6 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaisuTila;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
-import fi.vm.sade.eperusteet.ylops.dto.util.FieldComparisonFailureDto;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,10 +26,10 @@ public class JulkaisuController {
     @Autowired
     private JulkaisuService julkaisuService;
 
-    @RequestMapping(method = GET, value = "/julkaisu/muutokset")
-    public List<FieldComparisonFailureDto> julkaisuversioMuutokset(
+    @RequestMapping(method = GET, value = "/julkaisu/muutoksia")
+    public boolean julkaisemattomiaMuutoksia(
             @PathVariable("opsId") final long opsId) {
-        return julkaisuService.julkaisuversioMuutokset(opsId);
+        return julkaisuService.julkaisemattomiaMuutoksia(opsId);
     }
 
     @RequestMapping(method = GET, value = "/viimeisinjulkaisutila")
