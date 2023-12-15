@@ -286,14 +286,14 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public String getYllapitoAsetus(String key) {
+        if (!StringUtils.isBlank(usePdfServiceLocal)) {
+            return usePdfServiceLocal;
+        }
         try {
             return client.getForObject(eperusteetServiceUrl + "/api/maintenance/yllapito/" + key, String.class);
         } catch (Exception e) {
-            if (StringUtils.isBlank(usePdfServiceLocal)) {
-                log.error(e.getMessage());
-                throw new BusinessRuleViolationException("yllapitoasetuksia-ei-saatu-haettu-eperusteista");
-            }
-            return usePdfServiceLocal;
+            log.error(e.getMessage());
+            throw new BusinessRuleViolationException("yllapitoasetuksia-ei-saatu-haettu-eperusteista");
         }
     }
 
