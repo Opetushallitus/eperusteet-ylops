@@ -19,20 +19,17 @@ import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
-
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * @author jhyoty
@@ -53,6 +50,7 @@ public class PerusteOppiaineenVuosiluokkakokonaisuusDto implements Referenceable
     private PerusteTekstiOsaDto sisaltoalueinfo;
     private LokalisoituTekstiDto opetuksenTavoitteetOtsikko;
     private LokalisoituTekstiDto vapaaTeksti;
+    private List<TekstiKappaleDto> vapaatTekstit;
     private List<PerusteOpetuksentavoiteDto> tavoitteet;
     private List<PerusteKeskeinensisaltoalueDto> sisaltoalueet;
 

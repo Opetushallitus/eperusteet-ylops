@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,6 +37,7 @@ public class OppiaineDto {
     private Boolean abstrakti;
     private PerusteenLokalisoituTekstiDto nimi;
     private TekstiOsaDto tehtava;
+    private List<TekstiKappaleDto> vapaatTekstit;
     private Set<OppiaineDto> oppimaarat;
     private Set<OpetuksenKohdealueDto> kohdealueet;
     private Set<OppiaineenVuosiluokkaKokonaisuusDto> vuosiluokkakokonaisuudet;
