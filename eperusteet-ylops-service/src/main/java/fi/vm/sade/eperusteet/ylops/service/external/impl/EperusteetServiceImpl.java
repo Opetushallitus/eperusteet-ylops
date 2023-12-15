@@ -25,6 +25,7 @@ import fi.vm.sade.javautils.http.OphHttpRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
@@ -76,6 +77,9 @@ public class EperusteetServiceImpl implements EperusteetService {
     // perusteet in the environment has been synced:
     @Value("${fi.vm.sade.eperusteet.ylops.update-peruste-cache-for-all-missing: false}")
     private boolean updateMissingToCache;
+
+    @Value("${fi.vm.sade.eperusteet.ylops.use-pdf-service: }")
+    private String usePdfServiceLocal;
 
     @Autowired
     private PerusteCacheRepository perusteCacheRepository;
@@ -282,6 +286,9 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public String getYllapitoAsetus(String key) {
+        if (!StringUtils.isBlank(usePdfServiceLocal)) {
+            return usePdfServiceLocal;
+        }
         try {
             return client.getForObject(eperusteetServiceUrl + "/api/maintenance/yllapito/" + key, String.class);
         } catch (Exception e) {
