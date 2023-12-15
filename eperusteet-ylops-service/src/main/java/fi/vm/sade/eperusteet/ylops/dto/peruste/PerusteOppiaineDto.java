@@ -18,17 +18,15 @@ package fi.vm.sade.eperusteet.ylops.dto.peruste;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
-
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 /**
  * @author jhyoty
@@ -46,6 +44,7 @@ public class PerusteOppiaineDto implements ReferenceableDto {
     private Boolean abstrakti;
     private LokalisoituTekstiDto nimi;
     private PerusteTekstiOsaDto tehtava;
+    private List<TekstiKappaleDto> vapaatTekstit;
     private Set<PerusteOppiaineDto> oppimaarat;
     private Set<PerusteOpetuksenkohdealueDto> kohdealueet;
     private List<PerusteOppiaineenVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
