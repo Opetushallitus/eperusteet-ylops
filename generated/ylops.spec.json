@@ -10332,6 +10332,12 @@
         "pohjanOppiaine" : {
           "$ref" : "#/definitions/OppiaineDto"
         },
+        "vapaatTekstit" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/VapaatekstiPaikallinentarkennusDto"
+          }
+        },
         "_liittyvaOppiaine" : {
           "$ref" : "#/definitions/Reference"
         }
@@ -10796,23 +10802,20 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10828,6 +10831,9 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "first" : {
+          "type" : "boolean"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         }
@@ -10836,23 +10842,20 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10868,6 +10871,9 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "first" : {
+          "type" : "boolean"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         }
@@ -10876,23 +10882,20 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "first" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "last" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -10907,6 +10910,9 @@
         "number" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
@@ -11310,6 +11316,12 @@
         "tehtava" : {
           "$ref" : "#/definitions/PerusteTekstiOsaDto"
         },
+        "vapaatTekstit" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TekstiKappaleDto"
+          }
+        },
         "oppimaarat" : {
           "type" : "array",
           "uniqueItems" : true,
@@ -11364,6 +11376,12 @@
           "type" : "object",
           "additionalProperties" : {
             "type" : "string"
+          }
+        },
+        "vapaatTekstit" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TekstiKappaleDto"
           }
         },
         "tavoitteet" : {
@@ -12120,6 +12138,12 @@
         "pohjanOppiaine" : {
           "$ref" : "#/definitions/OppiaineDto"
         },
+        "vapaatTekstit" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/VapaatekstiPaikallinentarkennusDto"
+          }
+        },
         "_liittyvaOppiaine" : {
           "$ref" : "#/definitions/Reference"
         }
@@ -12342,6 +12366,21 @@
           "type" : "array",
           "items" : {
             "$ref" : "#/definitions/Virhe"
+          }
+        }
+      }
+    },
+    "VapaatekstiPaikallinentarkennusDto" : {
+      "type" : "object",
+      "properties" : {
+        "perusteenVapaaTekstiId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "paikallinenTarkennus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
           }
         }
       }
