@@ -12031,6 +12031,9 @@
         "perusteenTekstikappale" : {
           "$ref" : "#/definitions/TekstiKappaleDto"
         },
+        "piilotettu" : {
+          "type" : "boolean"
+        },
         "_tekstiKappale" : {
           "$ref" : "#/definitions/Reference"
         }
