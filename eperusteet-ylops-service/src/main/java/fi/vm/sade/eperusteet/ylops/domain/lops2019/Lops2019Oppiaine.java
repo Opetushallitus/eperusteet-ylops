@@ -17,6 +17,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -83,9 +84,17 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private Lops2019PaikallinenArviointi arviointi;
 
+//    @Getter
+//    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+//    @OrderColumn
+//    private List<PaikallinenLaajaAlainenOsaaminen> laajaAlainenOsaaminen = new ArrayList<>();
+
     @Getter
-    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @OrderColumn
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinTable(name = "lops2019_oppiaine_paikallinen_laaja_alainen_osaaminen",
+            joinColumns = @JoinColumn(name = "lops2019_oppiaine_id"),
+            inverseJoinColumns = @JoinColumn(name = "laajaalainenosaaminen_id"))
     private List<PaikallinenLaajaAlainenOsaaminen> laajaAlainenOsaaminen = new ArrayList<>();
 
     @Getter

@@ -35,7 +35,7 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author mikkom
  */
 @RestController
-@RequestMapping("/ohjeet")
+@RequestMapping("/api/ohjeet")
 @ApiIgnore
 @Api("Ohjeet")
 public class OhjeController {

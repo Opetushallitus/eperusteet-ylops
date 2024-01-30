@@ -38,7 +38,7 @@ import java.util.Objects;
 @Slf4j
 @Api("Dokumentit")
 @RestController
-@RequestMapping("/dokumentit")
+@RequestMapping("/api/dokumentit")
 public class DokumenttiController {
     @Autowired
     private DtoMapper mapper;

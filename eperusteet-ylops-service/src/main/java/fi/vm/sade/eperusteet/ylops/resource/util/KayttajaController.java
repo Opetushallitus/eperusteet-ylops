@@ -31,7 +31,7 @@ import java.util.Set;
  * @author jhyoty
  */
 @RestController
-@RequestMapping("/kayttaja")
+@RequestMapping("/api/kayttaja")
 @Api("Kayttajat")
 @ApiIgnore
 public class KayttajaController {

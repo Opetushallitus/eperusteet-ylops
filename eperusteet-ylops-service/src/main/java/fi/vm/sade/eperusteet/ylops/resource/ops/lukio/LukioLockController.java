@@ -32,7 +32,7 @@ import springfox.documentation.annotations.ApiIgnore;
  * Time: 14.19
  */
 @RestController
-@RequestMapping(value = "/opetussuunnitelmat/lukio/{opsId}/lukko")
+@RequestMapping(value = "/api/opetussuunnitelmat/lukio/{opsId}/lukko")
 @ApiIgnore
 public class LukioLockController extends AbstractLockController<LukioLockCtx> {
     @Autowired

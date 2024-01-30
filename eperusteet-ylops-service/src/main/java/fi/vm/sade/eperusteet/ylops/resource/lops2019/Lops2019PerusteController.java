@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/peruste")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}/peruste")
 @Api("Lops2019PerusteController")
 public class Lops2019PerusteController {
 

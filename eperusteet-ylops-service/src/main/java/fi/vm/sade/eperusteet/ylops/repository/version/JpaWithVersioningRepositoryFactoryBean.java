@@ -18,9 +18,9 @@ package fi.vm.sade.eperusteet.ylops.repository.version;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository.DomainClassNotAuditedException;
 import org.hibernate.envers.Audited;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactory;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
+import org.springframework.data.jpa.repository.support.JpaRepositoryImplementation;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
@@ -57,15 +57,15 @@ public class JpaWithVersioningRepositoryFactoryBean<R extends JpaRepository<T, I
 
         @SuppressWarnings("unchecked")
         @Override
-        protected Object getTargetRepository(RepositoryInformation metadata) {
+        protected JpaRepositoryImplementation<?, ?> getTargetRepository(RepositoryInformation metadata, EntityManager entityManager) {
 
             if (JpaWithVersioningRepository.class.isAssignableFrom(metadata.getRepositoryInterface())) {
                 if (metadata.getDomainType().getAnnotation(Audited.class) == null) {
                     throw new DomainClassNotAuditedException(metadata.getDomainType());
                 }
-                return new JpaWithVersioningRepositoryImpl<>((JpaEntityInformation<T, ID>) getEntityInformation((Class<T>) metadata.getDomainType()), entityManager);
+                return new JpaWithVersioningRepositoryImpl<>(getEntityInformation((Class<T>) metadata.getDomainType()), entityManager);
             } else {
-                return super.getTargetRepository(metadata);
+                return super.getTargetRepository(metadata, entityManager);
             }
         }
 

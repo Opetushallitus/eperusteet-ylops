@@ -59,7 +59,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  * @author mikkom
  */
 @RestController
-@RequestMapping("/ulkopuoliset")
+@RequestMapping("/api/ulkopuoliset")
 @ApiIgnore
 @Api("Ulkopuoliset")
 public class UlkopuolisetController {

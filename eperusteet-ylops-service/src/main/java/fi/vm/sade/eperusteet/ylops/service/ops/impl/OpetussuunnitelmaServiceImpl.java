@@ -393,7 +393,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public Page<OpetussuunnitelmaJulkinenDto> getAllJulkaistutOpetussuunnitelmat(OpetussuunnitelmaJulkaistuQuery query) {
-        Pageable pageable = new PageRequest(query.getSivu(), query.getSivukoko());
+        Pageable pageable = PageRequest.of(query.getSivu(), query.getSivukoko());
 
         List<String> koulutustyypit = query.getKoulutustyypit();
         if (CollectionUtils.isEmpty(koulutustyypit)) {
@@ -467,7 +467,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Transactional(readOnly = true)
     public Page<OpetussuunnitelmaInfoDto> getSivutettu(Tyyppi tyyppi, Tila tila, KoulutusTyyppi koulutustyyppi, String nimi, String jarjestys, String jarjestysSuunta, String kieli, int sivu, int sivukoko) {
         Page<Object[]> opetussuunnitelmat;
-        Pageable pageable = new PageRequest(sivu, sivukoko, new Sort(Sort.Direction.fromString(jarjestysSuunta), jarjestys));
+        Pageable pageable = PageRequest.of(sivu, sivukoko, Sort.by(Sort.Direction.fromString(jarjestysSuunta), jarjestys));
         if (SecurityUtil.isUserAdmin()) {
             opetussuunnitelmat = opetussuunnitelmaRepository.findSivutettuAdmin(
                     tyyppi,

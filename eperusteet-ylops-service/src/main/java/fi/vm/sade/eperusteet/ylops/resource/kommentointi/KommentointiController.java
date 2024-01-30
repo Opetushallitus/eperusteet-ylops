@@ -13,7 +13,7 @@ import java.util.UUID;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 @RestController
-@RequestMapping("/kommentointi")
+@RequestMapping("/api/kommentointi")
 @Api("Kommentointi")
 public class KommentointiController {
 

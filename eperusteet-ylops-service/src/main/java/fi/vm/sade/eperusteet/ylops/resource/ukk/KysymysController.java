@@ -22,7 +22,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 @InternalApi
 @RestController
 @Api("Kysymykset")
-@RequestMapping("/kysymykset")
+@RequestMapping("/api/kysymykset")
 public class KysymysController {
 
     @Autowired

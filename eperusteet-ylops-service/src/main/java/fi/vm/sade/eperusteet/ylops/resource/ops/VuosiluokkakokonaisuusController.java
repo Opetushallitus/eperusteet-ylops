@@ -39,7 +39,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet")
 @Api(value = "Vuosiluokkakokonaisuudet")
 public class VuosiluokkakokonaisuusController {
 

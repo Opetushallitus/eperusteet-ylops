@@ -9,90 +9,18 @@ env:
   ARTIFACT_NAME: eperusteet-ylops
 
 jobs:
-  build-and-test-eperusteet-ylops-service:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'corretto'
-
-      - name: Cache Maven repository
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-cache-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Build with Maven
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          cd eperusteet-ylops-service
-          mvn clean verify --batch-mode
-
-      - name: Cache eperusteet-ylops-service build results
-        uses: actions/cache@v3
-        id: restore-service-build
-        with:
-          path: eperusteet-ylops-service/target
-          key: ${{ github.run_number }}-${{ github.run_attempt }}-service
-
   build-and-test-eperusteet-ylops-ui:
     runs-on: ubuntu-latest
     env:
         EPERUSTEET_YLOPS_SPECFILE: https://raw.githubusercontent.com/Opetushallitus/eperusteet-ylops/${{ github.ref_name }}/generated/ylops.spec.json
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'corretto'
+      - name: Checkout source
+        uses: actions/checkout@v3
 
       - name: Set up Node 16
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-
-      - name: Cache Maven repository
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-cache-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
-
-      - name: Print yarn cache directory path
-        id: yarn-cache-dir-path
-        run: |
-          yarn cache dir
-          echo "::set-output name=dir::$(yarn cache dir)"
-
-      - name: Cache yarn
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Print npm cache directory
-        id: npm-cache-dir
-        run: |
-          npm config get cache
-          echo "::set-output name=dir::$(npm config get cache)"
-
-      - name: Cache npm
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.npm-cache-dir.outputs.dir }}
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node- 
 
       - name: Check if UI has same branch
         id: ui_branch_status
@@ -111,8 +39,7 @@ jobs:
           git clone ${{ env.EPERUSTEET_YLOPS_UI_GIT_BRANCH }} --recurse-submodules --depth 1 https://github.com/Opetushallitus/eperusteet-ylops-ui.git
           git clone --depth=1 https://github.com/Opetushallitus/eperusteet
           git clone --depth=1 https://github.com/Opetushallitus/eperusteet-amosaa
-          export YLOPS_SERVICE_DIR=$TRAVIS_BUILD_DIR/eperusteet-ylops-service
-            
+          
           cd eperusteet-ylops-ui
           yarn install --silent
           cd eperusteet-frontend-utils/vue
@@ -120,51 +47,67 @@ jobs:
           yarn gen:api
           rm -rf node_modules
           cd ../..
+          echo "----------ui:n viimeisimman commitin sha----------"
           git rev-parse HEAD
           yarn run build
-          cp -R dist/ ../eperusteet-ylops-app/dist
-          cd ..
-          cd eperusteet-ylops-app
-          mvn clean verify --batch-mode
-
-      - name: Cache eperusteet-ylops-app build results
-        uses: actions/cache@v3
-        id: restore-app-build
+          
+      - name: Upload eperusteet-ylops-ui
+        uses: actions/upload-artifact@v3
         with:
-          path: eperusteet-ylops-app/target
-          key: ${{ github.run_number }}-${{ github.run_attempt }}-app
-
-  build-image:
-    needs: [build-and-test-eperusteet-ylops-service, build-and-test-eperusteet-ylops-ui]
+          name: eperusteet-ylops-ui
+          path: eperusteet-ylops-ui/dist/
+          
+  build-and-test-eperusteet-ylops-service:
+    needs: [build-and-test-eperusteet-ylops-ui]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
-      - name: Get eperusteet-ylops-service build results
-        uses: actions/cache@v3
-        id: restore-service-build
+      - name: Checkout source
+        uses: actions/checkout@v3
+        
+      - name: Download ui
+        uses: actions/download-artifact@v3
         with:
-          path: eperusteet-ylops-service/target
-          key: ${{ github.run_number }}-${{ github.run_attempt }}-service
-
-      - name: Get eperusteet-ylops-app build results
-        uses: actions/cache@v3
-        id: restore-app-build
+          name: eperusteet-ylops-ui
+          path: eperusteet-ylops-service/src/main/resources/static/ui
+          
+      - name: Set up JDK 11
+        uses: actions/setup-java@v3
         with:
-          path: eperusteet-ylops-app/target
-          key: ${{ github.run_number }}-${{ github.run_attempt }}-app
+          java-version: '11'
+          distribution: 'adopt'
+          cache: 'maven'
 
-      - name: Build image
+      - name: Build with Maven
+        run: |
+          cd eperusteet-ylops-service
+          mvn clean verify --batch-mode
+
+      - name: Upload eperusteet-ylops-service-jar
+        uses: actions/upload-artifact@v3
+        with:
+          name: eperusteet-ylops-service-jar
+          path: eperusteet-ylops-service/target/eperusteet-ylops-service.jar
+
+  build-image:
+    needs: [build-and-test-eperusteet-ylops-service]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+        
+      - name: Download service-jar
+        uses: actions/download-artifact@v3
+        with:
+          name: eperusteet-ylops-service-jar
+          
+      - name: Build Docker Conainer
+        shell: bash
         run: |
           git clone https://github.com/Opetushallitus/ci-tools.git
-          source ci-tools/common/setup-tools.sh
-          
-          mv ${ARTIFACT_NAME}-service/target/${ARTIFACT_NAME}-service.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-service.war
-          mv ${ARTIFACT_NAME}-app/target/${ARTIFACT_NAME}-app.war $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}-app.war
+          source ci-tools/common/setup-tools.sh          
+          export BASE_IMAGE="baseimage-fatjar-openjdk11:master"
+          cp ${ARTIFACT_NAME}-service.jar $DOCKER_BUILD_DIR/artifact/${ARTIFACT_NAME}.jar
           cp -vr src/main/resources/oph-configuration $DOCKER_BUILD_DIR/config/
-          cp -vr src/main/resources/tomcat $DOCKER_BUILD_DIR/config/
-          
-          export BASE_IMAGE="baseimage-war-tomcat8-openjdk11:master"
           ./ci-tools/common/pull-image.sh
-          ./ci-tools/github-build/build-war.sh ${ARTIFACT_NAME}
-          ./ci-tools/github-build/upload-image.sh ${ARTIFACT_NAME}
+          ./ci-tools/github-build/build-fatjar.sh $ARTIFACT_NAME
+          ./ci-tools/github-build/upload-image.sh $ARTIFACT_NAME
