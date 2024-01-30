@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/lops2019/oppiaineet")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}/lops2019/oppiaineet")
 @Api("Lops2019Oppiaineet")
 public class Lops2019OppiaineController {
 

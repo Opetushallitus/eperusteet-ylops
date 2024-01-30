@@ -100,6 +100,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Autowired
+    @Lazy
     private DokumenttiService dokumenttiService;
 
     @Autowired

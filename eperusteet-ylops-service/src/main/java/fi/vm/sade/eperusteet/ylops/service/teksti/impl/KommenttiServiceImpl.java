@@ -26,12 +26,13 @@ import fi.vm.sade.eperusteet.ylops.service.security.Permission;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
 import fi.vm.sade.eperusteet.ylops.service.teksti.KommenttiService;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
@@ -167,7 +168,7 @@ public class KommenttiServiceImpl implements KommenttiService {
         Kommentti kommentti = repository.findOne(kommenttiId);
         assertExists(kommentti, "Poistettavaa kommenttia ei ole olemassa");
         assertRights(kommentti, Permission.HALLINTA);
-        repository.delete(kommenttiId);
+        repository.deleteById(kommenttiId);
     }
 
 }

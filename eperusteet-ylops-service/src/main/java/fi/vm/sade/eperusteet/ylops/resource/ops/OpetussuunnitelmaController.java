@@ -68,7 +68,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
  * @author mikkom
  */
 @RestController
-@RequestMapping("/opetussuunnitelmat")
+@RequestMapping("/api/opetussuunnitelmat")
 @Api(value = "Opetussuunnitelmat")
 public class OpetussuunnitelmaController {
 

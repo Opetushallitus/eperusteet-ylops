@@ -112,7 +112,9 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     private Boolean piilotettu = false;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    @JoinTable
+    @JoinTable(name = "oppiaineen_vlkok_oppiaineenvuosiluokka",
+            joinColumns = @JoinColumn(name = "oppiaineen_vlkok_id"),
+            inverseJoinColumns = @JoinColumn(name = "vuosiluokat_id"))
     @OrderColumn
     @BatchSize(size = 5)
     private Set<Oppiaineenvuosiluokka> vuosiluokat = new HashSet<>();

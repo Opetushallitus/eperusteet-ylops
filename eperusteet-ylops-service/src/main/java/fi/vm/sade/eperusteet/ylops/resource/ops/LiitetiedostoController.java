@@ -61,7 +61,7 @@ import java.util.UUID;
  * @author jhyoty
  */
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/kuvat")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}/kuvat")
 @Api("Liitetiedostot")
 public class LiitetiedostoController {
 

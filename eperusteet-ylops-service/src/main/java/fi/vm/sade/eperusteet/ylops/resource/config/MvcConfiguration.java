@@ -31,7 +31,11 @@ import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.persistence.EntityManagerFactory;
 import java.nio.charset.StandardCharsets;
@@ -42,8 +46,7 @@ import java.util.List;
  * @author jhyoty
  */
 @Configuration
-@EnableWebMvc
-public class MvcConfiguration extends WebMvcConfigurerAdapter {
+public class MvcConfiguration implements WebMvcConfigurer {
 
     @Autowired
     EntityManagerFactory emf;
@@ -54,9 +57,9 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
     }
 
     @Override
-    public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/index.html").addResourceLocations("/index.html");
-        super.addResourceHandlers(registry);
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/ui/").setViewName("forward:/ui/index.html");
+        registry.addRedirectViewController("/ui", "/ui/");
     }
 
     @Override
@@ -72,7 +75,6 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new LoggingInterceptor());
         registry.addInterceptor(new CacheHeaderInterceptor());
-        super.addInterceptors(registry);
     }
 
     @Bean

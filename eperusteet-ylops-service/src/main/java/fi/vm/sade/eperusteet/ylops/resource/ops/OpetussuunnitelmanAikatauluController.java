@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/aikataulu")
+@RequestMapping("/api/aikataulu")
 @Api("Aikataulu")
 public class OpetussuunnitelmanAikatauluController {
 

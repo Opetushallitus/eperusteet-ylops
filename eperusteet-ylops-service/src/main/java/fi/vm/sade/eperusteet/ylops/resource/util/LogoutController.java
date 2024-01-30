@@ -15,17 +15,17 @@ import java.io.IOException;
 import java.util.Optional;
 
 @RestController
-@RequestMapping
+@RequestMapping("/api/logout")
 @Api("Logout")
 @InternalApi
 public class LogoutController {
 
-    @PostMapping(value = "/logout")
+    @PostMapping()
     public void logoutPOST(HttpServletRequest request, HttpServletResponse response) throws IOException {
         deleteCookies(request, response);
     }
 
-    @GetMapping(value = "/logout")
+    @GetMapping()
     public void logoutGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         deleteCookies(request, response);
 

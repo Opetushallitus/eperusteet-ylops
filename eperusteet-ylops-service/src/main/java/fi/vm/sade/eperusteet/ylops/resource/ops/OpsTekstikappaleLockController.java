@@ -29,7 +29,7 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author jhyoty
  */
 @RestController
-@RequestMapping(value = "/opetussuunnitelmat/{opsId}/tekstit/{viiteId}/lukko")
+@RequestMapping(value = "/api/opetussuunnitelmat/{opsId}/tekstit/{viiteId}/lukko")
 @ApiIgnore
 @Api(value = "OpsTekstikappaleLukot")
 public class OpsTekstikappaleLockController extends AbstractLockController<OpsTekstikappaleCtx> {

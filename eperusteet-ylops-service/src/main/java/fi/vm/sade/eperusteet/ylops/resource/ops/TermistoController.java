@@ -36,7 +36,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * @author apvilkko
  */
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}")
 @InternalApi
 @Api(value = "Termisto")
 public class TermistoController {

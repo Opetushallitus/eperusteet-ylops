@@ -1,0 +1,126 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.ehcache.org/v3"
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd">
+
+    <cache alias="tilastot">
+        <expiry>
+            <ttl unit="seconds">604800</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">1</heap>
+        </resources>
+    </cache>
+
+    <cache alias="koodistot">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="organisaatiot">
+        <expiry>
+            <ttl unit="seconds">6000</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="organisaatio-ryhma">
+        <expiry>
+            <ttl unit="seconds">6000</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="organisaation-peruskoulut">
+        <expiry>
+            <ttl unit="seconds">6000</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="organisaation-lukiot">
+        <expiry>
+            <ttl unit="seconds">6000</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="kayttajat">
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="perusteet">
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">10</heap>
+        </resources>
+    </cache>
+
+    <cache alias="ops-julkaisu">
+        <expiry>
+            <ttl unit="seconds">28800</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">50</heap>
+        </resources>
+    </cache>
+
+    <cache alias="ops-navigation">
+        <expiry>
+            <ttl unit="seconds">86400</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">500</heap>
+        </resources>
+    </cache>
+
+    <cache alias="lokalisoinnit">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">10000</heap>
+        </resources>
+    </cache>
+
+    <cache alias="ylops-lokalisoinnit">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">3</heap>
+        </resources>
+    </cache>
+
+
+</config>

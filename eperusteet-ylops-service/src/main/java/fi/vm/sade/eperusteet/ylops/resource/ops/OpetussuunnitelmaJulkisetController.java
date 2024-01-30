@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/julkiset")
+@RequestMapping("/api/opetussuunnitelmat/julkiset")
 @Api(value = "Opetussuunnitelmat julkiset")
 public class OpetussuunnitelmaJulkisetController {
     @Autowired

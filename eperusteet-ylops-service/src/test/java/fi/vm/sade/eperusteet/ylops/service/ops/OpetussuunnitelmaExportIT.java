@@ -1,16 +1,12 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
-import fi.vm.sade.eperusteet.ylops.dto.export.OpetussuunnitelmaExportLopsDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.export.OpetussuunnitelmaExportLops2019Dto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLaajaDto;
@@ -19,15 +15,13 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
-import java.io.IOException;
-import java.util.stream.IntStream;
-import org.assertj.core.api.Assertions;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.test.annotation.DirtiesContext;
+
+import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -57,8 +51,9 @@ public class OpetussuunnitelmaExportIT extends AbstractIntegrationTest {
         OpetussuunnitelmaExportDto exportDto = objectMapper.readValue(resource.getFile(), dispatcher.get(persops.getId(), OpsExport.class).getExportClass());
         assertThat(exportDto).isNotNull();
         assertThat(exportDto instanceof OpetussuunnitelmaLaajaDto).isTrue();
-        assertThat((OpetussuunnitelmaLaajaDto) exportDto).extracting("oppiaineet").isNotEmpty();
-        assertThat((OpetussuunnitelmaLaajaDto) exportDto).extracting("vuosiluokkakokonaisuudet").isNotEmpty();
+        OpetussuunnitelmaLaajaDto laajaDto = (OpetussuunnitelmaLaajaDto) exportDto;
+        assertThat(((OpetussuunnitelmaLaajaDto) exportDto).getOppiaineet()).isNotEmpty();
+        assertThat(((OpetussuunnitelmaLaajaDto) exportDto).getVuosiluokkakokonaisuudet()).isNotEmpty();
     }
 
     @Test
@@ -73,10 +68,10 @@ public class OpetussuunnitelmaExportIT extends AbstractIntegrationTest {
         OpetussuunnitelmaExportDto exportDto = objectMapper.readValue(resource.getFile(), dispatcher.get(lukioOps.getId(), OpsExport.class).getExportClass());
         assertThat(exportDto).isNotNull();
         assertThat(exportDto instanceof OpetussuunnitelmaExportLops2019Dto).isTrue();
-        assertThat((OpetussuunnitelmaExportLops2019Dto) exportDto).extracting("laajaAlaisetOsaamiset").isNotEmpty();
-        assertThat((OpetussuunnitelmaExportLops2019Dto) exportDto).extracting("opintojaksot").isNotEmpty();
-        assertThat((OpetussuunnitelmaExportLops2019Dto) exportDto).extracting("valtakunnallisetOppiaineet").isNotEmpty();
-        assertThat((OpetussuunnitelmaExportLops2019Dto) exportDto).extracting("paikallisetOppiaineet").isNotEmpty();
+        assertThat(((OpetussuunnitelmaExportLops2019Dto) exportDto).getLaajaAlaisetOsaamiset()).isNotEmpty();
+        assertThat(((OpetussuunnitelmaExportLops2019Dto) exportDto).getOpintojaksot()).isNotEmpty();
+        assertThat(((OpetussuunnitelmaExportLops2019Dto) exportDto).getValtakunnallisetOppiaineet()).isNotEmpty();
+        assertThat(((OpetussuunnitelmaExportLops2019Dto) exportDto).getPaikallisetOppiaineet()).isNotEmpty();
     }
 
     private OpetussuunnitelmaDto createPohja(KoulutustyyppiToteutus toteutus, String diaarinumero) {

@@ -404,7 +404,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
             assertThat(ops.getTekstit().getLapset().get(0).getTekstiKappale().getNimi().get(Kieli.FI)).doesNotContain("(vanha)");
             assertThat(ops.getTekstit().getLapset().get(1).getTekstiKappale().getNimi().get(Kieli.FI)).contains("(vanha)");
             assertThat(ops.getTekstit().getLapset().get(1).isPakollinen()).isFalse();
-            assertThat(ops.getTekstit().getLapset().get(1)).extracting("omistussuhde").containsExactly(Omistussuhde.OMA);
+            assertThat(ops.getTekstit().getLapset().get(1).getOmistussuhde()).isEqualTo(Omistussuhde.OMA);
 
         }
 

@@ -1,9 +1,9 @@
 package fi.vm.sade.eperusteet.ylops.repository.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaistuOpetussuunnitelmaTila;
-import org.springframework.data.jpa.repository.JpaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.CustomJpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface JulkaistuOpetussuunnitelmaTilaRepository extends JpaRepository<JulkaistuOpetussuunnitelmaTila, Long> {
+public interface JulkaistuOpetussuunnitelmaTilaRepository extends CustomJpaRepository<JulkaistuOpetussuunnitelmaTila, Long> {
 }
