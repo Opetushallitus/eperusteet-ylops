@@ -51,7 +51,7 @@ jobs:
           echo "----------eperusteet-ui:n viimeisimman commitin sha----------"
           git rev-parse HEAD
           yarn run build
-      - name: Upload eperusteet-ui
+      - name: Upload eperusteet-ylops-ui
         uses: actions/upload-artifact@v3
         with:
           name: eperusteet-ylops-ui
@@ -79,7 +79,7 @@ jobs:
           cd eperusteet-ylops-service
           mvn clean verify --batch-mode
 
-      - name: Upload service-jar
+      - name: Upload eperusteet-ylops-service-jar
         uses: actions/upload-artifact@v3
         with:
           name: eperusteet-ylops-service-jar

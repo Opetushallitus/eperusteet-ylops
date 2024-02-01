@@ -96,6 +96,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     @Autowired
     private JsonMapper jsonMapper;
 
+    @Lazy
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
 

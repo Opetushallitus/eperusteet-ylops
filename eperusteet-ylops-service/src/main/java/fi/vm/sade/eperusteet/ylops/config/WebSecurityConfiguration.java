@@ -47,10 +47,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Value("${web.url.cas}")
     private String webUrlCas;
 
-    @Value("${fi.vm.sade.eperusteet.oph_username}")
+    @Value("${fi.vm.sade.eperusteet.ylops.oph_username}")
     private String eperusteet_username;
 
-    @Value("${fi.vm.sade.eperusteet.oph_password}")
+    @Value("${fi.vm.sade.eperusteet.ylops.oph_password}")
     private String eperusteet_password;
     @Bean
     public CasAuthenticator casAuthenticator() {
