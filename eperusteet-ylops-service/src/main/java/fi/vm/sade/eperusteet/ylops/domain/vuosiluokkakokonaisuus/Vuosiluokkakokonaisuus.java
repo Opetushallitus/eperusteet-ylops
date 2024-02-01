@@ -19,6 +19,7 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.VapaatekstiPaikallinentarkennus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
@@ -34,12 +35,17 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -91,6 +97,20 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity i
     @NotNull
     @Getter
     private Tila tila = Tila.LUONNOS;
+
+    @Getter
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinTable(name = "vlk_vapaatekstit",
+            joinColumns = @JoinColumn(name = "vlk_id"),
+            inverseJoinColumns = @JoinColumn(name = "vapaateksti_paikallinentarkennus_id"))
+    private List<VapaatekstiPaikallinentarkennus> vapaatTekstit = new ArrayList<>();
+
+    public void setVapaatTekstit(List<VapaatekstiPaikallinentarkennus> vapaatTekstit) {
+        this.vapaatTekstit.clear();
+        if (vapaatTekstit != null) {
+            this.vapaatTekstit.addAll(vapaatTekstit);
+        }
+    }
 
     public Vuosiluokkakokonaisuus() {
     }

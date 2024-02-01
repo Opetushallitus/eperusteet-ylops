@@ -10823,13 +10823,17 @@
     "Page" : {
       "type" : "object",
       "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "totalElements" : {
+        "number" : {
           "type" : "integer",
-          "format" : "int64"
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10841,35 +10845,35 @@
             "type" : "object"
           }
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         }
       }
     },
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "totalElements" : {
+        "number" : {
           "type" : "integer",
-          "format" : "int64"
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10881,35 +10885,35 @@
             "$ref" : "#/definitions/OpetussuunnitelmaInfoDto"
           }
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         }
       }
     },
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "totalElements" : {
+        "number" : {
           "type" : "integer",
-          "format" : "int64"
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -10921,22 +10925,18 @@
             "$ref" : "#/definitions/OpetussuunnitelmaJulkinenDto"
           }
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
         "first" : {
           "type" : "boolean"
         },
+        "last" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
         }
       }
     },
@@ -11570,6 +11570,12 @@
         "paikallisestiPaatettavatAsiat" : {
           "$ref" : "#/definitions/PerusteTekstiOsaDto"
         },
+        "vapaatTekstit" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/TekstiKappaleDto"
+          }
+        },
         "laajaalaisetosaamiset" : {
           "type" : "array",
           "uniqueItems" : true,
@@ -11866,30 +11872,19 @@
           "type" : "string"
         },
         "nimi" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "string"
-          }
+          "$ref" : "#/definitions/PerusteenLokalisoituTekstiDto"
         },
         "teksti" : {
-          "type" : "object",
-          "additionalProperties" : {
-            "type" : "string"
-          }
+          "$ref" : "#/definitions/PerusteenLokalisoituTekstiDto"
         },
         "tila" : {
-          "type" : "string",
-          "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
+          "type" : "string"
         },
         "tunniste" : {
-          "type" : "string",
-          "format" : "uuid"
+          "type" : "string"
         },
-        "pakollinen" : {
-          "type" : "boolean"
-        },
-        "valmis" : {
-          "type" : "boolean"
+        "osanTyyppi" : {
+          "type" : "string"
         }
       }
     },
@@ -12232,6 +12227,12 @@
           "items" : {
             "$ref" : "#/definitions/LaajaalainenosaaminenDto"
           }
+        },
+        "vapaatTekstit" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/VapaatekstiPaikallinentarkennusDto"
+          }
         }
       }
     },
@@ -12475,6 +12476,12 @@
           "uniqueItems" : true,
           "items" : {
             "$ref" : "#/definitions/LaajaalainenosaaminenDto"
+          }
+        },
+        "vapaatTekstit" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/VapaatekstiPaikallinentarkennusDto"
           }
         }
       }
