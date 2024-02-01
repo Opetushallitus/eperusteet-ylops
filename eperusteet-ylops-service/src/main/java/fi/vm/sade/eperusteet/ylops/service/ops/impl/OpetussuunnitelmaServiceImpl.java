@@ -260,6 +260,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Autowired
     private CacheManager cacheManager;
 
+    @Lazy
     @Autowired
     private JulkaisuService julkaisuService;
 

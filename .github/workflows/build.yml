@@ -78,6 +78,8 @@ jobs:
           cache: 'maven'
 
       - name: Build with Maven
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd eperusteet-ylops-service
           mvn clean verify --batch-mode

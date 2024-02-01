@@ -11,7 +11,7 @@
   } ],
   "schemes" : [ "http", "https" ],
   "paths" : {
-    "/external/opetussuunnitelma/{id}" : {
+    "/api/external/opetussuunnitelma/{id}" : {
       "get" : {
         "tags" : [ "Julkinen" ],
         "summary" : "Opetussuunnitelman tietojen haku",
@@ -35,6 +35,7 @@
         }
       }
     },
+<<<<<<< HEAD
     "/external/opetussuunnitelma/{id}/peruste" : {
       "get" : {
         "tags" : [ "Julkinen" ],
@@ -60,6 +61,9 @@
       }
     },
     "/external/opetussuunnitelmat" : {
+=======
+    "/api/external/opetussuunnitelmat" : {
+>>>>>>> 438bf9aa (props)
       "get" : {
         "tags" : [ "Julkinen" ],
         "summary" : "Opetussuunnitelmien haku",
@@ -371,12 +375,37 @@
       "type" : "object",
       "properties" : {
         "totalPages" : {
+<<<<<<< HEAD
           "type" : "integer",
           "format" : "int32"
         },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+=======
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+>>>>>>> 73ec8b24 (props)
         },
         "size" : {
           "type" : "integer",
@@ -392,18 +421,8 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
+        "empty" : {
           "type" : "boolean"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         }
       }
     },
@@ -411,12 +430,37 @@
       "type" : "object",
       "properties" : {
         "totalPages" : {
+<<<<<<< HEAD
           "type" : "integer",
           "format" : "int32"
         },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+=======
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+>>>>>>> 73ec8b24 (props)
         },
         "size" : {
           "type" : "integer",
@@ -432,18 +476,34 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "empty" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "Pageable" : {
+      "type" : "object",
+      "properties" : {
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
+        "pageSize" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "unpaged" : {
+          "type" : "boolean"
+        },
+        "paged" : {
+          "type" : "boolean"
+        },
+        "offset" : {
+          "type" : "integer",
+          "format" : "int64"
         }
       }
     },
@@ -551,7 +611,18 @@
       "type" : "object"
     },
     "Sort" : {
-      "type" : "object"
+      "type" : "object",
+      "properties" : {
+        "sorted" : {
+          "type" : "boolean"
+        },
+        "unsorted" : {
+          "type" : "boolean"
+        },
+        "empty" : {
+          "type" : "boolean"
+        }
+      }
     },
     "TekstiKappaleDto" : {
       "type" : "object",

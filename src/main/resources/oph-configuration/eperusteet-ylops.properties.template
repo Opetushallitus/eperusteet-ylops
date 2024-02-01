@@ -62,3 +62,13 @@ root.organisaatio.oid=1.2.246.562.10.00000000001
 user.home.conf=${user.home}/oph-configuration
 user.webservice.url.backend=https\://${host.virkailija}/authentication-service/services/userService
 web.url.cas=https\://${host.cas}/cas
+
+host_postgresql_eperusteet_ylops={{host_postgresql_eperusteet_ylops}}
+host_postgresql_eperusteet_ylops_port={{host_postgresql_eperusteet_ylops_port}}
+host_postgresql_eperusteet_ylops_user={{postgres_app_user}}
+host_postgresql_eperusteet_ylops_password={{host_postgresql_eperusteet_ylops_app_password}}
+
+#cas
+cas.login=${web.url.cas}/login
+cas.service=${cas.service.eperusteet-ylops-service}
+cas_callback_url=${cas.callback.eperusteet-ylops-service}
