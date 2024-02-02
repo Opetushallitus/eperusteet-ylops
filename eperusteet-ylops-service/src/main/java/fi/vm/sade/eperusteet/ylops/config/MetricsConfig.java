@@ -13,17 +13,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.resource.config;
+package fi.vm.sade.eperusteet.ylops.config;
 
 import com.codahale.metrics.ConsoleReporter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.jmx.JmxReporter;
 import com.ryantenney.metrics.spring.config.annotation.EnableMetrics;
 import com.ryantenney.metrics.spring.config.annotation.MetricsConfigurerAdapter;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.TimeUnit;
-
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author jhyoty

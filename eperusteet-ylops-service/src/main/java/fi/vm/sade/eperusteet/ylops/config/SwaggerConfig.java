@@ -13,11 +13,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.resource.config;
+package fi.vm.sade.eperusteet.ylops.config;
 
 import com.fasterxml.classmate.GenericType;
 import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
