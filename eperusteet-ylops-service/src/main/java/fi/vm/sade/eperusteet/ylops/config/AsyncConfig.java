@@ -1,4 +1,4 @@
-package fi.vm.sade.eperusteet.ylops.service.config;
+package fi.vm.sade.eperusteet.ylops.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

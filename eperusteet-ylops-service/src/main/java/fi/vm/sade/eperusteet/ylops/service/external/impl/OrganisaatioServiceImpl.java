@@ -75,19 +75,19 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     @Value("${cas.key}")
     private String casKey;
 
-    @Value("${cas.service}")
+    @Value("${cas.service:''}")
     private String casService;
 
-    @Value("${cas.sendRenew}")
+    @Value("${cas.sendRenew:false}")
     private boolean casSendRenew;
 
-    @Value("${cas.login}")
+    @Value("${cas.login:''}")
     private String casLogin;
 
-    @Value("${host.alb}")
+    @Value("${host.alb:''}")
     private String hostAlb;
 
-    @Value("${web.url.cas}")
+    @Value("${web.url.cas:''}")
     private String webUrlCas;
 
     @Autowired
@@ -243,9 +243,6 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
             try {
                 String jsonContent = mapper.writeValueAsString(criteriaDto);
-
-                log.info("jsoncontent : " + jsonContent );
-
                 OphHttpEntity entity = new OphHttpEntity.Builder()
                         .content(jsonContent)
                         .contentType("application/json", "UTF-8")
