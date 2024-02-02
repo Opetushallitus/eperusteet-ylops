@@ -612,28 +612,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return dto;
     }
 
-    private void fetchPeriytyvatPohjat(OpetussuunnitelmaKevytDto rootOps, OpetussuunnitelmaBaseDto pohjaDto) {
-        if (pohjaDto == null) {
-            return;
-        }
-
-        Set<String> kayttajaOids = kayttajanOrganisaatioOids();
-        Opetussuunnitelma pohja = opetussuunnitelmaRepository.findById(pohjaDto.getId());
-
-        OpetussuunnitelmaNimiDto pohjaNimi = new OpetussuunnitelmaNimiDto();
-        boolean hasOikeudet = pohja.getOrganisaatiot().stream().anyMatch(kayttajaOids::contains);
-
-        if (hasOikeudet) {
-            pohjaNimi.setId(pohja.getId());
-        }
-        pohjaNimi.setNimi(pohjaDto.getNimi());
-        rootOps.getPeriytyvatPohjat().add(pohjaNimi);
-
-        if (pohja.getPohja() != null) {
-            fetchPeriytyvatPohjat(rootOps, mapper.map(pohja.getPohja(), OpetussuunnitelmaKevytDto.class));
-        }
-    }
-
     @Override
     @Transactional(readOnly = true)
     public Set<OpsVuosiluokkakokonaisuusKevytDto> getOpetussuunnitelmanPohjanVuosiluokkakokonaisuudet(Long id) {
@@ -865,6 +843,28 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         navigationNodeDto.getChildren().addAll(liitteet);
 
         return navigationNodeDto;
+    }
+
+    private void fetchPeriytyvatPohjat(OpetussuunnitelmaKevytDto rootOps, OpetussuunnitelmaBaseDto pohjaDto) {
+        if (pohjaDto == null) {
+            return;
+        }
+
+        Set<String> kayttajaOids = kayttajanOrganisaatioOids();
+        Opetussuunnitelma pohja = opetussuunnitelmaRepository.findById(pohjaDto.getId());
+
+        OpetussuunnitelmaNimiDto pohjaNimi = new OpetussuunnitelmaNimiDto();
+        boolean hasOikeudet = pohja.getOrganisaatiot().stream().anyMatch(kayttajaOids::contains);
+
+        if (hasOikeudet) {
+            pohjaNimi.setId(pohja.getId());
+        }
+        pohjaNimi.setNimi(pohjaDto.getNimi());
+        rootOps.getPeriytyvatPohjat().add(pohjaNimi);
+
+        if (pohja.getPohja() != null) {
+            fetchPeriytyvatPohjat(rootOps, mapper.map(pohja.getPohja(), OpetussuunnitelmaKevytDto.class));
+        }
     }
 
     @Override
