@@ -4,6 +4,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactoryImpl;
 import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter;
 import fi.vm.sade.javautils.http.auth.CasAuthenticator;
 import fi.vm.sade.javautils.kayttooikeusclient.OphUserDetailsServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidator;
@@ -23,6 +24,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
+import javax.annotation.PostConstruct;
+
+@Slf4j
 @Profile({"!dev & !test"})
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
@@ -52,6 +56,17 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Value("${fi.vm.sade.eperusteet.ylops.oph_password}")
     private String eperusteet_password;
+
+    @PostConstruct
+    public void post() {
+        log.info("caskey " + casKey);
+        log.info("casService " + casService);
+        log.info("casSendRenew " + casSendRenew);
+        log.info("casLogin " + casLogin);
+        log.info("hostAlb " + hostAlb);
+        log.info("webUrlCas " + webUrlCas);
+    }
+
     @Bean
     public CasAuthenticator casAuthenticator() {
         return new CasAuthenticator(this.webUrlCas, eperusteet_username, eperusteet_password, hostAlb, null, false, null);
