@@ -856,7 +856,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         Set<String> kayttajaOids = kayttajanOrganisaatioOids();
-        Opetussuunnitelma pohja = opetussuunnitelmaRepository.findById(pohjaDto.getId());
+        Opetussuunnitelma pohja = opetussuunnitelmaRepository.findById(pohjaDto.getId()).orElseThrow();
 
         OpetussuunnitelmaNimiDto pohjaNimi = new OpetussuunnitelmaNimiDto();
         boolean hasOikeudet = pohja.getOrganisaatiot().stream().anyMatch(kayttajaOids::contains);

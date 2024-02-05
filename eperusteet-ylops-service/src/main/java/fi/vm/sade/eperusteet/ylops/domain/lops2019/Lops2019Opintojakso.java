@@ -92,7 +92,6 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     private List<Lops2019LaajaAlainenOsaaminen> laajaAlainenOsaaminen = new ArrayList<>();
 
     @Getter
-//    @OrderBy("koodiuri")
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "lops2019_opintojakso_moduuli",

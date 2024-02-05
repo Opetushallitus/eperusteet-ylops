@@ -47,7 +47,7 @@ jobs:
           yarn gen:api
           rm -rf node_modules
           cd ../..
-          echo "----------eperusteet-ui:n viimeisimman commitin sha----------"
+          echo "----------ui:n viimeisimman commitin sha----------"
           git rev-parse HEAD
           yarn run build
           

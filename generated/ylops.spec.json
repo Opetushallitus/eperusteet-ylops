@@ -10828,13 +10828,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10874,13 +10874,13 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10920,13 +10920,13 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10973,19 +10973,19 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "paged" : {
-          "type" : "boolean"
-        },
         "unpaged" : {
           "type" : "boolean"
+        },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "pageNumber" : {
-          "type" : "integer",
-          "format" : "int32"
+        "paged" : {
+          "type" : "boolean"
         }
       }
     },
@@ -11863,10 +11863,10 @@
         "empty" : {
           "type" : "boolean"
         },
-        "sorted" : {
+        "unsorted" : {
           "type" : "boolean"
         },
-        "unsorted" : {
+        "sorted" : {
           "type" : "boolean"
         }
       }
@@ -11932,19 +11932,30 @@
           "type" : "string"
         },
         "nimi" : {
-          "$ref" : "#/definitions/PerusteenLokalisoituTekstiDto"
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         },
         "teksti" : {
-          "$ref" : "#/definitions/PerusteenLokalisoituTekstiDto"
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
         },
         "tila" : {
-          "type" : "string"
+          "type" : "string",
+          "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
         },
         "tunniste" : {
-          "type" : "string"
+          "type" : "string",
+          "format" : "uuid"
         },
-        "osanTyyppi" : {
-          "type" : "string"
+        "pakollinen" : {
+          "type" : "boolean"
+        },
+        "valmis" : {
+          "type" : "boolean"
         }
       }
     },

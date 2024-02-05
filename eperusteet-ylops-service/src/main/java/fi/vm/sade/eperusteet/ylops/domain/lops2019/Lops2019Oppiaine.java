@@ -84,11 +84,6 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     private Lops2019PaikallinenArviointi arviointi;
 
-//    @Getter
-//    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
-//    @OrderColumn
-//    private List<PaikallinenLaajaAlainenOsaaminen> laajaAlainenOsaaminen = new ArrayList<>();
-
     @Getter
     @OrderColumn
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)

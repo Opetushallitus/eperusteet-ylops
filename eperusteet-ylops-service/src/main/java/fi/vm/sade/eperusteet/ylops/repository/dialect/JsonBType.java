@@ -55,7 +55,6 @@ public class JsonBType implements UserType, Serializable {
     @Override
     public void nullSafeSet(PreparedStatement st, Object value, int index, SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if (value != null) {
-//            String jsonStr = gson.toJson(value);
             try {
                 String s = mapper.writeValueAsString(value);
                 st.setObject(index, s, Types.OTHER);
