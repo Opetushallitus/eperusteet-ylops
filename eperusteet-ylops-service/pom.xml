@@ -600,6 +600,7 @@
 <!--                    </systemPropertyVariables>-->
                     <excludes>
                         <exclude>**/ylops/test/**.java</exclude>
+                        <exclude>**/*IT.java</exclude>
                     </excludes>
                 </configuration>
             </plugin>
