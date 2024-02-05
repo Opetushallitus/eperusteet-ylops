@@ -85,7 +85,6 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViitePerusteTekstillaDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
-import fi.vm.sade.eperusteet.ylops.repository.ohje.OhjeRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusRepository;
@@ -228,9 +227,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private VuosiluokkakokonaisuusviiteRepository vuosiluokkakokonaisuusviiteRepository;
-
-    @Autowired
-    private OhjeRepository ohjeRepository;
 
     @Autowired
     private PerusteCacheRepository perusteCacheRepository;
@@ -610,6 +606,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
+        fetchPeriytyvatPohjat(dto, dto.getPohja());
         fetchKuntaNimet(dto);
         fetchOrganisaatioNimet(dto);
         return dto;
@@ -846,6 +843,28 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         navigationNodeDto.getChildren().addAll(liitteet);
 
         return navigationNodeDto;
+    }
+
+    private void fetchPeriytyvatPohjat(OpetussuunnitelmaKevytDto rootOps, OpetussuunnitelmaBaseDto pohjaDto) {
+        if (pohjaDto == null) {
+            return;
+        }
+
+        Set<String> kayttajaOids = kayttajanOrganisaatioOids();
+        Opetussuunnitelma pohja = opetussuunnitelmaRepository.findById(pohjaDto.getId());
+
+        OpetussuunnitelmaNimiDto pohjaNimi = new OpetussuunnitelmaNimiDto();
+        boolean hasOikeudet = pohja.getOrganisaatiot().stream().anyMatch(kayttajaOids::contains);
+
+        if (hasOikeudet) {
+            pohjaNimi.setId(pohja.getId());
+        }
+        pohjaNimi.setNimi(pohjaDto.getNimi());
+        rootOps.getPeriytyvatPohjat().add(pohjaNimi);
+
+        if (pohja.getPohja() != null) {
+            fetchPeriytyvatPohjat(rootOps, mapper.map(pohja.getPohja(), OpetussuunnitelmaKevytDto.class));
+        }
     }
 
     @Override

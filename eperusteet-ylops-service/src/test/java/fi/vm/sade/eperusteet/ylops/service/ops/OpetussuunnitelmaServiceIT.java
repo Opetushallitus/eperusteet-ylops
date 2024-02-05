@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
- *
- * This program is free software: Licensed under the EUPL, Version 1.1 or - as
- * soon as they will be approved by the European Commission - subsequent versions
- * of the EUPL (the "Licence");
- *
- * You may not use this work except in compliance with the Licence.
- * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * European Union Public Licence for more details.
- */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import com.google.common.collect.Sets;
@@ -71,9 +56,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-/**
- * @author mikkom
- */
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
@@ -119,21 +101,6 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops.setHyvaksyjataho("hyvaksyja");
         OpetussuunnitelmaDto createdOps = opetussuunnitelmaService.addOpetussuunnitelma(ops);
         this.opsId = createdOps.getId();
-    }
-
-    @Test
-    public void testiHierarkia() {
-//        OpetussuunnitelmaKevytDto pohja = opetussuunnitelmaRepository.findOne(opsId);
-//        OpetussuunnitelmaLuontiDto ylaopsLuonti = TestUtils.createOps();
-//        ylaopsLuonti.setPohja(pohja);
-//        OpetussuunnitelmaDto ylaops = opetussuunnitelmaService.addOpetussuunnitelma(ylaopsLuonti);
-//        TekstiKappaleViiteDto.Matala tkv = TestUtils.createTekstiKappaleViite();
-//        ylaops
-
-//        ylaopsLuonti.setVuosiluokkakokonaisuudet(vuosiluokkakokonaisuudet);
-
-//        OpetussuunnitelmaLuontiDto aliops = TestUtils.createOps();
-//        aliops.setPohja(pohja);
     }
 
     @Test
@@ -725,5 +692,12 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         TestTransaction.flagForRollback();
         TestTransaction.end();
+    }
+
+    @Test
+    public void testPeriytyvatPohjat() {
+        OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.PERUSOPETUS, "perusopetus-diaarinumero"), KoulutusTyyppi.PERUSOPETUS);
+        OpetussuunnitelmaKevytDto dbOps = opetussuunnitelmaService.getOpetussuunnitelma(ops.getId());
+        assertThat(dbOps.getPeriytyvatPohjat()).hasSize(1);
     }
 }
