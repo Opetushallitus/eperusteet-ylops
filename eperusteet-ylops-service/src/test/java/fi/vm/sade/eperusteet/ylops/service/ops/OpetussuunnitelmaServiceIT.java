@@ -116,7 +116,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         Long id = opsit.get(0).getId();
         assertNotNull(id);
-        OpetussuunnitelmaKevytDto ops = opetussuunnitelmaService.getOpetussuunnitelma(id);
+        OpetussuunnitelmaKevytDto ops = opetussuunnitelmaService.getOpetussuunnitelmaOrganisaatioillaJaPohjilla(id);
         assertNotNull(ops);
         assertEquals(id, ops.getId());
         assertEquals(EperusteetServiceMock.PERUSOPETUS_DIAARINUMERO, ops.getPerusteenDiaarinumero());
@@ -697,7 +697,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
     @Test
     public void testPeriytyvatPohjat() {
         OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.PERUSOPETUS, "perusopetus-diaarinumero"), KoulutusTyyppi.PERUSOPETUS);
-        OpetussuunnitelmaKevytDto dbOps = opetussuunnitelmaService.getOpetussuunnitelma(ops.getId());
+        OpetussuunnitelmaKevytDto dbOps = opetussuunnitelmaService.getOpetussuunnitelmaOrganisaatioillaJaPohjilla(ops.getId());
         assertThat(dbOps.getPeriytyvatPohjat()).hasSize(1);
     }
 }

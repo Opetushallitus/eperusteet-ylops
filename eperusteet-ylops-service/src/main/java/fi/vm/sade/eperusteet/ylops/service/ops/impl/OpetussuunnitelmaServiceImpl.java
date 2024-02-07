@@ -602,7 +602,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public OpetussuunnitelmaKevytDto getOpetussuunnitelma(Long id) {
+    public OpetussuunnitelmaKevytDto getOpetussuunnitelmaOrganisaatioillaJaPohjilla(Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
@@ -610,6 +610,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         fetchKuntaNimet(dto);
         fetchOrganisaatioNimet(dto);
         return dto;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OpetussuunnitelmaKevytDto getOpetussuunnitelmaKevyt(Long id) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
+        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
+        return mapper.map(ops, OpetussuunnitelmaKevytDto.class);
     }
 
     @Override
@@ -676,7 +684,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public OpetussuunnitelmaKevytDto getOpetussuunnitelmaOrganisaatiotarkistuksella(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         if (ops.getTyyppi().equals(Tyyppi.POHJA) && ops.getTila().equals(Tila.VALMIS)) {
-            return self.getOpetussuunnitelma(opsId);
+            return self.getOpetussuunnitelmaOrganisaatioillaJaPohjilla(opsId);
         }
 
         Set<String> kaikki = kayttajanOrganisaatioOids();
