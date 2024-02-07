@@ -5,10 +5,6 @@ import lombok.*;
 
 import java.util.Map;
 
-/**
- *
- * @author nkala
- */
 @Data
 @EqualsAndHashCode(of = {"koodisto", "uri", "versio"})
 @JsonIgnoreProperties(ignoreUnknown = true)

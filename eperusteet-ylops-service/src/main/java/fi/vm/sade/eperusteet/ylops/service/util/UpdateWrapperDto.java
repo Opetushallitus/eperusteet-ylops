@@ -6,10 +6,6 @@ import lombok.Setter;
 
 /**
  * Wraps revision information in the update data
- *
- *
- *
- * @param <T>
  */
 @Getter
 @Setter

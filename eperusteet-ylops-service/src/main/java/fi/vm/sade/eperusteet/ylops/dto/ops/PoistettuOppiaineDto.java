@@ -6,9 +6,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-/**
- * Created by autio on 24.2.2016.
- */
 @Data
 @EqualsAndHashCode(callSuper = true)
 @AllArgsConstructor
