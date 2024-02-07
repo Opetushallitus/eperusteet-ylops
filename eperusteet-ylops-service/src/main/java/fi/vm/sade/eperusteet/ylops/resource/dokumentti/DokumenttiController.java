@@ -94,7 +94,7 @@ public class DokumenttiController {
         headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
         DokumenttiDto dokumenttiDto = dokumenttiService.getDto(dokumenttiId);
         if (dokumenttiDto != null) {
-            OpetussuunnitelmaKevytDto opsDto = opetussuunnitelmaService.getOpetussuunnitelma(dokumenttiDto.getOpsId());
+            OpetussuunnitelmaKevytDto opsDto = opetussuunnitelmaService.getOpetussuunnitelmaKevyt(dokumenttiDto.getOpsId());
             if (opsDto != null) {
                 LokalisoituTekstiDto nimi = opsDto.getNimi();
                 if (nimi != null && nimi.getTekstit().containsKey(dokumenttiDto.getKieli())) {
