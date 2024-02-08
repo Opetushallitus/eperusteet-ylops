@@ -17,20 +17,17 @@ package fi.vm.sade.eperusteet.ylops.service.mapping;
 
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiKuva;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiKuva_;
-import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti_;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.Lukiokurssi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine_;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale_;
-import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
-import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiKuvaDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineRakenneListausDto;
@@ -41,7 +38,6 @@ import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiUpdateDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
@@ -50,8 +46,6 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.LokalisoituTekstiRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto;
-import java.time.Instant;
-import java.util.Comparator;
 import ma.glasnost.orika.CustomMapper;
 import ma.glasnost.orika.MappingContext;
 import ma.glasnost.orika.converter.builtin.PassThroughConverter;
@@ -60,6 +54,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.time.Instant;
+import java.util.Comparator;
 
 /**
  * @author jhyoty
@@ -188,7 +185,8 @@ public class DtoMapperConfig {
                     public void mapAtoB(Opetussuunnitelma opetussuunnitelma, OpetussuunnitelmaInfoDto opetussuunnitelmaInfoDto, MappingContext context) {
                         super.mapAtoB(opetussuunnitelma, opetussuunnitelmaInfoDto, context);
                         if (!Tyyppi.POHJA.equals(opetussuunnitelma.getTyyppi()) && !Tila.POISTETTU.equals(opetussuunnitelma.getTila()) && CollectionUtils.isNotEmpty(opetussuunnitelma.getJulkaisut())) {
-                            opetussuunnitelmaInfoDto.setJulkaistu(opetussuunnitelma.getJulkaisut().stream().max(Comparator.comparing(julkaisu -> julkaisu.getLuotu())).get().getLuotu());
+                            opetussuunnitelmaInfoDto.setJulkaistu(opetussuunnitelma.getJulkaisut().stream().max(Comparator.comparing(OpetussuunnitelmanJulkaisu::getLuotu)).map(OpetussuunnitelmanJulkaisu::getLuotu).orElse(null));
+                            opetussuunnitelmaInfoDto.setEnsijulkaisu(opetussuunnitelma.getJulkaisut().stream().min(Comparator.comparing(OpetussuunnitelmanJulkaisu::getLuotu)).map(OpetussuunnitelmanJulkaisu::getLuotu).orElse(null));
                             opetussuunnitelmaInfoDto.setTila(Tila.JULKAISTU);
                         }
                     }
