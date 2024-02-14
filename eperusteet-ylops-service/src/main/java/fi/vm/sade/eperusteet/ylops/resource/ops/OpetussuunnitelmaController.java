@@ -151,7 +151,7 @@ public class OpetussuunnitelmaController {
     @ResponseBody
     @Timed
     public ResponseEntity<OpetussuunnitelmaKevytDto> getOpetussuunnitelma(@PathVariable("id") final Long id) {
-        return ResponseEntity.ok(opetussuunnitelmaService.getOpetussuunnitelmaOrganisaatioillaJaPohjilla(id));
+        return ResponseEntity.ok(opetussuunnitelmaService.getOpetussuunnitelma(id));
     }
 
     @RequestMapping(value = "/{id}/pohja/vuosiluokkakokonaisuudet", method = RequestMethod.GET)

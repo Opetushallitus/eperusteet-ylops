@@ -602,22 +602,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional(readOnly = true)
-    public OpetussuunnitelmaKevytDto getOpetussuunnitelmaOrganisaatioillaJaPohjilla(Long id) {
+    public OpetussuunnitelmaKevytDto getOpetussuunnitelma(Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
-        fetchPeriytyvatPohjat(dto, dto.getPohja());
         fetchKuntaNimet(dto);
         fetchOrganisaatioNimet(dto);
-        return dto;
-    }
 
-    @Override
-    @Transactional(readOnly = true)
-    public OpetussuunnitelmaKevytDto getOpetussuunnitelmaKevyt(Long id) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        return mapper.map(ops, OpetussuunnitelmaKevytDto.class);
+        if (SecurityUtil.isAuthenticated()) {
+            fetchPeriytyvatPohjat(dto, dto.getPohja());
+        }
+
+        return dto;
     }
 
     @Override
@@ -684,7 +680,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public OpetussuunnitelmaKevytDto getOpetussuunnitelmaOrganisaatiotarkistuksella(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         if (ops.getTyyppi().equals(Tyyppi.POHJA) && ops.getTila().equals(Tila.VALMIS)) {
-            return self.getOpetussuunnitelmaOrganisaatioillaJaPohjilla(opsId);
+            return self.getOpetussuunnitelma(opsId);
         }
 
         Set<String> kaikki = kayttajanOrganisaatioOids();
@@ -868,6 +864,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             pohjaNimi.setId(pohja.getId());
         }
         pohjaNimi.setNimi(pohjaDto.getNimi());
+        rootOps.setPeriytyvatPohjat(new ArrayList<>());
         rootOps.getPeriytyvatPohjat().add(pohjaNimi);
 
         if (pohja.getPohja() != null) {
