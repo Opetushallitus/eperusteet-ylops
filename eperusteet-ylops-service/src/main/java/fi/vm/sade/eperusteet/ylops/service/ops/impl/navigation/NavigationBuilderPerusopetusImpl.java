@@ -50,7 +50,7 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
     @Override
     public NavigationNodeDto buildNavigation(Long opsId, String kieli) {
 
-        OpetussuunnitelmaKevytDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKevyt(opsId);
+        OpetussuunnitelmaKevytDto ops = opetussuunnitelmaService.getOpetussuunnitelma(opsId);
 
         List<VuosiluokkakokonaisuusSuppeaDto> vuosiluokkakokonaisuudet = ops.getVuosiluokkakokonaisuudet().stream()
                 .sorted(Comparator.comparing(vlk -> vlk.getVuosiluokkakokonaisuus().getNimi().getOrDefault(Kieli.of(kieli))))
