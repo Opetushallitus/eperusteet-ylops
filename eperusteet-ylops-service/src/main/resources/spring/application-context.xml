@@ -55,10 +55,6 @@
         <property name="permissionEvaluator" ref="ylopsPermissionEvaluator"/>
     </bean>
 
-    <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled">
-        <security:expression-handler ref="expressionHandler"/>
-    </security:global-method-security>
-
     <import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/>
 
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.service"/>
@@ -122,5 +118,17 @@
     <bean id="defaultExecutor" class="org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor">
         <constructor-arg ref="defaultThreadPool"/>
     </bean>
+
+    <beans profile="!developmentPermissionOverride">
+        <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled">
+            <security:expression-handler ref="expressionHandler"/>
+        </security:global-method-security>
+    </beans>
+
+    <beans profile="developmentPermissionOverride">
+        <security:global-method-security secured-annotations="disabled" pre-post-annotations="disabled">
+            <security:expression-handler ref="expressionHandler"/>
+        </security:global-method-security>
+    </beans>
 
 </beans>

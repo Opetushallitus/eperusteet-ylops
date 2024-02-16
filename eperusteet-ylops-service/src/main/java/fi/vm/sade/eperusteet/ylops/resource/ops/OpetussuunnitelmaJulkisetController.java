@@ -13,7 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -25,7 +29,6 @@ public class OpetussuunnitelmaJulkisetController {
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
     @RequestMapping(method = RequestMethod.GET)
-    @ResponseBody
     @Timed
     @ApiImplicitParams({
             @ApiImplicitParam(name = "koulutustyyppi", dataType = "string", paramType = "query", allowMultiple = false, value = "koulutustyyppi (koodistokoodi)"),
@@ -39,14 +42,12 @@ public class OpetussuunnitelmaJulkisetController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
     @Timed
     public ResponseEntity<OpetussuunnitelmaJulkinenDto> getOpetussuunnitelmanJulkisetTiedot(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkinen(id), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/julkaisut")
-    @ResponseBody
     @Timed
     @ApiImplicitParams({
             @ApiImplicitParam(name = "koulutustyypit", dataType = "string", paramType = "query", allowMultiple = true, value = "koulutustyypit"),
@@ -61,11 +62,15 @@ public class OpetussuunnitelmaJulkisetController {
     }
 
     @RequestMapping(value = "/{id}/julkaisu", method = RequestMethod.GET)
-    @ResponseBody
     @Timed
     public ResponseEntity<OpetussuunnitelmaExportDto> getOpetussuunnitelmaJulkaistu(
             @PathVariable("id") final Long id, @RequestParam(required = false) boolean esikatselu) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(id, esikatselu), HttpStatus.OK);
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/kaikki")
+    public List<OpetussuunnitelmaJulkinenDto> getKaikkiJulkaistutOpetussuunnitelmat() {
+        return opetussuunnitelmaService.getKaikkiJulkaistutOpetussuunnitelmat();
     }
 
 }

@@ -152,7 +152,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -407,14 +406,22 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 query.getPerusteenDiaarinumero(),
                 koulutustyypit,
                 pageable)
-                .map(obj -> {
-                    try {
-                        return objectMapper.readValue(obj, OpetussuunnitelmaJulkinenDto.class);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        throw new RuntimeException(e);
-                    }
-                });
+                .map(this::convertToOpetussuunnitelmaDto);
+    }
+
+    private OpetussuunnitelmaJulkinenDto convertToOpetussuunnitelmaDto(String obj) {
+        try {
+            return objectMapper.readValue(obj, OpetussuunnitelmaJulkinenDto.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<OpetussuunnitelmaJulkinenDto> getKaikkiJulkaistutOpetussuunnitelmat() {
+        return julkaisuRepository.findAllJulkaistutOpetussuunnitelmat().stream()
+                .map(this::convertToOpetussuunnitelmaDto).collect(Collectors.toList());
     }
 
     @Override

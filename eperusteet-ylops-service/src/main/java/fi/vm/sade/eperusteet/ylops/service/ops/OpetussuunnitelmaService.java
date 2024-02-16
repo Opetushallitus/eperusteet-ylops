@@ -82,6 +82,9 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("permitAll()")
     Page<OpetussuunnitelmaJulkinenDto> getAllJulkaistutOpetussuunnitelmat(OpetussuunnitelmaJulkaistuQuery query);
 
+    @PreAuthorize("isAuthenticated()")
+    List<OpetussuunnitelmaJulkinenDto> getKaikkiJulkaistutOpetussuunnitelmat();
+
     @PreAuthorize("permitAll()")
     OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(Long opsId);
 
