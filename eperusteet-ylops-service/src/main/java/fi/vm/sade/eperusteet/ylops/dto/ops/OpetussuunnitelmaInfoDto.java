@@ -13,4 +13,5 @@ import java.util.Date;
 @NoArgsConstructor
 public class OpetussuunnitelmaInfoDto extends OpetussuunnitelmaBaseDto {
     private Date julkaistu;
+    private Date ensijulkaisu;
 }

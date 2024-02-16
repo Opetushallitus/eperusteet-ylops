@@ -606,9 +606,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         OpetussuunnitelmaKevytDto dto = mapper.map(ops, OpetussuunnitelmaKevytDto.class);
-        fetchPeriytyvatPohjat(dto, dto.getPohja());
         fetchKuntaNimet(dto);
         fetchOrganisaatioNimet(dto);
+
+        if (SecurityUtil.isAuthenticated()) {
+            fetchPeriytyvatPohjat(dto, dto.getPohja());
+        }
+
         return dto;
     }
 
@@ -860,6 +864,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             pohjaNimi.setId(pohja.getId());
         }
         pohjaNimi.setNimi(pohjaDto.getNimi());
+        rootOps.setPeriytyvatPohjat(new ArrayList<>());
         rootOps.getPeriytyvatPohjat().add(pohjaNimi);
 
         if (pohja.getPohja() != null) {
