@@ -2001,6 +2001,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         return getOpetussuunnitelmaJulkaistuSisalto(opsId);
     }
 
+    @Override
+    public JsonNode getJulkaistuOpetussuunnitelmaPeruste(Long opsId) {
+        OpetussuunnitelmaExportDto opetussuunnitelmaExportDto = getOpetussuunnitelmaJulkaistuSisalto(opsId);
+
+        if (opetussuunnitelmaExportDto == null) {
+            return null;
+        }
+
+        return eperusteetService.getPerusteenJulkaisuByGlobalversionMuutosaika(
+                opetussuunnitelmaExportDto.getPeruste().getId(),
+                opetussuunnitelmaExportDto.getPeruste().getGlobalVersion().getAikaleima());
+
+    }
+
     @Cacheable(value = "ops-julkaisu", key = "#opsId")
     public OpetussuunnitelmaExportDto getOpetussuunnitelmanJulkaisuWithData(Long opsId, OpetussuunnitelmanJulkaisu julkaisu) {
         ObjectNode data = julkaisu.getData().getOpsData();

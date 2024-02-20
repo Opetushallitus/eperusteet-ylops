@@ -14,7 +14,9 @@
     "/external/opetussuunnitelma/{id}" : {
       "get" : {
         "tags" : [ "Julkinen" ],
-        "operationId" : "getPublicOpetussuunnitelma",
+        "summary" : "Opetussuunnitelman tietojen haku",
+        "description" : "",
+        "operationId" : "getOpetussuunnitelma",
         "produces" : [ "application/json;charset=UTF-8" ],
         "parameters" : [ {
           "name" : "id",
@@ -33,10 +35,36 @@
         }
       }
     },
+    "/external/opetussuunnitelma/{id}/peruste" : {
+      "get" : {
+        "tags" : [ "Julkinen" ],
+        "summary" : "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.",
+        "description" : "",
+        "operationId" : "getOpetussuunnitelmanPeruste",
+        "produces" : [ "application/json;charset=UTF-8" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    },
     "/external/opetussuunnitelmat" : {
       "get" : {
         "tags" : [ "Julkinen" ],
-        "operationId" : "getPublicOpetussuunnitelmat",
+        "summary" : "Opetussuunnitelmien haku",
+        "description" : "",
+        "operationId" : "getOpetussuunnitelmat",
         "produces" : [ "application/json;charset=UTF-8" ],
         "parameters" : [ {
           "name" : "nimi",
@@ -55,6 +83,16 @@
           "description" : "perusteenDiaarinumero",
           "required" : false,
           "type" : "string"
+        }, {
+          "name" : "koulutustyypit",
+          "in" : "query",
+          "description" : "koulutustyypit",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
         }, {
           "name" : "sivu",
           "in" : "query",

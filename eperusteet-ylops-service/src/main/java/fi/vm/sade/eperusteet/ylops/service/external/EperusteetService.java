@@ -62,4 +62,10 @@ public interface EperusteetService {
 
     @PreAuthorize("permitAll()")
     Date viimeisinPerusteenJulkaisuaika(Long perusteId);
+
+    @PreAuthorize("permitAll()")
+    JsonNode getPerusteenJulkaisuByGlobalversionMuutosaika(Long perusteId, Date globalVersionMuutosaika);
+
+    @PreAuthorize("permitAll()")
+    JsonNode getPerusteByRevision(Long perusteId, Integer revision);
 }
