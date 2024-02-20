@@ -15,6 +15,7 @@
  */
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
@@ -226,4 +227,7 @@ public interface OpetussuunnitelmaService {
 
     @PreAuthorize("hasPermission(null, 'pohja', 'HALLINTA')")
     void palautaTekstirakenne(@P("opsId") Long id);
+
+    @PreAuthorize("permitAll()")
+    JsonNode getJulkaistuOpetussuunnitelmaPeruste(Long opsId);
 }
