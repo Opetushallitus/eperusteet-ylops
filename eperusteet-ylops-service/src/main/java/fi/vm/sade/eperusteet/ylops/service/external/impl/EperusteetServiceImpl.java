@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
 import fi.vm.sade.eperusteet.utils.client.OphClientHelper;
 import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
@@ -252,8 +253,8 @@ public class EperusteetServiceImpl implements EperusteetService {
                 }
                 return peruste;
             } catch (Exception e) {
-                log.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
-                        + " Trying from DB-cache.");
+                Throwables.getStackTraceAsString(e);
+                throw new BusinessRuleViolationException("Virhe haettaessa perustetta ePerusteista.");
             }
         }
 
