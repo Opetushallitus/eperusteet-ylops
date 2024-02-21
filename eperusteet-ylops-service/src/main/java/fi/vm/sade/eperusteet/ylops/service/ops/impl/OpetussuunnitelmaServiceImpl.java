@@ -864,7 +864,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             pohjaNimi.setId(pohja.getId());
         }
         pohjaNimi.setNimi(pohjaDto.getNimi());
-        rootOps.setPeriytyvatPohjat(new ArrayList<>());
+        if (rootOps.getPeriytyvatPohjat() == null) {
+            rootOps.setPeriytyvatPohjat(new ArrayList<>());
+        }
         rootOps.getPeriytyvatPohjat().add(pohjaNimi);
 
         if (pohja.getPohja() != null) {
