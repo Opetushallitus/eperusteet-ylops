@@ -180,7 +180,7 @@ public class DtoMapperConfig {
         factory.classMap(Opetussuunnitelma.class, OpetussuunnitelmaInfoDto.class)
                 .byDefault()
                 .favorExtension(true)
-                .customize(new CustomMapper<Opetussuunnitelma, OpetussuunnitelmaInfoDto>() {
+                .customize(new CustomMapper<>() {
                     @Override
                     public void mapAtoB(Opetussuunnitelma opetussuunnitelma, OpetussuunnitelmaInfoDto opetussuunnitelmaInfoDto, MappingContext context) {
                         super.mapAtoB(opetussuunnitelma, opetussuunnitelmaInfoDto, context);
@@ -188,6 +188,9 @@ public class DtoMapperConfig {
                             opetussuunnitelmaInfoDto.setJulkaistu(opetussuunnitelma.getJulkaisut().stream().max(Comparator.comparing(OpetussuunnitelmanJulkaisu::getLuotu)).map(OpetussuunnitelmanJulkaisu::getLuotu).orElse(null));
                             opetussuunnitelmaInfoDto.setEnsijulkaisu(opetussuunnitelma.getJulkaisut().stream().min(Comparator.comparing(OpetussuunnitelmanJulkaisu::getLuotu)).map(OpetussuunnitelmanJulkaisu::getLuotu).orElse(null));
                             opetussuunnitelmaInfoDto.setTila(Tila.JULKAISTU);
+                        } else {
+                            opetussuunnitelmaInfoDto.setJulkaistu(null);
+                            opetussuunnitelmaInfoDto.setEnsijulkaisu(null);
                         }
                     }
                 })

@@ -39,8 +39,7 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class OpetussuunnitelmaBaseDto
-        implements Serializable, Identifiable, OpsIdentifiable {
+public class OpetussuunnitelmaBaseDto implements Serializable, Identifiable, OpsIdentifiable {
     private Long id;
     private Set<Kieli> julkaisukielet;
     private Set<OrganisaatioDto> organisaatiot;
