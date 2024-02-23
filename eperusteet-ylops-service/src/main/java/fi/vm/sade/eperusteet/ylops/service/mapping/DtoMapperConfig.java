@@ -24,7 +24,6 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine_;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
-import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale_;
@@ -56,7 +55,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.Instant;
-import java.util.Comparator;
 
 /**
  * @author jhyoty
@@ -185,12 +183,7 @@ public class DtoMapperConfig {
                     public void mapAtoB(Opetussuunnitelma opetussuunnitelma, OpetussuunnitelmaInfoDto opetussuunnitelmaInfoDto, MappingContext context) {
                         super.mapAtoB(opetussuunnitelma, opetussuunnitelmaInfoDto, context);
                         if (!Tyyppi.POHJA.equals(opetussuunnitelma.getTyyppi()) && !Tila.POISTETTU.equals(opetussuunnitelma.getTila()) && CollectionUtils.isNotEmpty(opetussuunnitelma.getJulkaisut())) {
-                            opetussuunnitelmaInfoDto.setJulkaistu(opetussuunnitelma.getJulkaisut().stream().max(Comparator.comparing(OpetussuunnitelmanJulkaisu::getLuotu)).map(OpetussuunnitelmanJulkaisu::getLuotu).orElse(null));
-                            opetussuunnitelmaInfoDto.setEnsijulkaisu(opetussuunnitelma.getJulkaisut().stream().min(Comparator.comparing(OpetussuunnitelmanJulkaisu::getLuotu)).map(OpetussuunnitelmanJulkaisu::getLuotu).orElse(null));
                             opetussuunnitelmaInfoDto.setTila(Tila.JULKAISTU);
-                        } else {
-                            opetussuunnitelmaInfoDto.setJulkaistu(null);
-                            opetussuunnitelmaInfoDto.setEnsijulkaisu(null);
                         }
                     }
                 })
