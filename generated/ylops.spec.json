@@ -492,7 +492,11 @@
         "tags" : [ "Julkinen" ],
         "summary" : "Opetussuunnitelman tietojen haku",
         "description" : "",
+<<<<<<< HEAD
         "operationId" : "getExternalOpetussuunnitelma",
+=======
+        "operationId" : "getJulkaistuOpetussuunnitelma",
+>>>>>>> 96d6e5d2 (cas client session)
         "produces" : [ "application/json;charset=UTF-8" ],
         "parameters" : [ {
           "name" : "id",
@@ -511,6 +515,7 @@
         }
       }
     },
+<<<<<<< HEAD
 <<<<<<< HEAD
     "/external/opetussuunnitelma/{id}/peruste" : {
       "get" : {
@@ -542,6 +547,35 @@
 >>>>>>> 73ec8b24 (props)
       "get" : {
         "tags" : [ "Julkinen" ],
+=======
+    "/api/external/opetussuunnitelma/{id}/peruste" : {
+      "get" : {
+        "tags" : [ "Julkinen" ],
+        "summary" : "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.",
+        "description" : "",
+        "operationId" : "getJulkaistunOpetussuunnitelmanPeruste",
+        "produces" : [ "application/json;charset=UTF-8" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    },
+    "/api/external/opetussuunnitelmat" : {
+      "get" : {
+        "tags" : [ "Julkinen" ],
+>>>>>>> 96d6e5d2 (cas client session)
         "summary" : "Opetussuunnitelmien haku",
         "description" : "",
         "operationId" : "getOpetussuunnitelmat",
@@ -10981,6 +11015,10 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -10992,10 +11030,6 @@
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -11027,6 +11061,10 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -11038,10 +11076,6 @@
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -11073,6 +11107,10 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -11084,10 +11122,6 @@
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -11104,18 +11138,18 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "unpaged" : {
-          "type" : "boolean"
-        },
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "paged" : {
+          "type" : "boolean"
         },
         "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "paged" : {
+        "unpaged" : {
           "type" : "boolean"
         }
       }
@@ -12000,10 +12034,10 @@
         "empty" : {
           "type" : "boolean"
         },
-        "unsorted" : {
+        "sorted" : {
           "type" : "boolean"
         },
-        "sorted" : {
+        "unsorted" : {
           "type" : "boolean"
         }
       }
