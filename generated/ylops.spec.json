@@ -490,7 +490,9 @@
     "/api/external/opetussuunnitelma/{id}" : {
       "get" : {
         "tags" : [ "Julkinen" ],
-        "operationId" : "getPublicOpetussuunnitelma",
+        "summary" : "Opetussuunnitelman tietojen haku",
+        "description" : "",
+        "operationId" : "getJulkaistuOpetussuunnitelma",
         "produces" : [ "application/json;charset=UTF-8" ],
         "parameters" : [ {
           "name" : "id",
@@ -509,10 +511,36 @@
         }
       }
     },
+    "/api/external/opetussuunnitelma/{id}/peruste" : {
+      "get" : {
+        "tags" : [ "Julkinen" ],
+        "summary" : "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.",
+        "description" : "",
+        "operationId" : "getJulkaistunOpetussuunnitelmanPeruste",
+        "produces" : [ "application/json;charset=UTF-8" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    },
     "/api/external/opetussuunnitelmat" : {
       "get" : {
         "tags" : [ "Julkinen" ],
-        "operationId" : "getPublicOpetussuunnitelmat",
+        "summary" : "Opetussuunnitelmien haku",
+        "description" : "",
+        "operationId" : "getOpetussuunnitelmat",
         "produces" : [ "application/json;charset=UTF-8" ],
         "parameters" : [ {
           "name" : "nimi",
@@ -531,6 +559,16 @@
           "description" : "perusteenDiaarinumero",
           "required" : false,
           "type" : "string"
+        }, {
+          "name" : "koulutustyypit",
+          "in" : "query",
+          "description" : "koulutustyypit",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
         }, {
           "name" : "sivu",
           "in" : "query",
@@ -9755,6 +9793,10 @@
         "julkaistu" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "ensijulkaisu" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },
@@ -10850,6 +10892,10 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -10861,10 +10907,6 @@
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -10896,6 +10938,10 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -10907,10 +10953,6 @@
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -10942,6 +10984,10 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -10953,10 +10999,6 @@
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -10973,18 +11015,18 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "unpaged" : {
-          "type" : "boolean"
-        },
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "paged" : {
+          "type" : "boolean"
         },
         "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "paged" : {
+        "unpaged" : {
           "type" : "boolean"
         }
       }
@@ -11863,10 +11905,10 @@
         "empty" : {
           "type" : "boolean"
         },
-        "unsorted" : {
+        "sorted" : {
           "type" : "boolean"
         },
-        "sorted" : {
+        "unsorted" : {
           "type" : "boolean"
         }
       }

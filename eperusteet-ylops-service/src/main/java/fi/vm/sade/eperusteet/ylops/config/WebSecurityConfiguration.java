@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.config;
 
+import fi.vm.sade.eperusteet.ylops.repository.OphSessionMappingStorage;
 import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactoryImpl;
 import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter;
 import fi.vm.sade.javautils.http.auth.CasAuthenticator;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.TicketValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,6 +58,9 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Value("${fi.vm.sade.eperusteet.ylops.oph_password}")
     private String eperusteet_password;
+
+    @Autowired
+    private OphSessionMappingStorage ophSessionMappingStorage;
 
     @PostConstruct
     public void post() {
@@ -127,6 +132,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     public SingleSignOutFilter singleSignOutFilter() {
         SingleSignOutFilter singleSignOutFilter = new SingleSignOutFilter();
         singleSignOutFilter.setIgnoreInitConfiguration(true);
+        singleSignOutFilter.setSessionMappingStorage(ophSessionMappingStorage);
         return singleSignOutFilter;
     }
 
