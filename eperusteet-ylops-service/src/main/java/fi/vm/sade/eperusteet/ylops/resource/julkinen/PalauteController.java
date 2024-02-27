@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/palaute")
+@RequestMapping("/api/palaute")
 @Api(value = "Palautteet")
 public class PalauteController {
 

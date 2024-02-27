@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/external", produces = "application/json;charset=UTF-8")
+@RequestMapping(value = "/api/external", produces = "application/json;charset=UTF-8")
 @Api(value = "Julkinen")
 @Description("Opetussuunnitelminen julkinen rajapinta")
 public class ExternalController {
@@ -44,13 +44,13 @@ public class ExternalController {
 
     @ApiOperation(value = "Opetussuunnitelman tietojen haku")
     @RequestMapping(value = "/opetussuunnitelma/{id}", method = RequestMethod.GET)
-    public ResponseEntity<OpetussuunnitelmaExportDto> getOpetussuunnitelma(@PathVariable("id") final Long id) {
+    public ResponseEntity<OpetussuunnitelmaExportDto> getJulkaistuOpetussuunnitelma(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(id), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.")
     @RequestMapping(value = "/opetussuunnitelma/{id}/peruste", method = RequestMethod.GET)
-    public ResponseEntity<JsonNode> getOpetussuunnitelmanPeruste(@PathVariable("id") final Long id) {
+    public ResponseEntity<JsonNode> getJulkaistunOpetussuunnitelmanPeruste(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getJulkaistuOpetussuunnitelmaPeruste(id), HttpStatus.OK);
     }
 }

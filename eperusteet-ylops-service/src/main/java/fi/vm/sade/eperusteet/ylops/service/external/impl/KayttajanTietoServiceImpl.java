@@ -12,6 +12,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
@@ -32,9 +33,11 @@ import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.R
 public class KayttajanTietoServiceImpl implements KayttajanTietoService {
 
     @Autowired
+    @Lazy
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Autowired
+    @Lazy
     private KayttajaClient client;
 
     @Override

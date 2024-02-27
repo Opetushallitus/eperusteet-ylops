@@ -34,7 +34,7 @@ import springfox.documentation.annotations.ApiIgnore;
  * @author mikkom
  */
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat")
 @ApiIgnore
 @Api(value = "OppiaineenVuosiluokat")
 public class OppiaineenVuosiluokkaController {

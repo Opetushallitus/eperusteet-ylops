@@ -29,6 +29,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
@@ -84,12 +86,18 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @BatchSize(size = 25)
+    @JoinTable(name = "opetuksen_tavoite_tavoitteen_arviointi",
+            joinColumns = @JoinColumn(name = "opetuksen_tavoite_id"),
+            inverseJoinColumns = @JoinColumn(name = "arvioinninkohteet_id"))
     private Set<Tavoitteenarviointi> arvioinninkohteet = new HashSet<>();
 
     @Getter
     @Setter
     @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
     @BatchSize(size = 25)
+    @JoinTable(name = "opetuksen_tavoite_oppiaine_kohdealue",
+            joinColumns = @JoinColumn(name = "opetuksen_tavoite_id"),
+            inverseJoinColumns = @JoinColumn(name = "kohdealueet_id"))
     private Set<Opetuksenkohdealue> kohdealueet = new HashSet<>();
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

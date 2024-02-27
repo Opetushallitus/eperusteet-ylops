@@ -45,7 +45,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
  * @author mikkom
  */
 @RestController
-@RequestMapping("/kommentit")
+@RequestMapping("/api/kommentit")
 @ApiIgnore
 @Api("Kommentit")
 @Deprecated

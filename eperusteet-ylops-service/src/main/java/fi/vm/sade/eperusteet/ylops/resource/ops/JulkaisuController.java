@@ -18,7 +18,7 @@ import java.util.List;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}")
 @Api(value = "Julkaisut")
 @Description("Opetussuunnitelmien julkaisut")
 public class JulkaisuController {

@@ -16,17 +16,26 @@
 package fi.vm.sade.eperusteet.ylops.repository.version;
 
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
 @NoRepositoryBean
 public interface JpaWithVersioningRepository<T, ID extends Serializable> extends JpaRepository<T, ID> {
+
+    default T findOne(ID id) {
+        return findById(id).orElse(null);
+    }
+
+    default void delete(ID id) {
+        deleteById(id);
+    }
 
     List<Revision> getRevisions(final ID id);
 

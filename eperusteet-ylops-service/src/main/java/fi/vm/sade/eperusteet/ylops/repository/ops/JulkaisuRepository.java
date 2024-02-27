@@ -32,7 +32,7 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
             "   AND (:nimi LIKE '' OR LOWER(nimi->>:kieli) LIKE LOWER(CONCAT('%',:nimi,'%'))) " +
             "   AND (:perusteenDiaarinumero = '' OR peruste->>'diaarinumero' = :perusteenDiaarinumero) " +
             "   AND (COALESCE(:koulutustyypit, NULL) = '' OR koulutustyyppi IN (:koulutustyypit)) " +
-            "   order by nimi->>:kieli asc, ?#{#pageable} " +
+            "   order by nimi->>:kieli asc " +
             ") t";
 
     @Query(nativeQuery = true,
