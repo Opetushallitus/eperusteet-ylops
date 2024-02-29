@@ -767,7 +767,6 @@
                                         <location>${eperusteet.resources}.ops.lukio.LukioOpetussuunnitelmatController</location>
                                         <location>${eperusteet.resources}.ukk.*</location>
                                         <location>${eperusteet.resources}.util.KayttajaController</location>
-                                        <location>${eperusteet.resources}.util.LogoutController</location>
                                     </locations>
                                     <modelSubstitute>/substitutes.map</modelSubstitute>
                                     <info>
