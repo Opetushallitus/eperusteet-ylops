@@ -16,11 +16,7 @@
         "tags" : [ "Julkinen" ],
         "summary" : "Opetussuunnitelman tietojen haku",
         "description" : "",
-<<<<<<< HEAD
         "operationId" : "getExternalOpetussuunnitelma",
-=======
-        "operationId" : "getJulkaistuOpetussuunnitelma",
->>>>>>> 96d6e5d2 (cas client session)
         "produces" : [ "application/json;charset=UTF-8" ],
         "parameters" : [ {
           "name" : "id",
@@ -44,11 +40,7 @@
         "tags" : [ "Julkinen" ],
         "summary" : "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.",
         "description" : "",
-<<<<<<< HEAD
         "operationId" : "getExternalOpetussuunnitelmanPeruste",
-=======
-        "operationId" : "getJulkaistunOpetussuunnitelmanPeruste",
->>>>>>> 96d6e5d2 (cas client session)
         "produces" : [ "application/json;charset=UTF-8" ],
         "parameters" : [ {
           "name" : "id",
@@ -378,42 +370,14 @@
     "Page" : {
       "type" : "object",
       "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "totalPages" : {
-<<<<<<< HEAD
           "type" : "integer",
           "format" : "int32"
         },
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-=======
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-<<<<<<< HEAD
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
->>>>>>> 73ec8b24 (props)
-        },
-=======
->>>>>>> 96d6e5d2 (cas client session)
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -431,14 +395,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean"
-        },
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
+        },
+        "first" : {
+          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
@@ -452,42 +416,14 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
         "totalPages" : {
-<<<<<<< HEAD
           "type" : "integer",
           "format" : "int32"
         },
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-=======
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
-<<<<<<< HEAD
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
->>>>>>> 73ec8b24 (props)
-        },
-=======
->>>>>>> 96d6e5d2 (cas client session)
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -505,14 +441,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean"
-        },
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
+        },
+        "first" : {
+          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
@@ -533,17 +469,17 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "unpaged" : {
-          "type" : "boolean"
-        },
-        "pageNumber" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "paged" : {
           "type" : "boolean"
         },
         "pageSize" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "unpaged" : {
+          "type" : "boolean"
+        },
+        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         }
@@ -658,10 +594,10 @@
         "empty" : {
           "type" : "boolean"
         },
-        "unsorted" : {
+        "sorted" : {
           "type" : "boolean"
         },
-        "sorted" : {
+        "unsorted" : {
           "type" : "boolean"
         }
       }

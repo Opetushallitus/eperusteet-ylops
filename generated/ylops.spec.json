@@ -23,8 +23,6 @@
   }, {
     "name" : "Liitetiedostot"
   }, {
-    "name" : "Logout"
-  }, {
     "name" : "Lops2019"
   }, {
     "name" : "Lops2019Opintojaksot"
@@ -492,11 +490,7 @@
         "tags" : [ "Julkinen" ],
         "summary" : "Opetussuunnitelman tietojen haku",
         "description" : "",
-<<<<<<< HEAD
         "operationId" : "getExternalOpetussuunnitelma",
-=======
-        "operationId" : "getJulkaistuOpetussuunnitelma",
->>>>>>> 96d6e5d2 (cas client session)
         "produces" : [ "application/json;charset=UTF-8" ],
         "parameters" : [ {
           "name" : "id",
@@ -515,9 +509,7 @@
         }
       }
     },
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "/external/opetussuunnitelma/{id}/peruste" : {
+    "/api/external/opetussuunnitelma/{id}/peruste" : {
       "get" : {
         "tags" : [ "Julkinen" ],
         "summary" : "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.",
@@ -541,41 +533,9 @@
         }
       }
     },
-    "/external/opetussuunnitelmat" : {
-=======
-    "/api/external/opetussuunnitelmat" : {
->>>>>>> 73ec8b24 (props)
-      "get" : {
-        "tags" : [ "Julkinen" ],
-=======
-    "/api/external/opetussuunnitelma/{id}/peruste" : {
-      "get" : {
-        "tags" : [ "Julkinen" ],
-        "summary" : "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.",
-        "description" : "",
-        "operationId" : "getJulkaistunOpetussuunnitelmanPeruste",
-        "produces" : [ "application/json;charset=UTF-8" ],
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "object"
-            }
-          }
-        }
-      }
-    },
     "/api/external/opetussuunnitelmat" : {
       "get" : {
         "tags" : [ "Julkinen" ],
->>>>>>> 96d6e5d2 (cas client session)
         "summary" : "Opetussuunnitelmien haku",
         "description" : "",
         "operationId" : "getOpetussuunnitelmat",
@@ -1139,26 +1099,6 @@
         }
       }
     },
-    "/api/logout" : {
-      "get" : {
-        "tags" : [ "Logout" ],
-        "operationId" : "logoutGet",
-        "responses" : {
-          "default" : {
-            "description" : "successful operation"
-          }
-        }
-      },
-      "post" : {
-        "tags" : [ "Logout" ],
-        "operationId" : "logoutPOST",
-        "responses" : {
-          "default" : {
-            "description" : "successful operation"
-          }
-        }
-      }
-    },
     "/api/muokkaustieto/{opsId}" : {
       "get" : {
         "tags" : [ "Muokkaustieto" ],
@@ -1195,8 +1135,7 @@
         }
       }
     },
-<<<<<<< HEAD
-    "/muokkaustieto/{opsId}/viimeisinpohjatekstisync" : {
+    "/api/muokkaustieto/{opsId}/viimeisinpohjatekstisync" : {
       "get" : {
         "tags" : [ "Muokkaustieto" ],
         "operationId" : "getViimeisinPohjatekstiSync",
@@ -1217,10 +1156,7 @@
         }
       }
     },
-    "/ohjeet" : {
-=======
     "/api/ohjeet" : {
->>>>>>> 73ec8b24 (props)
       "post" : {
         "tags" : [ "Ohjeet" ],
         "operationId" : "addOhje",
@@ -1498,8 +1434,7 @@
         }
       }
     },
-<<<<<<< HEAD
-    "/opetussuunnitelmat/julkiset/kaikki" : {
+    "/api/opetussuunnitelmat/julkiset/kaikki" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat julkiset" ],
         "operationId" : "getKaikkiJulkaistutOpetussuunnitelmat",
@@ -1516,10 +1451,7 @@
         }
       }
     },
-    "/opetussuunnitelmat/julkiset/{id}" : {
-=======
     "/api/opetussuunnitelmat/julkiset/{id}" : {
->>>>>>> 73ec8b24 (props)
       "get" : {
         "tags" : [ "Opetussuunnitelmat julkiset" ],
         "operationId" : "getOpetussuunnitelmanJulkisetTiedot",
@@ -2117,32 +2049,7 @@
         }
       }
     },
-<<<<<<< HEAD
-    "/opetussuunnitelmat/pohjat" : {
-=======
-    "/api/opetussuunnitelmat/peruste" : {
-      "get" : {
-        "tags" : [ "Opetussuunnitelmat" ],
-        "operationId" : "getOpetussuunnitelmanPeruste",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/PerusteInfoDto"
-            }
-          }
-        }
-      }
-    },
     "/api/opetussuunnitelmat/pohjat" : {
->>>>>>> 73ec8b24 (props)
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
         "operationId" : "getOpetussuunnitelmienOpsPohjat",
@@ -2642,8 +2549,7 @@
         }
       }
     },
-<<<<<<< HEAD
-    "/opetussuunnitelmat/{id}/peruste" : {
+    "/api/opetussuunnitelmat/{id}/peruste" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
         "operationId" : "getOpetussuunnitelmanPeruste",
@@ -2664,10 +2570,7 @@
         }
       }
     },
-    "/opetussuunnitelmat/{id}/pohja/vuosiluokkakokonaisuudet" : {
-=======
     "/api/opetussuunnitelmat/{id}/pohja/vuosiluokkakokonaisuudet" : {
->>>>>>> 73ec8b24 (props)
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
         "operationId" : "getOpetussuunnitelmanPohjanVuosiluokkakokonaisuudet",
@@ -4923,32 +4826,7 @@
         }
       }
     },
-<<<<<<< HEAD
-    "/opetussuunnitelmat/{opsId}/peruste/moduulit" : {
-=======
-    "/api/opetussuunnitelmat/{opsId}/peruste" : {
-      "get" : {
-        "tags" : [ "Lops2019PerusteController" ],
-        "operationId" : "getLops2019Peruste",
-        "parameters" : [ {
-          "name" : "opsId",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/PerusteInfoDto"
-            }
-          }
-        }
-      }
-    },
     "/api/opetussuunnitelmat/{opsId}/peruste/moduulit" : {
->>>>>>> 73ec8b24 (props)
       "get" : {
         "tags" : [ "Lops2019PerusteController" ],
         "operationId" : "getAllLops2019PerusteModuulit",
@@ -10993,13 +10871,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -11015,10 +10893,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -11031,6 +10905,10 @@
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "empty" : {
           "type" : "boolean"
         }
@@ -11039,13 +10917,13 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -11061,10 +10939,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -11077,6 +10951,10 @@
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "empty" : {
           "type" : "boolean"
         }
@@ -11085,13 +10963,13 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -11107,10 +10985,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
@@ -11122,6 +10996,10 @@
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -11138,18 +11016,18 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "pageNumber" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "paged" : {
-          "type" : "boolean"
-        },
         "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "unpaged" : {
+          "type" : "boolean"
+        },
+        "paged" : {
           "type" : "boolean"
         }
       }
@@ -12034,10 +11912,10 @@
         "empty" : {
           "type" : "boolean"
         },
-        "sorted" : {
+        "unsorted" : {
           "type" : "boolean"
         },
-        "unsorted" : {
+        "sorted" : {
           "type" : "boolean"
         }
       }
