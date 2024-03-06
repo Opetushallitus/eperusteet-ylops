@@ -6,7 +6,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
-
 public interface KysymysService {
 
     @PreAuthorize("isAuthenticated()")

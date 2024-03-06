@@ -6,9 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
-/**
- * Created by autio on 2.2.2016.
- */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

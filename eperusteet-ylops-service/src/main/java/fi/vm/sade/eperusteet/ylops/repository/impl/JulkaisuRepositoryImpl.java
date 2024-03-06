@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
-import org.apache.commons.lang.NullArgumentException;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

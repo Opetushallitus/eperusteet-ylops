@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
-
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;

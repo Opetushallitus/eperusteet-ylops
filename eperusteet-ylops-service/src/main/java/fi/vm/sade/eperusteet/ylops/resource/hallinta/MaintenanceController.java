@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.resource.hallinta;
 
-
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
 import fi.vm.sade.eperusteet.ylops.service.util.MaintenanceService;

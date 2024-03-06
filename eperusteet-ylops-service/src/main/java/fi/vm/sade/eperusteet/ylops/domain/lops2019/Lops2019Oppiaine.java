@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.domain.lops2019;
 
-
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Poistettava;

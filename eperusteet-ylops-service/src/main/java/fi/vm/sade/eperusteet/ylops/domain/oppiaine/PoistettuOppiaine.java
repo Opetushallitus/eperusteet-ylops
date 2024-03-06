@@ -9,9 +9,6 @@ import org.hibernate.envers.Audited;
 import javax.persistence.*;
 import java.io.Serializable;
 
-/**
- * Created by autio on 24.2.2016.
- */
 @Entity
 @Table(name = "poistettu_oppiaine")
 @Audited

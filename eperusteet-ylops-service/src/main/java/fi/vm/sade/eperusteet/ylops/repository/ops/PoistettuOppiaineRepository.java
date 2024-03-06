@@ -7,9 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-/**
- * Created by autio on 24.2.2016.
- */
 @Repository
 @Deprecated
 public interface PoistettuOppiaineRepository extends JpaWithVersioningRepository<PoistettuOppiaine, Long> {

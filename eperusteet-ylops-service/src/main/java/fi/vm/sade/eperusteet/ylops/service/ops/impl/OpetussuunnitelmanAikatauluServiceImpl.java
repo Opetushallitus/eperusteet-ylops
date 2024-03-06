@@ -5,8 +5,6 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanAikatauluDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmanAikatauluRepository;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanAikatauluService;
-import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
-import java.util.Date;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
