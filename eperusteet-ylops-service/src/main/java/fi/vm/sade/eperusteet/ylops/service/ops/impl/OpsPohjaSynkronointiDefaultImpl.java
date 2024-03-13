@@ -4,6 +4,7 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoLisatieto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaHierarkiaKopiointiService;
@@ -46,7 +47,7 @@ public class OpsPohjaSynkronointiDefaultImpl implements OpsPohjaSynkronointi {
             throw new BusinessRuleViolationException("hierarkiakopiointi-epaonnistui");
         }
 
-        opetussuunnitelmanMuokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-pohja-teksti-synkronointi");
+        opetussuunnitelmanMuokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.PAIVITYS, MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU);
     }
 
     private Set<UUID> getOpetussuunnitelmaOmatTekstikappaleViiteUUID(Opetussuunnitelma ops) {

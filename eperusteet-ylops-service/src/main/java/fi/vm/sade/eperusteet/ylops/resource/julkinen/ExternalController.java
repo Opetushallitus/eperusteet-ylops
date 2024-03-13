@@ -44,13 +44,13 @@ public class ExternalController {
 
     @ApiOperation(value = "Opetussuunnitelman tietojen haku")
     @RequestMapping(value = "/opetussuunnitelma/{id}", method = RequestMethod.GET)
-    public ResponseEntity<OpetussuunnitelmaExportDto> getOpetussuunnitelma(@PathVariable("id") final Long id) {
+    public ResponseEntity<OpetussuunnitelmaExportDto> getExternalOpetussuunnitelma(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(id), HttpStatus.OK);
     }
 
     @ApiOperation(value = "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.")
     @RequestMapping(value = "/opetussuunnitelma/{id}/peruste", method = RequestMethod.GET)
-    public ResponseEntity<JsonNode> getOpetussuunnitelmanPeruste(@PathVariable("id") final Long id) {
+    public ResponseEntity<JsonNode> getExternalOpetussuunnitelmanPeruste(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getJulkaistuOpetussuunnitelmaPeruste(id), HttpStatus.OK);
     }
 }

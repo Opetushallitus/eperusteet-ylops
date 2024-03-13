@@ -491,7 +491,9 @@
     "/external/opetussuunnitelma/{id}" : {
       "get" : {
         "tags" : [ "Julkinen" ],
-        "operationId" : "getPublicOpetussuunnitelma",
+        "summary" : "Opetussuunnitelman tietojen haku",
+        "description" : "",
+        "operationId" : "getExternalOpetussuunnitelma",
         "produces" : [ "application/json;charset=UTF-8" ],
         "parameters" : [ {
           "name" : "id",
@@ -510,10 +512,36 @@
         }
       }
     },
+    "/external/opetussuunnitelma/{id}/peruste" : {
+      "get" : {
+        "tags" : [ "Julkinen" ],
+        "summary" : "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.",
+        "description" : "",
+        "operationId" : "getExternalOpetussuunnitelmanPeruste",
+        "produces" : [ "application/json;charset=UTF-8" ],
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "object"
+            }
+          }
+        }
+      }
+    },
     "/external/opetussuunnitelmat" : {
       "get" : {
         "tags" : [ "Julkinen" ],
-        "operationId" : "getPublicOpetussuunnitelmat",
+        "summary" : "Opetussuunnitelmien haku",
+        "description" : "",
+        "operationId" : "getOpetussuunnitelmat",
         "produces" : [ "application/json;charset=UTF-8" ],
         "parameters" : [ {
           "name" : "nimi",
@@ -532,6 +560,16 @@
           "description" : "perusteenDiaarinumero",
           "required" : false,
           "type" : "string"
+        }, {
+          "name" : "koulutustyypit",
+          "in" : "query",
+          "description" : "koulutustyypit",
+          "required" : false,
+          "type" : "array",
+          "items" : {
+            "type" : "string"
+          },
+          "collectionFormat" : "multi"
         }, {
           "name" : "sivu",
           "in" : "query",
@@ -1120,6 +1158,27 @@
         }
       }
     },
+    "/muokkaustieto/{opsId}/viimeisinpohjatekstisync" : {
+      "get" : {
+        "tags" : [ "Muokkaustieto" ],
+        "operationId" : "getViimeisinPohjatekstiSync",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/MuokkaustietoKayttajallaDto"
+            }
+          }
+        }
+      }
+    },
     "/ohjeet" : {
       "post" : {
         "tags" : [ "Ohjeet" ],
@@ -1393,6 +1452,23 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/PageOpetussuunnitelmaJulkinenDto"
+            }
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/julkiset/kaikki" : {
+      "get" : {
+        "tags" : [ "Opetussuunnitelmat julkiset" ],
+        "operationId" : "getKaikkiJulkaistutOpetussuunnitelmat",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/OpetussuunnitelmaJulkinenDto"
+              }
             }
           }
         }
@@ -1996,27 +2072,6 @@
         }
       }
     },
-    "/opetussuunnitelmat/peruste" : {
-      "get" : {
-        "tags" : [ "Opetussuunnitelmat" ],
-        "operationId" : "getOpetussuunnitelmanPeruste",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/PerusteInfoDto"
-            }
-          }
-        }
-      }
-    },
     "/opetussuunnitelmat/pohjat" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
@@ -2513,6 +2568,27 @@
         "responses" : {
           "200" : {
             "description" : ""
+          }
+        }
+      }
+    },
+    "/opetussuunnitelmat/{id}/peruste" : {
+      "get" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "getOpetussuunnitelmanPeruste",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/PerusteInfoDto"
+            }
           }
         }
       }
@@ -4768,27 +4844,6 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/TekstiKappaleViitePerusteTekstillaDto"
-            }
-          }
-        }
-      }
-    },
-    "/opetussuunnitelmat/{opsId}/peruste" : {
-      "get" : {
-        "tags" : [ "Lops2019PerusteController" ],
-        "operationId" : "getLops2019Peruste",
-        "parameters" : [ {
-          "name" : "opsId",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/PerusteInfoDto"
             }
           }
         }
@@ -9756,6 +9811,10 @@
         "julkaistu" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "ensijulkaisu" : {
+          "type" : "string",
+          "format" : "date-time"
         }
       }
     },
@@ -10829,13 +10888,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10869,13 +10928,13 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -10909,13 +10968,13 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
