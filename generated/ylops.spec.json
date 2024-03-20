@@ -9153,6 +9153,12 @@
             "type" : "string"
           }
         },
+        "arvioinninOtsikko" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
         "vapaaTeksti" : {
           "type" : "object",
           "additionalProperties" : {
@@ -11344,6 +11350,12 @@
           }
         },
         "arvioinninKuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "arvioinninOtsikko" : {
           "type" : "object",
           "additionalProperties" : {
             "type" : "string"
