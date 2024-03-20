@@ -25,6 +25,7 @@ public class OpetuksenTavoiteDto implements ReferenceableDto {
     private Set<TavoitteenArviointiDto> arvioinninkohteet;
     private Set<OpetuksenKeskeinensisaltoalueDto> sisaltoalueet;
     private LokalisoituTekstiDto arvioinninKuvaus;
+    private LokalisoituTekstiDto arvioinninOtsikko;
     private LokalisoituTekstiDto vapaaTeksti;
     private LokalisoituTekstiDto tavoitteistaJohdetutOppimisenTavoitteet;
     private List<OppiaineenTavoitteenOpetuksenTavoiteDto> oppiaineenTavoitteenOpetuksenTavoitteet;
