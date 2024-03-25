@@ -17,15 +17,6 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +30,13 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
 /**
  * @author mikkom
  */
@@ -47,6 +45,9 @@ public class KoodistoServiceImpl implements KoodistoService {
 
     @Value("${koodisto.service.url:https://virkailija.opintopolku.fi/koodisto-service}")
     private String koodistoServiceUrl;
+
+    @Value("${koodisto.service.internal.url:${koodisto.service.url:''}}")
+    private String koodistoServiceInternalUrl;
 
     private static final String KOODISTO_API = "/rest/json/";
     private static final String YLARELAATIO = "relaatio/sisaltyy-ylakoodit/";
@@ -77,7 +78,7 @@ public class KoodistoServiceImpl implements KoodistoService {
 
     @Override
     public List<KoodistoKoodiDto> getAll(String koodisto) {
-        String url = koodistoServiceUrl + KOODISTO_API + koodisto + "/koodi/";
+        String url = koodistoServiceInternalUrl + KOODISTO_API + koodisto + "/koodi/";
         KoodistoKoodiDto[] koodistot = client.getForObject(url, KoodistoKoodiDto[].class);
         List<KoodistoKoodiDto> koodistoLista;
         if ("kunta".equals(koodisto)) {
@@ -96,7 +97,7 @@ public class KoodistoServiceImpl implements KoodistoService {
 
     @Override
     public KoodistoKoodiDto get(String koodisto, String koodi) {
-        String url = koodistoServiceUrl + KOODISTO_API + koodisto + "/koodi/" + koodi;
+        String url = koodistoServiceInternalUrl + KOODISTO_API + koodisto + "/koodi/" + koodi;
         return client.getForObject(url, KoodistoKoodiDto.class);
     }
 
@@ -117,14 +118,14 @@ public class KoodistoServiceImpl implements KoodistoService {
 
     @Override
     public List<KoodistoKoodiDto> getAlarelaatio(String koodi) {
-        String url = koodistoServiceUrl + KOODISTO_API + ALARELAATIO + koodi;
+        String url = koodistoServiceInternalUrl + KOODISTO_API + ALARELAATIO + koodi;
         KoodistoKoodiDto[] koodistot = client.getForObject(url, KoodistoKoodiDto[].class);
         return koodistot == null ? null : Arrays.asList(koodistot);
     }
 
     @Override
     public List<KoodistoKoodiDto> getYlarelaatio(String koodi) {
-        String url = koodistoServiceUrl + KOODISTO_API + YLARELAATIO + koodi;
+        String url = koodistoServiceInternalUrl + KOODISTO_API + YLARELAATIO + koodi;
         KoodistoKoodiDto[] koodistot = client.getForObject(url, KoodistoKoodiDto[].class);
         return koodistot == null ? null : Arrays.asList(koodistot);
     }
