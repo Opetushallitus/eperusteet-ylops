@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.service.external.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Throwables;
 import fi.vm.sade.eperusteet.utils.client.OphClientHelper;
 import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
@@ -12,6 +13,7 @@ import fi.vm.sade.eperusteet.ylops.dto.PalauteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteJulkaisuKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -44,6 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -252,8 +255,8 @@ public class EperusteetServiceImpl implements EperusteetService {
                 }
                 return peruste;
             } catch (Exception e) {
-                log.warn("Could not fetch newest peruste from ePerusteet: " + e.getMessage()
-                        + " Trying from DB-cache.");
+                Throwables.getStackTraceAsString(e);
+                throw new BusinessRuleViolationException("Virhe haettaessa perustetta ePerusteista.");
             }
         }
 
@@ -385,6 +388,31 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     public Date viimeisinPerusteenJulkaisuaika(Long perusteId) {
         return client.exchange(eperusteetServiceUrl + "/api/perusteet/{perusteId}/viimeisinjulkaisuaika", HttpMethod.GET, httpEntity, Date.class, perusteId).getBody();
+    }
+
+    @Override
+    public JsonNode getPerusteenJulkaisuByGlobalversionMuutosaika(Long perusteId, Date globalVersionMuutosaika) {
+        String url = eperusteetServiceUrl + "/api/perusteet/" + perusteId + "/julkaisut/kaikki";
+        PerusteJulkaisuKevytDto[] julkaisut = client.exchange(url, HttpMethod.GET, httpEntity, PerusteJulkaisuKevytDto[].class).getBody();
+        if (julkaisut == null) {
+            return null;
+        }
+
+        Optional<PerusteJulkaisuKevytDto> perusteJulkaisuKevytDto = Arrays.stream(julkaisut)
+                .filter(julkaisu -> julkaisu.getLuotu().compareTo(globalVersionMuutosaika) >= 0)
+                .min(Comparator.comparing(PerusteJulkaisuKevytDto::getLuotu));
+
+        if (perusteJulkaisuKevytDto.isEmpty()) {
+            return null;
+        }
+
+        return getPerusteByRevision(perusteId, perusteJulkaisuKevytDto.get().getRevision());
+    }
+
+    @Override
+    public JsonNode getPerusteByRevision(Long perusteId, Integer revision) {
+        String url = eperusteetServiceUrl + "/api/perusteet/" + perusteId + "/kaikki/?rev=" + revision;
+        return client.exchange(url, HttpMethod.GET, httpEntity, JsonNode.class).getBody();
     }
 
     @Getter

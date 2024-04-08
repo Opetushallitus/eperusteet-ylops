@@ -108,7 +108,7 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.getOpetussuunnitelmaOrganisaatiotarkistuksella(id);
     }
 
-    @RequestMapping(value = "/peruste", method = GET)
+    @RequestMapping(value = "/{id}/peruste", method = GET)
     @ResponseBody
     public PerusteInfoDto getOpetussuunnitelmanPeruste(
             @PathVariable(value = "id") final Long id) {

@@ -700,4 +700,12 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaKevytDto dbOps = opetussuunnitelmaService.getOpetussuunnitelma(ops.getId());
         assertThat(dbOps.getPeriytyvatPohjat()).hasSize(1);
     }
+
+    @Test
+    public void testAdminList() {
+        List<OpetussuunnitelmaInfoDto> adminList = opetussuunnitelmaService.getAdminList();
+        assertThat(adminList).hasSize(1);
+        assertThat(adminList.get(0).getJulkaistu()).isNull();
+        assertThat(adminList.get(0).getEnsijulkaisu()).isNull();
+    }
 }

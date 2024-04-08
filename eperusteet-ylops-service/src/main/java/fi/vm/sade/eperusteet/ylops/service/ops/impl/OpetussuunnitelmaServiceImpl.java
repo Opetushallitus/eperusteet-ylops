@@ -152,7 +152,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -407,14 +406,22 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 query.getPerusteenDiaarinumero(),
                 koulutustyypit,
                 pageable)
-                .map(obj -> {
-                    try {
-                        return objectMapper.readValue(obj, OpetussuunnitelmaJulkinenDto.class);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        throw new RuntimeException(e);
-                    }
-                });
+                .map(this::convertToOpetussuunnitelmaDto);
+    }
+
+    private OpetussuunnitelmaJulkinenDto convertToOpetussuunnitelmaDto(String obj) {
+        try {
+            return objectMapper.readValue(obj, OpetussuunnitelmaJulkinenDto.class);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public List<OpetussuunnitelmaJulkinenDto> getKaikkiJulkaistutOpetussuunnitelmat() {
+        return julkaisuRepository.findAllJulkaistutOpetussuunnitelmat().stream()
+                .map(this::convertToOpetussuunnitelmaDto).collect(Collectors.toList());
     }
 
     @Override
@@ -864,7 +871,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             pohjaNimi.setId(pohja.getId());
         }
         pohjaNimi.setNimi(pohjaDto.getNimi());
-        rootOps.setPeriytyvatPohjat(new ArrayList<>());
+        if (rootOps.getPeriytyvatPohjat() == null) {
+            rootOps.setPeriytyvatPohjat(new ArrayList<>());
+        }
         rootOps.getPeriytyvatPohjat().add(pohjaNimi);
 
         if (pohja.getPohja() != null) {
@@ -1997,6 +2006,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         return getOpetussuunnitelmaJulkaistuSisalto(opsId);
+    }
+
+    @Override
+    public JsonNode getJulkaistuOpetussuunnitelmaPeruste(Long opsId) {
+        OpetussuunnitelmaExportDto opetussuunnitelmaExportDto = getOpetussuunnitelmaJulkaistuSisalto(opsId);
+
+        if (opetussuunnitelmaExportDto == null) {
+            return null;
+        }
+
+        return eperusteetService.getPerusteenJulkaisuByGlobalversionMuutosaika(
+                opetussuunnitelmaExportDto.getPeruste().getId(),
+                opetussuunnitelmaExportDto.getPeruste().getGlobalVersion().getAikaleima());
+
     }
 
     @Cacheable(value = "ops-julkaisu", key = "#opsId")

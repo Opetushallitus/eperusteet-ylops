@@ -436,4 +436,18 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
 
         return null;
     }
+
+    public Date getJulkaistu() {
+        if (CollectionUtils.isNotEmpty(julkaisut)) {
+            return julkaisut.stream().max(Comparator.comparing(OpetussuunnitelmanJulkaisu::getLuotu)).map(OpetussuunnitelmanJulkaisu::getLuotu).orElse(null);
+        }
+        return null;
+    }
+
+    public Date getEnsijulkaisu() {
+        if (CollectionUtils.isNotEmpty(julkaisut)) {
+            return julkaisut.stream().min(Comparator.comparing(OpetussuunnitelmanJulkaisu::getLuotu)).map(OpetussuunnitelmanJulkaisu::getLuotu).orElse(null);
+        }
+        return null;
+    }
 }

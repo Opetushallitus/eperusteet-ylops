@@ -73,6 +73,9 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         @Value("${cas.service.organisaatio-service:''}")
         private String serviceUrl;
 
+        @Value("${cas.service.organisaatio-service.internal:${cas.service.organisaatio-service:''}}")
+        private String serviceInternalUrl;
+
         @Value("#{'${fi.vm.sade.eperusteet.ylops.organisaatio-service.peruskoulu-oppilaitostyypit}'.split(',')}")
         private List<String> oppilaitostyypit;
 
@@ -98,7 +101,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         @Cacheable("organisaatiot")
         public JsonNode getOrganisaatio(String organisaatioOid) {
             OphHttpClient client = restClientFactory.get(serviceUrl, false);
-            String url = serviceUrl + ORGANISAATIOT + organisaatioOid;
+            String url = serviceInternalUrl + ORGANISAATIOT + organisaatioOid;
 
             OphHttpRequest request = OphHttpRequest.Builder
                     .get(url)
@@ -154,7 +157,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
         private JsonNode get(String hakuehto) {
             OphHttpClient client = restClientFactory.get(serviceUrl, false);
-            String url = serviceUrl + ORGANISAATIOT + hakuehto + STATUS_KRITEERI;
+            String url = serviceInternalUrl + ORGANISAATIOT + hakuehto + STATUS_KRITEERI;
 
             OphHttpRequest request = OphHttpRequest.Builder
                     .get(url)
@@ -265,7 +268,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
         public List<JsonNode> getRyhmat() {
             OphHttpClient client = restClientFactory.get(serviceUrl, false);
-            String url = serviceUrl + ORGANISAATIOT + "v3/ryhmat";
+            String url = serviceInternalUrl + ORGANISAATIOT + "v3/ryhmat";
 
             OphHttpRequest request = OphHttpRequest.Builder
                     .get(url)

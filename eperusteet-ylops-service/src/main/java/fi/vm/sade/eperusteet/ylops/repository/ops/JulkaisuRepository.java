@@ -45,4 +45,10 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
             @Param("perusteenDiaarinumero") String perusteenDiaarinumero,
             @Param("koulutustyypit") List<String> koulutustyypit,
             Pageable pageable);
+
+    @Query(nativeQuery = true, value =
+            "SELECT CAST(row_to_json(t) as text) FROM ( " +
+                    "   SELECT * " +
+                    "   FROM julkaistu_opetussuunnitelma_Data_view data) t")
+    List<String> findAllJulkaistutOpetussuunnitelmat();
 }

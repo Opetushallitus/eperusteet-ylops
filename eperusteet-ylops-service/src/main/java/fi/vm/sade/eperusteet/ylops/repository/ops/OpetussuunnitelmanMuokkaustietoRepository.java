@@ -1,12 +1,13 @@
 package fi.vm.sade.eperusteet.ylops.repository.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustieto;
-import java.util.Date;
-import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.Date;
+import java.util.List;
 
 @Repository
 public interface OpetussuunnitelmanMuokkaustietoRepository extends JpaRepository<OpetussuunnitelmanMuokkaustieto, Long> {
@@ -18,4 +19,6 @@ public interface OpetussuunnitelmanMuokkaustietoRepository extends JpaRepository
     }
 
     List<OpetussuunnitelmanMuokkaustieto> findByKohdeId(Long kohdeId);
+
+    OpetussuunnitelmanMuokkaustieto findTop1ByOpetussuunnitelmaIdAndLisatietoOrderByLuotuDesc(Long opsId, String lisatieto);
 }

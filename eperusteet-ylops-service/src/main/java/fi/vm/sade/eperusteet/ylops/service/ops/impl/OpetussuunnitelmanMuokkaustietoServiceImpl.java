@@ -7,11 +7,18 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLis
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoLisatieto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmanMuokkaustietoRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajaClient;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +26,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 @Slf4j
 @Service
@@ -108,6 +110,11 @@ public class OpetussuunnitelmanMuokkaustietoServiceImpl implements Opetussuunnit
         } catch(RuntimeException e) {
             log.error("Historiatiedon lisääminen epäonnistui", e);
         }
+    }
+
+    @Override
+    public MuokkaustietoKayttajallaDto getViimeisinPohjatekstiSync(Long opsId) {
+        return mapper.map(muokkausTietoRepository.findTop1ByOpetussuunnitelmaIdAndLisatietoOrderByLuotuDesc(opsId, MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU), MuokkaustietoKayttajallaDto.class);
     }
 }
 
