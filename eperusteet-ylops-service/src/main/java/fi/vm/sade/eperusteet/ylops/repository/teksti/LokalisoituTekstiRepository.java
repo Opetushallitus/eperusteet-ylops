@@ -16,12 +16,12 @@
 package fi.vm.sade.eperusteet.ylops.repository.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import org.springframework.data.jpa.repository.JpaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.CustomJpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
  * @author jhyoty
  */
 @Repository
-public interface LokalisoituTekstiRepository extends JpaRepository<LokalisoituTeksti, Long> {
+public interface LokalisoituTekstiRepository extends CustomJpaRepository<LokalisoituTeksti, Long> {
 }

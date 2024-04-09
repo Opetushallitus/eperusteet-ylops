@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
  * @author jhyoty
  */
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet")
 @ApiIgnore
 @Api(value = "OppiaineenVuosiluokkakokonaisuudet")
 public class OppiaineenVuosiluokkakokonaisuusController {

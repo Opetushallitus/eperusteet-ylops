@@ -50,7 +50,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * Time: 14.32
  */
 @RestController
-@RequestMapping("/opetussuunnitelmat/lukio/{opsId}")
+@RequestMapping("/api/opetussuunnitelmat/lukio/{opsId}")
 @Api(value = "LukioOpetussuunnitelmat")
 public class LukioOpetussuunnitelmatController {
 

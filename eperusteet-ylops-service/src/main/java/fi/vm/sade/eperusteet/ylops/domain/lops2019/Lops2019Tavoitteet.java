@@ -8,7 +8,13 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,7 +33,9 @@ public class Lops2019Tavoitteet extends AbstractAuditedReferenceableEntity {
 
     @Getter
     @OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, orphanRemoval = true)
-    @JoinTable(name = "lops2019_tavoitteiden_tavoitealueet")
+    @JoinTable(name = "lops2019_tavoitteiden_tavoitealueet",
+            joinColumns = @JoinColumn(name = "lops2019_oppiaine_tavoitteet_id"),
+            inverseJoinColumns = @JoinColumn(name = "tavoitealueet_id"))
     private Set<Lops2019OppiaineenTavoitealue> tavoitealueet = new HashSet<>();
 
     public static Lops2019Tavoitteet copy(Lops2019Tavoitteet original) {

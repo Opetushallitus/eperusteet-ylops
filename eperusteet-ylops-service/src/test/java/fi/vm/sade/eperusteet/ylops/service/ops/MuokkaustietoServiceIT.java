@@ -15,18 +15,20 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 @Transactional
 public class MuokkaustietoServiceIT extends AbstractIntegrationTest {
@@ -121,9 +123,7 @@ public class MuokkaustietoServiceIT extends AbstractIntegrationTest {
                         "lisatieto2"
                 );
 
-        assertThat(dtos.get(4))
-                .extracting(
-                        "lisaparametrit")
+        assertThat(dtos.get(4).getLisaparametrit())
                 .hasSize(1);
         assertThat(dtos.get(4).getLisaparametrit())
                 .extracting("kohde", "kohdeId")

@@ -13,11 +13,12 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * European Union Public Licence for more details.
  */
-package fi.vm.sade.eperusteet.ylops.resource.config;
+package fi.vm.sade.eperusteet.ylops.config;
 
 import com.fasterxml.classmate.GenericType;
 import com.fasterxml.classmate.TypeResolver;
 import com.fasterxml.jackson.databind.JsonNode;
+import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
 import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.VendorExtension;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger1.annotations.EnableSwagger;
@@ -36,7 +36,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 import javax.servlet.ServletContext;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
@@ -48,7 +47,7 @@ import static com.google.common.base.Predicates.not;
 @Configuration
 @EnableSwagger
 @EnableSwagger2
-@Profile("default")
+@Profile("!test")
 public class SwaggerConfig {
     private static final Logger LOG = LoggerFactory.getLogger(SwaggerConfig.class);
 

@@ -5,7 +5,6 @@
        xmlns:tx="http://www.springframework.org/schema/tx"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
-       xmlns:jee="http://www.springframework.org/schema/jee"
        xmlns:util="http://www.springframework.org/schema/util"
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns:cache="http://www.springframework.org/schema/cache"
@@ -15,7 +14,7 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
        http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
-       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd
+
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
        http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
        http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
@@ -26,14 +25,14 @@
         ignore-resource-not-found="true"
         properties-ref="defaultProps"/>
 
-    <bean id="eperusteetEhCache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
-        <property name="configLocation"  value="classpath:eperusteet-ehcache.xml"/>
-        <property name="cacheManagerName" value="eperusteetCacheManager"/>
-    </bean>
+<!--    <bean id="eperusteetEhCache" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">-->
+<!--        <property name="configLocation"  value="classpath:eperusteet-ehcache.xml"/>-->
+<!--        <property name="cacheManagerName" value="eperusteetCacheManager"/>-->
+<!--    </bean>-->
 
-    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">
-        <property name="cacheManager" ref="eperusteetEhCache"/>
-    </bean>
+<!--    <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheCacheManager">-->
+<!--        <property name="cacheManager" ref="eperusteetEhCache"/>-->
+<!--    </bean>-->
 
     <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
 
@@ -55,7 +54,9 @@
         <property name="permissionEvaluator" ref="ylopsPermissionEvaluator"/>
     </bean>
 
-    <import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/>
+    <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled">
+        <security:expression-handler ref="expressionHandler"/>
+    </security:global-method-security>
 
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.service"/>
     <context:component-scan base-package="fi.vm.sade.eperusteet.utils"/>
@@ -65,7 +66,7 @@
     <cache:annotation-driven/>
     <aop:aspectj-autoproxy/>
 
-    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/eperusteet-ylops" expected-type="javax.sql.DataSource"/>
+<!--    <jee:jndi-lookup id="dataSource" jndi-name="jdbc/eperusteet-ylops" expected-type="javax.sql.DataSource"/>-->
 
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="flyway">
         <property name="persistenceUnitName" value="eperusteet-ylops-pu"/>
@@ -78,14 +79,15 @@
                 <entry key="hibernate.show_sql" value="${hibernate.show_sql:false}"/>
                 <entry key="hibernate.dialect" value="fi.vm.sade.eperusteet.utils.repository.dialect.CustomPostgreSqlDialect"/>
                 <entry key="javax.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/>
-                <entry key="hibernate.cache.use_second_level_cache" value="${hibernate.cache.use_second_level_cache:true}"/>
-                <entry key="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory"/>
-                <entry key="net.sf.ehcache.configurationResourceName" value="/eperusteet-hibernate-ehcache.xml"/>
+                <entry key="hibernate.cache.use_second_level_cache" value="false"/>
+<!--                <entry key="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory"/>-->
+<!--                <entry key="net.sf.ehcache.configurationResourceName" value="/eperusteet-hibernate-ehcache.xml"/>-->
                 <entry key="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.DefaultAuditStrategy"/>
                 <entry key="javax.persistence.validation.factory" value-ref="validator" />
                 <entry key="org.hibernate.envers.revision_listener" value="fi.vm.sade.eperusteet.ylops.service.internal.AuditRevisionListener"/>
                 <entry key="hibernate.jdbc.batch_size" value="20"/>
                 <entry key="hibernate.jdbc.fetch_size" value="20"/>
+                <entry key="hibernate.id.new_generator_mappings" value="false" />
             </map>
         </property>
         <property name="mappingResources">

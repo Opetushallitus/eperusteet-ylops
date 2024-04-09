@@ -45,7 +45,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * @author mikkom
  */
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}")
 @Api(value = "OpetussuunnitelmanSisalto")
 @ApiIgnore
 public class OpetussuunnitelmanSisaltoController {

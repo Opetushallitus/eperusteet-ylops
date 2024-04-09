@@ -30,6 +30,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.javautils.http.OphHttpClient;
 import fi.vm.sade.javautils.http.OphHttpEntity;
 import fi.vm.sade.javautils.http.OphHttpRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,9 +59,7 @@ import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.R
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.READ_UPDATE;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
-/**
- * @author mikkom
- */
+@Slf4j
 @Service
 public class OrganisaatioServiceImpl implements OrganisaatioService {
 
@@ -73,6 +72,23 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     private static final String ORGANISAATIO_KRITEERI = "oidRestrictionList=";
     private static final String KOULUTUSTOIMIJAT_KRITEERI = "&organisaatiotyyppi=Koulutustoimija";
 
+    @Value("${cas.key}")
+    private String casKey;
+
+    @Value("${cas.service:''}")
+    private String casService;
+
+    @Value("${cas.sendRenew:false}")
+    private boolean casSendRenew;
+
+    @Value("${cas.login:''}")
+    private String casLogin;
+
+    @Value("${host.alb:''}")
+    private String hostAlb;
+
+    @Value("${web.url.cas:''}")
+    private String webUrlCas;
 
     @Autowired
     private Client client;
@@ -227,7 +243,6 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
             try {
                 String jsonContent = mapper.writeValueAsString(criteriaDto);
-
                 OphHttpEntity entity = new OphHttpEntity.Builder()
                         .content(jsonContent)
                         .contentType("application/json", "UTF-8")
