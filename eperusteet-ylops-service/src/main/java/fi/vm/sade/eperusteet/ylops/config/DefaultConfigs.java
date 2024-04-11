@@ -79,11 +79,11 @@ public class DefaultConfigs {
 
     @Bean(initMethod = "migrate")
     public Flyway flyway() {
-        Flyway flyway = Flyway.configure()
+        return Flyway.configure()
                 .dataSource(dataSource)
                 .outOfOrder(true)
+                .table("schema_version")
                 .load();
-        return flyway;
     }
 
     @Bean
