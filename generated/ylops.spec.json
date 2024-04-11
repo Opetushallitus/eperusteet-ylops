@@ -1315,23 +1315,6 @@
         }
       }
     },
-    "/api/opetussuunnitelmat/adminlist" : {
-      "get" : {
-        "tags" : [ "Opetussuunnitelmat" ],
-        "operationId" : "getAdminList",
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "type" : "array",
-              "items" : {
-                "$ref" : "#/definitions/OpetussuunnitelmaInfoDto"
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/opetussuunnitelmat/julkiset" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat julkiset" ],
@@ -2128,7 +2111,7 @@
         }
       }
     },
-    "/api/opetussuunnitelmat/tilastot" : {
+    "/api/opetussuunnitelmat/statistiikka" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
         "operationId" : "getStatistiikka",
@@ -2137,6 +2120,23 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/OpetussuunnitelmaStatistiikkaDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/tilastot" : {
+      "get" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "getAdminList",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/definitions/OpetussuunnitelmaInfoDto"
+              }
             }
           }
         }
@@ -2264,32 +2264,6 @@
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
         "operationId" : "getNavigation",
-        "parameters" : [ {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        }, {
-          "name" : "kieli",
-          "in" : "query",
-          "required" : false,
-          "type" : "string"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/NavigationNodeDto"
-            }
-          }
-        }
-      }
-    },
-    "/api/opetussuunnitelmat/{id}/navigaatio/julkinen" : {
-      "get" : {
-        "tags" : [ "Opetussuunnitelmat" ],
-        "operationId" : "getNavigationJulkinen",
         "parameters" : [ {
           "name" : "id",
           "in" : "path",
@@ -9286,6 +9260,9 @@
             "$ref" : "#/definitions/OrganisaatioDto"
           }
         },
+        "koulutuksenjarjestaja" : {
+          "$ref" : "#/definitions/OrganisaatioDto"
+        },
         "kunnat" : {
           "type" : "array",
           "uniqueItems" : true,
@@ -9410,6 +9387,9 @@
           "items" : {
             "$ref" : "#/definitions/OrganisaatioDto"
           }
+        },
+        "koulutuksenjarjestaja" : {
+          "$ref" : "#/definitions/OrganisaatioDto"
         },
         "kunnat" : {
           "type" : "array",
@@ -9556,6 +9536,9 @@
             "$ref" : "#/definitions/OrganisaatioDto"
           }
         },
+        "koulutuksenjarjestaja" : {
+          "$ref" : "#/definitions/OrganisaatioDto"
+        },
         "kunnat" : {
           "type" : "array",
           "uniqueItems" : true,
@@ -9689,6 +9672,9 @@
           "items" : {
             "$ref" : "#/definitions/OrganisaatioDto"
           }
+        },
+        "koulutuksenjarjestaja" : {
+          "$ref" : "#/definitions/OrganisaatioDto"
         },
         "kunnat" : {
           "type" : "array",
@@ -9879,6 +9865,9 @@
             "$ref" : "#/definitions/OrganisaatioDto"
           }
         },
+        "koulutuksenjarjestaja" : {
+          "$ref" : "#/definitions/OrganisaatioDto"
+        },
         "kunnat" : {
           "type" : "array",
           "uniqueItems" : true,
@@ -10026,6 +10015,9 @@
           "items" : {
             "$ref" : "#/definitions/OrganisaatioDto"
           }
+        },
+        "koulutuksenjarjestaja" : {
+          "$ref" : "#/definitions/OrganisaatioDto"
         },
         "kunnat" : {
           "type" : "array",
@@ -10899,15 +10891,15 @@
         "first" : {
           "type" : "boolean"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "last" : {
+          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -10945,15 +10937,15 @@
         "first" : {
           "type" : "boolean"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "last" : {
+          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -10991,15 +10983,15 @@
         "first" : {
           "type" : "boolean"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "last" : {
+          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -11016,6 +11008,12 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "paged" : {
+          "type" : "boolean"
+        },
+        "unpaged" : {
+          "type" : "boolean"
+        },
         "pageSize" : {
           "type" : "integer",
           "format" : "int32"
@@ -11023,12 +11021,6 @@
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "unpaged" : {
-          "type" : "boolean"
-        },
-        "paged" : {
-          "type" : "boolean"
         }
       }
     },

@@ -24,4 +24,6 @@
         <appender-ref ref="STDOUT-CONSOLE"/>
     </root>
 
+    <logger name="fi.vm.sade.eperusteet.ylops.service.audit.LoggerForAudit" level="OFF" />
+
 </configuration>

@@ -49,6 +49,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
@@ -567,7 +568,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public List<OpetussuunnitelmaInfoDto> getAdminList() {
-        return mapper.mapAsList(opetussuunnitelmaRepository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class);
+        return mapper.mapAsList(opetussuunnitelmaRepository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class).stream()
+                .peek(dto -> {
+                    fetchKuntaNimet(dto);
+                    fetchOrganisaatioNimet(dto);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -919,6 +925,28 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             organisaatioDto.setNimi(new LokalisoituTekstiDto(tekstit));
             organisaatioDto.setTyypit(tyypit);
         }
+
+        asetaKoulutuksenJarjestaja(opetussuunnitelmaDto);
+    }
+
+    private void asetaKoulutuksenJarjestaja(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
+        if (ObjectUtils.isEmpty(opetussuunnitelmaDto.getOrganisaatiot())) {
+            return;
+        }
+
+        Set<OrganisaatioDto> oppilaitokset = opetussuunnitelmaDto.getOrganisaatiot().stream()
+                .filter(org -> org.getTyypit().contains(OrganisaatioTyyppi.OPPILAITOS))
+                .collect(Collectors.toUnmodifiableSet());
+
+        if (oppilaitokset.size() == 1) {
+            opetussuunnitelmaDto.setKoulutuksenjarjestaja(oppilaitokset.iterator().next());
+        } else {
+            opetussuunnitelmaDto.setKoulutuksenjarjestaja(opetussuunnitelmaDto.getOrganisaatiot().stream()
+                    .filter(org -> org.getTyypit().contains(OrganisaatioTyyppi.KUNTA))
+                    .findFirst()
+                    .orElse(null));
+        }
+
     }
 
     public void kopioiPohjanSisallotOpetussuunnitelmaan(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
