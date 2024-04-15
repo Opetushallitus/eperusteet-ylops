@@ -362,15 +362,6 @@ public class OpetussuunnitelmaController {
     }
 
     @InternalApi
-    @RequestMapping(value = "/{id}/navigaatio/julkinen", method = GET)
-    public NavigationNodeDto getNavigationJulkinen(
-            @PathVariable final Long id,
-            @RequestParam(value = "kieli", required = false, defaultValue = "fi") final String kieli
-    ) {
-        return opetussuunnitelmaService.buildNavigationJulkinen(id, kieli);
-    }
-
-    @InternalApi
     @RequestMapping(value = "/{id}/navigaatio/public", method = GET)
     public NavigationNodeDto getNavigationPublic(
             @PathVariable final Long id,
