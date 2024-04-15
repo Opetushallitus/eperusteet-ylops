@@ -1,9 +1,12 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.utils.CollectionUtil;
+import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
@@ -24,10 +27,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
+import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Transactional
@@ -115,7 +121,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
             opintojaksoDto = opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
         }
 
-        NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilderJulkinen.class).buildNavigation(ops.getId());
+        NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilderPublic.class).buildNavigation(ops.getId(), true);
         assertThat(navi.getType()).isEqualTo(NavigationType.root);
         assertThat(navi.getChildren()).hasSize(6);
 
@@ -140,16 +146,71 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testNavigationBuilder_yksinkertainen() {
-        OpetussuunnitelmaDto ops = createOpetussuunnitelma(KoulutustyyppiToteutus.YKSINKERTAINEN);
+        OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.ESIOPETUS, "OPH-2791-2018"), KoulutusTyyppi.ESIOPETUS);
 
         {
-            NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilder.class).buildNavigation(ops.getId());
-            assertThat(navi.getChildren()).hasSize(6);
+            NavigationNodeDto navi = opetussuunnitelmaService.buildNavigation(ops.getId(), "fi");
+            assertThat(navi.getChildren()).hasSize(7);
+            assertThat(CollectionUtil.treeToStream(navi, NavigationNodeDto::getChildren)
+                    .filter(node -> node.getMeta().containsKey("numerointi"))
+                    .collect(Collectors.toUnmodifiableSet())).isEmpty();
         }
 
         {
-            NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilderJulkinen.class).buildNavigation(ops.getId());
-            assertThat(navi.getChildren()).hasSize(5);
+            NavigationNodeDto navi = opetussuunnitelmaService.buildNavigationPublic(ops.getId(), "fi", true);
+            assertThat(navi.getChildren()).hasSize(7);
+            assertThat(CollectionUtil.treeToStream(navi, NavigationNodeDto::getChildren)
+                    .filter(node -> node.getMeta().containsKey("numerointi"))
+                    .map(node -> node.getMeta().get("numerointi").toString())
+                    .collect(Collectors.toList())).contains(
+                        "1", "1.1", "1.2", "1.3", "1.4",
+                        "2", "2.1", "2.2", "2.3", "2.4", "2.5", "2.6", "2.7", "2.8",
+                        "3", "3.1", "3.2", "3.3",
+                        "4", "4.1", "4.2", "4.3", "4.4", "4.5", "4.6", "4.7",
+                        "5", "5.1", "5.2", "5.3", "5.4", "5.5",
+                        "6", "5.1",
+                        "7", "7.1", "7.2");
         }
+    }
+
+    private OpetussuunnitelmaDto createOpetussuunnitelma(KoulutusTyyppi koulutustyyppi, String diaarinumero) {
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.POHJA);
+        ops.setKoulutustyyppi(koulutustyyppi);
+        ops.setPerusteenDiaarinumero(diaarinumero);
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.246.562.10.00000000001");
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+
+        OpetussuunnitelmaDto luotu = opetussuunnitelmaService.addPohja(ops);
+        return opetussuunnitelmaService.updateTila(luotu.getId(), Tila.VALMIS);
+    }
+
+    private OpetussuunnitelmaDto createOpetussuunnitelmaLuonti(OpetussuunnitelmaDto pohjaOps, KoulutusTyyppi koulutustyyppi) {
+        OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
+        ops.setNimi(lt(uniikkiString()));
+        ops.setKuvaus(lt(uniikkiString()));
+        ops.setTila(Tila.LUONNOS);
+        ops.setTyyppi(Tyyppi.OPS);
+        ops.setKoulutustyyppi(koulutustyyppi);
+
+        KoodistoDto kunta = new KoodistoDto();
+        kunta.setKoodiUri("kunta_837");
+        ops.setKunnat(new HashSet<>(Collections.singleton(kunta)));
+        OrganisaatioDto kouluDto = new OrganisaatioDto();
+        kouluDto.setNimi(lt("Etelä-Hervannan koulu"));
+        kouluDto.setOid("1.2.246.562.10.00000000001");
+        ops.setOrganisaatiot(new HashSet<>(Collections.singleton(kouluDto)));
+
+        ops.setPohja(Reference.of(pohjaOps.getId()));
+        return opetussuunnitelmaService.addOpetussuunnitelma(ops);
     }
 }

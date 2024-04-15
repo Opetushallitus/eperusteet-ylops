@@ -103,7 +103,6 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
-import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderJulkinen;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
@@ -122,6 +121,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import fi.vm.sade.eperusteet.ylops.service.util.NavigationUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.extern.slf4j.Slf4j;
@@ -598,13 +598,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public NavigationNodeDto buildNavigationJulkinen(Long opsId, String kieli) {
-        return buildNavigationWithDate(opsId, new Date(), kieli, NavigationBuilderJulkinen.class);
-    }
-
-    @Override
     public NavigationNodeDto buildNavigationPublic(Long opsId, String kieli, boolean esikatselu) {
         NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilderPublic.class).buildNavigation(opsId, kieli, esikatselu);
+        NavigationUtil.asetaNumerointi(getOpetussuunnitelma(opsId), navigationNodeDto);
         return siirraLiitteetLoppuun(navigationNodeDto);
     }
 
