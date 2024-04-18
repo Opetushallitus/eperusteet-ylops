@@ -1,12 +1,12 @@
 package fi.vm.sade.eperusteet.ylops.repository.koodisto;
 
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
-import org.springframework.data.jpa.repository.JpaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.CustomJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface KoodistoKoodiRepository extends JpaRepository<KoodistoKoodi, Long> {
+public interface KoodistoKoodiRepository extends CustomJpaRepository<KoodistoKoodi, Long> {
     Optional<KoodistoKoodi> findByKoodiUri(String koodiUri);
 }

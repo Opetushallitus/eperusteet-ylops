@@ -148,7 +148,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional(readOnly = true)
     public Long getLatestValmisDokumenttiId(Long opsId, Kieli kieli) {
-        Sort sort = new Sort(Sort.Direction.DESC, "valmistumisaika");
+        Sort sort = Sort.by(Sort.Direction.DESC, "valmistumisaika");
         List<Dokumentti> dokumentit = dokumenttiRepository.findByOpsIdAndKieliAndTila(opsId, kieli, DokumenttiTila.VALMIS, sort);
 
         if (!dokumentit.isEmpty()) {
@@ -264,7 +264,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Override
     public void updateDokumenttiPdfData(byte[] pdfData, Long dokumenttiId) {
-        Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId);
+        Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId).orElseThrow();
         dokumentti.setData(pdfData);
         dokumentti.setVirhekoodi(null);
         dokumentti.setTila(DokumenttiTila.VALMIS);
@@ -274,7 +274,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Override
     public void updateDokumenttiTila(DokumenttiTila tila, Long dokumenttiId) {
-        Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId);
+        Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId).orElseThrow();
         dokumentti.setTila(tila);
         dokumenttiRepository.save(dokumentti);
     }

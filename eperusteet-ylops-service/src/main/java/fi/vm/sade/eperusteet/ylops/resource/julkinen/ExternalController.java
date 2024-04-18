@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(value = "/external", produces = "application/json;charset=UTF-8")
+@RequestMapping(value = "/api/external", produces = "application/json;charset=UTF-8")
 @Api(value = "Julkinen")
 @Description("Opetussuunnitelminen julkinen rajapinta")
 public class ExternalController {

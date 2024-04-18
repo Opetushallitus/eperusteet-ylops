@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/muokkaustieto")
+@RequestMapping("/api/muokkaustieto")
 @Api("Muokkaustieto")
 public class OpetussuunnitelmanMuokkausietoController {
 

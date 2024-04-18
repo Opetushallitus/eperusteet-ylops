@@ -25,6 +25,7 @@ public class OpetussuunnitelmaBaseDto implements Serializable, Identifiable, Ops
     private Long id;
     private Set<Kieli> julkaisukielet;
     private Set<OrganisaatioDto> organisaatiot;
+    private OrganisaatioDto koulutuksenjarjestaja;
     private Set<KoodistoDto> kunnat;
     private LokalisoituTekstiDto kuvaus;
     private String luoja;

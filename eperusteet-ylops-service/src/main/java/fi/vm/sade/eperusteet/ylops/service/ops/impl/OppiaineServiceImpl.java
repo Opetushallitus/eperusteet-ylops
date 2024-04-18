@@ -837,9 +837,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oppiaine.getVuosiluokkakokonaisuudet().forEach(vuosiluokkakokonaisuus -> vuosiluokkakokonaisuusService
                 .removeSisaltoalueetInKeskeinensisaltoalueet(opsId, vuosiluokkakokonaisuus, true));
 
-        lukioOppiaineJarjestysRepository.delete(lukioOppiaineJarjestysRepository
+        lukioOppiaineJarjestysRepository.deleteAll(lukioOppiaineJarjestysRepository
                 .findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
-        oppiaineLukiokurssiRepository.delete(oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, oppiaineId));
+        oppiaineLukiokurssiRepository.deleteAll(oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, oppiaineId));
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
         PoistettuOppiaineDto poistettu = tallennaPoistettu(oppiaineId, ops, oppiaine);

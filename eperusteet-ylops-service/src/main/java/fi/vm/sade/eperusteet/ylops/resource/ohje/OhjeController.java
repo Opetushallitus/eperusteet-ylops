@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@RequestMapping("/ohjeet")
+@RequestMapping("/api/ohjeet")
 @ApiIgnore
 @Api("Ohjeet")
 public class OhjeController {

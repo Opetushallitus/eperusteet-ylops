@@ -22,7 +22,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import java.util.ArrayList;
@@ -93,7 +92,6 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     private List<Lops2019LaajaAlainenOsaaminen> laajaAlainenOsaaminen = new ArrayList<>();
 
     @Getter
-    @OrderBy("koodiuri")
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
     @Fetch(FetchMode.SUBSELECT)
     @JoinTable(name = "lops2019_opintojakso_moduuli",

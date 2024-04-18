@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/aikataulu")
+@RequestMapping("/api/aikataulu")
 @Api("Aikataulu")
 public class OpetussuunnitelmanAikatauluController {
 

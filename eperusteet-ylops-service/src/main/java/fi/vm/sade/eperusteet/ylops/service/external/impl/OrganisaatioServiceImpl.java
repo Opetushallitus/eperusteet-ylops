@@ -1,3 +1,18 @@
+/*
+ * Copyright (c) 2013 The Finnish Board of Education - Opetushallitus
+ *
+ * This program is free software: Licensed under the EUPL, Version 1.1 or - as
+ * soon as they will be approved by the European Commission - subsequent versions
+ * of the EUPL (the "Licence");
+ *
+ * You may not use this work except in compliance with the Licence.
+ * You may obtain a copy of the Licence at: http://ec.europa.eu/idabc/eupl
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * European Union Public Licence for more details.
+ */
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +30,7 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.javautils.http.OphHttpClient;
 import fi.vm.sade.javautils.http.OphHttpEntity;
 import fi.vm.sade.javautils.http.OphHttpRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +59,7 @@ import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.R
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.READ_UPDATE;
 import static javax.servlet.http.HttpServletResponse.SC_OK;
 
+@Slf4j
 @Service
 public class OrganisaatioServiceImpl implements OrganisaatioService {
 
@@ -55,6 +72,23 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     private static final String ORGANISAATIO_KRITEERI = "oidRestrictionList=";
     private static final String KOULUTUSTOIMIJAT_KRITEERI = "&organisaatiotyyppi=Koulutustoimija";
 
+    @Value("${cas.key}")
+    private String casKey;
+
+    @Value("${cas.service:''}")
+    private String casService;
+
+    @Value("${cas.sendRenew:false}")
+    private boolean casSendRenew;
+
+    @Value("${cas.login:''}")
+    private String casLogin;
+
+    @Value("${host.alb:''}")
+    private String hostAlb;
+
+    @Value("${web.url.cas:''}")
+    private String webUrlCas;
 
     @Autowired
     private Client client;
@@ -209,7 +243,6 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
             try {
                 String jsonContent = mapper.writeValueAsString(criteriaDto);
-
                 OphHttpEntity entity = new OphHttpEntity.Builder()
                         .content(jsonContent)
                         .contentType("application/json", "UTF-8")

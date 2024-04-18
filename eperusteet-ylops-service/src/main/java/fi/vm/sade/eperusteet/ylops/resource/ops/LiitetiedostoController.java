@@ -43,7 +43,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/kuvat")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}/kuvat")
 @Api("Liitetiedostot")
 public class LiitetiedostoController {
 

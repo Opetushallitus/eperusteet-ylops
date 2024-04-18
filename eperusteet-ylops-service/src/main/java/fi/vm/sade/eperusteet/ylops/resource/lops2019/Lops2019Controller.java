@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/lops2019")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}/lops2019")
 @Api("Lops2019")
 @InternalApi
 public class Lops2019Controller {

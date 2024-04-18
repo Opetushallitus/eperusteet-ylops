@@ -1,48 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
-<!-- NOT IN USE -->
-
 <configuration>
-  <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-    <encoder>
-      <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSX} %-5p {%X{user}} [%thread] %-5level %logger: %msg%n</pattern>
-    </encoder>
-  </appender>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <appender name="STDOUT-CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{ISO8601} %-5p [%t] %c: %m%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="STDOUT-APP" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{ISO8601} %-5p [%t] %c: %m%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="STDOUT-APP-NO-EX" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{ISO8601} %-5p [%t] %c: %m%nopex%n</pattern>
+        </encoder>
+    </appender>
 
-  <logger name="org.apache.fop" level="off"/>
-  <logger name="org.apache.http.client.protocol.ResponseProcessCookies" level="error"/>
-  <logger name="org.hibernate" level="error"/>
-  <!-- näytä kyselyjen parametrit -->
-  <!-- logger name="org.hibernate.type" level="trace/ -->
-  <logger name="org.hibernate.tool.hbm2ddl" level="off"/>
-  <logger name="org.springframework" level="warn"/>
-  <logger name="org.springframework.context.support.PropertySourcesPlaceholderConfigurer" level="error"/>
-  <logger name="fi.vm.sade" level="warn"/>
-  <logger name="fi.vm.sade.eperusteet.ylops" level="info"/>
-  <logger name="fi.vm.sade.eperusteet.ylops.PROFILING" level="trace"/>
-  <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiServiceImpl" level="info"/>
-  <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiEventListener" level="warn"/>
-  <logger name="fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.DokumenttiBuilderServiceImpl" level="info"/>
-  <logger name="springfox.documentation" level="warn"/>
-  <root level="info">
-    <appender-ref ref="console"/>
-  </root>
+    <appender name="AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${user.home}/logs/auditlog_eperusteet_ylops.log</file>
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+            <fileNamePattern>${user.home}/logs/auditlog_eperusteet_ylops.%i.log</fileNamePattern>
+            <minIndex>1</minIndex>
+            <maxIndex>20</maxIndex>
+        </rollingPolicy>
+        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <maxFileSize>20MB</maxFileSize>
+        </triggeringPolicy>
+        <encoder>
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
 
-  <appender name="AUDIT" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <encoding>UTF-8</encoding>
-    <file>${user.home}/logs/auditlog_eperusteet-ylops.log</file>
-    <append>true</append>
-    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${user.home}/logs/auditlog_eperusteet-ylops.%d{yyyy-MM-dd}.%i.log.zip</fileNamePattern>
-      <maxFileSize>20MB</maxFileSize>
-    </rollingPolicy>
-    <encoder>
-      <pattern>%msg%n</pattern>
-    </encoder>
-  </appender>
-
-  <logger name="fi.vm.sade.eperusteet.ylops.service.audit" level="INFO" additivity="false">
-    <appender-ref ref="AUDIT" />
-  </logger>
+    <logger name="fi.vm" level="INFO" additivity="false">
+        <appender-ref ref="STDOUT-APP"/>
+    </logger>
+    <root level="INFO">
+        <appender-ref ref="STDOUT-CONSOLE"/>
+    </root>
+    <logger name="fi.vm.sade.eperusteet.ylops.service.audit.LoggerForAudit" level="INFO" additivity="false">
+        <appender-ref ref="AUDIT"/>
+    </logger>
 
 </configuration>

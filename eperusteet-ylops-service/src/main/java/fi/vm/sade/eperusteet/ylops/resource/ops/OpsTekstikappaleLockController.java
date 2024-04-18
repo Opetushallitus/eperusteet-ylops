@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@RequestMapping(value = "/opetussuunnitelmat/{opsId}/tekstit/{viiteId}/lukko")
+@RequestMapping(value = "/api/opetussuunnitelmat/{opsId}/tekstit/{viiteId}/lukko")
 @ApiIgnore
 @Api(value = "OpsTekstikappaleLukot")
 public class OpsTekstikappaleLockController extends AbstractLockController<OpsTekstikappaleCtx> {

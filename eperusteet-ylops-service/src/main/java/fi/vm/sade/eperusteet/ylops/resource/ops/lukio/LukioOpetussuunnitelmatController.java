@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/lukio/{opsId}")
+@RequestMapping("/api/opetussuunnitelmat/lukio/{opsId}")
 @Api(value = "LukioOpetussuunnitelmat")
 public class LukioOpetussuunnitelmatController {
 

@@ -50,7 +50,7 @@ import java.util.Set;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat")
+@RequestMapping("/api/opetussuunnitelmat")
 @Api(value = "Opetussuunnitelmat")
 public class OpetussuunnitelmaController {
 
@@ -115,14 +115,14 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.getPerusteBase(id);
     }
 
-    @RequestMapping(value = "/tilastot", method = RequestMethod.GET)
+    @RequestMapping(value = "/statistiikka", method = RequestMethod.GET)
     @ResponseBody
     @Timed
     public ResponseEntity<OpetussuunnitelmaStatistiikkaDto> getStatistiikka() {
         return new ResponseEntity<>(opetussuunnitelmaService.getStatistiikka(), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/adminlist", method = RequestMethod.GET)
+    @RequestMapping(value = "/tilastot", method = RequestMethod.GET)
     @ResponseBody
     @Timed
     public ResponseEntity<List<OpetussuunnitelmaInfoDto>> getAdminList() {
@@ -341,15 +341,6 @@ public class OpetussuunnitelmaController {
             @RequestParam(value = "kieli", required = false, defaultValue = "fi") final String kieli
     ) {
         return opetussuunnitelmaService.buildNavigation(id, kieli);
-    }
-
-    @InternalApi
-    @RequestMapping(value = "/{id}/navigaatio/julkinen", method = GET)
-    public NavigationNodeDto getNavigationJulkinen(
-            @PathVariable final Long id,
-            @RequestParam(value = "kieli", required = false, defaultValue = "fi") final String kieli
-    ) {
-        return opetussuunnitelmaService.buildNavigationJulkinen(id, kieli);
     }
 
     @InternalApi

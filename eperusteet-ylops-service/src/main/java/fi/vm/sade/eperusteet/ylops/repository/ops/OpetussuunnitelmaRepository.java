@@ -20,8 +20,6 @@ import java.util.Set;
 @Repository
 public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository<Opetussuunnitelma, Long> {
 
-    Opetussuunnitelma findById(Long id);
-
     @Query(value = "SELECT org from Opetussuunnitelma o join o.organisaatiot org where o.id = ?1")
     List<String> findOrganisaatiot(long id);
 

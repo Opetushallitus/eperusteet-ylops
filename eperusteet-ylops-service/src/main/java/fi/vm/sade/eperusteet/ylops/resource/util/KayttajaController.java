@@ -13,7 +13,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/kayttaja")
+@RequestMapping("/api/kayttaja")
 @Api("Kayttajat")
 @ApiIgnore
 public class KayttajaController {

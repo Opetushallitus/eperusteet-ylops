@@ -49,6 +49,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoMetadataDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
@@ -103,7 +104,6 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
-import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderJulkinen;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
@@ -122,6 +122,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import fi.vm.sade.eperusteet.ylops.service.util.NavigationUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.extern.slf4j.Slf4j;
@@ -260,6 +261,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Autowired
     private CacheManager cacheManager;
 
+    @Lazy
     @Autowired
     private JulkaisuService julkaisuService;
 
@@ -393,7 +395,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public Page<OpetussuunnitelmaJulkinenDto> getAllJulkaistutOpetussuunnitelmat(OpetussuunnitelmaJulkaistuQuery query) {
-        Pageable pageable = new PageRequest(query.getSivu(), query.getSivukoko());
+        Pageable pageable = PageRequest.of(query.getSivu(), query.getSivukoko());
 
         List<String> koulutustyypit = query.getKoulutustyypit();
         if (CollectionUtils.isEmpty(koulutustyypit)) {
@@ -467,7 +469,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Transactional(readOnly = true)
     public Page<OpetussuunnitelmaInfoDto> getSivutettu(Tyyppi tyyppi, Tila tila, KoulutusTyyppi koulutustyyppi, String nimi, String jarjestys, String jarjestysSuunta, String kieli, int sivu, int sivukoko) {
         Page<Object[]> opetussuunnitelmat;
-        Pageable pageable = new PageRequest(sivu, sivukoko, new Sort(Sort.Direction.fromString(jarjestysSuunta), jarjestys));
+        Pageable pageable = PageRequest.of(sivu, sivukoko, Sort.by(Sort.Direction.fromString(jarjestysSuunta), jarjestys));
         if (SecurityUtil.isUserAdmin()) {
             opetussuunnitelmat = opetussuunnitelmaRepository.findSivutettuAdmin(
                     tyyppi,
@@ -566,7 +568,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public List<OpetussuunnitelmaInfoDto> getAdminList() {
-        return mapper.mapAsList(opetussuunnitelmaRepository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class);
+        return mapper.mapAsList(opetussuunnitelmaRepository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class).stream()
+                .peek(dto -> {
+                    fetchKuntaNimet(dto);
+                    fetchOrganisaatioNimet(dto);
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -597,13 +604,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public NavigationNodeDto buildNavigationJulkinen(Long opsId, String kieli) {
-        return buildNavigationWithDate(opsId, new Date(), kieli, NavigationBuilderJulkinen.class);
-    }
-
-    @Override
     public NavigationNodeDto buildNavigationPublic(Long opsId, String kieli, boolean esikatselu) {
         NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilderPublic.class).buildNavigation(opsId, kieli, esikatselu);
+        NavigationUtil.asetaNumerointi(getOpetussuunnitelma(opsId), navigationNodeDto);
         return siirraLiitteetLoppuun(navigationNodeDto);
     }
 
@@ -862,7 +865,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         Set<String> kayttajaOids = kayttajanOrganisaatioOids();
-        Opetussuunnitelma pohja = opetussuunnitelmaRepository.findById(pohjaDto.getId());
+        Opetussuunnitelma pohja = opetussuunnitelmaRepository.findById(pohjaDto.getId()).orElseThrow();
 
         OpetussuunnitelmaNimiDto pohjaNimi = new OpetussuunnitelmaNimiDto();
         boolean hasOikeudet = pohja.getOrganisaatiot().stream().anyMatch(kayttajaOids::contains);
@@ -922,6 +925,28 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             organisaatioDto.setNimi(new LokalisoituTekstiDto(tekstit));
             organisaatioDto.setTyypit(tyypit);
         }
+
+        asetaKoulutuksenJarjestaja(opetussuunnitelmaDto);
+    }
+
+    private void asetaKoulutuksenJarjestaja(OpetussuunnitelmaBaseDto opetussuunnitelmaDto) {
+        if (ObjectUtils.isEmpty(opetussuunnitelmaDto.getOrganisaatiot())) {
+            return;
+        }
+
+        Set<OrganisaatioDto> oppilaitokset = opetussuunnitelmaDto.getOrganisaatiot().stream()
+                .filter(org -> org.getTyypit().contains(OrganisaatioTyyppi.OPPILAITOS))
+                .collect(Collectors.toUnmodifiableSet());
+
+        if (oppilaitokset.size() == 1) {
+            opetussuunnitelmaDto.setKoulutuksenjarjestaja(oppilaitokset.iterator().next());
+        } else {
+            opetussuunnitelmaDto.setKoulutuksenjarjestaja(opetussuunnitelmaDto.getOrganisaatiot().stream()
+                    .filter(org -> org.getTyypit().contains(OrganisaatioTyyppi.KUNTA))
+                    .findFirst()
+                    .orElse(null));
+        }
+
     }
 
     public void kopioiPohjanSisallotOpetussuunnitelmaan(Opetussuunnitelma pohja, Opetussuunnitelma ops) {

@@ -18,7 +18,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}")
 @InternalApi
 @Api(value = "Termisto")
 public class TermistoController {

@@ -1,0 +1,1 @@
+ALTER TABLE tekstikappaleviite_aud ADD COLUMN IF NOT EXISTS lapset_ORDER int4;

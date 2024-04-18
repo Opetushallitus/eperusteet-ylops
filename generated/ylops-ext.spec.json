@@ -11,7 +11,7 @@
   } ],
   "schemes" : [ "http", "https" ],
   "paths" : {
-    "/external/opetussuunnitelma/{id}" : {
+    "/api/external/opetussuunnitelma/{id}" : {
       "get" : {
         "tags" : [ "Julkinen" ],
         "summary" : "Opetussuunnitelman tietojen haku",
@@ -35,7 +35,7 @@
         }
       }
     },
-    "/external/opetussuunnitelma/{id}/peruste" : {
+    "/api/external/opetussuunnitelma/{id}/peruste" : {
       "get" : {
         "tags" : [ "Julkinen" ],
         "summary" : "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.",
@@ -59,7 +59,7 @@
         }
       }
     },
-    "/external/opetussuunnitelmat" : {
+    "/api/external/opetussuunnitelmat" : {
       "get" : {
         "tags" : [ "Julkinen" ],
         "summary" : "Opetussuunnitelmien haku",
@@ -370,13 +370,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -395,28 +395,34 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
+        "last" : {
           "type" : "boolean"
         },
-        "last" : {
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "empty" : {
+          "type" : "boolean"
         }
       }
     },
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalPages" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "totalElements" : {
           "type" : "integer",
           "format" : "int64"
+        },
+        "totalPages" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "size" : {
           "type" : "integer",
@@ -435,13 +441,45 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "first" : {
-          "type" : "boolean"
-        },
         "last" : {
           "type" : "boolean"
         },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
         "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "empty" : {
+          "type" : "boolean"
+        }
+      }
+    },
+    "Pageable" : {
+      "type" : "object",
+      "properties" : {
+        "offset" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
+        },
+        "paged" : {
+          "type" : "boolean"
+        },
+        "pageSize" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "unpaged" : {
+          "type" : "boolean"
+        },
+        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         }
@@ -551,7 +589,18 @@
       "type" : "object"
     },
     "Sort" : {
-      "type" : "object"
+      "type" : "object",
+      "properties" : {
+        "empty" : {
+          "type" : "boolean"
+        },
+        "sorted" : {
+          "type" : "boolean"
+        },
+        "unsorted" : {
+          "type" : "boolean"
+        }
+      }
     },
     "TekstiKappaleDto" : {
       "type" : "object",

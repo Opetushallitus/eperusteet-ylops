@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 @RestController
-@RequestMapping(value = "/opetussuunnitelmat/lukio/{opsId}/lukko")
+@RequestMapping(value = "/api/opetussuunnitelmat/lukio/{opsId}/lukko")
 @ApiIgnore
 public class LukioLockController extends AbstractLockController<LukioLockCtx> {
     @Autowired

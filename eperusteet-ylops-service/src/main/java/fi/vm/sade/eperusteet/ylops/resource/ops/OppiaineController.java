@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/opetussuunnitelmat/{opsId}/oppiaineet")
+@RequestMapping("/api/opetussuunnitelmat/{opsId}/oppiaineet")
 @Api(value = "Oppiaineet")
 public class OppiaineController {
 
