@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulkaisu, Long> {
@@ -51,4 +52,6 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
                     "   SELECT * " +
                     "   FROM julkaistu_opetussuunnitelma_Data_view data) t")
     List<String> findAllJulkaistutOpetussuunnitelmat();
+
+    OpetussuunnitelmanJulkaisu findOneByDokumentitIn(Set<Long> dokumentit);
 }

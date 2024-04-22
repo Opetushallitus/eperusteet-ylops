@@ -3,8 +3,11 @@ package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
+import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.ExternalPdfService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -17,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED;
@@ -38,13 +42,24 @@ public class ExternalPdfServiceImpl implements ExternalPdfService {
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Autowired
+    private JulkaisuRepository julkaisuRepository;
+
+    @Autowired
     RestClientFactory restClientFactory;
 
     private final ObjectMapper mapper = InitJacksonConverter.createMapper();
 
     @Override
     public void generatePdf(DokumenttiDto dto) throws JsonProcessingException {
-        OpetussuunnitelmaExportDto ops = opetussuunnitelmaService.getExportedOpetussuunnitelma(dto.getOpsId());
+
+        OpetussuunnitelmaExportDto ops = null;
+        OpetussuunnitelmanJulkaisu julkaisu = julkaisuRepository.findOneByDokumentitIn(Collections.singleton(dto.getId()));
+        if (dto.getTila().equals(DokumenttiTila.EPAONNISTUI) && julkaisu != null) {
+            ops = opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(dto.getOpsId());
+        } else {
+            ops = opetussuunnitelmaService.getExportedOpetussuunnitelma(dto.getOpsId());
+        }
+
         String json = mapper.writeValueAsString(ops);
         OphHttpClient client = restClientFactory.get(pdfServiceUrl, true);
         String url = pdfServiceUrl + "/api/pdf/generate/ylops/" + dto.getId() + "/" + dto.getKieli().name();
