@@ -2,11 +2,8 @@ package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
 import fi.vm.sade.eperusteet.ylops.domain.AikatauluTapahtuma;
-import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
-import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,11 +19,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.Immutable;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 

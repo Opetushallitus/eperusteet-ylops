@@ -19,7 +19,6 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Objects;
 
-
 public class JsonBType implements UserType, Serializable {
     private final ObjectMapper mapper = InitJacksonConverter.createMapper();
 

@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
-
 import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
@@ -16,7 +15,6 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-
 
 @Entity
 @Immutable
