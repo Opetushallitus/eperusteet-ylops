@@ -56,6 +56,12 @@ public class DokumenttiController {
     public ResponseEntity<DokumenttiDto> create(@RequestParam final long opsId,
                                                 @RequestParam(defaultValue = "fi") final String kieli) throws DokumenttiException {
 
+        DokumenttiDto viimeisinJulkaistuDokumentti = dokumenttiService.getJulkaistuDokumentti(opsId, Kieli.of(kieli), null);
+        if (viimeisinJulkaistuDokumentti != null && viimeisinJulkaistuDokumentti.getTila().equals(DokumenttiTila.EPAONNISTUI)) {
+            dokumenttiService.setStarted(viimeisinJulkaistuDokumentti);
+            dokumenttiService.generateWithDto(viimeisinJulkaistuDokumentti);
+        }
+
         DokumenttiDto dto = dokumenttiService.createDtoFor(opsId, Kieli.of(kieli));
 
         if (dto != null && dto.getTila() != DokumenttiTila.EPAONNISTUI) {
