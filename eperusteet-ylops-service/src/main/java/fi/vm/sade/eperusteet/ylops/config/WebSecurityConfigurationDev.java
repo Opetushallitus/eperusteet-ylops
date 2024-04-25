@@ -36,8 +36,6 @@ public class WebSecurityConfigurationDev {
                 .antMatchers("/buildversion.txt").permitAll()
                 .antMatchers(HttpMethod.GET, "/api/**").permitAll()
                 .antMatchers(HttpMethod.POST, "/api/**").permitAll()
-                .antMatchers("/swagger", "/swagger/**", "/v2/api-docs", "/v3/api-docs", "/swagger-resources/**", "/webjars/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/swagger").permitAll()
                 .antMatchers(HttpMethod.GET, "/").permitAll()
                 .anyRequest().authenticated()
                 .and().logout(logout -> {
