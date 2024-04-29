@@ -16,11 +16,6 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.MaintenanceService;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
@@ -32,6 +27,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
+
+import java.io.IOException;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -84,6 +85,15 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         }
 
         log.info("julkaisut tehty");
+    }
+
+    @Override
+    public void paivitaOpetussuunnitelmaOrganisaatiotasot() {
+        opetussuunnitelmaService.getAdminList().forEach(opetussuunnitelmaDto -> {
+            Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opetussuunnitelmaDto.getId());
+            opetussuunnitelma.setOrganisaatiotaso(opetussuunnitelmaService.paatteleOpetussuunnitelmaOrganisaatioTaso(opetussuunnitelmaDto.getOrganisaatiot()));
+            opetussuunnitelmaRepository.save(opetussuunnitelma);
+        });
     }
 
     private void teeJulkaisu(String username, Long opsId) {
