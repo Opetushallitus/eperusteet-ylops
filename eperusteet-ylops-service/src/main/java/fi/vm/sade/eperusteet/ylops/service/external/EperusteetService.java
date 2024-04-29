@@ -9,6 +9,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
+import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.EperusteetPerusteDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.Date;
@@ -65,6 +66,11 @@ public interface EperusteetService {
 
     @PreAuthorize("permitAll()")
     JsonNode getPerusteenJulkaisuByGlobalversionMuutosaika(Long perusteId, Date globalVersionMuutosaika);
+
+    EperusteetPerusteDto getPerusteDtoByRevision(Long perusteId, Integer revision);
+
+    @PreAuthorize("permitAll()")
+    PerusteDto getPerusteenJulkaisuByGlobalversionMuutosaikaAsDto(Long perusteId, Date globalVersionMuutosaika);
 
     @PreAuthorize("permitAll()")
     JsonNode getPerusteByRevision(Long perusteId, Integer revision);

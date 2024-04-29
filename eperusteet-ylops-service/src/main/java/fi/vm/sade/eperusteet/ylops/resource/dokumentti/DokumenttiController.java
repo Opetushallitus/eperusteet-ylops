@@ -63,7 +63,6 @@ public class DokumenttiController {
         }
 
         DokumenttiDto dto = dokumenttiService.createDtoFor(opsId, Kieli.of(kieli));
-
         if (dto != null && dto.getTila() != DokumenttiTila.EPAONNISTUI) {
             dokumenttiService.setStarted(dto);
             dokumenttiService.generateWithDto(dto);

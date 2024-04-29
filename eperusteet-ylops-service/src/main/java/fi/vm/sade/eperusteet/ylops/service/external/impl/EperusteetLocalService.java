@@ -231,6 +231,16 @@ public class EperusteetLocalService implements EperusteetService {
     }
 
     @Override
+    public EperusteetPerusteDto getPerusteDtoByRevision(Long perusteId, Integer revision) {
+        return null;
+    }
+
+    @Override
+    public PerusteDto getPerusteenJulkaisuByGlobalversionMuutosaikaAsDto(Long perusteId, Date globalVersionMuutosaika) {
+        return null;
+    }
+
+    @Override
     public JsonNode getPerusteByRevision(Long perusteId, Integer revision) {
         return null;
     }
