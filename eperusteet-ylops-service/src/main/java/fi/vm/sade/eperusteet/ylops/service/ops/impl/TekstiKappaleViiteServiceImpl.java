@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
@@ -289,6 +290,16 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         viite.getVanhempi().getLapset().remove(viite);
         viite.setVanhempi(null);
         tekstikappaleviiteRepository.delete(viite);
+
+        poistaTekstikappaleAlaOpetussuunnitelmista(opsId, tekstiKappale.getTunniste());
+    }
+
+    private void poistaTekstikappaleAlaOpetussuunnitelmista(Long opsId, UUID tunniste) {
+        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
+            CollectionUtil.treeToStream(opetussuunnitelma.getTekstit(), TekstiKappaleViite::getLapset)
+                    .filter(viite -> viite.getTekstiKappale() != null && viite.getTekstiKappale().getTunniste().equals(tunniste))
+                    .forEach(viite -> removeTekstiKappaleViite(opetussuunnitelma.getId(), viite.getId()));
+        });
     }
 
     @Override
@@ -435,7 +446,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     private void updateTekstiKappale(Long opsId, TekstiKappaleViite viite, TekstiKappaleDto uusiTekstiKappale, boolean requireLock) {
         if (uusiTekstiKappale != null) {
-            if (viite.getOmistussuhde() == Omistussuhde.OMA) {
+//            if (viite.getOmistussuhde() == Omistussuhde.OMA) {
                 if (viite.getTekstiKappale() != null) {
                     final Long tid = viite.getTekstiKappale().getId();
                     if (requireLock || lockMgr.getLock(tid) != null) {
@@ -443,9 +454,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                     }
                 }
                 tekstiKappaleService.update(opsId, uusiTekstiKappale, requireLock, null);
-            } else {
-                throw new BusinessRuleViolationException("Lainattua tekstikappaletta ei voida muokata");
-            }
+//            } else {
+//                throw new BusinessRuleViolationException("Lainattua tekstikappaletta ei voida muokata");
+//            }
         }
     }
 
