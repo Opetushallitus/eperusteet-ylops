@@ -16,6 +16,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteJulkaisuKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
+import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -103,6 +104,8 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Autowired
     private OphClientHelper ophClientHelper;
+
+    private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
     @PostConstruct
     protected void init() {
@@ -392,6 +395,15 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public JsonNode getPerusteenJulkaisuByGlobalversionMuutosaika(Long perusteId, Date globalVersionMuutosaika) {
+        Integer revision = getPerusteRevisionByGlobalVersionMuutosaika(perusteId, globalVersionMuutosaika);
+        if (revision == null) {
+            return null;
+        }
+
+        return getPerusteByRevision(perusteId, revision);
+    }
+
+    private Integer getPerusteRevisionByGlobalVersionMuutosaika(Long perusteId, Date globalVersionMuutosaika) {
         String url = eperusteetServiceUrl + "/api/perusteet/" + perusteId + "/julkaisut/kaikki";
         PerusteJulkaisuKevytDto[] julkaisut = client.exchange(url, HttpMethod.GET, httpEntity, PerusteJulkaisuKevytDto[].class).getBody();
         if (julkaisut == null) {
@@ -406,7 +418,7 @@ public class EperusteetServiceImpl implements EperusteetService {
             return null;
         }
 
-        return getPerusteByRevision(perusteId, perusteJulkaisuKevytDto.get().getRevision());
+        return perusteJulkaisuKevytDto.get().getRevision();
     }
 
     @Override
@@ -415,9 +427,27 @@ public class EperusteetServiceImpl implements EperusteetService {
         return client.exchange(url, HttpMethod.GET, httpEntity, JsonNode.class).getBody();
     }
 
+    @Override
+    public EperusteetPerusteDto getPerusteDtoByRevision(Long perusteId, Integer revision) {
+        return client.exchange(eperusteetServiceUrl + "/api/perusteet/{id}/kaikki?rev={revision}",
+                    HttpMethod.GET,
+                    httpEntity,
+                    EperusteetPerusteDto.class,
+                    perusteId,
+                    revision)
+                .getBody();
+    }
+
     @Getter
     @Setter
     private static class PerusteInfoWrapperDto {
         private List<PerusteInfoDto> data;
+    }
+
+    @Override
+    public PerusteDto getPerusteenJulkaisuByGlobalversionMuutosaikaAsDto(Long perusteId, Date globalVersionMuutosaika) {
+        Integer revision = getPerusteRevisionByGlobalVersionMuutosaika(perusteId, globalVersionMuutosaika);
+        EperusteetPerusteDto eperusteetPerusteDto = getPerusteDtoByRevision(perusteId, revision);
+        return mapper.map(eperusteetPerusteDto, PerusteDto.class);
     }
 }

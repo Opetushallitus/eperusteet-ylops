@@ -98,6 +98,14 @@ public class UlkopuolisetController {
         return eperusteetService.getPerusteById(id);
     }
 
+    @RequestMapping(value = "/peruste/{id}/julkaisuhetki/{julkaisuhetki}", method = GET)
+    @ResponseBody
+    public PerusteDto getOpetussuunnitelmanJulkaisuhetkenPeruste(
+            @PathVariable(value = "id") final Long id,
+            @PathVariable(value = "julkaisuhetki") final Long julkaisuhetki) {
+        return eperusteetService.getPerusteenJulkaisuByGlobalversionMuutosaikaAsDto(id, new java.util.Date(julkaisuhetki));
+    }
+
     @RequestMapping(value = "/lukiokoulutusperusteet", method = GET)
     @Deprecated
     @ResponseBody
