@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.service.teksti;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -12,6 +13,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
+import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,6 +126,20 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
         assertThatThrownBy(() ->tekstiKappaleViiteService.removeTekstiKappaleViite(ops.getId(), perusteenTekstiDto.getId()))
                 .hasMessage("pakollista-tekstikappaletta-ei-voi-poistaa");
     }
+
+    @Test
+    public void testTekstikappaleenPoisto() {
+        OpetussuunnitelmaDto kunnanOps = createLukioOpetussuunnitelma();
+        TekstiKappaleViiteDto.Matala kunnanTeksti = tekstiKappaleViiteService.addTekstiKappaleViite(kunnanOps.getId(), kunnanOps.getTekstit().getId(), TestUtils.createTekstiKappaleViite());
+
+        OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
+            ops.setPohja(Reference.of(kunnanOps.getId()));
+        });
+
+
+    }
+
+
 
     private TekstiKappaleViite findTkNimi(Long opsId, String nimi) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
