@@ -52,4 +52,5 @@ public class OpetussuunnitelmaBaseDto implements Serializable, Identifiable, Ops
     private Date perusteDataTuontiPvm = new Date();
     private Date viimeisinSyncPvm;
     private Date viimeisinJulkaisuAika;
+    private OpetussuunnitelmaOrganisaatioTaso organisaatiotaso;
 }
