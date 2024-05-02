@@ -20,4 +20,5 @@ public class OpetussuunnitelmaKevytDto extends OpetussuunnitelmaBaseDto {
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<OpetussuunnitelmaNimiDto> periytyvatPohjat;
+    private List<OpetussuunnitelmaNimiDto> joissaPohjana;
 }
