@@ -699,6 +699,10 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.PERUSOPETUS, "perusopetus-diaarinumero"), KoulutusTyyppi.PERUSOPETUS);
         OpetussuunnitelmaKevytDto dbOps = opetussuunnitelmaService.getOpetussuunnitelma(ops.getId());
         assertThat(dbOps.getPeriytyvatPohjat()).hasSize(1);
+        // Luodaan uusi ops, jolla pohjana äsken luotu ops
+        createOpetussuunnitelmaLuonti(ops, KoulutusTyyppi.PERUSOPETUS);
+        dbOps = opetussuunnitelmaService.getOpetussuunnitelma(ops.getId());
+        assertThat(dbOps.getJoissaPohjana()).hasSize(1);
     }
 
     @Test
