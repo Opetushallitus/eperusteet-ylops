@@ -72,6 +72,10 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service: ''}")
     private String eperusteetServiceUrl;
+
+    @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service.internal:${fi.vm.sade.eperusteet.ylops.eperusteet-service:''}}")
+    private String eperusteetServiceInternalUrl;
+
     @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus:koulutustyyppi_16}")
     private String koulutustyyppiPerusopetus;
     @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_lukiokoilutus:koulutustyyppi_2}")
@@ -186,7 +190,7 @@ public class EperusteetServiceImpl implements EperusteetService {
     private List<PerusteInfoDto> findPerusteetFromEperusteService(Set<KoulutusTyyppi> tyypit) {
         List<PerusteInfoDto> infot = new ArrayList<>();
         for (KoulutusTyyppi tyyppi : tyypit) {
-            String url = eperusteetServiceUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}&julkaistu=true";
+            String url = eperusteetServiceInternalUrl + "/api/perusteet?tyyppi={koulutustyyppi}&sivukoko={sivukoko}&julkaistu=true";
             PerusteInfoWrapperDto wrapperDto = client.exchange(
                     url,
                     HttpMethod.GET, httpEntity, PerusteInfoWrapperDto.class, tyyppi.toString(), 100).getBody();
@@ -248,7 +252,7 @@ public class EperusteetServiceImpl implements EperusteetService {
         PerusteCache found = perusteCacheRepository.findNewestEntryForPeruste(id);
         if (found == null || forceRefresh) {
             try {
-                EperusteetPerusteDto peruste = client.exchange(eperusteetServiceUrl
+                EperusteetPerusteDto peruste = client.exchange(eperusteetServiceInternalUrl
                         + "/api/perusteet/{id}/kaikki", HttpMethod.GET, httpEntity, EperusteetPerusteDto.class, id).getBody();
 
                 Date newest = perusteCacheRepository.findNewestEntryAikaleimaForPeruste(id);
@@ -296,7 +300,7 @@ public class EperusteetServiceImpl implements EperusteetService {
             return usePdfServiceLocal;
         }
         try {
-            return client.getForObject(eperusteetServiceUrl + "/api/maintenance/yllapito/" + key, String.class);
+            return client.getForObject(eperusteetServiceInternalUrl + "/api/maintenance/yllapito/" + key, String.class);
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new BusinessRuleViolationException("yllapitoasetuksia-ei-saatu-haettu-eperusteista");
@@ -350,12 +354,12 @@ public class EperusteetServiceImpl implements EperusteetService {
         if (jalkeen != null) {
             params = "?alkaen=" + String.valueOf(jalkeen);
         }
-        return client.exchange(eperusteetServiceUrl + "/api/tiedotteet" + params, HttpMethod.GET, httpEntity, JsonNode.class).getBody();
+        return client.exchange(eperusteetServiceInternalUrl + "/api/tiedotteet" + params, HttpMethod.GET, httpEntity, JsonNode.class).getBody();
     }
 
     @Override
     public JsonNode getTiedotteetHaku(TiedoteQueryDto queryDto) {
-        String url = eperusteetServiceUrl.concat("/api/tiedotteet/haku").concat(queryDto.toRequestParams());
+        String url = eperusteetServiceInternalUrl.concat("/api/tiedotteet/haku").concat(queryDto.toRequestParams());
         OphHttpClient client = restClientFactory.get(eperusteetServiceUrl, true);
         OphHttpRequest request = OphHttpRequest.Builder
                 .get(url)
@@ -375,22 +379,22 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public byte[] getLiite(Long perusteId, UUID id) {
-        return client.exchange(eperusteetServiceUrl + "/api/perusteet/{perusteId}/kuvat/{id}", HttpMethod.GET, httpEntity, byte[].class, perusteId, id).getBody();
+        return client.exchange(eperusteetServiceInternalUrl + "/api/perusteet/{perusteId}/kuvat/{id}", HttpMethod.GET, httpEntity, byte[].class, perusteId, id).getBody();
     }
 
     @Override
     public PalauteDto lahetaPalaute(PalauteDto palaute) throws JsonProcessingException {
-        return ophClientHelper.post(eperusteetServiceUrl, String.format(eperusteetServiceUrl + "/api/palaute"), palaute, PalauteDto.class);
+        return ophClientHelper.post(eperusteetServiceInternalUrl, String.format(eperusteetServiceUrl + "/api/palaute"), palaute, PalauteDto.class);
     }
 
     @Override
     public TermiDto getTermi(Long perusteId, String avain) {
-        return client.exchange(eperusteetServiceUrl + "/api/perusteet/{perusteId}/termisto/{id}", HttpMethod.GET, httpEntity, TermiDto.class, perusteId, avain).getBody();
+        return client.exchange(eperusteetServiceInternalUrl + "/api/perusteet/{perusteId}/termisto/{id}", HttpMethod.GET, httpEntity, TermiDto.class, perusteId, avain).getBody();
     }
 
     @Override
     public Date viimeisinPerusteenJulkaisuaika(Long perusteId) {
-        return client.exchange(eperusteetServiceUrl + "/api/perusteet/{perusteId}/viimeisinjulkaisuaika", HttpMethod.GET, httpEntity, Date.class, perusteId).getBody();
+        return client.exchange(eperusteetServiceInternalUrl + "/api/perusteet/{perusteId}/viimeisinjulkaisuaika", HttpMethod.GET, httpEntity, Date.class, perusteId).getBody();
     }
 
     @Override
@@ -404,7 +408,7 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     private Integer getPerusteRevisionByGlobalVersionMuutosaika(Long perusteId, Date globalVersionMuutosaika) {
-        String url = eperusteetServiceUrl + "/api/perusteet/" + perusteId + "/julkaisut/kaikki";
+        String url = eperusteetServiceInternalUrl + "/api/perusteet/" + perusteId + "/julkaisut/kaikki";
         PerusteJulkaisuKevytDto[] julkaisut = client.exchange(url, HttpMethod.GET, httpEntity, PerusteJulkaisuKevytDto[].class).getBody();
         if (julkaisut == null) {
             return null;
@@ -423,13 +427,13 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Override
     public JsonNode getPerusteByRevision(Long perusteId, Integer revision) {
-        String url = eperusteetServiceUrl + "/api/perusteet/" + perusteId + "/kaikki/?rev=" + revision;
+        String url = eperusteetServiceInternalUrl + "/api/perusteet/" + perusteId + "/kaikki/?rev=" + revision;
         return client.exchange(url, HttpMethod.GET, httpEntity, JsonNode.class).getBody();
     }
 
     @Override
     public EperusteetPerusteDto getPerusteDtoByRevision(Long perusteId, Integer revision) {
-        return client.exchange(eperusteetServiceUrl + "/api/perusteet/{id}/kaikki?rev={revision}",
+        return client.exchange(eperusteetServiceInternalUrl + "/api/perusteet/{id}/kaikki?rev={revision}",
                     HttpMethod.GET,
                     httpEntity,
                     EperusteetPerusteDto.class,
