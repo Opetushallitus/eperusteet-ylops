@@ -216,6 +216,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             Set<DokumenttiDto> dokumentit = ops.getJulkaisukielet().stream().map(kieli -> {
                 DokumenttiDto dokumenttiDto = dokumenttiService.createDtoFor(opsId, kieli);
                 try {
+                    dokumenttiDto.setJulkaisuDokumentti(true);
                     dokumenttiService.setStarted(dokumenttiDto);
                     dokumenttiService.generateWithDto(dokumenttiDto);
                 } catch (DokumenttiException e) {
