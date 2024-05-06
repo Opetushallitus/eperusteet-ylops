@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED;
@@ -65,6 +66,8 @@ public class ExternalPdfServiceImpl implements ExternalPdfService {
 
         if (!dto.getJulkaisuDokumentti()) {
             ops.setViimeisinJulkaisuAika(null);
+        } else if (ops.getViimeisinJulkaisuAika() == null) {
+            ops.setViimeisinJulkaisuAika(new Date());
         }
 
         String json = mapper.writeValueAsString(ops);
