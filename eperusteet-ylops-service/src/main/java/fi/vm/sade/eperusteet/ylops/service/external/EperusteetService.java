@@ -18,10 +18,6 @@ import java.util.Set;
 import java.util.UUID;
 
 public interface EperusteetService {
-
-    @PreAuthorize("permitAll()")
-    String getYllapitoAsetus(String key);
-
     @PreAuthorize("permitAll()")
     PerusteDto getPeruste(String diaariNumero) throws NotExistsException;
 

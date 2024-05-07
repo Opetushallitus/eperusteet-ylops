@@ -8,22 +8,18 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.util.YllapitoAvaimet;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
-import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiBuilderService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiStateService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.ExternalPdfService;
-import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Async;
@@ -46,9 +42,6 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
-
-    @Autowired
-    private DokumenttiBuilderService builder;
 
     @Autowired
     private DokumenttiStateService dokumenttiStateService;
@@ -84,59 +77,11 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional(noRollbackFor = DokumenttiException.class)
     @Async(value = "docTaskExecutor")
-    public void autogenerate(Long id, Kieli kieli) throws DokumenttiException {
-        // TODO: käytetäänkö tätä vielä? Jos, niin varmistettava toimivuus myöhemmin.
-        Dokumentti dokumentti = new Dokumentti();
-        dokumentti.setTila(DokumenttiTila.LUODAAN);
-        dokumentti.setAloitusaika(new Date());
-        dokumentti.setLuoja(SecurityUtil.getAuthenticatedPrincipal().getName());
-        dokumentti.setKieli(kieli);
-        dokumentti.setOpsId(id);
-
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
-        if (ops != null) {
-            try {
-                dokumentti.setData(builder.generatePdf(ops, dokumentti, kieli));
-                dokumentti.setTila(DokumenttiTila.VALMIS);
-                dokumentti.setValmistumisaika(new Date());
-                dokumentti.setVirhekoodi("");
-                dokumenttiRepository.save(dokumentti);
-            } catch (Exception ex) {
-                dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
-                dokumentti.setVirhekoodi(ExceptionUtils.getStackTrace(ex));
-                dokumenttiRepository.save(dokumentti);
-
-                throw new DokumenttiException(ex.getMessage(), ex);
-            }
-        } else {
-            dokumentti.setTila(DokumenttiTila.EPAONNISTUI);
-            dokumenttiRepository.save(dokumentti);
-        }
-    }
-
-    @Override
-    @Transactional(noRollbackFor = DokumenttiException.class)
-    @Async(value = "docTaskExecutor")
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         dto.setTila(DokumenttiTila.LUODAAN);
-        Dokumentti dokumentti = dokumenttiStateService.save(dto);
 
         try {
-            boolean isPdfServiceUsed = Boolean.parseBoolean(eperusteetService.getYllapitoAsetus(YllapitoAvaimet.USE_PDF_SERVICE_YLOPS));
-
-            if (isPdfServiceUsed) {
-                externalPdfService.generatePdf(dto);
-            } else {
-                Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(dokumentti.getOpsId());
-                if (ops != null) {
-                    dokumentti.setData(builder.generatePdf(ops, dokumentti, dokumentti.getKieli()));
-                }
-                dokumentti.setTila(DokumenttiTila.VALMIS);
-                dokumentti.setValmistumisaika(new Date());
-                dokumentti.setVirhekoodi(null);
-
-                dokumenttiRepository.save(dokumentti);
-            }
+            externalPdfService.generatePdf(dto);
         } catch (Exception ex) {
             dto.setTila(DokumenttiTila.EPAONNISTUI);
             dto.setVirhekoodi(ex.getLocalizedMessage());

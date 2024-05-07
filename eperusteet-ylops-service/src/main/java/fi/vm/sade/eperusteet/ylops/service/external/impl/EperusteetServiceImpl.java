@@ -16,7 +16,6 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteJulkaisuKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.TiedoteQueryDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
-import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -28,7 +27,6 @@ import fi.vm.sade.javautils.http.OphHttpRequest;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachePut;
@@ -76,18 +74,10 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Value("${fi.vm.sade.eperusteet.ylops.eperusteet-service.internal:${fi.vm.sade.eperusteet.ylops.eperusteet-service:''}}")
     private String eperusteetServiceInternalUrl;
 
-    @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_perusopetus:koulutustyyppi_16}")
-    private String koulutustyyppiPerusopetus;
-    @Value("${fi.vm.sade.eperusteet.ylops.koulutustyyppi_lukiokoilutus:koulutustyyppi_2}")
-    private String koulutustyyppiLukiokoulutus;
-
     // feature that could be used to populate data and turned off after all existing
     // perusteet in the environment has been synced:
     @Value("${fi.vm.sade.eperusteet.ylops.update-peruste-cache-for-all-missing: false}")
     private boolean updateMissingToCache;
-
-    @Value("${fi.vm.sade.eperusteet.ylops.use-pdf-service: }")
-    private String usePdfServiceLocal;
 
     @Autowired
     private PerusteCacheRepository perusteCacheRepository;
@@ -108,8 +98,6 @@ public class EperusteetServiceImpl implements EperusteetService {
 
     @Autowired
     private OphClientHelper ophClientHelper;
-
-    private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
     @PostConstruct
     protected void init() {
@@ -292,19 +280,6 @@ public class EperusteetServiceImpl implements EperusteetService {
             throw new IllegalStateException("Could not serialize EperusteetPerusteDto for cache.", e);
         }
         perusteCacheRepository.saveAndFlush(cache);
-    }
-
-    @Override
-    public String getYllapitoAsetus(String key) {
-        if (!StringUtils.isBlank(usePdfServiceLocal)) {
-            return usePdfServiceLocal;
-        }
-        try {
-            return client.getForObject(eperusteetServiceInternalUrl + "/api/maintenance/yllapito/" + key, String.class);
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw new BusinessRuleViolationException("yllapitoasetuksia-ei-saatu-haettu-eperusteista");
-        }
     }
 
     @Override
