@@ -1,4 +1,4 @@
-package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl;
+package fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util;
 
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.Dokumentti;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;

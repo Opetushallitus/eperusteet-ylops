@@ -14,6 +14,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiStateService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.ExternalPdfService;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.impl.util.DokumenttiUtils;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
