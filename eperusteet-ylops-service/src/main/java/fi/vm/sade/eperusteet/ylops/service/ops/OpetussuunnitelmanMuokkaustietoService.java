@@ -20,6 +20,9 @@ public interface OpetussuunnitelmanMuokkaustietoService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS') or hasPermission(null, 'pohja', 'LUONTI')")
     void addOpsMuokkausTieto(@P("opsId") Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma);
 
+    @PreAuthorize("isAuthenticated()")
+    void addOpsMuokkausTietoPermissionSkip(@P("opsId") Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma);
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS') or hasPermission(null, 'pohja', 'LUONTI')")
     void addOpsMuokkausTieto(@P("opsId") Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma, String lisatieto);
 

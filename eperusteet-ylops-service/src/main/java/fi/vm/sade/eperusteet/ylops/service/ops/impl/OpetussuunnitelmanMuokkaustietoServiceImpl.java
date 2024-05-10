@@ -57,6 +57,11 @@ public class OpetussuunnitelmanMuokkaustietoServiceImpl implements Opetussuunnit
     }
 
     @Override
+    public void addOpsMuokkausTietoPermissionSkip(Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma) {
+        addOpsMuokkausTieto(opsId, historiaTapahtuma, muokkausTapahtuma);
+    }
+
+    @Override
     public void addOpsMuokkausTieto(Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma) {
         addOpsMuokkausTieto(opsId, historiaTapahtuma, muokkausTapahtuma, historiaTapahtuma.getNavigationType(), null);
     }

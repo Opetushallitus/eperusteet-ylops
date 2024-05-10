@@ -94,6 +94,7 @@ public abstract class TestUtils {
 
     public static TekstiKappaleDto createTekstiKappale() {
         TekstiKappaleDto tk = new TekstiKappaleDto();
+        tk.setNimi(lt(uniikkiString()));
         tk.setTeksti(lt(uniikkiString()));
         return tk;
     }

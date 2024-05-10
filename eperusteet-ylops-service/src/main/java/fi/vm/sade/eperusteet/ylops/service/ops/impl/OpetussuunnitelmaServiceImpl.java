@@ -1010,7 +1010,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("toteutustyyppi-ei-tuettu");
         }
 
-        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), true);
+        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit());
     }
 
     @Override
@@ -1145,7 +1145,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
         boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
-        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), teeKopio);
+        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit());
 
         boolean onPohjastaTehtyPohja = isPohjastaTehtyPohja(pohja);
 
@@ -1260,29 +1260,34 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    private void kasitteleTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent, boolean teeKopio) {
+    private void kasitteleTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent) {
         List<TekstiKappaleViite> vanhaLapset = vanha.getLapset();
         if (vanhaLapset != null) {
             vanhaLapset.stream()
                     .filter(vanhaTkv -> vanhaTkv.getTekstiKappale() != null)
                     .forEach(vanhaTkv -> {
-                        TekstiKappaleViite tkv = viiteRepository.save(new TekstiKappaleViite());
-                        tkv.setOmistussuhde(Omistussuhde.OMA);
-                        tkv.setLapset(new ArrayList<>());
-                        tkv.updateOriginal(vanhaTkv);
-                        tkv.setVanhempi(parent);
-                        tkv.setPakollinen(vanhaTkv.isPakollinen());
-                        tkv.setNaytaPerusteenTeksti(vanhaTkv.isNaytaPerusteenTeksti());
-                        tkv.setPerusteTekstikappaleId(vanhaTkv.getPerusteTekstikappaleId());
-                        tkv.setLiite(vanhaTkv.isLiite());
-                        TekstiKappale copy = vanhaTkv.getTekstiKappale().copy();
-                        copy.setTeksti(null);
-                        copy = tekstiKappaleRepository.save(copy);
-                        tkv.setTekstiKappale(copy);
-                        parent.getLapset().add(tkv);
-                        kasitteleTekstit(vanhaTkv, tkv, teeKopio);
+                        TekstiKappaleViite tkv = copyTekstikappaleViiteFromOpsToOps(parent, vanhaTkv);
+                        kasitteleTekstit(vanhaTkv, tkv);
                     });
         }
+    }
+
+    private TekstiKappaleViite copyTekstikappaleViiteFromOpsToOps(TekstiKappaleViite parent, TekstiKappaleViite vanhaTkv) {
+        TekstiKappaleViite tkv = viiteRepository.save(new TekstiKappaleViite());
+        tkv.setOmistussuhde(Omistussuhde.OMA);
+        tkv.setLapset(new ArrayList<>());
+        tkv.updateOriginal(vanhaTkv);
+        tkv.setVanhempi(parent);
+        tkv.setPakollinen(vanhaTkv.isPakollinen());
+        tkv.setNaytaPerusteenTeksti(vanhaTkv.isNaytaPerusteenTeksti());
+        tkv.setPerusteTekstikappaleId(vanhaTkv.getPerusteTekstikappaleId());
+        tkv.setLiite(vanhaTkv.isLiite());
+        TekstiKappale copy = vanhaTkv.getTekstiKappale().copy();
+        copy.setTeksti(null);
+        copy = tekstiKappaleRepository.save(copy);
+        tkv.setTekstiKappale(copy);
+        parent.getLapset().add(tkv);
+        return tkv;
     }
 
     private Opetussuunnitelma addPohjaLisaJaEsiopetus(Opetussuunnitelma ops, PerusteDto peruste, OpetussuunnitelmaLuontiDto pohjaDto) {
@@ -1630,25 +1635,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         TekstiKappaleViite juuri = new TekstiKappaleViite(Omistussuhde.OMA);
         juuri = viiteRepository.saveAndFlush(juuri);
         ops.setTekstit(juuri);
-    }
-
-    @Deprecated
-    private void lisaaTekstipuunLapset(Opetussuunnitelma ops) {
-        LokalisoituTekstiDto nimi, teksti;
-        nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI, "Opetuksen järjestäminen"));
-        teksti = new LokalisoituTekstiDto(null, null);
-        TekstiKappaleDto ohjeistusTeksti = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
-        TekstiKappaleViiteDto.Matala ohjeistus = new TekstiKappaleViiteDto.Matala(ohjeistusTeksti);
-        addTekstiKappale(ops.getId(), ohjeistus);
-
-        nimi = new LokalisoituTekstiDto(null, Collections.singletonMap(Kieli.FI,
-                "Opetuksen toteuttamisen lähtökohdat"));
-        teksti = new LokalisoituTekstiDto(null, null);
-        TekstiKappaleDto opetuksenJarjestaminenTeksti
-                = new TekstiKappaleDto(nimi, teksti, Tila.LUONNOS);
-        TekstiKappaleViiteDto.Matala opetuksenJarjestaminen
-                = new TekstiKappaleViiteDto.Matala(opetuksenJarjestaminenTeksti);
-        addTekstiKappale(ops.getId(), opetuksenJarjestaminen);
     }
 
     private void flattenTekstikappaleviitteet(Map<UUID, TekstiKappaleViite> viitteet, TekstiKappaleViite tov) {
@@ -2026,14 +2012,38 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
         // Lisätään viite juurinoden alle
-        return tekstiKappaleViiteService.addTekstiKappaleViite(opsId, ops.getTekstit().getId(), viite);
+        TekstiKappaleViiteDto.Matala tekstiKappaleViiteDto = tekstiKappaleViiteService.addTekstiKappaleViite(opsId, ops.getTekstit().getId(), viite);
+        return addTekstikappaleToChildOpetussuunnitelmat(opsId, tekstiKappaleViiteDto, true);
     }
 
     @Override
     public TekstiKappaleViiteDto.Matala addTekstiKappaleLapsi(Long opsId, Long parentId,
                                                               TekstiKappaleViiteDto.Matala viite) {
         // Lisätään viite parent-noden alle
-        return tekstiKappaleViiteService.addTekstiKappaleViite(opsId, parentId, viite);
+        TekstiKappaleViiteDto.Matala tekstiKappaleViiteDto = tekstiKappaleViiteService.addTekstiKappaleViite(opsId, parentId, viite);
+        return addTekstikappaleToChildOpetussuunnitelmat(opsId, tekstiKappaleViiteDto, false);
+    }
+
+    private TekstiKappaleViiteDto.Matala addTekstikappaleToChildOpetussuunnitelmat(Long opsId, TekstiKappaleViiteDto.Matala tekstiKappaleViiteDto, boolean juuritaso) {
+        TekstiKappaleViite tekstiKappaleViite = viiteRepository.findOne(tekstiKappaleViiteDto.getId());
+        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
+            Optional<UUID> parentTunniste = Optional.ofNullable(tekstiKappaleViite).map(TekstiKappaleViite::getVanhempi).map(TekstiKappaleViite::getTekstiKappale).map(TekstiKappale::getTunniste);
+            Optional<TekstiKappaleViite> parentViite = CollectionUtil.treeToStream(opetussuunnitelma.getTekstit(), TekstiKappaleViite::getLapset)
+                    .filter(lapsi -> lapsi.getTekstiKappale() != null)
+                    .filter(lapsi -> lapsi.getTekstiKappale().getTunniste().equals(parentTunniste.orElse(null))).findFirst();
+
+            Optional<TekstiKappaleViite> luotuViite = Optional.empty();
+            if (juuritaso || parentTunniste.isEmpty() || parentViite.isEmpty()) {
+                luotuViite = Optional.of(copyTekstikappaleViiteFromOpsToOps(opetussuunnitelma.getTekstit(), tekstiKappaleViite));
+            } else if (parentViite.isPresent()) {
+                luotuViite = Optional.of(copyTekstikappaleViiteFromOpsToOps(parentViite.get(), tekstiKappaleViite));
+            }
+
+            luotuViite.ifPresent(kappaleViite -> muokkaustietoService.addOpsMuokkausTietoPermissionSkip(opetussuunnitelma.getId(), kappaleViite, MuokkausTapahtuma.LUONTI));
+
+        });
+
+        return tekstiKappaleViiteDto;
     }
 
     @Override

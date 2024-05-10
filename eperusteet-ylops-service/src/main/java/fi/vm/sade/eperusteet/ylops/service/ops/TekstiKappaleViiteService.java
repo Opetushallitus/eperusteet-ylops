@@ -5,10 +5,11 @@ import fi.vm.sade.eperusteet.ylops.dto.RevisionKayttajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.PoistettuTekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface TekstiKappaleViiteService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
@@ -66,4 +67,7 @@ public interface TekstiKappaleViiteService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<TekstiKappaleViiteDto.Matala> getTekstiKappaleViiteOriginals(@P("opsId") Long opsId, Long viiteId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    Integer alaOpetussuunnitelmaLukumaaraTekstikappaleTunniste(Long opsId, UUID tunniste);
 }
