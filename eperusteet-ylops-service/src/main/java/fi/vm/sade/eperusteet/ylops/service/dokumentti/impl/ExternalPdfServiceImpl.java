@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
-import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.ExternalPdfService;
@@ -40,9 +39,6 @@ public class ExternalPdfServiceImpl implements ExternalPdfService {
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
-
-    @Autowired
-    private JulkaisuRepository julkaisuRepository;
 
     @Autowired
     RestClientFactory restClientFactory;

@@ -137,11 +137,6 @@ public class EperusteetLocalService implements EperusteetService {
     }
 
     @Override
-    public String getYllapitoAsetus(String key) {
-        return null;
-    }
-
-    @Override
     public PerusteDto getPeruste(String diaariNumero) {
         return getPeruste((peruste) ->
                 peruste.get("diaarinumero") != null
