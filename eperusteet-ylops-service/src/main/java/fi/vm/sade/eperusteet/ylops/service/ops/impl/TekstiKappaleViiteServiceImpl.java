@@ -35,6 +35,7 @@ import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,6 +87,10 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Autowired
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
+
+    @Lazy
+    @Autowired
+    private TekstiKappaleViiteService self;
 
     @Override
     public <T> T getTekstiKappaleViite(Long opsId, Long viiteId, Class<T> t) {
@@ -253,7 +258,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(ops), MuokkausTapahtuma.PAIVITYS, NavigationType.opetussuunnitelma_rakenne);
     }
 
-
     @Override
     @Transactional
     public void removeTekstiKappaleViite(Long opsId, Long viiteId) {
@@ -284,7 +288,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             tekstiKappaleService.removeTekstiKappaleFromOps(opsId, tekstiKappale.getId());
         }
 
-        muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
+        muokkaustietoService.addOpsMuokkausTietoPermissionSkip(opsId, new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
 
         viite.setTekstiKappale(null);
         viite.getVanhempi().getLapset().remove(viite);
@@ -292,6 +296,16 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         tekstikappaleviiteRepository.delete(viite);
 
         poistaTekstikappaleAlaOpetussuunnitelmista(opsId, tekstiKappale.getTunniste());
+    }
+
+    @Override
+    public Integer alaOpetussuunnitelmaLukumaaraTekstikappaleTunniste(Long opsId, UUID tunniste) {
+        return opetussuunnitelmaRepository.findAllByPohjaId(opsId).stream()
+                .mapToInt(opetussuunnitelma -> CollectionUtil.treeToStream(opetussuunnitelma.getTekstit(), TekstiKappaleViite::getLapset)
+                            .filter(viite -> viite.getTekstiKappale() != null && viite.getTekstiKappale().getTunniste().equals(tunniste))
+                            .mapToInt(viite -> 1)
+                            .sum())
+                .sum();
     }
 
     private void poistaTekstikappaleAlaOpetussuunnitelmista(Long opsId, UUID tunniste) {
@@ -422,6 +436,13 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         addTekstiKappaleViite(opsId, teksti.getId(), new TekstiKappaleViiteDto.Matala(dto), MuokkausTapahtuma.PALAUTUS);
         Collections.rotate(teksti.getLapset(), 1);
         poistettu.setPalautettu(true);
+
+        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
+            List<PoistettuTekstiKappale> poistetut = poistettuTekstiKappaleRepository.findPoistetutByOpsIdAndTunniste(opetussuunnitelma.getId(), tekstikappale.getTunniste());
+            poistetut.forEach(poistettuTekstiKappale -> {
+                returnRemovedTekstikappale(opetussuunnitelma.getId(), poistettuTekstiKappale.getId());
+            });
+        });
 
         return dto;
     }

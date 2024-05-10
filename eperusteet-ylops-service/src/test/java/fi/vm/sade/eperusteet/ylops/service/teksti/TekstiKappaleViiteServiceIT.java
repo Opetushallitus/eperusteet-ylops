@@ -2,12 +2,14 @@ package fi.vm.sade.eperusteet.ylops.service.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.repository.teksti.PoistettuTekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
@@ -21,6 +23,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,6 +46,9 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private EntityManager em;
+
+    @Autowired
+    private PoistettuTekstiKappaleRepository poistettuTekstiKappaleRepository;
 
     @Test
     public void testOpintojaksojenHallinta() {
@@ -128,18 +134,46 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testTekstikappaleenPoisto() {
+    public void testTekstikappaleenPoistoJaLisaysKunnanOpsiin() {
         OpetussuunnitelmaDto kunnanOps = createLukioOpetussuunnitelma();
         TekstiKappaleViiteDto.Matala kunnanTeksti = tekstiKappaleViiteService.addTekstiKappaleViite(kunnanOps.getId(), kunnanOps.getTekstit().getId(), TestUtils.createTekstiKappaleViite());
+        opetussuunnitelmaService.addTekstiKappale(kunnanOps.getId(), TestUtils.createTekstiKappaleViite());
 
         OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
             ops.setPohja(Reference.of(kunnanOps.getId()));
         });
+        assertThat(findTkNimi(koulunOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();
 
+        tekstiKappaleViiteService.removeTekstiKappaleViite(kunnanOps.getId(), kunnanTeksti.getId());
+        assertThat(findTkNimi(kunnanOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNull();
+        assertThat(findTkNimi(koulunOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNull();
 
+        TekstiKappaleViiteDto.Matala kunnanTekstiLisatty = opetussuunnitelmaService.addTekstiKappaleLapsi(kunnanOps.getId(), kunnanOps.getTekstit().getId(), TestUtils.createTekstiKappaleViite());
+        TekstiKappaleViiteDto.Matala kunnanTekstiLisatty2 = opetussuunnitelmaService.addTekstiKappaleLapsi(kunnanOps.getId(), kunnanTekstiLisatty.getId(), TestUtils.createTekstiKappaleViite());
+        assertThat(findTkNimi(koulunOps.getId(), kunnanTekstiLisatty2.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();
     }
 
+    @Test
+    public void testTekstikappalePoistettuJaPalautusOpsiin() {
+        OpetussuunnitelmaDto kunnanOps = createLukioOpetussuunnitelma();
+        TekstiKappaleViiteDto.Matala kunnanTeksti = tekstiKappaleViiteService.addTekstiKappaleViite(kunnanOps.getId(), kunnanOps.getTekstit().getId(), TestUtils.createTekstiKappaleViite());
+        opetussuunnitelmaService.addTekstiKappale(kunnanOps.getId(), TestUtils.createTekstiKappaleViite());
 
+        OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
+            ops.setPohja(Reference.of(kunnanOps.getId()));
+        });
+        assertThat(findTkNimi(kunnanOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();
+        assertThat(findTkNimi(koulunOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();
+
+        tekstiKappaleViiteService.removeTekstiKappaleViite(kunnanOps.getId(), kunnanTeksti.getId());
+        assertThat(findTkNimi(kunnanOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNull();
+        assertThat(findTkNimi(koulunOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNull();
+
+        List<PoistettuTekstiKappale> poistettuTekstiKappales = poistettuTekstiKappaleRepository.findPoistetutByOpsId(kunnanOps.getId());
+        tekstiKappaleViiteService.returnRemovedTekstikappale(kunnanOps.getId(), poistettuTekstiKappales.get(0).getId());
+        assertThat(findTkNimi(kunnanOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();
+        assertThat(findTkNimi(koulunOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();
+    }
 
     private TekstiKappaleViite findTkNimi(Long opsId, String nimi) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
