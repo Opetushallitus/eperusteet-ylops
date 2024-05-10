@@ -5170,6 +5170,33 @@
         }
       }
     },
+    "/api/opetussuunnitelmat/{opsId}/tekstit/{tunniste}/alaopetussuunnitelmalukumaara" : {
+      "get" : {
+        "tags" : [ "OpetussuunnitelmanSisalto" ],
+        "operationId" : "getTekstikappaleAlaOpetussuunnitelmaLukumaara",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "tunniste",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          }
+        }
+      }
+    },
     "/api/opetussuunnitelmat/{opsId}/tekstit/{viiteId}" : {
       "get" : {
         "tags" : [ "OpetussuunnitelmanSisalto" ],
@@ -9390,6 +9417,10 @@
         "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "organisaatiotaso" : {
+          "type" : "string",
+          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
         }
       }
     },
@@ -9518,6 +9549,10 @@
         "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "organisaatiotaso" : {
+          "type" : "string",
+          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
         },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaNimiDto"
@@ -9667,6 +9702,10 @@
           "type" : "string",
           "format" : "date-time"
         },
+        "organisaatiotaso" : {
+          "type" : "string",
+          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
+        },
         "peruste" : {
           "$ref" : "#/definitions/PerusteInfoDto"
         },
@@ -9803,6 +9842,10 @@
         "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "organisaatiotaso" : {
+          "type" : "string",
+          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
         },
         "julkaistu" : {
           "type" : "string",
@@ -9996,6 +10039,10 @@
           "type" : "string",
           "format" : "date-time"
         },
+        "organisaatiotaso" : {
+          "type" : "string",
+          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
+        },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaBaseDto"
         },
@@ -10152,6 +10199,10 @@
         "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
+        },
+        "organisaatiotaso" : {
+          "type" : "string",
+          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
         },
         "pohja" : {
           "$ref" : "#/definitions/Reference"
@@ -10921,18 +10972,18 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -10967,18 +11018,18 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -11013,18 +11064,18 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "last" : {
+          "type" : "boolean"
+        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-        "last" : {
-          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -11048,10 +11099,16 @@
         "unpaged" : {
           "type" : "boolean"
         },
+<<<<<<< HEAD
         "paged" : {
           "type" : "boolean"
-        },
+=======
         "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+>>>>>>> e9875f86 (EP-4217)
+        },
+        "pageSize" : {
           "type" : "integer",
           "format" : "int32"
         }
