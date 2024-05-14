@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
-import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.ExternalPdfService;
@@ -20,6 +19,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED;
@@ -41,9 +41,6 @@ public class ExternalPdfServiceImpl implements ExternalPdfService {
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Autowired
-    private JulkaisuRepository julkaisuRepository;
-
-    @Autowired
     RestClientFactory restClientFactory;
 
     @Lazy
@@ -61,6 +58,12 @@ public class ExternalPdfServiceImpl implements ExternalPdfService {
             ops = opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(dto.getOpsId());
         } else {
             ops = opetussuunnitelmaService.getExportedOpetussuunnitelma(dto.getOpsId());
+        }
+
+        if (!dto.getJulkaisuDokumentti()) {
+            ops.setViimeisinJulkaisuAika(null);
+        } else if (ops.getViimeisinJulkaisuAika() == null) {
+            ops.setViimeisinJulkaisuAika(new Date());
         }
 
         String json = mapper.writeValueAsString(ops);

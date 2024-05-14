@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaistuOpetussuunnitelmaData;
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaistuOpetussuunnitelmaTila;
@@ -195,27 +196,27 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         log.debug("teeJulkaisu: {}", opsId);
 
         JulkaistuOpetussuunnitelmaTila julkaistuOpetussuunnitelmaTila = getOrCreateTila(opsId);
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
 
         try {
-            Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-
             List<Validointi> validoinnit = validointiService.validoiOpetussuunnitelma(opsId);
             if (validoinnit.stream().anyMatch(validointi -> CollectionUtils.isNotEmpty(validointi.getVirheet()))) {
                 throw new BusinessRuleViolationException("opetussuunnitelma-ei-validi");
             };
 
             OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
-            julkaisu.setOpetussuunnitelma(ops);
+            julkaisu.setOpetussuunnitelma(opetussuunnitelma);
             julkaisu.setTiedote(mapper.map(julkaisuDto.getJulkaisutiedote(), LokalisoituTeksti.class));
             OpetussuunnitelmaExportDto opsData = opetussuunnitelmaService.getExportedOpetussuunnitelma(opsId);
             opsData.setViimeisinJulkaisuAika(new Date());
 
             ObjectNode opsDataJson = (ObjectNode) jsonMapper.toJson(opsData);
-            List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
+            List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(opetussuunnitelma);
 
-            Set<DokumenttiDto> dokumentit = ops.getJulkaisukielet().stream().map(kieli -> {
+            Set<DokumenttiDto> dokumentit = opetussuunnitelma.getJulkaisukielet().stream().map(kieli -> {
                 DokumenttiDto dokumenttiDto = dokumenttiService.createDtoFor(opsId, kieli);
                 try {
+                    dokumenttiDto.setJulkaisuDokumentti(true);
                     dokumenttiService.setStarted(dokumenttiDto);
                     dokumenttiService.generateWithDto(dokumenttiDto);
                 } catch (DokumenttiException e) {
@@ -231,7 +232,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             julkaisu.setRevision(vanhatJulkaisut.stream().mapToInt(OpetussuunnitelmanJulkaisu::getRevision).max().orElse(0) + 1);
             julkaisu = julkaisuRepository.saveAndFlush(julkaisu);
 
-            muokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.JULKAISU);
+            muokkaustietoService.addOpsMuokkausTieto(opsId, opetussuunnitelma, MuokkausTapahtuma.JULKAISU);
 
         } catch (Exception e) {
             log.error(Throwables.getStackTraceAsString(e));
@@ -240,6 +241,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             throw new BusinessRuleViolationException("julkaisun-tallennus-epaonnistui");
         }
 
+        opetussuunnitelma.setTila(Tila.JULKAISTU);
         julkaistuOpetussuunnitelmaTila.setJulkaisutila(JulkaisuTila.JULKAISTU);
         self.saveJulkaistuOpetussuunnitelmaTila(julkaistuOpetussuunnitelmaTila);
     }

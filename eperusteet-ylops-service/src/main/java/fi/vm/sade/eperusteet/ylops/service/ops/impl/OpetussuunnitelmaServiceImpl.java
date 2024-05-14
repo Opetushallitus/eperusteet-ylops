@@ -959,15 +959,15 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .filter(org -> org.getTyypit().contains(OrganisaatioTyyppi.OPPILAITOS))
                 .collect(Collectors.toUnmodifiableSet());
 
+        Set<OrganisaatioDto> kunnat = opetussuunnitelmaDto.getOrganisaatiot().stream()
+                .filter(org -> org.getTyypit().contains(OrganisaatioTyyppi.KUNTA))
+                .collect(Collectors.toUnmodifiableSet());
+
         if (oppilaitokset.size() == 1) {
             opetussuunnitelmaDto.setKoulutuksenjarjestaja(oppilaitokset.iterator().next());
-        } else {
-            opetussuunnitelmaDto.setKoulutuksenjarjestaja(opetussuunnitelmaDto.getOrganisaatiot().stream()
-                    .filter(org -> org.getTyypit().contains(OrganisaatioTyyppi.KUNTA))
-                    .findFirst()
-                    .orElse(null));
+        } else if(kunnat.size() == 1) {
+            opetussuunnitelmaDto.setKoulutuksenjarjestaja(kunnat.iterator().next());
         }
-
     }
 
     public void kopioiPohjanSisallotOpetussuunnitelmaan(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
