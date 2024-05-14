@@ -10018,6 +10018,12 @@
           "items" : {
             "$ref" : "#/definitions/OpetussuunnitelmaNimiDto"
           }
+        },
+        "joissaPohjana" : {
+          "type" : "array",
+          "items" : {
+            "$ref" : "#/definitions/OpetussuunnitelmaNimiDto"
+          }
         }
       }
     },
@@ -10922,11 +10928,11 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -10968,11 +10974,11 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -11014,11 +11020,11 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
-        },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -11039,15 +11045,15 @@
           "type" : "integer",
           "format" : "int32"
         },
+        "unpaged" : {
+          "type" : "boolean"
+        },
         "paged" : {
           "type" : "boolean"
         },
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "unpaged" : {
-          "type" : "boolean"
         }
       }
     },
