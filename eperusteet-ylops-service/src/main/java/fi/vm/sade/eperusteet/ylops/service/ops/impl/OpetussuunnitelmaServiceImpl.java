@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Throwables;
+import com.google.common.collect.Lists;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
@@ -621,8 +622,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         if (SecurityUtil.isAuthenticated()) {
             fetchPeriytyvatPohjat(dto, dto.getPohja());
+            if (!ObjectUtils.isEmpty(dto.getPeriytyvatPohjat())) {
+                dto.setPeriytyvatPohjat(Lists.reverse(dto.getPeriytyvatPohjat()));
+            }
+            fetchOpsitJoissaPohjana(dto);
         }
-
         return dto;
     }
 
@@ -882,6 +886,23 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (pohja.getPohja() != null) {
             fetchPeriytyvatPohjat(rootOps, mapper.map(pohja.getPohja(), OpetussuunnitelmaKevytDto.class));
         }
+    }
+
+    private void fetchOpsitJoissaPohjana(OpetussuunnitelmaKevytDto rootOps) {
+        Set<String> kayttajaOids = kayttajanOrganisaatioOids();
+        Set<Opetussuunnitelma> opsitJoissaPohjana = opetussuunnitelmaRepository.findAllByPohjaId(rootOps.getId());
+        List<OpetussuunnitelmaNimiDto> opsit = new ArrayList<>();
+
+        opsitJoissaPohjana.forEach(ops -> {
+            OpetussuunnitelmaNimiDto opsNimiDto = new OpetussuunnitelmaNimiDto();
+            boolean hasOikeudet = ops.getOrganisaatiot().stream().anyMatch(kayttajaOids::contains);
+            if (hasOikeudet) {
+                opsNimiDto.setId(ops.getId());
+            }
+            opsNimiDto.setNimi(mapper.map(ops.getNimi(),LokalisoituTekstiDto.class));
+            opsit.add(opsNimiDto);
+        });
+        rootOps.setJoissaPohjana(opsit);
     }
 
     @Override
