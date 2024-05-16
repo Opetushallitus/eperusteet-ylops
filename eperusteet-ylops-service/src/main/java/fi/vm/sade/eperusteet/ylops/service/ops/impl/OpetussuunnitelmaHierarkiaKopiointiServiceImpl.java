@@ -127,6 +127,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
 
     private TekstiKappaleViite tekstiKappaleViiteRec(TekstiKappaleViite vanhaOma) {
         TekstiKappaleViite oma = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(vanhaOma));
+        oma.updateOriginal(vanhaOma.getOriginal());
         oma.setOmistussuhde(Omistussuhde.OMA);
         oma.setLapset(new ArrayList<>());
         oma.getLapset().addAll(vanhaOma.getLapset().stream().map(vanhaLapsi -> tekstiKappaleViiteRec(vanhaLapsi)).collect(Collectors.toList()));
