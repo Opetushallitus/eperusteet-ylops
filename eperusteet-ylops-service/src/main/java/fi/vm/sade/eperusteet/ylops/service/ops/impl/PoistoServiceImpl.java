@@ -22,11 +22,12 @@ import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
-import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -146,6 +147,14 @@ public class PoistoServiceImpl implements PoistoService {
     private OppiainePalautettuDto palautaOppiaine(Long opsId, Poistettu poistettuInfo) {
         OppiainePalautettuDto palautettuDto = oppiaineService.restore(opsId, poistettuInfo.getPoistettuId(), null);
         poistetutRepository.delete(poistettuInfo);
+
+        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
+            Poistettu alaOpsPoistettuOppiaine = poistetutRepository.findByOpetussuunnitelmaAndOppiaineTunniste(opetussuunnitelma.getId(), palautettuDto.getTunniste().toString());
+            if (alaOpsPoistettuOppiaine != null) {
+                palautaOppiaine(opetussuunnitelma.getId(), alaOpsPoistettuOppiaine);
+            }
+        });
+
         return palautettuDto;
     }
 

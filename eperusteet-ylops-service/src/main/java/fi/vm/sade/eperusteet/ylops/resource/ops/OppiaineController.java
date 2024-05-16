@@ -15,8 +15,6 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
 import io.swagger.annotations.Api;
-import java.util.List;
-import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +25,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/opetussuunnitelmat/{opsId}/oppiaineet")
@@ -71,6 +72,14 @@ public class OppiaineController {
             @PathVariable final Long id
     ) {
         return Responses.ofNullable(new UnwrappedOpsOppiaineDto(oppiaineService.get(opsId, id)));
+    }
+
+    @RequestMapping(value = "/{id}/pohja", method = RequestMethod.GET)
+    public OppiaineDto getPohjanVastaavaOppiaine(
+            @PathVariable final Long opsId,
+            @PathVariable final Long id
+    ) {
+        return oppiaineService.getPohjanVastaavaOppiaine(opsId, id);
     }
 
     @RequestMapping(value = "/{id}/versio/{versio}", method = RequestMethod.GET)
@@ -205,20 +214,6 @@ public class OppiaineController {
     public void deleteOppiaine(@PathVariable final Long opsId, @PathVariable final Long id) {
         oppiaineService.delete(opsId, id);
     }
-
-//    @RequestMapping(value = "/{id}/versions", method = RequestMethod.GET)
-//    @ApiIgnore
-//    @ResponseBody
-//    public List<OppiaineLaajaDto> getAllVersions(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-//        return oppiaineService.getAllVersions(opsId, id);
-//    }
-//
-//    @RequestMapping(value = "/{id}/restore", method = RequestMethod.POST)
-//    @ApiIgnore
-//    @ResponseBody
-//    public OppiaineLaajaDto restore(@PathVariable("opsId") final Long opsId, @PathVariable("id") final Long id) {
-//        return oppiaineService.restore(opsId, id);
-//    }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     public ResponseEntity<PerusteOppiaineDto> getPerusteSisalto(
