@@ -1015,14 +1015,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     @Transactional
-    public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
+    public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaLuontiDto) {
 
-        if (opetussuunnitelmaDto.getId() != null) {
+        if (opetussuunnitelmaLuontiDto.getId() != null) {
             throw new BusinessRuleViolationException("Uudessa opetussuunnitelmassa on id");
         }
 
-        opetussuunnitelmaDto.setTyyppi(Tyyppi.OPS);
-        Opetussuunnitelma ops = mapper.map(opetussuunnitelmaDto, Opetussuunnitelma.class);
+        opetussuunnitelmaLuontiDto.setTyyppi(Tyyppi.OPS);
+        Opetussuunnitelma ops = mapper.map(opetussuunnitelmaLuontiDto, Opetussuunnitelma.class);
 
         Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD,
                 RolePermission.ADMIN));
@@ -1039,7 +1039,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             Set<Opetussuunnitelma> pohjat = opetussuunnitelmaRepository.findOneByTyyppiAndTilaAndKoulutustyyppi(
                     Tyyppi.POHJA,
                     Tila.VALMIS,
-                    opetussuunnitelmaDto.getKoulutustyyppi());
+                    opetussuunnitelmaLuontiDto.getKoulutustyyppi());
             if (pohjat.isEmpty()) {
                 throw new BusinessRuleViolationException("koulutustyypin-pohjaa-ei-ole");
             }
@@ -1081,7 +1081,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 kopioiPohjanSisallotOpetussuunnitelmaan(pohja, ops);
             }
             else {
-                luoOpsPohjasta(pohja, ops);
+                luoOpsPohjasta(pohja, ops, opetussuunnitelmaLuontiDto.isKopioiSisallot());
                 ops = opetussuunnitelmaRepository.save(ops);
                 if (isPohjastaTehtyPohja(pohja)
                         && !KoulutustyyppiToteutus.LOPS2019.equals(pohja.getToteutus())
@@ -1143,8 +1143,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 });
     }
 
-    private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
-        boolean teeKopio = pohja.getTyyppi() == Tyyppi.POHJA;
+    private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops, boolean teeKopio) {
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit());
 
         boolean onPohjastaTehtyPohja = isPohjastaTehtyPohja(pohja);

@@ -19,4 +19,5 @@ public class OpetussuunnitelmaLuontiDto extends OpetussuunnitelmaBaseDto {
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineDto> oppiaineet;
     private boolean rakennePohjasta = false;
+    private boolean kopioiSisallot = true;
 }

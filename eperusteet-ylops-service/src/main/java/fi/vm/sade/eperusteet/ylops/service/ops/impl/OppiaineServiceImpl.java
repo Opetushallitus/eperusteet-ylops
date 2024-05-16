@@ -4,6 +4,7 @@ import com.codepoetics.protonpack.StreamUtils;
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
@@ -209,6 +210,21 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         return getOpsOppiaine(opsId, id, null);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public OppiaineDto getPohjanVastaavaOppiaine(Long opsId, Long id) {
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
+        Oppiaine oppiaine = oppiaineet.findOne(id);
+
+        if (opetussuunnitelma.getPohja() == null || !opetussuunnitelma.getPohja().getTyyppi().equals(Tyyppi.OPS)) {
+            return null;
+        }
+
+        Oppiaine pohjanOppiaine = oppiaineet.findOneByOpsIdAndTunniste(opetussuunnitelma.getPohja().getId(), oppiaine.getTunniste());
+        return mapper.map(pohjanOppiaine, OppiaineDto.class);
+    }
+
+
     private OpsOppiaineDto getOpsOppiaine(Long opsId, Long id, Integer version) {
         Boolean isOma = oppiaineet.isOma(opsId, id);
         if (isOma == null) {
@@ -369,7 +385,16 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
         oppiaine = oppiaineet.save(oppiaine);
+        addValinnainenToChildOpetussuunnitelmat(opsId, oppiaine);
         return mapper.map(oppiaine, OppiaineDto.class);
+    }
+
+    private void addValinnainenToChildOpetussuunnitelmat(Long opetussuunnitelmaId, Oppiaine oppiaine) {
+        opetussuunnitelmaRepository.findAllByPohjaId(opetussuunnitelmaId).forEach(opetussuunnitelma -> {
+            Oppiaine newOppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
+            newOppiaine.asetaPohjanOppiaine(oppiaine);
+            opetussuunnitelma.addOppiaine(newOppiaine);
+        });
     }
 
     private HashSet<Oppiaineenvuosiluokka> updateValinnainenVuosiluokat(
@@ -841,7 +866,14 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
         oppiaineLukiokurssiRepository.deleteAll(oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, oppiaineId));
 
+        oppiaineet.findByPohjanOppiaine(oppiaine).forEach(pohjanOppiainettaKayttavaOppiaine -> {
+            pohjanOppiainettaKayttavaOppiaine.asetaPohjanOppiaine(null);
+            oppiaineet.save(pohjanOppiainettaKayttavaOppiaine);
+        });
+
+        poistaOppiaineAlaOpetussuunnitelmista(opsId, oppiaine.getTunniste());
         muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
+
         PoistettuOppiaineDto poistettu = tallennaPoistettu(oppiaineId, ops, oppiaine);
 
         if (oppiaine.getOppiaine() != null) {
@@ -851,6 +883,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         return poistettu;
+    }
+
+    private void poistaOppiaineAlaOpetussuunnitelmista(Long opsId, UUID tunniste) {
+        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
+            Oppiaine oppiaine = oppiaineet.findOneByOpsIdAndTunniste(opetussuunnitelma.getId(), tunniste);
+            if (oppiaine != null) {
+                delete(opetussuunnitelma.getId(), oppiaine.getId());
+            }
+        });
     }
 
     private void checkOppiaineDeleteIsAllowed(Long opsId, Long oppiaineId) {
@@ -994,6 +1035,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
+    @Deprecated
     public OpsOppiaineDto palautaYlempi(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
