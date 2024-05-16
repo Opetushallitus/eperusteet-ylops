@@ -4249,6 +4249,33 @@
         }
       }
     },
+    "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/pohja" : {
+      "get" : {
+        "tags" : [ "Oppiaineet" ],
+        "operationId" : "getPohjanVastaavaOppiaine",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OppiaineDto"
+            }
+          }
+        }
+      }
+    },
     "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/raakaversio/{versio}" : {
       "get" : {
         "tags" : [ "Oppiaineet" ],
@@ -11004,6 +11031,7 @@
           "$ref" : "#/definitions/Sort"
         },
 <<<<<<< HEAD
+<<<<<<< HEAD
         "last" : {
           "type" : "boolean"
         },
@@ -11018,6 +11046,14 @@
           "type" : "boolean"
         },
 >>>>>>> 695354a3 (EP-4217)
+=======
+        "last" : {
+          "type" : "boolean"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+>>>>>>> 51eea6e9 (valinnaisen logiikat)
         "first" : {
           "type" : "boolean"
         },
@@ -11059,6 +11095,7 @@
           "$ref" : "#/definitions/Sort"
         },
 <<<<<<< HEAD
+<<<<<<< HEAD
         "last" : {
           "type" : "boolean"
         },
@@ -11073,6 +11110,14 @@
           "type" : "boolean"
         },
 >>>>>>> 695354a3 (EP-4217)
+=======
+        "last" : {
+          "type" : "boolean"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+>>>>>>> 51eea6e9 (valinnaisen logiikat)
         "first" : {
           "type" : "boolean"
         },
@@ -11114,6 +11159,7 @@
           "$ref" : "#/definitions/Sort"
         },
 <<<<<<< HEAD
+<<<<<<< HEAD
         "last" : {
           "type" : "boolean"
         },
@@ -11128,6 +11174,14 @@
           "type" : "boolean"
         },
 >>>>>>> 695354a3 (EP-4217)
+=======
+        "last" : {
+          "type" : "boolean"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+>>>>>>> 51eea6e9 (valinnaisen logiikat)
         "first" : {
           "type" : "boolean"
         },
