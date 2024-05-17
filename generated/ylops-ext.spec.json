@@ -5,7 +5,8 @@
     "version" : "1",
     "title" : "OPS-työkalu API"
   },
-  "basePath" : "https://eperusteet.opintopolku.fi/eperusteet-ylops-service",
+  "host" : "virkailija.opintopolku.fi",
+  "basePath" : "/eperusteet-ylops-service",
   "tags" : [ {
     "name" : "Julkinen"
   } ],
@@ -406,10 +407,6 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -420,21 +417,25 @@
             "type" : "object"
           }
         },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "first" : {
           "type" : "boolean"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -452,10 +453,6 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "number" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "size" : {
           "type" : "integer",
           "format" : "int32"
@@ -466,21 +463,25 @@
             "$ref" : "#/definitions/OpetussuunnitelmaJulkinenDto"
           }
         },
+        "number" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "first" : {
           "type" : "boolean"
         },
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -497,14 +498,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "unpaged" : {
+        "paged" : {
           "type" : "boolean"
         },
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "paged" : {
+        "unpaged" : {
           "type" : "boolean"
         },
         "pageSize" : {
@@ -622,10 +623,10 @@
         "empty" : {
           "type" : "boolean"
         },
-        "unsorted" : {
+        "sorted" : {
           "type" : "boolean"
         },
-        "sorted" : {
+        "unsorted" : {
           "type" : "boolean"
         }
       }
