@@ -54,4 +54,12 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
     List<String> findAllJulkaistutOpetussuunnitelmat();
 
     OpetussuunnitelmanJulkaisu findOneByDokumentitIn(Set<Long> dokumentit);
+
+    @Query(nativeQuery = true,
+            value = "SELECT CAST(jsonb_path_query(julkaisu_data.opsdata, CAST(:query AS jsonpath)) AS text) " +
+                    "FROM opetussuunnitelman_julkaisu julkaisu " +
+                    "INNER JOIN opetussuunnitelman_julkaisu_data julkaisu_data ON julkaisu.data_id = julkaisu_data.id " +
+                    "WHERE julkaisu.ops_id = :opetussuunnitelmaId " +
+                    "AND luotu = (SELECT MAX(luotu) FROM opetussuunnitelman_julkaisu WHERE ops_id = julkaisu.ops_id)")
+    String findJulkaisutByJsonPath(@Param("opetussuunnitelmaId") Long opetussuunnitelmaId, @Param("query") String query);
 }

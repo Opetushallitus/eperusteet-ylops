@@ -129,6 +129,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -410,6 +411,30 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 koulutustyypit,
                 pageable)
                 .map(this::convertToOpetussuunnitelmaDto);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Object getJulkaistuSisaltoObjectNode(Long id, List<String> queryList) {
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findById(id).orElse(null);
+
+        if (opetussuunnitelma == null || opetussuunnitelma.getTila().equals(Tila.POISTETTU)) {
+            throw new NotExistsException("");
+        }
+
+        String query = queryList.stream().reduce("$", (subquery, element) -> {
+            if (NumberUtils.isCreatable(element)) {
+                return subquery + String.format("?(@.id==%s)", element);
+            }
+            return subquery + "." + element;
+        });
+
+        try {
+            return objectMapper.readValue(julkaisuRepository.findJulkaisutByJsonPath(id, query), Object.class);
+        } catch (JsonProcessingException e) {
+            log.error(Throwables.getStackTraceAsString(e));
+            return null;
+        }
     }
 
     private OpetussuunnitelmaJulkinenDto convertToOpetussuunnitelmaDto(String obj) {
