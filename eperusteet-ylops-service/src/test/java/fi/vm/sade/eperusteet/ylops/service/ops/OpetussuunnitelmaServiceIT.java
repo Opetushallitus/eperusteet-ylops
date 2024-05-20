@@ -562,7 +562,6 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         pohjaLuontiDto.setPerusteenDiaarinumero("OPH-2791-2018");
 
         {
-            pohjaLuontiDto.setRakennePohjasta(true);
             OpetussuunnitelmaDto pohjaDto = opetussuunnitelmaService.addPohja(pohjaLuontiDto);
             assertThat(pohjaDto.getTekstit()).isNotNull();
             assertThat(pohjaDto.getTekstit().getLapset()).hasSize(7);

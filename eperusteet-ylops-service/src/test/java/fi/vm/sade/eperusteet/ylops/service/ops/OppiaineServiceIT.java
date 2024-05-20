@@ -130,7 +130,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineService.add(ylaOps.getId(), TestUtils.createOppiaine("oppiaine 3"));
 
         OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
-        alaOpsDto.setKopioiSisallot(false);
         OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
 
         OppiaineDto oppiaine = oppiaineService.getAll(ylaOps.getId()).get(0);
@@ -173,7 +172,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         opetussuunnitelmaService.updateTila(pohjaOps.getId(), Tila.VALMIS);
 
         OpetussuunnitelmaLuontiDto newOps = createOpetussuunnitelmaLuonti(pohjaOps);
-        newOps.setKopioiSisallot(true);
         return opetussuunnitelmaService.addOpetussuunnitelma(newOps);
     }
 
@@ -185,7 +183,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     private OpetussuunnitelmaDto createOpsBasedOnOps(OpetussuunnitelmaDto ylaOps) {
         OpetussuunnitelmaLuontiDto alaOps = createOpetussuunnitelmaLuonti(ylaOps);
-        alaOps.setKopioiSisallot(false);
         return opetussuunnitelmaService.addOpetussuunnitelma(alaOps);
     }
 
@@ -196,6 +193,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         ops.setTila(Tila.LUONNOS);
         ops.setTyyppi(Tyyppi.OPS);
         ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+        if (pohjaOps.getTyyppi().equals(Tyyppi.POHJA)) {
+            ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO);
+        }
 
         KoodistoDto kunta = new KoodistoDto();
         kunta.setKoodiUri("kunta_837");
@@ -275,7 +275,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         OppiaineDto oppiaine = oppiaineService.add(ylaOps.getId(), oppiainecreate);
 
         OpetussuunnitelmaLuontiDto alaOpsDto = createOpetussuunnitelmaLuonti(ylaOps);
-        alaOpsDto.setKopioiSisallot(false);
         OpetussuunnitelmaDto alaOps = opetussuunnitelmaService.addOpetussuunnitelma(alaOpsDto);
 
         OpsOppiaineDto opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId(), true);
@@ -609,7 +608,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         OpetussuunnitelmaDto ops = createOpsBasedOnPohja();
         OpetussuunnitelmaLuontiDto newOps = createOpetussuunnitelmaLuonti(ops);
-        newOps.setKopioiSisallot(false);
         OpetussuunnitelmaDto ops2 = opetussuunnitelmaService.addOpetussuunnitelma(newOps);
 
         ops2.setVuosiluokkakokonaisuudet(ops2.getVuosiluokkakokonaisuudet().stream()
@@ -679,6 +677,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
             ops.setPohja(Reference.of(kunnanOps.getId()));
+            ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA);
         });
 
         assertThat(oppiaineService.getAll(kunnanOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineDto.getNimi().get(Kieli.FI)))).isTrue();

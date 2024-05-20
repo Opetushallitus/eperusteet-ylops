@@ -68,7 +68,6 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         ops.setKuvaus(lt(uniikkiString()));
         ops.setTyyppi(Tyyppi.POHJA);
         ops.setKoulutustyyppi(KoulutusTyyppi.LUKIOKOULUTUS);
-        ops.setRakennePohjasta(true);
         OpetussuunnitelmaDto luotu = opetussuunnitelmaService.addPohja(ops);
         opetussuunnitelmaService.updateTila(luotu.getId(), Tila.VALMIS);
         this.pohjaOpsId = luotu.getId();

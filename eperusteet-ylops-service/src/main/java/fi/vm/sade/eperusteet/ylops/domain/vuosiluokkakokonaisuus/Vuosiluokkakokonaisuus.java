@@ -5,12 +5,10 @@ import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.VapaatekstiPaikallinentarkennus;
-import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
@@ -100,9 +98,9 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity i
     private Vuosiluokkakokonaisuus(Vuosiluokkakokonaisuus other) {
         this.tunniste = other.getTunniste();
         this.nimi = other.getNimi();
-        this.siirtymaEdellisesta = Tekstiosa.copyOf(other.getSiirtymaEdellisesta());
-        this.siirtymaSeuraavaan = Tekstiosa.copyOf(other.getSiirtymaSeuraavaan());
-        this.tehtava = Tekstiosa.copyOf(other.getTehtava());
+        this.siirtymaEdellisesta = new Tekstiosa();
+        this.siirtymaSeuraavaan = new Tekstiosa();
+        this.tehtava = new Tekstiosa();
         this.tila = Tila.LUONNOS;
 
         other.getLaajaalaisetosaamiset().forEach(l -> {
@@ -153,13 +151,6 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity i
 
     public static Vuosiluokkakokonaisuus copyOf(Vuosiluokkakokonaisuus vuosiluokkakokonaisuus) {
         return new Vuosiluokkakokonaisuus(vuosiluokkakokonaisuus);
-    }
-
-    public static void validoi(Validointi validointi, Vuosiluokkakokonaisuus vlk, Set<Kieli> kielet) {
-//        LokalisoituTeksti edellinenTeksti = (vlk.getSiirtymaEdellisesta() != null) ? vlk.getSiirtymaEdellisesta().getTeksti() : null;
-//        LokalisoituTeksti seuraavaTeksti = (vlk.getSiirtymaSeuraavaan() != null) ? vlk.getSiirtymaSeuraavaan().getTeksti() : null;
-//        LokalisoituTeksti.validoi(validointi, kielet, edellinenTeksti);
-//        LokalisoituTeksti.validoi(validointi, kielet, seuraavaTeksti);
     }
 
     @Override

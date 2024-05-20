@@ -38,7 +38,7 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OpsOppiaineDto get(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OppiaineDto getPohjanVastaavaOppiaine(@P("opsId") Long opsId, Long id);
+    <T> T getPohjanVastaavaOppiaine(@P("opsId") Long opsId, Long id, Class<T> clazz);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OppiaineDto getParent(@P("opsId") Long opsId, Long id);

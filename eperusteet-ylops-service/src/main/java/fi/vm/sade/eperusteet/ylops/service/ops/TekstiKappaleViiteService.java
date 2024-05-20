@@ -69,6 +69,9 @@ public interface TekstiKappaleViiteService {
     List<TekstiKappaleViiteDto.Matala> getTekstiKappaleViiteOriginals(@P("opsId") Long opsId, Long viiteId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    <T> List<T> getTekstiKappaleViiteOriginals(@P("opsId") Long opsId, Long viiteId, Class<T> clazz);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Integer alaOpetussuunnitelmaLukumaaraTekstikappaleTunniste(Long opsId, UUID tunniste);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
