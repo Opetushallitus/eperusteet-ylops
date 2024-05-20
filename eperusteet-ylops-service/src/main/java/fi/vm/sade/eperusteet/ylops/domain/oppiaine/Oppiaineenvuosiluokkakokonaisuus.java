@@ -145,16 +145,24 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
                 .findAny();
     }
 
-    static Oppiaineenvuosiluokkakokonaisuus copyOf(final Oppiaineenvuosiluokkakokonaisuus other, Map<Long, Opetuksenkohdealue> kohdealueet) {
+    static Oppiaineenvuosiluokkakokonaisuus copyOf(final Oppiaineenvuosiluokkakokonaisuus other, Map<Long, Opetuksenkohdealue> kohdealueet, boolean kopioiTekstit) {
         Oppiaineenvuosiluokkakokonaisuus ovk = new Oppiaineenvuosiluokkakokonaisuus();
 
         ovk.setVuosiluokkakokonaisuus(other.getVuosiluokkakokonaisuus());
-        ovk.setArviointi(Tekstiosa.copyOf(other.getArviointi()));
-        ovk.setOhjaus(Tekstiosa.copyOf(other.getOhjaus()));
-        ovk.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
-        ovk.setTyotavat(Tekstiosa.copyOf(other.getTyotavat()));
-        ovk.setJnro(other.getJnro());
 
+        if (kopioiTekstit) {
+            ovk.setArviointi(Tekstiosa.copyOf(other.getArviointi()));
+            ovk.setOhjaus(Tekstiosa.copyOf(other.getOhjaus()));
+            ovk.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
+            ovk.setTyotavat(Tekstiosa.copyOf(other.getTyotavat()));
+        } else {
+            ovk.setArviointi(new Tekstiosa());
+            ovk.setOhjaus(new Tekstiosa());
+            ovk.setTehtava(new Tekstiosa());
+            ovk.setTyotavat(new Tekstiosa());
+        }
+
+        ovk.setJnro(other.getJnro());
         other.getVuosiluokat().forEach(vl -> ovk.addVuosiluokka(Oppiaineenvuosiluokka.copyOf(vl, kohdealueet)));
 
         return ovk;

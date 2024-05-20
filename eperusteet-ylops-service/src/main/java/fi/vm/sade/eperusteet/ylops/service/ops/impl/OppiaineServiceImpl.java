@@ -36,6 +36,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiainePalautettuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
@@ -212,7 +213,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     @Transactional(readOnly = true)
-    public OppiaineDto getPohjanVastaavaOppiaine(Long opsId, Long id) {
+    public <T> T getPohjanVastaavaOppiaine(Long opsId, Long id, Class<T> clazz) {
         Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
         Oppiaine oppiaine = oppiaineet.findOne(id);
 
@@ -221,7 +222,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         Oppiaine pohjanOppiaine = oppiaineet.findOneByOpsIdAndTunniste(opetussuunnitelma.getPohja().getId(), oppiaine.getTunniste());
-        return mapper.map(pohjanOppiaine, OppiaineDto.class);
+        if (pohjanOppiaine == null) {
+            pohjanOppiaine = oppiaineet.findOppimaaraByOpsIdAndTunniste(opetussuunnitelma.getPohja().getId(), oppiaine.getNimi().getTunniste());
+        }
+
+        return mapper.map(pohjanOppiaine, clazz);
     }
 
 
@@ -283,6 +288,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         assertExists(uusi, "Pyydettyä kielitarjonnan oppiainetta ei ole");
+        addOppiaineToChildOpetussuunnitelmat(opsId, uusi, parent.getTunniste());
         return mapper.map(uusi, OppiaineDto.class);
     }
 
@@ -385,15 +391,33 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
         oppiaine = oppiaineet.save(oppiaine);
-        addValinnainenToChildOpetussuunnitelmat(opsId, oppiaine);
+        addOppiaineToChildOpetussuunnitelmat(opsId, oppiaine);
         return mapper.map(oppiaine, OppiaineDto.class);
     }
 
-    private void addValinnainenToChildOpetussuunnitelmat(Long opetussuunnitelmaId, Oppiaine oppiaine) {
+    private void addOppiaineToChildOpetussuunnitelmat(Long opetussuunnitelmaId, Oppiaine oppiaine) {
+        addOppiaineToChildOpetussuunnitelmat(opetussuunnitelmaId, oppiaine, null);
+    }
+
+    private void addOppiaineToChildOpetussuunnitelmat(Long opetussuunnitelmaId, Oppiaine oppiaine, UUID parentOppiaineTunniste) {
         opetussuunnitelmaRepository.findAllByPohjaId(opetussuunnitelmaId).forEach(opetussuunnitelma -> {
             Oppiaine newOppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
             newOppiaine.asetaPohjanOppiaine(oppiaine);
-            opetussuunnitelma.addOppiaine(newOppiaine);
+            newOppiaine.setLiittyvaOppiaine(Optional.ofNullable(oppiaine.getLiittyvaOppiaine())
+                    .map(liittyva -> oppiaineet.findOneByOpsIdAndTunniste(opetussuunnitelma.getId(), liittyva.getTunniste())).orElse(null));
+
+            if (parentOppiaineTunniste == null) {
+                opetussuunnitelma.addOppiaine(newOppiaine);
+            } else {
+                Oppiaine parentOppiaine = oppiaineet.findOneByOpsIdAndTunniste(opetussuunnitelma.getId(), parentOppiaineTunniste);
+                Boolean isParentOma = oppiaineet.isOma(opetussuunnitelma.getId(), parentOppiaine.getId());
+
+                if (!isParentOma) {
+                    kopioiMuokattavaksi(opetussuunnitelma.getId(), parentOppiaine.getId(), true);
+                } else {
+                    parentOppiaine.addOppimaara(newOppiaine);
+                }
+            }
         });
     }
 
@@ -730,7 +754,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Oppiaine oppiaine = getOppiaine(opsId, id);
 
         if (oppiaine.getOppiaine() != null) {
-            throw new BusinessRuleViolationException("Oppimäärää ei voi kopioida");
+            Boolean isParentOma = oppiaineet.isOma(opsId, oppiaine.getOppiaine().getId());
+            if (!isParentOma) {
+                OpsOppiaineDto parentKopio = kopioiMuokattavaksi(opsId, oppiaine.getOppiaine().getId(), asetaPohjanOppiaine);
+                OppiaineSuppeaDto oppimaaraKopio = parentKopio.getOppiaine().getOppimaarat().stream()
+                        .filter(oppimaara -> oppimaara.getTunniste().equals(oppiaine.getTunniste())).findFirst().orElseThrow();
+                return getOpsOppiaine(opsId, oppimaaraKopio.getId(), null);
+            }
         }
 
         Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()

@@ -84,6 +84,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Setter
     private Oppiaine liittyvaOppiaine;
 
+    @Deprecated
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "pohjan_oppiaine_id")
     @Getter
@@ -451,6 +452,29 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
             to.setKieliKoodiArvo(other.getKieliKoodiArvo());
             to.setKieliKoodiUri(other.getKieliKoodiUri());
             to.setKieli(other.getKieli());
+
+            for (LukiokurssiTyyppi tyyppi : LukiokurssiTyyppi.values()) {
+                tyyppi.oppiaineKuvausCopier().copy(other, to);
+            }
+        };
+    }
+
+    public static Copier<Oppiaine> viitteellaCopier() {
+        return (other, to) -> {
+            to.setNimi(other.getNimi());
+            to.setTehtava(new Tekstiosa());
+            to.setTyyppi(other.getTyyppi());
+            to.setValinnainenTyyppi(other.getValinnainenTyyppi());
+            to.setKoodi(other.getKoodi());
+            to.setKoosteinen(other.isKoosteinen());
+            to.setKoodiArvo(other.getKoodiArvo());
+            to.setKoodiUri(other.getKoodiUri());
+            to.setTavoitteet(new Tekstiosa());
+            to.setArviointi(new Tekstiosa());
+            to.setKieliKoodiArvo(other.getKieliKoodiArvo());
+            to.setKieliKoodiUri(other.getKieliKoodiUri());
+            to.setKieli(other.getKieli());
+
             for (LukiokurssiTyyppi tyyppi : LukiokurssiTyyppi.values()) {
                 tyyppi.oppiaineKuvausCopier().copy(other, to);
             }
@@ -463,7 +487,19 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
                     .collect(Collectors.toMap(AbstractReferenceableEntity::getId, ka -> new Opetuksenkohdealue(ka.getNimi())));
             o.setKohdealueet(new HashSet<>(kohdealueet.values()));
             other.getVuosiluokkakokonaisuudet().forEach((vk -> {
-                Oppiaineenvuosiluokkakokonaisuus ovk = Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet);
+                Oppiaineenvuosiluokkakokonaisuus ovk = Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet, true);
+                o.addVuosiluokkaKokonaisuus(ovk);
+            }));
+        };
+    }
+
+    public static Copier<Oppiaine> perusopetusViitteellaCopier() {
+        return (other, o) -> {
+            Map<Long, Opetuksenkohdealue> kohdealueet = other.getKohdealueet().stream()
+                    .collect(Collectors.toMap(AbstractReferenceableEntity::getId, ka -> new Opetuksenkohdealue(ka.getNimi())));
+            o.setKohdealueet(new HashSet<>(kohdealueet.values()));
+            other.getVuosiluokkakokonaisuudet().forEach((vk -> {
+                Oppiaineenvuosiluokkakokonaisuus ovk = Oppiaineenvuosiluokkakokonaisuus.copyOf(vk, kohdealueet, false);
                 o.addVuosiluokkaKokonaisuus(ovk);
             }));
         };
