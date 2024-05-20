@@ -58,7 +58,7 @@ public class OppiaineController {
                 dto.getTavoitteet(), null, null, false);
     }
 
-    @RequestMapping(value = "/{id}/kielitarjonta", method = RequestMethod.POST)
+    @RequestMapping(value = "/{id}/oppimaara", method = RequestMethod.POST)
     public OppiaineDto addOppimaara(
             @PathVariable final Long opsId,
             @PathVariable final Long id,
@@ -79,7 +79,7 @@ public class OppiaineController {
             @PathVariable final Long opsId,
             @PathVariable final Long id
     ) {
-        return oppiaineService.getPohjanVastaavaOppiaine(opsId, id);
+        return oppiaineService.getPohjanVastaavaOppiaine(opsId, id, OppiaineDto.class);
     }
 
     @RequestMapping(value = "/{id}/versio/{versio}", method = RequestMethod.GET)

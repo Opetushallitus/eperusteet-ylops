@@ -4003,7 +4003,39 @@
         }
       }
     },
-    "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/kielitarjonta" : {
+    "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/muokattavakopio" : {
+      "post" : {
+        "tags" : [ "Oppiaineet" ],
+        "operationId" : "kopioiMuokattavaksi",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "asetaPohjanOppiaine",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UnwrappedOpsOppiaineDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/oppimaara" : {
       "post" : {
         "tags" : [ "Oppiaineet" ],
         "operationId" : "addOppimaara",
@@ -4032,38 +4064,6 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/OppiaineDto"
-            }
-          }
-        }
-      }
-    },
-    "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/muokattavakopio" : {
-      "post" : {
-        "tags" : [ "Oppiaineet" ],
-        "operationId" : "kopioiMuokattavaksi",
-        "parameters" : [ {
-          "name" : "opsId",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        }, {
-          "name" : "asetaPohjanOppiaine",
-          "in" : "query",
-          "required" : false,
-          "type" : "boolean"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/UnwrappedOpsOppiaineDto"
             }
           }
         }
@@ -5938,6 +5938,33 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/PerusteVuosiluokkakokonaisuusDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet/{tunniste}/pohja" : {
+      "get" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "getPohjanVuosiluokkakokonaisuus",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "tunniste",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UnwrappedOpsVuosiluokkakokonaisuusDto"
             }
           }
         }
@@ -10282,8 +10309,9 @@
             "$ref" : "#/definitions/OpsOppiaineDto"
           }
         },
-        "rakennePohjasta" : {
-          "type" : "boolean"
+        "luontityyppi" : {
+          "type" : "string",
+          "enum" : [ "KOPIO", "VIITTEILLA", "LEGACY" ]
         }
       }
     },
@@ -11032,12 +11060,23 @@
         },
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+>>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+<<<<<<< HEAD
 =======
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
@@ -11061,6 +11100,8 @@
           "type" : "integer",
           "format" : "int32"
         },
+=======
+>>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "empty" : {
           "type" : "boolean"
         }
@@ -11096,12 +11137,23 @@
         },
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+>>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+<<<<<<< HEAD
 =======
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
@@ -11125,6 +11177,8 @@
           "type" : "integer",
           "format" : "int32"
         },
+=======
+>>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "empty" : {
           "type" : "boolean"
         }
@@ -11160,12 +11214,23 @@
         },
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
+        "first" : {
+          "type" : "boolean"
+        },
+>>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+<<<<<<< HEAD
 =======
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
@@ -11189,6 +11254,8 @@
           "type" : "integer",
           "format" : "int32"
         },
+=======
+>>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "empty" : {
           "type" : "boolean"
         }
@@ -11204,6 +11271,7 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+<<<<<<< HEAD
         "unpaged" : {
           "type" : "boolean"
         },
@@ -11219,17 +11287,17 @@
         "paged" : {
           "type" : "boolean"
 =======
+=======
+>>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "unpaged" : {
           "type" : "boolean"
         },
-<<<<<<< HEAD
-        "paged" : {
-          "type" : "boolean"
-=======
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
->>>>>>> e9875f86 (EP-4217)
+        },
+        "paged" : {
+          "type" : "boolean"
         },
         "pageSize" : {
           "type" : "integer",

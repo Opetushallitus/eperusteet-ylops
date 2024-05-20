@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,6 +72,20 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
         final Vuosiluokkakokonaisuus vk = kokonaisuudet.findBy(opsId, kokonaisuusId);
         OpsVuosiluokkakokonaisuus ovk = new OpsVuosiluokkakokonaisuus(vk, isOma);
         return mapper.map(ovk, OpsVuosiluokkakokonaisuusDto.class);
+    }
+
+    @Override
+    public OpsVuosiluokkakokonaisuusDto getPohjanVuosiluokkakokonaisuus(Long opsId, UUID tunniste) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+
+        if (ops != null && ops.getPohja() != null) {
+            Vuosiluokkakokonaisuus pohjanVuosiluokkakokonaisuus = kokonaisuudet.findByOpetussuunnitelmaIdAndTunniste(ops.getPohja().getId(), tunniste);
+            if (pohjanVuosiluokkakokonaisuus != null) {
+                return mapper.map(new OpsVuosiluokkakokonaisuus(pohjanVuosiluokkakokonaisuus, false), OpsVuosiluokkakokonaisuusDto.class);
+            }
+        }
+
+        return null;
     }
 
     @Override

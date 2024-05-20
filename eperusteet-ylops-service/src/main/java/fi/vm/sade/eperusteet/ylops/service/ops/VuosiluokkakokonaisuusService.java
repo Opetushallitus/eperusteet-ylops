@@ -6,6 +6,8 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 
+import java.util.UUID;
+
 public interface VuosiluokkakokonaisuusService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
@@ -13,6 +15,9 @@ public interface VuosiluokkakokonaisuusService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpsVuosiluokkakokonaisuusDto get(@P("opsId") Long opsId, Long kokonaisuusId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OpsVuosiluokkakokonaisuusDto getPohjanVuosiluokkakokonaisuus(@P("opsId") Long opsId, UUID tunniste);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OpsVuosiluokkakokonaisuusDto update(@P("opsId") Long opsId, VuosiluokkakokonaisuusDto dto);
