@@ -133,7 +133,8 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
             assertThat(tkViitteet(ops1)).hasSize(32);
             assertThat(perusteTekstikappaleIdt(ops1)).hasSize(17);
-            assertThat(tekstikappaleviiteRepository.findOne(tk4.getId()).getOriginal().getId()).isEqualTo(tk3.getId());
+            assertThat(tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(ops1.getId(), tk4.getTekstiKappale().getTunniste().toString())).isNotNull();
+            assertThat(tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(pohjaOps.getId(), tk4.getTekstiKappale().getTunniste().toString())).isNotNull();
         }
 
         {
@@ -165,10 +166,10 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
         TekstiKappaleViite viite = tekstikappaleviiteRepository.findOne(perusteenTekstiDto.getId());
 
-        List<TekstiKappaleViite> viittaavat = tekstikappaleviiteRepository.findAllByOriginalId(perusteenTekstiDto.getId());
-        viittaavat.forEach(vierasViite -> {
-            vierasViite.updateOriginal(null);
-        });
+//        List<TekstiKappaleViite> viittaavat = tekstikappaleviiteRepository.findAllByOriginalId(perusteenTekstiDto.getId());
+//        viittaavat.forEach(vierasViite -> {
+//            vierasViite.updateOriginal(null);
+//        });
         viite.setTekstiKappale(null);
         viite.setVanhempi(null);
         tekstikappaleviiteRepository.delete(viite);
@@ -227,8 +228,8 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         assertThat(findTkNimi(ops1, "ops1 oma tekstikappale")).isNotNull();
 
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getTekstiKappale().getTeksti().getTeksti().get(Kieli.FI)).isEqualTo("ops2 teksti");
-        assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getOriginal()).isNotNull();
-        assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getOriginal().getTekstiKappale().getTeksti().getTeksti().get(Kieli.FI)).isEqualTo("ops1 teksti");
+        assertThat(findTkNimiOriginal(ops2, "Uudistuva lukiokoulutus")).isNotNull();
+        assertThat(findTkNimiOriginal(ops2, "Uudistuva lukiokoulutus").getTekstiKappale().getTeksti().getTeksti().get(Kieli.FI)).isEqualTo("ops1 teksti");
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getLapset()).hasSize(2);
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getLapset().get(0).getId()).isEqualTo(findTkNimi(ops2, "ops2.1 oma tekstikappale perusteen tekstikappaleen alla").getId());
         assertThat(findTkNimi(ops2, "Uudistuva lukiokoulutus").getLapset().get(1).getId()).isEqualTo(findTkNimi(ops2, "ops2.2 oma tekstikappale perusteen tekstikappaleen alla").getId());
@@ -336,6 +337,12 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
                 .filter(viite -> viite.getVanhempi() != null)
                 .filter(viite -> viite.getTekstiKappale().getNimi().getTeksti().get(Kieli.FI).equals(nimi))
                 .collect(Collectors.toList());
+
+    }
+
+    private TekstiKappaleViite findTkNimiOriginal(Opetussuunnitelma ops, String nimi) {
+        TekstiKappaleViite tk = findTkNimi(ops, nimi);
+        return tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(ops.getPohja().getId(), tk.getTekstiKappale().getTunniste().toString());
     }
 
     private List<Long> perusteTekstikappaleIdt(Opetussuunnitelma ops) {
@@ -379,7 +386,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
     private void setTekstikappaleOriginal(Long opsId, Long tkId, Long originalId) {
         TekstiKappaleViite viite = tekstikappaleviiteRepository.findOne(tkId);
         TekstiKappaleViite original = tekstikappaleviiteRepository.findOne(originalId);
-        viite.updateOriginal(original);
+//        viite.updateOriginal(original);
         tekstikappaleviiteRepository.save(viite);
     }
 }

@@ -36,6 +36,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -276,10 +277,10 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         }
 
         // Poistetaan viittaus poistettavaan tekstikappale viitteeseen
-        List<TekstiKappaleViite> viittaavat = tekstikappaleviiteRepository.findAllByOriginalId(viiteId);
-        viittaavat.forEach(vierasViite -> {
-            vierasViite.updateOriginal(null);
-        });
+//        List<TekstiKappaleViite> viittaavat = tekstikappaleviiteRepository.findAllByOriginalId(viiteId);
+//        viittaavat.forEach(vierasViite -> {
+//            vierasViite.updateOriginal(null);
+//        });
 
         tekstikappaleviiteRepository.lock(viite.getRoot());
         TekstiKappale tekstiKappale = viite.getTekstiKappale();
@@ -306,6 +307,11 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                             .mapToInt(viite -> 1)
                             .sum())
                 .sum();
+    }
+
+    @Override
+    public TekstiKappaleViiteDto.Matala getTekstiKappaleViiteByTunniste(@P("opsId") Long opsId, UUID tunniste) {
+        return mapper.map(tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(opsId, tunniste.toString()), TekstiKappaleViiteDto.Matala.class);
     }
 
     private void poistaTekstikappaleAlaOpetussuunnitelmista(Long opsId, UUID tunniste) {
@@ -404,21 +410,46 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Override
     public TekstiKappaleViiteDto.Matala getTekstiKappaleViiteOriginal(Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
-        return mapper.map(viite.getOriginal(), TekstiKappaleViiteDto.Matala.class);
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
+        if (opetussuunnitelma.getPohja() != null) {
+            TekstiKappaleViite pohjaViite = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(
+                    opetussuunnitelma.getPohja().getId(),
+                    viite.getTekstiKappale().getTunniste().toString());
+
+            if (pohjaViite != null) {
+                return mapper.map(pohjaViite, TekstiKappaleViiteDto.Matala.class);
+            }
+        }
+
+        return null;
     }
 
     @Override
     public List<TekstiKappaleViiteDto.Matala> getTekstiKappaleViiteOriginals(Long opsId, Long viiteId) {
         List<TekstiKappaleViiteDto.Matala> viiteList = new ArrayList<>();
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
 
         TekstiKappaleViite viite = findViite(opsId, viiteId);
-        TekstiKappaleViite viiteOriginal = viite.getOriginal();
+        if (opetussuunnitelma.getPohja() != null) {
+            TekstiKappaleViite viiteOriginal = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(
+                opetussuunnitelma.getPohja().getId(),
+                viite.getTekstiKappale().getTunniste().toString());
 
-        if (viiteOriginal != null && viiteOriginal.getOriginal() != null && viiteOriginal.isNaytaPohjanTeksti()) {
-            viiteList.add(mapper.map(viiteOriginal.getOriginal(), TekstiKappaleViiteDto.Matala.class));
+            if (viiteOriginal != null) {
+                viiteList.add(mapper.map(viiteOriginal, TekstiKappaleViiteDto.Matala.class));
+
+                if (viiteOriginal.isNaytaPohjanTeksti() && opetussuunnitelma.getPohja().getPohja() != null) {
+                    TekstiKappaleViite viiteOriginal2 = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(
+                        opetussuunnitelma.getPohja().getPohja().getId(),
+                        viite.getTekstiKappale().getTunniste().toString());
+
+                    if (viiteOriginal2 != null) {
+                        viiteList.add(mapper.map(viiteOriginal2, TekstiKappaleViiteDto.Matala.class));
+                    }
+                }
+            }
         }
 
-        viiteList.add(mapper.map(viiteOriginal, TekstiKappaleViiteDto.Matala.class));
         return viiteList;
     }
 

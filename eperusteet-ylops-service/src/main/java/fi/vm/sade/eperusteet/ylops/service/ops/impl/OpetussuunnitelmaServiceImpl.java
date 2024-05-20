@@ -1275,7 +1275,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         TekstiKappaleViite tkv = viiteRepository.save(new TekstiKappaleViite());
         tkv.setOmistussuhde(Omistussuhde.OMA);
         tkv.setLapset(new ArrayList<>());
-        tkv.updateOriginal(vanhaTkv);
+//        tkv.updateOriginal(vanhaTkv);
         tkv.setVanhempi(parent);
         tkv.setPakollinen(vanhaTkv.isPakollinen());
         tkv.setNaytaPerusteenTeksti(vanhaTkv.isNaytaPerusteenTeksti());

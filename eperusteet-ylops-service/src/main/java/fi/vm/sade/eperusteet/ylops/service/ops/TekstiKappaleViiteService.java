@@ -70,4 +70,7 @@ public interface TekstiKappaleViiteService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Integer alaOpetussuunnitelmaLukumaaraTekstikappaleTunniste(Long opsId, UUID tunniste);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    TekstiKappaleViiteDto.Matala getTekstiKappaleViiteByTunniste(@P("opsId") Long opsId, UUID tunniste);
 }
