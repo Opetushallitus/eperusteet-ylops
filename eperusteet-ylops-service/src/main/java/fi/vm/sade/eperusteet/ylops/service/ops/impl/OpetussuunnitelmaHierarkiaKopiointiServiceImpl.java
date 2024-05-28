@@ -7,6 +7,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaHierarkiaKopiointiService;
+import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +38,10 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
         Map<Long, List<TekstiKappaleViite>> omat = new HashMap<>();
         Map<Long, TekstiKappaleViite> perusteen = new HashMap<>();
         List<TekstiKappaleViite> perusteettomat = new ArrayList<>();
-        collectTekstit(ops.getTekstit(), omat, perusteen, perusteettomat);
+        Set<UUID> pohjanTekstikappaleTunnisteet = CollectionUtil.treeToStream(pohja.getTekstit(), TekstiKappaleViite::getLapset)
+                .filter(tkv -> tkv.getTekstiKappale() != null)
+                .map(tkv -> tkv.getTekstiKappale().getTunniste()).collect(Collectors.toSet());
+        collectTekstit(ops.getTekstit(), omat, perusteen, perusteettomat, pohjanTekstikappaleTunnisteet);
 
         ops.setTekstit(tekstikappaleviiteRepository.save(new TekstiKappaleViite()));
         kopioiHierarkia(pohja.getTekstit(), ops.getTekstit(), omat, perusteen);
@@ -62,14 +68,13 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
     private void collectTekstit(TekstiKappaleViite viite,
                                 Map<Long, List<TekstiKappaleViite>> omat,
                                 Map<Long, TekstiKappaleViite> perusteen,
-                                List<TekstiKappaleViite> perusteettomat) {
+                                List<TekstiKappaleViite> perusteettomat,
+                                Set<UUID> pohjanTekstikappaleTunnisteet) {
         if (viite.getTekstiKappale() != null) {
-            if (viite.getPerusteTekstikappaleId() == null) {
+            if (viite.getPerusteTekstikappaleId() == null && !pohjanTekstikappaleTunnisteet.contains(viite.getTekstiKappale().getTunniste())) {
                 Long perusteenTekstiId = findPerusteenTekstiId(viite);
                 if (perusteenTekstiId != null) {
-                    if (omat.get(perusteenTekstiId) == null) {
-                        omat.put(perusteenTekstiId, new ArrayList<>());
-                    }
+                    omat.computeIfAbsent(perusteenTekstiId, k -> new ArrayList<>());
                     omat.get(perusteenTekstiId).add(viite);
                 } else {
                     perusteettomat.add(viite);
@@ -82,7 +87,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
         }
 
         for (TekstiKappaleViite lapsi : viite.getLapset()) {
-            collectTekstit(lapsi, omat, perusteen, perusteettomat);
+            collectTekstit(lapsi, omat, perusteen, perusteettomat, pohjanTekstikappaleTunnisteet);
         }
     }
 
