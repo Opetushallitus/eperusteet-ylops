@@ -261,6 +261,24 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
     }
 
     @Test
+    public void pohjanTekstiOpsissaTest() {
+        Opetussuunnitelma ops1 = opetussuunnitelmaRepository.getOne(ops1Id);
+        TekstiKappaleViiteDto.Matala tk21 = addTekstikappaleLapsi("ops1 oma tekstikappale juuressa", ops1Id, ops1.getTekstit().getLapset().get(0).getId());
+
+        assertThat(ops1.getTekstit().getLapset().get(0).getLapset()).hasSize(5);
+
+        Opetussuunnitelma uusiOps = opetussuunnitelmaRepository.getOne(createOps(ops1Id));
+        assertThat(ops1.getTekstit().getLapset().get(0).getLapset()).hasSize(5);
+        assertThat(findTkNimis(uusiOps, "ops1 oma tekstikappale juuressa")).hasSize(1);
+
+        opsPohjaSynkronointi.syncTekstitPohjasta(uusiOps.getId());
+
+        assertThat(findTkNimis(uusiOps, "ops1 oma tekstikappale juuressa")).hasSize(1);
+        assertThat(ops1.getTekstit().getLapset().get(0).getLapset()).hasSize(5);
+
+    }
+
+    @Test
     public void lukumaaratSamat() {
         assertThat(opsPohjaSynkronointi.opetussuunnitelmanPohjallaUusiaTeksteja(ops2Id)).isFalse();
 
@@ -299,6 +317,13 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
                 .filter(viite -> viite.getTekstiKappale().getNimi().getTeksti().get(Kieli.FI).equals(nimi))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private List<TekstiKappaleViite> findTkNimis(Opetussuunnitelma ops, String nimi) {
+        return CollectionUtil.treeToStream(ops.getTekstit(), TekstiKappaleViite::getLapset)
+                .filter(viite -> viite.getVanhempi() != null)
+                .filter(viite -> viite.getTekstiKappale().getNimi().getTeksti().get(Kieli.FI).equals(nimi))
+                .collect(Collectors.toList());
     }
 
     private List<Long> perusteTekstikappaleIdt(Opetussuunnitelma ops) {
