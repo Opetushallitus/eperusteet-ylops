@@ -23,7 +23,6 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaOrganisaatioTaso;
 import fi.vm.sade.eperusteet.ylops.service.ops.Identifiable;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsIdentifiable;
 import lombok.Getter;
@@ -267,11 +266,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY)
     @Getter
     private List<OpetussuunnitelmanJulkaisu> julkaisut;
-
-    @Getter
-    @Setter
-    @Enumerated(EnumType.STRING)
-    private OpetussuunnitelmaOrganisaatioTaso organisaatiotaso;
 
     public void addVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vk) {
         vuosiluokkakokonaisuudet.add(new OpsVuosiluokkakokonaisuus(vk, true));

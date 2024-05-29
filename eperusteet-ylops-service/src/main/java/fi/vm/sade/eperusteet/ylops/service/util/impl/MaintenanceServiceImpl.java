@@ -87,15 +87,6 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         log.info("julkaisut tehty");
     }
 
-    @Override
-    public void paivitaOpetussuunnitelmaOrganisaatiotasot() {
-        opetussuunnitelmaService.getAdminList().forEach(opetussuunnitelmaDto -> {
-            Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opetussuunnitelmaDto.getId());
-            opetussuunnitelma.setOrganisaatiotaso(opetussuunnitelmaService.paatteleOpetussuunnitelmaOrganisaatioTaso(opetussuunnitelmaDto.getOrganisaatiot()));
-            opetussuunnitelmaRepository.save(opetussuunnitelma);
-        });
-    }
-
     private void teeJulkaisu(String username, Long opsId) {
         TransactionTemplate template = new TransactionTemplate(ptm);
         template.execute(status -> {
