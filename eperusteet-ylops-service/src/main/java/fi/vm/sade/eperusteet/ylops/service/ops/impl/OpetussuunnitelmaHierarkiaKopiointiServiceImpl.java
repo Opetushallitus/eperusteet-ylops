@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
@@ -38,13 +39,16 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
         Map<Long, List<TekstiKappaleViite>> omat = new HashMap<>();
         Map<Long, TekstiKappaleViite> perusteen = new HashMap<>();
         List<TekstiKappaleViite> perusteettomat = new ArrayList<>();
+        Map<UUID, TekstiKappale> uuidOpsTekstikappaleMap = CollectionUtil.treeToStream(ops.getTekstit(), TekstiKappaleViite::getLapset)
+                .filter(tkv -> tkv.getTekstiKappale() != null)
+                .collect(Collectors.toMap(tkv -> tkv.getTekstiKappale().getTunniste(), TekstiKappaleViite::getTekstiKappale));
         Set<UUID> pohjanTekstikappaleTunnisteet = CollectionUtil.treeToStream(pohja.getTekstit(), TekstiKappaleViite::getLapset)
                 .filter(tkv -> tkv.getTekstiKappale() != null)
                 .map(tkv -> tkv.getTekstiKappale().getTunniste()).collect(Collectors.toSet());
         collectTekstit(ops.getTekstit(), omat, perusteen, perusteettomat, pohjanTekstikappaleTunnisteet);
 
         ops.setTekstit(tekstikappaleviiteRepository.save(new TekstiKappaleViite()));
-        kopioiHierarkia(pohja.getTekstit(), ops.getTekstit(), omat, perusteen);
+        kopioiHierarkia(pohja.getTekstit(), ops.getTekstit(), omat, perusteen, uuidOpsTekstikappaleMap);
 
         perusteettomat.addAll(omat.values().stream().flatMap(x -> x.stream()).collect(Collectors.toList()));
         for (TekstiKappaleViite vanhaOma : perusteettomat) {
@@ -94,7 +98,8 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
     private void kopioiHierarkia(TekstiKappaleViite pohjanViite,
                                  TekstiKappaleViite opsViite,
                                  Map<Long, List<TekstiKappaleViite>> omat,
-                                 Map<Long, TekstiKappaleViite> perusteen) {
+                                 Map<Long, TekstiKappaleViite> perusteen,
+                                 Map<UUID, TekstiKappale> uuidOpsTekstikappaleMap) {
         List<TekstiKappaleViite> pohjanLapset = pohjanViite.getLapset();
         if (pohjanLapset != null) {
             pohjanLapset.stream()
@@ -105,7 +110,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
                         tkv.setOmistussuhde(pohjanTekstikappaleViite.getOmistussuhde());
                         tkv.setTekstiKappale(tekstiKappaleRepository.save(tkv.getTekstiKappale()));
                         opsViite.getLapset().add(tkv);
-                        kopioiHierarkia(pohjanTekstikappaleViite, tkv, omat, perusteen);
+                        kopioiHierarkia(pohjanTekstikappaleViite, tkv, omat, perusteen, uuidOpsTekstikappaleMap);
 
                         if (tkv.getPerusteTekstikappaleId() != null) {
                             // Perusteen tekstin paikallinen tarkennus
@@ -125,6 +130,8 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
                                 });
                                 omat.remove(tkv.getPerusteTekstikappaleId());
                             }
+                        } else if (uuidOpsTekstikappaleMap.containsKey(tkv.getTekstiKappale().getTunniste())) {
+                            tkv.setTekstiKappale(tekstiKappaleRepository.save(uuidOpsTekstikappaleMap.get(tkv.getTekstiKappale().getTunniste()).copy()));
                         }
                     });
         }
