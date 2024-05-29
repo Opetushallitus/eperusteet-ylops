@@ -263,7 +263,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
     @Test
     public void pohjanTekstiOpsissaTest() {
         Opetussuunnitelma ops1 = opetussuunnitelmaRepository.getOne(ops1Id);
-        TekstiKappaleViiteDto.Matala tk21 = addTekstikappaleLapsi("ops1 oma tekstikappale juuressa", ops1Id, ops1.getTekstit().getLapset().get(0).getId());
+        addTekstikappaleLapsi("ops1 oma tekstikappale juuressa", ops1Id, ops1.getTekstit().getLapset().get(0).getId());
 
         assertThat(ops1.getTekstit().getLapset().get(0).getLapset()).hasSize(5);
 
@@ -271,10 +271,20 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         assertThat(ops1.getTekstit().getLapset().get(0).getLapset()).hasSize(5);
         assertThat(findTkNimis(uusiOps, "ops1 oma tekstikappale juuressa")).hasSize(1);
 
+        TekstiKappaleViiteDto.Matala ops1maTk = tekstiKappaleViiteService.getTekstiKappaleViite(uusiOps.getId(), findTkNimi(uusiOps, "ops1 oma tekstikappale juuressa").getId());
+        ops1maTk.getTekstiKappale().setTeksti(lt("uusiOps teksti"));
+        tekstiKappaleViiteService.updateTekstiKappaleViite(uusiOps.getId(), ops1maTk.getId(), ops1maTk);
+
+        addTekstikappaleLapsi("uusiOps oma tekstikappale juuressa", uusiOps.getId(), uusiOps.getTekstit().getLapset().get(0).getId());
+
+        assertThat(uusiOps.getTekstit().getLapset().get(0).getLapset()).hasSize(6);
+
         opsPohjaSynkronointi.syncTekstitPohjasta(uusiOps.getId());
 
+        assertThat(uusiOps.getTekstit().getLapset().get(0).getLapset()).hasSize(6);
         assertThat(findTkNimis(uusiOps, "ops1 oma tekstikappale juuressa")).hasSize(1);
-        assertThat(ops1.getTekstit().getLapset().get(0).getLapset()).hasSize(5);
+        assertThat(findTkNimis(uusiOps, "uusiOps oma tekstikappale juuressa")).hasSize(1);
+        assertThat(findTkNimi(uusiOps, "ops1 oma tekstikappale juuressa").getTekstiKappale().getTeksti().getTeksti().get(Kieli.FI)).isEqualTo("uusiOps teksti");
 
     }
 
