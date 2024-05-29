@@ -10,7 +10,4 @@ public interface MaintenanceService {
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     void teeJulkaisut(boolean julkaiseKaikki, Set<KoulutusTyyppi> koulutustyypit);
 
-    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
-    void paivitaOpetussuunnitelmaOrganisaatiotasot();
-
 }
