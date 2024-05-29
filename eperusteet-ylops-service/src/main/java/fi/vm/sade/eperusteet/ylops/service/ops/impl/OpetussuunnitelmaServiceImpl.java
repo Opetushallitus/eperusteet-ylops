@@ -64,7 +64,6 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaOrganisaatioTaso;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaQuery;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaTilastoDto;
@@ -1035,8 +1034,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     "opetussuunnitelman organisaatioissa");
         }
 
-        ops.setOrganisaatiotaso(paatteleOpetussuunnitelmaOrganisaatioTaso(ops));
-
         Opetussuunnitelma pohja = ops.getPohja();
 
         if (pohja == null) {
@@ -1103,32 +1100,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         return mapper.map(ops, OpetussuunnitelmaDto.class);
-    }
-
-    private OpetussuunnitelmaOrganisaatioTaso paatteleOpetussuunnitelmaOrganisaatioTaso(Opetussuunnitelma opetussuunnitelma) {
-        OpetussuunnitelmaBaseDto opetussuunnitelmaBaseDto = mapper.map(opetussuunnitelma, OpetussuunnitelmaBaseDto.class);
-        fetchOrganisaatioNimet(opetussuunnitelmaBaseDto);
-        return paatteleOpetussuunnitelmaOrganisaatioTaso(opetussuunnitelmaBaseDto.getOrganisaatiot());
-    }
-
-    @Override
-    public OpetussuunnitelmaOrganisaatioTaso paatteleOpetussuunnitelmaOrganisaatioTaso(Set<OrganisaatioDto> organisaatiot) {
-        Set<OrganisaatioDto> oppilaitokset = organisaatiot.stream()
-                .filter(org -> org.getTyypit().contains(OrganisaatioTyyppi.OPPILAITOS))
-                .collect(Collectors.toUnmodifiableSet());
-        Set<OrganisaatioDto> kunnat = organisaatiot.stream()
-                .filter(org -> org.getTyypit().contains(OrganisaatioTyyppi.KUNTA))
-                .collect(Collectors.toUnmodifiableSet());
-
-        if (oppilaitokset.size() == 1) {
-            return OpetussuunnitelmaOrganisaatioTaso.OPPILAITOS;
-        } else if (kunnat.size() == 1) {
-            return OpetussuunnitelmaOrganisaatioTaso.KUNTA;
-        } else if(kunnat.size() > 1) {
-            return OpetussuunnitelmaOrganisaatioTaso.SEUTUKUNTA;
-        }
-
-        return OpetussuunnitelmaOrganisaatioTaso.MUU;
     }
 
     private void checkValidPohja(Opetussuunnitelma ops) {
