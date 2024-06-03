@@ -104,7 +104,7 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
 
     @Override
     public void removeSisaltoalueetInKeskeinensisaltoalueet(
-            Long opsId,
+            Opetussuunnitelma opetussuunnitelma,
             Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus,
             boolean clearSisaltoalueet
     ) {
