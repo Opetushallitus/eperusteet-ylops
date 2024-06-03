@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustieto;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
@@ -57,8 +58,8 @@ public class OpetussuunnitelmanMuokkaustietoServiceImpl implements Opetussuunnit
     }
 
     @Override
-    public void addOpsMuokkausTietoPermissionSkip(Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma) {
-        addOpsMuokkausTieto(opsId, historiaTapahtuma, muokkausTapahtuma);
+    public void addOpsMuokkausTieto(Opetussuunnitelma opetussuunnitelma, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma) {
+        addOpsMuokkausTieto(opetussuunnitelma.getId(), historiaTapahtuma, muokkausTapahtuma);
     }
 
     @Override

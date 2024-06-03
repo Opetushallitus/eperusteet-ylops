@@ -289,7 +289,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             tekstiKappaleService.removeTekstiKappaleFromOps(opsId, tekstiKappale.getId());
         }
 
-        muokkaustietoService.addOpsMuokkausTietoPermissionSkip(opsId, new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
+        muokkaustietoService.addOpsMuokkausTieto(opetussuunnitelmaRepository.findOne(opsId), new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
 
         viite.setTekstiKappale(null);
         viite.getVanhempi().getLapset().remove(viite);

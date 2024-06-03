@@ -1013,7 +1013,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("toteutustyyppi-ei-tuettu");
         }
 
-        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit());
+        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA);
     }
 
     @Override
@@ -1103,10 +1103,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void checkValidPohja(Opetussuunnitelma ops) {
-        if(ops.getPohja().getPohja() == null) {
-            if (!Tila.VALMIS.equals(ops.getPohja().getTila()) & !Tila.JULKAISTU.equals(ops.getPohja().getTila())) {
-                throw new BusinessRuleViolationException("pohjan-pitaa-olla-julkaistu");
-            }
+        if(ops.getPohja().getTyyppi().equals(Tyyppi.POHJA) && !Tila.VALMIS.equals(ops.getPohja().getTila()) & !Tila.JULKAISTU.equals(ops.getPohja().getTila())) {
+            throw new BusinessRuleViolationException("pohjan-pitaa-olla-julkaistu");
         }
     }
 
@@ -1127,7 +1125,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         boolean onPohjastaTehtyPohja = isPohjastaTehtyPohja(pohja);
         boolean teeKopio = luontityyppi != OpetussuunnitelmaLuontiDto.Luontityyppi.LEGACY;
-        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit());
+        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), luontityyppi);
 
         Copier<Oppiaine> oppiaineCopier = Copier.nothing();
 
@@ -1218,19 +1216,19 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         ).orElse(emptyList()));
     }
 
-    private void kasitteleTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent) {
+    private void kasitteleTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent, OpetussuunnitelmaLuontiDto.Luontityyppi luontityyppi) {
         List<TekstiKappaleViite> vanhaLapset = vanha.getLapset();
         if (vanhaLapset != null) {
             vanhaLapset.stream()
                     .filter(vanhaTkv -> vanhaTkv.getTekstiKappale() != null)
                     .forEach(vanhaTkv -> {
-                        TekstiKappaleViite tkv = copyTekstikappaleViiteFromOpsToOps(parent, vanhaTkv);
-                        kasitteleTekstit(vanhaTkv, tkv);
+                        TekstiKappaleViite tkv = copyTekstikappaleViiteFromOpsToOps(parent, vanhaTkv, luontityyppi);
+                        kasitteleTekstit(vanhaTkv, tkv, luontityyppi);
                     });
         }
     }
 
-    private TekstiKappaleViite copyTekstikappaleViiteFromOpsToOps(TekstiKappaleViite parent, TekstiKappaleViite vanhaTkv) {
+    private TekstiKappaleViite copyTekstikappaleViiteFromOpsToOps(TekstiKappaleViite parent, TekstiKappaleViite vanhaTkv, OpetussuunnitelmaLuontiDto.Luontityyppi luontityyppi) {
         TekstiKappaleViite tkv = viiteRepository.save(new TekstiKappaleViite());
         tkv.setOmistussuhde(Omistussuhde.OMA);
         tkv.setLapset(new ArrayList<>());
@@ -1240,7 +1238,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         tkv.setPerusteTekstikappaleId(vanhaTkv.getPerusteTekstikappaleId());
         tkv.setLiite(vanhaTkv.isLiite());
         TekstiKappale copy = vanhaTkv.getTekstiKappale().copy();
-        copy.setTeksti(null);
+        if (luontityyppi.equals(OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA)) {
+            copy.setTeksti(null);
+        }
         copy = tekstiKappaleRepository.save(copy);
         tkv.setTekstiKappale(copy);
         parent.getLapset().add(tkv);
@@ -1991,12 +1991,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
             Optional<TekstiKappaleViite> luotuViite = Optional.empty();
             if (juuritaso || parentTunniste.isEmpty() || parentViite.isEmpty()) {
-                luotuViite = Optional.of(copyTekstikappaleViiteFromOpsToOps(opetussuunnitelma.getTekstit(), tekstiKappaleViite));
+                luotuViite = Optional.of(copyTekstikappaleViiteFromOpsToOps(opetussuunnitelma.getTekstit(), tekstiKappaleViite, OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA));
             } else if (parentViite.isPresent()) {
-                luotuViite = Optional.of(copyTekstikappaleViiteFromOpsToOps(parentViite.get(), tekstiKappaleViite));
+                luotuViite = Optional.of(copyTekstikappaleViiteFromOpsToOps(parentViite.get(), tekstiKappaleViite, OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA));
             }
 
-            luotuViite.ifPresent(kappaleViite -> muokkaustietoService.addOpsMuokkausTietoPermissionSkip(opetussuunnitelma.getId(), kappaleViite, MuokkausTapahtuma.LUONTI));
+            luotuViite.ifPresent(kappaleViite -> muokkaustietoService.addOpsMuokkausTieto(opetussuunnitelma, kappaleViite, MuokkausTapahtuma.LUONTI));
 
         });
 
