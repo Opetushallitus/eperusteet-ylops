@@ -1866,7 +1866,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Opetussuunnitelman tyyppiä ei voi vaihtaa");
         }
 
-        // Ei sallita kieli ja vuoluokkakokonaisuuksien muutoksia kuin luonnostilassa
+        // Ei sallita vuoluokkakokonaisuuksien muutoksia kuin luonnostilassa
         if (opetussuunnitelmaDto.getTila() != Tila.LUONNOS) {
             if (!opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream()
                     .map(vlk -> vlk.getVuosiluokkakokonaisuus().getId())
@@ -1875,11 +1875,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                             .map(vlk -> vlk.getVuosiluokkakokonaisuus().getId())
                             .collect(Collectors.toSet()))) {
                 throw new BusinessRuleViolationException("Opetussuunnitelman vuosiluokkakokonaisuuksia ei voi vaihtaa kuin luonnoksessa");
-            }
-
-            if (!new HashSet<>(opetussuunnitelmaDto.getJulkaisukielet())
-                    .equals(new HashSet<>(ops.getJulkaisukielet()))) {
-                throw new BusinessRuleViolationException("Opetussuunnitelman julkaisukieliä ei voi vaihtaa kuin luonnoksessa");
             }
         }
 
