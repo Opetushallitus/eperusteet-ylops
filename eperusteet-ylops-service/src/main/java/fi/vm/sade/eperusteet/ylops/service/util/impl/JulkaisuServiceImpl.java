@@ -204,24 +204,20 @@ public class JulkaisuServiceImpl implements JulkaisuService {
                 throw new BusinessRuleViolationException("opetussuunnitelma-ei-validi");
             };
 
+            Date julkaisuaika = new Date();
             OpetussuunnitelmanJulkaisu julkaisu = new OpetussuunnitelmanJulkaisu();
             julkaisu.setOpetussuunnitelma(opetussuunnitelma);
             julkaisu.setTiedote(mapper.map(julkaisuDto.getJulkaisutiedote(), LokalisoituTeksti.class));
             OpetussuunnitelmaExportDto opsData = opetussuunnitelmaService.getExportedOpetussuunnitelma(opsId);
-            opsData.setViimeisinJulkaisuAika(new Date());
+            opsData.setViimeisinJulkaisuAika(julkaisuaika);
 
             ObjectNode opsDataJson = (ObjectNode) jsonMapper.toJson(opsData);
             List<OpetussuunnitelmanJulkaisu> vanhatJulkaisut = julkaisuRepository.findAllByOpetussuunnitelma(opetussuunnitelma);
 
             Set<DokumenttiDto> dokumentit = opetussuunnitelma.getJulkaisukielet().stream().map(kieli -> {
                 DokumenttiDto dokumenttiDto = dokumenttiService.createDtoFor(opsId, kieli);
-                try {
-                    dokumenttiDto.setJulkaisuDokumentti(true);
-                    dokumenttiService.setStarted(dokumenttiDto);
-                    dokumenttiService.generateWithDto(dokumenttiDto);
-                } catch (DokumenttiException e) {
-                    log.error(e.getLocalizedMessage(), e.getCause());
-                }
+                dokumenttiDto.setJulkaisuDokumentti(true);
+                dokumenttiService.setStarted(dokumenttiDto);
                 return dokumenttiDto;
             }).collect(toSet());
 
@@ -230,7 +226,16 @@ public class JulkaisuServiceImpl implements JulkaisuService {
             julkaisu.setDokumentit(dokumentit.stream().map(DokumenttiDto::getId).collect(toSet()));
             julkaisu.setData(data);
             julkaisu.setRevision(vanhatJulkaisut.stream().mapToInt(OpetussuunnitelmanJulkaisu::getRevision).max().orElse(0) + 1);
+            julkaisu.setLuotu(julkaisuaika);
             julkaisu = julkaisuRepository.saveAndFlush(julkaisu);
+
+            dokumentit.forEach(dokumenttiDto -> {
+                try {
+                    dokumenttiService.generateWithDto(dokumenttiDto);
+                } catch (DokumenttiException e) {
+                    log.error(e.getLocalizedMessage(), e.getCause());
+                }
+            });
 
             muokkaustietoService.addOpsMuokkausTieto(opsId, opetussuunnitelma, MuokkausTapahtuma.JULKAISU);
 

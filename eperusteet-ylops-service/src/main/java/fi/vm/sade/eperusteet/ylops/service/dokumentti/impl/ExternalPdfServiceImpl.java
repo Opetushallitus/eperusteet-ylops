@@ -51,7 +51,6 @@ public class ExternalPdfServiceImpl implements ExternalPdfService {
 
     @Override
     public void generatePdf(DokumenttiDto dto) throws JsonProcessingException {
-
         OpetussuunnitelmaExportDto ops = null;
         DokumenttiDto viimeisinJulkaistuDokumentti = dokumenttiService.getJulkaistuDokumentti(dto.getOpsId(), dto.getKieli(), null);
         if (viimeisinJulkaistuDokumentti != null && viimeisinJulkaistuDokumentti.getId().equals(dto.getId())) {
