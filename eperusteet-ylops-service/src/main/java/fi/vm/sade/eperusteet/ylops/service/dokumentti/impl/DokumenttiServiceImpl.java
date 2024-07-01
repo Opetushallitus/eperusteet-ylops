@@ -78,6 +78,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Transactional(noRollbackFor = DokumenttiException.class)
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
         dto.setTila(DokumenttiTila.LUODAAN);
+        dokumenttiStateService.save(dto);
 
         try {
             externalPdfService.generatePdf(dto);
