@@ -10,7 +10,17 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.HashSet;
@@ -53,7 +63,9 @@ public class OpetussuunnitelmanJulkaisu extends AbstractReferenceableEntity {
 
     @PrePersist
     private void prepersist() {
-        luotu = new Date();
+        if (luotu == null) {
+            luotu = new Date();
+        }
         if (luoja == null) {
             luoja = SecurityUtil.getAuthenticatedPrincipal().getName();
         }
