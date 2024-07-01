@@ -41,7 +41,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
         List<TekstiKappaleViite> perusteettomat = new ArrayList<>();
         Map<UUID, TekstiKappale> uuidOpsTekstikappaleMap = CollectionUtil.treeToStream(ops.getTekstit(), TekstiKappaleViite::getLapset)
                 .filter(tkv -> tkv.getTekstiKappale() != null)
-                .collect(Collectors.toMap(tkv -> tkv.getTekstiKappale().getTunniste(), TekstiKappaleViite::getTekstiKappale));
+                .collect(Collectors.toMap(tkv -> tkv.getTekstiKappale().getTunniste(), TekstiKappaleViite::getTekstiKappale, (o1, o2) -> o1));
         Set<UUID> pohjanTekstikappaleTunnisteet = CollectionUtil.treeToStream(pohja.getTekstit(), TekstiKappaleViite::getLapset)
                 .filter(tkv -> tkv.getTekstiKappale() != null)
                 .map(tkv -> tkv.getTekstiKappale().getTunniste()).collect(Collectors.toSet());
