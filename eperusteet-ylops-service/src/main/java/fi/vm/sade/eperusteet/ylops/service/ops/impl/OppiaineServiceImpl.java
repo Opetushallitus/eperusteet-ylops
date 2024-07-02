@@ -4,6 +4,7 @@ import com.codepoetics.protonpack.StreamUtils;
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
@@ -35,6 +36,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiainePalautettuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
@@ -165,7 +167,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 .orElseThrow(() -> new BusinessRuleViolationException("Oppiainetta tai vuosiluokkakokonaisuutta ei ole perusteessa"));
 
         oppiaineet.lock(oppiaine);
-        updateVuosiluokkakokonaisuudenTavoitteet(opsId, ovk, pov, tavoitteet);
+        updateVuosiluokkakokonaisuudenTavoitteet(opsId, ovk, oppiaine, pov, tavoitteet);
 
     }
 
@@ -208,6 +210,21 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     public OpsOppiaineDto get(Long opsId, Long id) {
         return getOpsOppiaine(opsId, id, null);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public <T> T getPohjanVastaavaOppiaine(Long opsId, Long id, Class<T> clazz) {
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
+        Oppiaine oppiaine = oppiaineet.findOne(id);
+
+        if (opetussuunnitelma.getPohja() == null || !opetussuunnitelma.getPohja().getTyyppi().equals(Tyyppi.OPS)) {
+            return null;
+        }
+
+        Oppiaine pohjanOppiaine = findOppiaineOrOppimaaraByTunniste(opetussuunnitelma.getPohja().getId(), oppiaine);
+        return mapper.map(pohjanOppiaine, clazz);
+    }
+
 
     private OpsOppiaineDto getOpsOppiaine(Long opsId, Long id, Integer version) {
         Boolean isOma = oppiaineet.isOma(opsId, id);
@@ -267,6 +284,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         assertExists(uusi, "Pyydettyä kielitarjonnan oppiainetta ei ole");
+        addOppiaineToChildOpetussuunnitelmat(opsId, uusi, parent.getTunniste());
         return mapper.map(uusi, OppiaineDto.class);
     }
 
@@ -369,7 +387,34 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
         oppiaine = oppiaineet.save(oppiaine);
+        addOppiaineToChildOpetussuunnitelmat(opsId, oppiaine);
         return mapper.map(oppiaine, OppiaineDto.class);
+    }
+
+    private void addOppiaineToChildOpetussuunnitelmat(Long opetussuunnitelmaId, Oppiaine oppiaine) {
+        addOppiaineToChildOpetussuunnitelmat(opetussuunnitelmaId, oppiaine, null);
+    }
+
+    private void addOppiaineToChildOpetussuunnitelmat(Long opetussuunnitelmaId, Oppiaine oppiaine, UUID parentOppiaineTunniste) {
+        opetussuunnitelmaRepository.findAllByPohjaId(opetussuunnitelmaId).forEach(opetussuunnitelma -> {
+            Oppiaine newOppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
+            newOppiaine.asetaPohjanOppiaine(oppiaine);
+            newOppiaine.setLiittyvaOppiaine(Optional.ofNullable(oppiaine.getLiittyvaOppiaine())
+                    .map(liittyva -> oppiaineet.findOneByOpsIdAndTunniste(opetussuunnitelma.getId(), liittyva.getTunniste())).orElse(null));
+
+            if (parentOppiaineTunniste == null) {
+                opetussuunnitelma.addOppiaine(newOppiaine);
+            } else {
+                Oppiaine parentOppiaine = oppiaineet.findOneByOpsIdAndTunniste(opetussuunnitelma.getId(), parentOppiaineTunniste);
+                Boolean isParentOma = oppiaineet.isOma(opetussuunnitelma.getId(), parentOppiaine.getId());
+
+                if (!isParentOma) {
+                    kopioiMuokattavaksi(opetussuunnitelma.getId(), parentOppiaine.getId(), true);
+                } else {
+                    parentOppiaine.addOppimaara(newOppiaine);
+                }
+            }
+        });
     }
 
     private HashSet<Oppiaineenvuosiluokka> updateValinnainenVuosiluokat(
@@ -705,7 +750,13 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Oppiaine oppiaine = getOppiaine(opsId, id);
 
         if (oppiaine.getOppiaine() != null) {
-            throw new BusinessRuleViolationException("Oppimäärää ei voi kopioida");
+            Boolean isParentOma = oppiaineet.isOma(opsId, oppiaine.getOppiaine().getId());
+            if (!isParentOma) {
+                OpsOppiaineDto parentKopio = kopioiMuokattavaksi(opsId, oppiaine.getOppiaine().getId(), asetaPohjanOppiaine);
+                OppiaineSuppeaDto oppimaaraKopio = parentKopio.getOppiaine().getOppimaarat().stream()
+                        .filter(oppimaara -> oppimaara.getTunniste().equals(oppiaine.getTunniste())).findFirst().orElseThrow();
+                return getOpsOppiaine(opsId, oppimaaraKopio.getId(), null);
+            }
         }
 
         Set<OpsOppiaine> opsOppiaineet = ops.getOppiaineet().stream()
@@ -835,13 +886,20 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         oppiaine.getVuosiluokkakokonaisuudet().forEach(vuosiluokkakokonaisuus -> vuosiluokkakokonaisuusService
-                .removeSisaltoalueetInKeskeinensisaltoalueet(opsId, vuosiluokkakokonaisuus, true));
+                .removeSisaltoalueetInKeskeinensisaltoalueet(ops, vuosiluokkakokonaisuus, true));
 
         lukioOppiaineJarjestysRepository.deleteAll(lukioOppiaineJarjestysRepository
                 .findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
         oppiaineLukiokurssiRepository.deleteAll(oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, oppiaineId));
 
-        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.POISTO);
+        oppiaineet.findByPohjanOppiaine(oppiaine).forEach(pohjanOppiainettaKayttavaOppiaine -> {
+            pohjanOppiainettaKayttavaOppiaine.asetaPohjanOppiaine(null);
+            oppiaineet.save(pohjanOppiainettaKayttavaOppiaine);
+        });
+
+        poistaOppiaineAlaOpetussuunnitelmista(opsId, oppiaine);
+        muokkaustietoService.addOpsMuokkausTieto(ops, oppiaine, MuokkausTapahtuma.POISTO);
+
         PoistettuOppiaineDto poistettu = tallennaPoistettu(oppiaineId, ops, oppiaine);
 
         if (oppiaine.getOppiaine() != null) {
@@ -851,6 +909,23 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
 
         return poistettu;
+    }
+
+    private void poistaOppiaineAlaOpetussuunnitelmista(Long opsId, Oppiaine parentOpsOppiaine) {
+        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
+            Oppiaine oppiaine = findOppiaineOrOppimaaraByTunniste(opetussuunnitelma.getId(), parentOpsOppiaine);
+            if (oppiaine != null) {
+                delete(opetussuunnitelma.getId(), oppiaine.getId());
+            }
+        });
+    }
+
+    private Oppiaine findOppiaineOrOppimaaraByTunniste(Long opsId, Oppiaine vertailuOppiaine) {
+        Oppiaine oppiaine = oppiaineet.findOneByOpsIdAndTunniste(opsId, vertailuOppiaine.getTunniste());
+        if (oppiaine == null) {
+            oppiaine = oppiaineet.findOppimaaraByOpsIdAndTunniste(opsId, vertailuOppiaine.getNimi().getTunniste());
+        }
+        return oppiaine;
     }
 
     private void checkOppiaineDeleteIsAllowed(Long opsId, Long oppiaineId) {
@@ -994,6 +1069,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
+    @Deprecated
     public OpsOppiaineDto palautaYlempi(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
@@ -1129,15 +1205,16 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     private void updateVuosiluokkakokonaisuudenTavoitteet(
             Long opsId,
             Oppiaineenvuosiluokkakokonaisuus v,
-            PerusteOppiaineenVuosiluokkakokonaisuusDto vuosiluokkakokonaisuus,
+            Oppiaine oppiaine,
+            PerusteOppiaineenVuosiluokkakokonaisuusDto perusteenVuosiluokkakokonaisuus,
             Map<Vuosiluokka, Set<UUID>> tavoitteet
     ) {
 
-        if (!vuosiluokkakokonaisuus.getVuosiluokkaKokonaisuus().getVuosiluokat().containsAll(tavoitteet.keySet())) {
+        if (!perusteenVuosiluokkakokonaisuus.getVuosiluokkaKokonaisuus().getVuosiluokat().containsAll(tavoitteet.keySet())) {
             throw new BusinessRuleViolationException("Yksi tai useampi vuosiluokka ei kuulu tähän vuosiluokkakokonaisuuteen");
         }
 
-        vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(opsId, v, false);
+        vuosiluokkakokonaisuusService.removeSisaltoalueetInKeskeinensisaltoalueet(opetussuunnitelmaRepository.findOne(opsId), v, false);
 
         tavoitteet.entrySet().stream()
                 .filter(e -> v.getVuosiluokkakokonaisuus().getVuosiluokat().contains(e.getKey()))
@@ -1147,11 +1224,23 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                         v.addVuosiluokka(tmp);
                         return tmp;
                     });
-                    mergePerusteTavoitteet(ov, vuosiluokkakokonaisuus, e.getValue());
+                    mergePerusteTavoitteet(ov, perusteenVuosiluokkakokonaisuus, e.getValue());
                     if (ov.getTavoitteet().isEmpty()) {
                         v.removeVuosiluokka(ov);
                     }
                 });
+
+        paivitaAlaOpetussuunnitelmienOppiaineenVuosiluokkakokonaisuudenTavoitteet(opsId, oppiaine, v.getVuosiluokkakokonaisuus().getId(), perusteenVuosiluokkakokonaisuus, tavoitteet);
+    }
+
+    private void paivitaAlaOpetussuunnitelmienOppiaineenVuosiluokkakokonaisuudenTavoitteet(Long pohjaOpsId, Oppiaine pohjaOppiaine, UUID vuosiluokkakokonaisuusTunniste, PerusteOppiaineenVuosiluokkakokonaisuusDto perusteenVuosiluokkakokonaisuus, Map<Vuosiluokka, Set<UUID>> tavoitteet) {
+        opetussuunnitelmaRepository.findAllByPohjaId(pohjaOpsId).forEach(opetussuunnitelma -> {
+            Oppiaine oppiaine = findOppiaineOrOppimaaraByTunniste(opetussuunnitelma.getId(), pohjaOppiaine);
+            if (oppiaine != null) {
+                oppiaine.getVuosiluokkakokonaisuus(vuosiluokkakokonaisuusTunniste).ifPresent(oavlk -> updateVuosiluokkakokonaisuudenTavoitteet(opetussuunnitelma.getId(), oavlk, oppiaine, perusteenVuosiluokkakokonaisuus, tavoitteet));
+            }
+
+        });
     }
 
     private void mergePerusteTavoitteet(Oppiaineenvuosiluokka ov, PerusteOppiaineenVuosiluokkakokonaisuusDto pvk, Set<UUID> tavoiteIds) {
