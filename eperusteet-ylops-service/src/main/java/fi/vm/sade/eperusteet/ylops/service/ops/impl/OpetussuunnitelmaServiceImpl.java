@@ -109,6 +109,7 @@ import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
+import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaAsyncTekstitPohjastaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
@@ -282,6 +283,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private OppiaineRepository oppiaineRepository;
+
+    @Autowired
+    private OpetussuunnitelmaAsyncTekstitPohjastaService opetussuunnitelmaAsyncTekstitPohjastaService;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -2014,8 +2018,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public void syncTekstitPohjasta(Long id) {
-        dispatcher.get(OpsPohjaSynkronointi.class).syncTekstitPohjasta(id);
+    public void syncTekstitPohjasta(Long opsId) {
+        dispatcher.get(OpsPohjaSynkronointi.class).syncTekstitPohjasta(opsId);
+        opetussuunnitelmaAsyncTekstitPohjastaService.syncTekstitPohjastaKaikki(opsId);
     }
 
     @Override
