@@ -55,13 +55,13 @@ public class JulkaisuController {
     @RequestMapping(value = "/julkaisut", method = RequestMethod.GET)
     public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(
             @PathVariable final Long opsId) {
-        return julkaisuService.getJulkaisut(opsId);
+        return julkaisuService.getJulkaisutJaViimeisinStatus(opsId);
     }
 
-    @RequestMapping(value = "/julkaisut/kevyt", method = RequestMethod.GET)
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(
+    @RequestMapping(value = "/julkaisut/kaikki", method = RequestMethod.GET)
+    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKaikki(
             @PathVariable final Long opsId) {
-        return julkaisuService.getJulkaisutKevyt(opsId);
+        return julkaisuService.getJulkaisut(opsId);
     }
 
 }
