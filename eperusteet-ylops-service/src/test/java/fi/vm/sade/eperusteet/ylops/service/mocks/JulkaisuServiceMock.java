@@ -15,12 +15,12 @@ import java.util.List;
 @Profile("test")
 public class JulkaisuServiceMock implements JulkaisuService {
     @Override
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(Long opsId) {
+    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutJaViimeisinStatus(Long opsId) {
         return null;
     }
 
     @Override
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(Long opsId) {
+    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(Long opsId) {
         return null;
     }
 
