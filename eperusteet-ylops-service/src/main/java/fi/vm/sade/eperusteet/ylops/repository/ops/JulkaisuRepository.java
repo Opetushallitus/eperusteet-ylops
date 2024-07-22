@@ -2,7 +2,6 @@ package fi.vm.sade.eperusteet.ylops.repository.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaisuKevyt;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,9 +19,6 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
     long countByOpetussuunnitelmaId(Long id);
 
     OpetussuunnitelmanJulkaisu findFirstByOpetussuunnitelmaOrderByRevisionDesc(Opetussuunnitelma opetussuunnitelma);
-
-    @Query("SELECT julkaisu FROM OpetussuunnitelmanJulkaisu julkaisu WHERE julkaisu.opetussuunnitelma = :ops")
-    List<OpetussuunnitelmaJulkaisuKevyt> findKevytdataByOpetussuunnitelma(@Param("ops") Opetussuunnitelma ops);
 
     OpetussuunnitelmanJulkaisu findByOpetussuunnitelmaAndRevision(Opetussuunnitelma opetussuunnitelma, int revision);
 
