@@ -17,10 +17,13 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v3
 
-      - name: Set up Node 16
-        uses: actions/setup-node@v3
+      - name: Set up Node 21
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '21.7.3'
+          
+      - name: Enable corepack for nodejs
+        run: corepack enable    
 
       - name: Check if UI has same branch
         id: ui_branch_status
@@ -49,10 +52,10 @@ jobs:
           cd ../..
           echo "----------ui:n viimeisimman commitin sha----------"
           git rev-parse HEAD
-          yarn run build
+          yarn build
           
       - name: Upload eperusteet-ylops-ui
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: eperusteet-ylops-ui
           path: eperusteet-ylops-ui/dist/
@@ -62,16 +65,16 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
       - name: Download ui
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: eperusteet-ylops-ui
           path: eperusteet-ylops-service/src/main/resources/static/ui
           
       - name: Set up JDK 11
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '11'
           distribution: 'adopt'
@@ -95,7 +98,7 @@ jobs:
           ./cc-test-reporter format-coverage -t jacoco --add-prefix src/main/java/ ../../../target/jacoco/jacoco.xml
           ./cc-test-reporter upload-coverage  
       - name: Upload eperusteet-ylops-service-jar
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: eperusteet-ylops-service-jar
           path: eperusteet-ylops-service/target/eperusteet-ylops-service.jar
@@ -105,10 +108,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         
       - name: Download service-jar
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: eperusteet-ylops-service-jar
           
