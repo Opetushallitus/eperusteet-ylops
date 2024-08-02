@@ -548,10 +548,27 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         opetussuunnitelmaRepository.lock(ops);
+
+        if (!Optional.ofNullable(oppiaineDto.getLaajuus()).orElse("0").equals(Optional.ofNullable(oppiaine.getLaajuus()).orElse("0"))) {
+            paivitaAlaOpetussuunnitelmienOppiaineenlaajuus(opsId, oppiaine, oppiaineDto.getLaajuus());
+        }
+
         mapper.map(oppiaineDto, oppiaine);
         oppiaine = oppiaineet.save(oppiaine);
 
         return mapper.map(oppiaine, OppiaineDto.class);
+    }
+
+    private void paivitaAlaOpetussuunnitelmienOppiaineenlaajuus(Long opsId, Oppiaine parentOppiaine, String laajuus) {
+        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
+            Oppiaine oppiaine = findOppiaineOrOppimaaraByTunniste(opetussuunnitelma.getId(), parentOppiaine);
+            if (oppiaine != null) {
+                oppiaine.setLaajuus(laajuus);
+                oppiaineet.save(oppiaine);
+            }
+
+            paivitaAlaOpetussuunnitelmienOppiaineenlaajuus(opetussuunnitelma.getId(), parentOppiaine, laajuus);
+        });
     }
 
     private Oppiaine latestNotNull(Long oppiaineId, Date deleteTime) {
