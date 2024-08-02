@@ -1131,20 +1131,16 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         boolean teeKopio = luontityyppi != OpetussuunnitelmaLuontiDto.Luontityyppi.LEGACY;
         kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), luontityyppi);
 
-        Copier<Oppiaine> oppiaineCopier = Copier.nothing();
-
-        if (luontityyppi == OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO) {
-            oppiaineCopier = Oppiaine.basicCopier();
-        }
+        Copier<Oppiaine> oppiaineCopier = Oppiaine.basicCopier();
 
         if (luontityyppi == OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA) {
-            oppiaineCopier = Oppiaine.viitteellaCopier();
+            oppiaineCopier = oppiaineCopier.and(Oppiaine.viitteellaCopier());
         }
 
         if (luontityyppi == OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO) {
             oppiaineCopier = oppiaineCopier.and(Oppiaine.perusopetusCopier());
         } else if (luontityyppi == OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA) {
-            oppiaineCopier = oppiaineCopier.and(Oppiaine.perusopetusViitteellaCopier());
+            oppiaineCopier = oppiaineCopier.and(Oppiaine.perusopetusCopier(false));
         }
 
         final Copier<Oppiaine> oppiainePerusCopier = oppiaineCopier;
