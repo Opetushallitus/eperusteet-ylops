@@ -4,19 +4,19 @@ import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
 
 @Entity
 @Audited
@@ -40,6 +40,16 @@ public class Laajaalainenosaaminen extends AbstractReferenceableEntity {
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     @ValidHtml
     private LokalisoituTeksti kuvaus;
+
+    @Getter
+    @Setter
+    @Column(name = "nayta_perusteen_paatason_lao")
+    private boolean naytaPerusteenPaatasonLao = true;
+
+    @Getter
+    @Setter
+    @Column(name = "nayta_perusteen_vlk_tarkennettu_lao")
+    private boolean naytaPerusteenVlkTarkennettuLao = false;
 
     public Laajaalainenosaaminen() {
     }
