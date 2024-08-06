@@ -59,7 +59,7 @@ public class DokumenttiController {
         DokumenttiDto viimeisinJulkaistuDokumentti = dokumenttiService.getJulkaistuDokumentti(opsId, Kieli.of(kieli), null);
         if (viimeisinJulkaistuDokumentti != null && viimeisinJulkaistuDokumentti.getTila().equals(DokumenttiTila.EPAONNISTUI)) {
             dokumenttiService.setStarted(viimeisinJulkaistuDokumentti);
-            dokumenttiService.generateWithDto(viimeisinJulkaistuDokumentti);
+            dokumenttiService.generateWithDto(viimeisinJulkaistuDokumentti, opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId));
         }
 
         DokumenttiDto dto = dokumenttiService.createDtoFor(opsId, Kieli.of(kieli));
