@@ -216,7 +216,6 @@ public class JulkaisuServiceImpl implements JulkaisuService {
 
             Set<DokumenttiDto> dokumentit = opetussuunnitelma.getJulkaisukielet().stream().map(kieli -> {
                 DokumenttiDto dokumenttiDto = dokumenttiService.createDtoFor(opsId, kieli);
-                dokumenttiDto.setJulkaisuDokumentti(true);
                 dokumenttiService.setStarted(dokumenttiDto);
                 return dokumenttiDto;
             }).collect(toSet());
@@ -231,7 +230,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
 
             dokumentit.forEach(dokumenttiDto -> {
                 try {
-                    dokumenttiService.generateWithDto(dokumenttiDto);
+                    dokumenttiService.generateWithDto(dokumenttiDto, opsData);
                 } catch (DokumenttiException e) {
                     log.error(e.getLocalizedMessage(), e.getCause());
                 }
