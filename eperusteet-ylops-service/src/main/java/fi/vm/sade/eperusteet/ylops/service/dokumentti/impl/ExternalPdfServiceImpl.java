@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Date;
 import java.util.Optional;
 
 import static javax.servlet.http.HttpServletResponse.SC_ACCEPTED;
@@ -50,22 +49,12 @@ public class ExternalPdfServiceImpl implements ExternalPdfService {
     private final ObjectMapper mapper = InitJacksonConverter.createMapper();
 
     @Override
-    public void generatePdf(DokumenttiDto dto) throws JsonProcessingException {
-        OpetussuunnitelmaExportDto ops = null;
-        DokumenttiDto viimeisinJulkaistuDokumentti = dokumenttiService.getJulkaistuDokumentti(dto.getOpsId(), dto.getKieli(), null);
-        if (viimeisinJulkaistuDokumentti != null && viimeisinJulkaistuDokumentti.getId().equals(dto.getId())) {
-            ops = opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(dto.getOpsId());
-        } else {
-            ops = opetussuunnitelmaService.getExportedOpetussuunnitelma(dto.getOpsId());
+    public void generatePdf(DokumenttiDto dto, OpetussuunnitelmaExportDto opsDto) throws JsonProcessingException {
+        if (opsDto == null) {
+            opsDto = opetussuunnitelmaService.getExportedOpetussuunnitelma(dto.getOpsId());
         }
 
-        if (!dto.getJulkaisuDokumentti()) {
-            ops.setViimeisinJulkaisuAika(null);
-        } else if (ops.getViimeisinJulkaisuAika() == null) {
-            ops.setViimeisinJulkaisuAika(new Date());
-        }
-
-        String json = mapper.writeValueAsString(ops);
+        String json = mapper.writeValueAsString(opsDto);
         OphHttpClient client = restClientFactory.get(pdfServiceUrl, true);
         String url = pdfServiceUrl + "/api/pdf/generate/ylops/" + dto.getId() + "/" + dto.getKieli().name();
 
@@ -88,4 +77,12 @@ public class ExternalPdfServiceImpl implements ExternalPdfService {
             throw new RuntimeException("Virhe pdf-palvelun kutsussa");
         }
     }
+
+    @Override
+    public void generatePdf(DokumenttiDto dto) throws JsonProcessingException {
+        OpetussuunnitelmaExportDto ops = opetussuunnitelmaService.getExportedOpetussuunnitelma(dto.getOpsId());
+        ops.setViimeisinJulkaisuAika(null);
+        generatePdf(dto, ops);
+    }
+
 }

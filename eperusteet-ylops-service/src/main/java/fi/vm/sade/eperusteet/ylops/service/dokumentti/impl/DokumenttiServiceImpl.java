@@ -6,6 +6,7 @@ import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
@@ -77,11 +78,17 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional(noRollbackFor = DokumenttiException.class)
     public void generateWithDto(DokumenttiDto dto) throws DokumenttiException {
+        generateWithDto(dto, null);
+    }
+
+    @Override
+    @Transactional(noRollbackFor = DokumenttiException.class)
+    public void generateWithDto(DokumenttiDto dto, OpetussuunnitelmaExportDto opsDto) throws DokumenttiException {
         dto.setTila(DokumenttiTila.LUODAAN);
         dokumenttiStateService.save(dto);
 
         try {
-            externalPdfService.generatePdf(dto);
+            externalPdfService.generatePdf(dto, opsDto);
         } catch (Exception ex) {
             dto.setTila(DokumenttiTila.EPAONNISTUI);
             dto.setVirhekoodi(ex.getLocalizedMessage());
