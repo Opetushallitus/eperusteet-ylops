@@ -30,7 +30,7 @@ public interface VuosiluokkakokonaisuusService {
     void delete(@P("opsId") Long opsId, Long kokonaisuusId);
 
     @PreAuthorize("hasPermission(#opetussuunnitelma.getId(), 'opetussuunnitelma', 'MUOKKAUS') or (#opetussuunnitelma.getPohja() != null and hasPermission(#opetussuunnitelma.getPohja().getId(), 'opetussuunnitelma', 'MUOKKAUS'))")
-    void removeSisaltoalueetInKeskeinensisaltoalueet(Opetussuunnitelma opetussuunnitelma, Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus, boolean clearSisaltoalueet);
+    void removeSisaltoalueetInKeskeinensisaltoalueet(@P("opetussuunnitelma") Opetussuunnitelma opetussuunnitelma, Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus, boolean clearSisaltoalueet);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void piilotaOppiaine(Long opsId, Long oppiaineId, Long vuosiluokkakokonaisuusId, boolean piilota);
