@@ -314,7 +314,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     private void poistaTekstikappaleAlaOpetussuunnitelmista(Long opsId, UUID tunniste) {
         opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
             TekstiKappaleViite viite = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(opetussuunnitelma.getId(), tunniste.toString());
-            removeTekstiKappaleViite(opetussuunnitelma.getId(), viite.getId());
+            if (viite != null) {
+                removeTekstiKappaleViite(opetussuunnitelma.getId(), viite.getId());
+            }
         });
     }
 
