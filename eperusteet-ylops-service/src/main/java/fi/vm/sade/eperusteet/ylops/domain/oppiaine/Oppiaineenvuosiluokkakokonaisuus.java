@@ -155,11 +155,13 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
             ovk.setOhjaus(Tekstiosa.copyOf(other.getOhjaus()));
             ovk.setTehtava(Tekstiosa.copyOf(other.getTehtava()));
             ovk.setTyotavat(Tekstiosa.copyOf(other.getTyotavat()));
+            ovk.setYleistavoitteet(Tekstiosa.copyOf(other.getYleistavoitteet()));
         } else {
             ovk.setArviointi(new Tekstiosa());
             ovk.setOhjaus(new Tekstiosa());
             ovk.setTehtava(new Tekstiosa());
             ovk.setTyotavat(new Tekstiosa());
+            ovk.setYleistavoitteet(new Tekstiosa());
         }
 
         ovk.setJnro(other.getJnro());

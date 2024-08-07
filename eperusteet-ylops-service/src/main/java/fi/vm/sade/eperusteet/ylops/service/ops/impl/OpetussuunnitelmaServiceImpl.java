@@ -2015,7 +2015,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public void syncTekstitPohjasta(Long opsId) {
         dispatcher.get(OpsPohjaSynkronointi.class).syncTekstitPohjasta(opsId);
-        opetussuunnitelmaAsyncTekstitPohjastaService.syncTekstitPohjastaKaikki(opsId);
+
+        try {
+            opetussuunnitelmaAsyncTekstitPohjastaService.syncTekstitPohjastaKaikki(opsId);
+        } catch(Exception e) {
+            log.error("Tekstien synkronointi pohjasta epäonnistui", e);
+            throw e;
+        }
     }
 
     @Override
