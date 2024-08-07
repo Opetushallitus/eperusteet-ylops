@@ -128,7 +128,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
             assertThat(tkViitteet(ops1)).hasSize(26);
 
-            opsPohjaSynkronointi.syncTekstitPohjasta(ops1Id);
+            opsPohjaSynkronointi.syncTekstitPohjasta(ops1);
 
             assertThat(tkViitteet(ops1)).hasSize(32);
             assertThat(perusteTekstikappaleIdt(ops1)).hasSize(17);
@@ -149,7 +149,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
             assertThat(tkViitteet(ops2)).hasSize(26);
 
-            opsPohjaSynkronointi.syncTekstitPohjasta(ops2Id);
+            opsPohjaSynkronointi.syncTekstitPohjasta(ops2);
 
             assertThat(tkViitteet(ops2)).hasSize(32);
             assertThat(perusteTekstikappaleIdt(ops2)).hasSize(17);
@@ -178,7 +178,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         addTekstikappaleLapsi("perustetekstin alla oleva teksti", ops2Id, findTkNimi(ops2, "Uudistuva lukiokoulutus").getId());
         assertThat(tkViitteet(ops2)).hasSize(18);
 
-        opsPohjaSynkronointi.syncTekstitPohjasta(ops2Id);
+        opsPohjaSynkronointi.syncTekstitPohjasta(ops2);
         assertThat(tkViitteet(ops2)).hasSize(17);
 
         assertThat(findTkNimi(ops1, "Uudistuva lukiokoulutus")).isNull();
@@ -221,7 +221,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
             TekstiKappaleViiteDto.Matala tk42 = addTekstikappaleLapsi("ops4.2 oma tekstikappale", ops2Id, tk4.getId());
         }
 
-        opsPohjaSynkronointi.syncTekstitPohjasta(ops2Id);
+        opsPohjaSynkronointi.syncTekstitPohjasta(ops2);
 
         assertThat(findTkNimi(ops1, "Uudistuva lukiokoulutus").getTekstiKappale().getTeksti().getTeksti().get(Kieli.FI)).isEqualTo("ops1 teksti");
         assertThat(findTkNimi(ops1, "ops1 oma tekstikappale")).isNotNull();
@@ -281,7 +281,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
         assertThat(uusiOps.getTekstit().getLapset().get(0).getLapset()).hasSize(6);
 
-        opsPohjaSynkronointi.syncTekstitPohjasta(uusiOps.getId());
+        opsPohjaSynkronointi.syncTekstitPohjasta(uusiOps);
 
         assertThat(uusiOps.getTekstit().getLapset().get(0).getLapset()).hasSize(6);
         assertThat(findTkNimis(uusiOps, "ops1 oma tekstikappale juuressa")).hasSize(1);
