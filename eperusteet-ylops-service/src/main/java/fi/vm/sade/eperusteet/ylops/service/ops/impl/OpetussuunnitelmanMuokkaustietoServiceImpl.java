@@ -124,8 +124,18 @@ public class OpetussuunnitelmanMuokkaustietoServiceImpl implements Opetussuunnit
     }
 
     @Override
+    public void poistaOpsMuokkaustieto(Opetussuunnitelma opetussuunnitelma, String lisatieto) {
+        List<OpetussuunnitelmanMuokkaustieto> poistettava = muokkausTietoRepository.findByOpetussuunnitelmaIdAndLisatieto(opetussuunnitelma.getId(), lisatieto);
+        muokkausTietoRepository.deleteAll(poistettava);
+    }
+
+    @Override
     public MuokkaustietoKayttajallaDto getViimeisinPohjatekstiSync(Long opsId) {
-        return mapper.map(muokkausTietoRepository.findTop1ByOpetussuunnitelmaIdAndLisatietoOrderByLuotuDesc(opsId, MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU), MuokkaustietoKayttajallaDto.class);
+        return mapper.map(muokkausTietoRepository.findTop1ByOpetussuunnitelmaIdAndLisatietoInOrderByLuotuDesc(
+                opsId,
+                List.of(MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU,
+                        MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU_VIRHE)),
+                MuokkaustietoKayttajallaDto.class);
     }
 }
 

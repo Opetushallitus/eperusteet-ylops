@@ -1,6 +1,8 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoLisatieto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,17 +23,21 @@ public class OpetussuunnitelmaAsyncTekstitPohjastaService {
     @Autowired
     private OpsDispatcher dispatcher;
 
+    @Autowired
+    private OpetussuunnitelmanMuokkaustietoService opetussuunnitelmanMuokkaustietoService;
+
     @PreAuthorize("hasPermission(#opetussuunnitelma.getId(), 'opetussuunnitelma', 'MUOKKAUS') or (#opetussuunnitelma.getPohja() != null and hasPermission(#opetussuunnitelma.getPohja().getId(), 'opetussuunnitelma', 'MUOKKAUS'))")
     @Async
-    public void syncTekstitPohjastaKaikki(@P("opetussuunnitelma") Opetussuunnitelma ops) {
-        opetussuunnitelmaRepository.findAllByPohjaId(ops.getId()).forEach(opetussuunnitelma -> {
+    public void syncTekstitPohjastaKaikki(@P("opetussuunnitelma") Opetussuunnitelma pohjaOps) {
+        opetussuunnitelmaRepository.findAllByPohjaId(pohjaOps.getId()).forEach(opetussuunnitelma -> {
             try {
-                dispatcher.get(OpsPohjaSynkronointi.class).syncTekstitPohjasta(opetussuunnitelma);
-                syncTekstitPohjastaKaikki(opetussuunnitelma);
+                opetussuunnitelmanMuokkaustietoService.poistaOpsMuokkaustieto(opetussuunnitelma, MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU_VIRHE);
+                dispatcher.get(OpsPohjaSynkronointi.class).syncTekstitPohjasta(opetussuunnitelma.getId(), pohjaOps.getId());
             } catch(Exception e) {
-                log.error("Virhe synkronoidessa tekstejä opetussuunnitelmaan " + opetussuunnitelma.getId(), e);
-                throw e;
+                log.error("Virhe synkronoidessa tekstejä opetussuunnitelmaan {}", opetussuunnitelma.getId(), e);
+                opetussuunnitelmanMuokkaustietoService.addOpsMuokkausTieto(opetussuunnitelma, opetussuunnitelma, MuokkausTapahtuma.VIRHE, MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU_VIRHE);
             }
+            syncTekstitPohjastaKaikki(opetussuunnitelma);
         });
     }
 

@@ -9054,7 +9054,7 @@
         },
         "tapahtuma" : {
           "type" : "string",
-          "enum" : [ "LUONTI", "PAIVITYS", "PALAUTUS", "POISTO", "JULKAISU" ]
+          "enum" : [ "LUONTI", "PAIVITYS", "PALAUTUS", "POISTO", "JULKAISU", "VIRHE" ]
         },
         "opetussuunnitelmaId" : {
           "type" : "integer",
@@ -9504,10 +9504,6 @@
         "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
-        },
-        "organisaatiotaso" : {
-          "type" : "string",
-          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
         }
       }
     },
@@ -9636,10 +9632,6 @@
         "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
-        },
-        "organisaatiotaso" : {
-          "type" : "string",
-          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
         },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaNimiDto"
@@ -9789,10 +9781,6 @@
           "type" : "string",
           "format" : "date-time"
         },
-        "organisaatiotaso" : {
-          "type" : "string",
-          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
-        },
         "peruste" : {
           "$ref" : "#/definitions/PerusteInfoDto"
         },
@@ -9929,10 +9917,6 @@
         "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
-        },
-        "organisaatiotaso" : {
-          "type" : "string",
-          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
         },
         "julkaistu" : {
           "type" : "string",
@@ -10126,10 +10110,6 @@
           "type" : "string",
           "format" : "date-time"
         },
-        "organisaatiotaso" : {
-          "type" : "string",
-          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
-        },
         "pohja" : {
           "$ref" : "#/definitions/OpetussuunnitelmaBaseDto"
         },
@@ -10286,10 +10266,6 @@
         "viimeisinJulkaisuAika" : {
           "type" : "string",
           "format" : "date-time"
-        },
-        "organisaatiotaso" : {
-          "type" : "string",
-          "enum" : [ "OPPILAITOS", "KUNTA", "SEUTUKUNTA", "MUU" ]
         },
         "pohja" : {
           "$ref" : "#/definitions/Reference"
@@ -11474,6 +11450,7 @@
           "$ref" : "#/definitions/Sort"
         },
 <<<<<<< HEAD
+<<<<<<< HEAD
         "paged" : {
           "type" : "boolean"
         },
@@ -11484,6 +11461,9 @@
 =======
 <<<<<<< HEAD
 >>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
+=======
+<<<<<<< HEAD
+>>>>>>> 714594ff (koulun hierarkiapaivitys fix)
         "unpaged" : {
           "type" : "boolean"
         },
@@ -11504,13 +11484,16 @@
 =======
 >>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "unpaged" : {
+=======
+        "paged" : {
+>>>>>>> a999d831 (koulun hierarkiapaivitys fix)
           "type" : "boolean"
         },
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         },
-        "paged" : {
+        "unpaged" : {
           "type" : "boolean"
         },
         "pageSize" : {

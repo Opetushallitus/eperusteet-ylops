@@ -56,6 +56,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
+import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoLisatieto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
@@ -2016,14 +2017,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public void syncTekstitPohjasta(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        dispatcher.get(OpsPohjaSynkronointi.class).syncTekstitPohjasta(ops);
-
-        try {
-            opetussuunnitelmaAsyncTekstitPohjastaService.syncTekstitPohjastaKaikki(ops);
-        } catch(Exception e) {
-            log.error("Tekstien synkronointi pohjasta epäonnistui", e);
-            throw e;
-        }
+        dispatcher.get(OpsPohjaSynkronointi.class).syncTekstitPohjasta(ops.getId(), ops.getPohja().getId());
+        muokkaustietoService.poistaOpsMuokkaustieto(ops, MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU_VIRHE);
+        opetussuunnitelmaAsyncTekstitPohjastaService.syncTekstitPohjastaKaikki(ops);
     }
 
     @Override
