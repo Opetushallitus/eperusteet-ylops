@@ -20,5 +20,7 @@ public interface OpetussuunnitelmanMuokkaustietoRepository extends CustomJpaRepo
 
     List<OpetussuunnitelmanMuokkaustieto> findByKohdeId(Long kohdeId);
 
-    OpetussuunnitelmanMuokkaustieto findTop1ByOpetussuunnitelmaIdAndLisatietoOrderByLuotuDesc(Long opsId, String lisatieto);
+    OpetussuunnitelmanMuokkaustieto findTop1ByOpetussuunnitelmaIdAndLisatietoInOrderByLuotuDesc(Long opsId, List<String> lisatieto);
+
+    List<OpetussuunnitelmanMuokkaustieto> findByOpetussuunnitelmaIdAndLisatieto(Long opsId, String lisatieto);
 }

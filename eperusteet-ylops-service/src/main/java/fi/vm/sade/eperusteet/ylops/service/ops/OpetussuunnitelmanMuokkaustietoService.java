@@ -39,6 +39,9 @@ public interface OpetussuunnitelmanMuokkaustietoService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void addOpsMuokkausTieto(@P("opsId") Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma, NavigationType navigationType, String lisatieto, Set<OpetussuunnitelmanMuokkaustietoLisaparametrit> lisaparametrit);
 
+    @PreAuthorize("hasPermission(#opetussuunnitelma.getId(), 'opetussuunnitelma', 'MUOKKAUS') or (#opetussuunnitelma.getPohja() != null and hasPermission(#opetussuunnitelma.getPohja().getId(), 'opetussuunnitelma', 'MUOKKAUS'))")
+    void poistaOpsMuokkaustieto(@P("opetussuunnitelma") Opetussuunnitelma opetussuunnitelma, String lisatieto);
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     MuokkaustietoKayttajallaDto getViimeisinPohjatekstiSync(Long opsId);
 }
