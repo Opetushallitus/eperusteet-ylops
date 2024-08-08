@@ -1,0 +1,2 @@
+ALTER TABLE poistettu_tekstikappale ADD COLUMN parent_tekstikappaleviite_id BIGINT;
+ALTER TABLE poistettu_tekstikappale_aud ADD COLUMN parent_tekstikappaleviite_id BIGINT;

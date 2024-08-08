@@ -27,5 +27,5 @@ public interface TekstiKappaleService {
     void delete(@P("opsId") Long opsId, Long id);
 
     @PreAuthorize("isAuthenticated()")
-    void removeTekstiKappaleFromOps(@P("opsId") Long opsId, Long id);
+    void removeTekstiKappaleFromOps(@P("opsId") Long opsId, Long tekstikappaleId, Long viiteId);
 }

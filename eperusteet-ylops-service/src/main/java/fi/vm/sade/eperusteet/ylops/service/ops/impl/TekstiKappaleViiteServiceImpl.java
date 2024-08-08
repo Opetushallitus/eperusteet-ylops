@@ -286,7 +286,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         TekstiKappale tekstiKappale = viite.getTekstiKappale();
         if (tekstiKappale != null && tekstiKappale.getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
             lockMgr.lock(tekstiKappale.getId());
-            tekstiKappaleService.removeTekstiKappaleFromOps(opsId, tekstiKappale.getId());
+            tekstiKappaleService.removeTekstiKappaleFromOps(opsId, tekstiKappale.getId(), viite.getVanhempi().getId());
         }
 
         muokkaustietoService.addOpsMuokkausTieto(opetussuunnitelmaRepository.findOne(opsId), new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
@@ -460,15 +460,20 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Transactional
     public TekstiKappaleDto returnRemovedTekstikappale(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        TekstiKappaleViite teksti = ops.getTekstit().getLapset().get(0);
-        tekstikappaleviiteRepository.lock(teksti.getRoot());
 
         PoistettuTekstiKappale poistettu = poistettuTekstiKappaleRepository.findOne(id);
+        TekstiKappaleViite parentViite = ops.getTekstit();
+        if (poistettu.getParentTekstiKappaleViite() != null) {
+            parentViite = CollectionUtil.treeToStream(ops.getTekstit(), TekstiKappaleViite::getLapset)
+                    .filter(viite -> viite.getId().equals(poistettu.getParentTekstiKappaleViite())).findFirst()
+                    .orElse(parentViite);
+        }
+
+        tekstikappaleviiteRepository.lock(parentViite.getRoot());
         TekstiKappale tekstikappale = tekstiKappaleRepository.findOne(poistettu.getTekstiKappale());
         TekstiKappaleDto dto = mapper.map(tekstikappale, TekstiKappaleDto.class);
         dto.setId(null);
-        addTekstiKappaleViite(opsId, teksti.getId(), new TekstiKappaleViiteDto.Matala(dto), MuokkausTapahtuma.PALAUTUS);
-        Collections.rotate(teksti.getLapset(), 1);
+        addTekstiKappaleViite(opsId, parentViite.getId(), new TekstiKappaleViiteDto.Matala(dto), MuokkausTapahtuma.PALAUTUS);
         poistettu.setPalautettu(true);
 
         opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
