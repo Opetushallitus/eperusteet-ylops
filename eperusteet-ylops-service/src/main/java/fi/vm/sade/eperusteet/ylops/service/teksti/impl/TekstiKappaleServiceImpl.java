@@ -98,13 +98,14 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     }
 
     @Override
-    public void removeTekstiKappaleFromOps(Long opsId, Long id) {
+    public void removeTekstiKappaleFromOps(Long opsId, Long tekstikappaleId, Long viiteId) {
         PoistettuTekstiKappale poistettu = new PoistettuTekstiKappale();
-        TekstiKappale tekstiKappale = repository.findOne(id);
+        TekstiKappale tekstiKappale = repository.findOne(tekstikappaleId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
         poistettu.setOpetussuunnitelma(ops);
         poistettu.setTekstiKappale(tekstiKappale.getId());
+        poistettu.setParentTekstiKappaleViite(viiteId);
         poistettuTekstiKappaleRepository.save(poistettu);
     }
 
