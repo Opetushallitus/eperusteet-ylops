@@ -2,8 +2,8 @@ package fi.vm.sade.eperusteet.ylops.domain.teksti;
 
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
-import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
+import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import lombok.Getter;
@@ -12,6 +12,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -24,7 +25,6 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.UUID;
-import javax.persistence.Column;
 
 @Entity
 @Table(name = "tekstikappale")
@@ -82,6 +82,12 @@ public class TekstiKappale extends AbstractAuditedEntity
         copyState(other);
     }
 
+    public void asetaTunniste(UUID tunniste) {
+        if (tunniste != null) {
+            this.tunniste = tunniste;
+        }
+    }
+
     public void setTila(Tila tila) {
         if (this.tila == null || this.tila == Tila.LUONNOS) {
             this.tila = tila;
@@ -102,4 +108,5 @@ public class TekstiKappale extends AbstractAuditedEntity
     public NavigationType getNavigationType() {
         return NavigationType.viite;
     }
+
 }

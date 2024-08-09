@@ -50,6 +50,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     @Override
     public TekstiKappaleDto add(Long opsId, TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto) {
         TekstiKappale tekstiKappale = mapper.map(tekstiKappaleDto, TekstiKappale.class);
+        tekstiKappale.asetaTunniste(tekstiKappaleDto.getTunniste());
         tekstiKappale.setTila(Tila.LUONNOS);
         viite.setTekstiKappale(tekstiKappale);
         tekstiKappale = repository.saveAndFlush(tekstiKappale);
