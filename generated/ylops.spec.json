@@ -11034,50 +11034,19 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "first" : {
           "type" : "boolean"
         },
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-<<<<<<< HEAD
-=======
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
->>>>>>> 695354a3 (EP-4217)
-=======
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
->>>>>>> 51eea6e9 (valinnaisen logiikat)
-        "first" : {
-          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
         },
-=======
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "empty" : {
           "type" : "boolean"
         }
@@ -11111,50 +11080,19 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "first" : {
           "type" : "boolean"
         },
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-<<<<<<< HEAD
-=======
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
->>>>>>> 695354a3 (EP-4217)
-=======
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
->>>>>>> 51eea6e9 (valinnaisen logiikat)
-        "first" : {
-          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
         },
-=======
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "empty" : {
           "type" : "boolean"
         }
@@ -11188,50 +11126,19 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
         "first" : {
           "type" : "boolean"
         },
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-<<<<<<< HEAD
-=======
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
->>>>>>> 695354a3 (EP-4217)
-=======
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
->>>>>>> 51eea6e9 (valinnaisen logiikat)
-        "first" : {
-          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
         },
-=======
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
         "empty" : {
           "type" : "boolean"
         }
@@ -11247,42 +11154,19 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
-        "unpaged" : {
-          "type" : "boolean"
-        },
         "pageSize" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-<<<<<<< HEAD
-        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         },
         "paged" : {
           "type" : "boolean"
-=======
-=======
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
+        },
         "unpaged" : {
-=======
-        "paged" : {
->>>>>>> a999d831 (koulun hierarkiapaivitys fix)
           "type" : "boolean"
         },
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "unpaged" : {
-          "type" : "boolean"
-        },
-        "pageSize" : {
-          "type" : "integer",
-          "format" : "int32"
->>>>>>> 695354a3 (EP-4217)
         }
       }
     },
