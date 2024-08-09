@@ -1,7 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 
 public interface OpsPohjaSynkronointi extends OpsToteutus {
     @Override
@@ -9,8 +9,8 @@ public interface OpsPohjaSynkronointi extends OpsToteutus {
         return OpsPohjaSynkronointi.class;
     }
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void syncTekstitPohjasta(@P("opsId") Long opsId);
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS') or hasPermission(#pohjaId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void syncTekstitPohjasta(@P("opsId") Long opsId, @P("pohjaId") Long pohjaId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     boolean opetussuunnitelmanPohjallaUusiaTeksteja(@P("opsId") Long opsId);

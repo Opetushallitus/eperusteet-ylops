@@ -5,6 +5,8 @@ import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositor
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
 public interface VuosiluokkakokonaisuusRepository extends JpaWithVersioningRepository<Vuosiluokkakokonaisuus, Long> {
 
@@ -16,4 +18,11 @@ public interface VuosiluokkakokonaisuusRepository extends JpaWithVersioningRepos
 
     @Query(value = "SELECT ov.oma FROM Opetussuunnitelma o JOIN o.vuosiluokkakokonaisuudet ov JOIN ov.vuosiluokkakokonaisuus v WHERE o.id = ?1 AND v.id = ?2")
     Boolean isOma(long opsId, long id);
+
+    @Query("SELECT v FROM Opetussuunnitelma o " +
+            "JOIN o.vuosiluokkakokonaisuudet ov " +
+            "JOIN ov.vuosiluokkakokonaisuus v " +
+            "JOIN v.tunniste t " +
+            "WHERE o.id = :opsId AND t.id = :tunniste")
+    Vuosiluokkakokonaisuus findByOpetussuunnitelmaIdAndTunniste(Long opsId, UUID tunniste);
 }

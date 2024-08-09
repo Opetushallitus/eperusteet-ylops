@@ -12,6 +12,7 @@ import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -205,6 +207,13 @@ public class OpetussuunnitelmanSisaltoController {
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId) {
             return tekstiKappaleViiteService.kloonaaTekstiKappale(opsId, viiteId);
+    }
+
+    @GetMapping(value = "/tekstit/{tunniste}/alaopetussuunnitelmalukumaara")
+    public Integer getTekstikappaleAlaOpetussuunnitelmaLukumaara(
+            @PathVariable("opsId") final Long opsId,
+            @PathVariable("tunniste") final String tunniste) {
+        return tekstiKappaleViiteService.alaOpetussuunnitelmaLukumaaraTekstikappaleTunniste(opsId, UUID.fromString(tunniste));
     }
 
 }

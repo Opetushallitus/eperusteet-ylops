@@ -4003,7 +4003,39 @@
         }
       }
     },
-    "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/kielitarjonta" : {
+    "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/muokattavakopio" : {
+      "post" : {
+        "tags" : [ "Oppiaineet" ],
+        "operationId" : "kopioiMuokattavaksi",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "asetaPohjanOppiaine",
+          "in" : "query",
+          "required" : false,
+          "type" : "boolean"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UnwrappedOpsOppiaineDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/oppimaara" : {
       "post" : {
         "tags" : [ "Oppiaineet" ],
         "operationId" : "addOppimaara",
@@ -4032,38 +4064,6 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/OppiaineDto"
-            }
-          }
-        }
-      }
-    },
-    "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/muokattavakopio" : {
-      "post" : {
-        "tags" : [ "Oppiaineet" ],
-        "operationId" : "kopioiMuokattavaksi",
-        "parameters" : [ {
-          "name" : "opsId",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        }, {
-          "name" : "id",
-          "in" : "path",
-          "required" : true,
-          "type" : "integer",
-          "format" : "int64"
-        }, {
-          "name" : "asetaPohjanOppiaine",
-          "in" : "query",
-          "required" : false,
-          "type" : "boolean"
-        } ],
-        "responses" : {
-          "200" : {
-            "description" : "successful operation",
-            "schema" : {
-              "$ref" : "#/definitions/UnwrappedOpsOppiaineDto"
             }
           }
         }
@@ -4244,6 +4244,33 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/PerusteOppiaineDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/pohja" : {
+      "get" : {
+        "tags" : [ "Oppiaineet" ],
+        "operationId" : "getPohjanVastaavaOppiaine",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OppiaineDto"
             }
           }
         }
@@ -5195,6 +5222,33 @@
         }
       }
     },
+    "/api/opetussuunnitelmat/{opsId}/tekstit/{tunniste}/alaopetussuunnitelmalukumaara" : {
+      "get" : {
+        "tags" : [ "OpetussuunnitelmanSisalto" ],
+        "operationId" : "getTekstikappaleAlaOpetussuunnitelmaLukumaara",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "tunniste",
+          "in" : "path",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "integer",
+              "format" : "int32"
+            }
+          }
+        }
+      }
+    },
     "/api/opetussuunnitelmat/{opsId}/tekstit/{viiteId}" : {
       "get" : {
         "tags" : [ "OpetussuunnitelmanSisalto" ],
@@ -5884,6 +5938,33 @@
             "description" : "successful operation",
             "schema" : {
               "$ref" : "#/definitions/PerusteVuosiluokkakokonaisuusDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet/{tunniste}/pohja" : {
+      "get" : {
+        "tags" : [ "Vuosiluokkakokonaisuudet" ],
+        "operationId" : "getPohjanVuosiluokkakokonaisuus",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "tunniste",
+          "in" : "path",
+          "required" : true,
+          "type" : "string",
+          "format" : "uuid"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/UnwrappedOpsVuosiluokkakokonaisuusDto"
             }
           }
         }
@@ -8971,7 +9052,7 @@
         },
         "tapahtuma" : {
           "type" : "string",
-          "enum" : [ "LUONTI", "PAIVITYS", "PALAUTUS", "POISTO", "JULKAISU" ]
+          "enum" : [ "LUONTI", "PAIVITYS", "PALAUTUS", "POISTO", "JULKAISU", "VIRHE" ]
         },
         "opetussuunnitelmaId" : {
           "type" : "integer",
@@ -10204,8 +10285,9 @@
             "$ref" : "#/definitions/OpsOppiaineDto"
           }
         },
-        "rakennePohjasta" : {
-          "type" : "boolean"
+        "luontityyppi" : {
+          "type" : "string",
+          "enum" : [ "KOPIO", "VIITTEILLA", "LEGACY" ]
         }
       }
     },
@@ -10952,14 +11034,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean"
+        },
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
@@ -10998,14 +11080,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean"
+        },
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
@@ -11044,14 +11126,14 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "first" : {
+          "type" : "boolean"
+        },
         "last" : {
           "type" : "boolean"
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
-        },
-        "first" : {
-          "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
@@ -11072,19 +11154,19 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "unpaged" : {
-          "type" : "boolean"
-        },
         "pageSize" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
         },
         "paged" : {
           "type" : "boolean"
+        },
+        "unpaged" : {
+          "type" : "boolean"
+        },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },

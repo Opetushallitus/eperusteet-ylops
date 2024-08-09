@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import fi.vm.sade.eperusteet.ylops.domain.HistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustieto;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
@@ -54,6 +55,16 @@ public class OpetussuunnitelmanMuokkaustietoServiceImpl implements Opetussuunnit
         muokkaustiedot.forEach(muokkaustieto -> muokkaustieto.setKayttajanTieto(kayttajatiedot.get(muokkaustieto.getMuokkaaja())));
 
         return muokkaustiedot;
+    }
+
+    @Override
+    public void addOpsMuokkausTieto(Opetussuunnitelma opetussuunnitelma, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma) {
+        addOpsMuokkausTieto(opetussuunnitelma.getId(), historiaTapahtuma, muokkausTapahtuma);
+    }
+
+    @Override
+    public void addOpsMuokkausTieto(Opetussuunnitelma opetussuunnitelma, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma, String lisatieto) {
+        addOpsMuokkausTieto(opetussuunnitelma.getId(), historiaTapahtuma, muokkausTapahtuma, lisatieto);
     }
 
     @Override
@@ -113,8 +124,18 @@ public class OpetussuunnitelmanMuokkaustietoServiceImpl implements Opetussuunnit
     }
 
     @Override
+    public void poistaOpsMuokkaustieto(Opetussuunnitelma opetussuunnitelma, String lisatieto) {
+        List<OpetussuunnitelmanMuokkaustieto> poistettava = muokkausTietoRepository.findByOpetussuunnitelmaIdAndLisatieto(opetussuunnitelma.getId(), lisatieto);
+        muokkausTietoRepository.deleteAll(poistettava);
+    }
+
+    @Override
     public MuokkaustietoKayttajallaDto getViimeisinPohjatekstiSync(Long opsId) {
-        return mapper.map(muokkausTietoRepository.findTop1ByOpetussuunnitelmaIdAndLisatietoOrderByLuotuDesc(opsId, MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU), MuokkaustietoKayttajallaDto.class);
+        return mapper.map(muokkausTietoRepository.findTop1ByOpetussuunnitelmaIdAndLisatietoInOrderByLuotuDesc(
+                opsId,
+                List.of(MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU,
+                        MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU_VIRHE)),
+                MuokkaustietoKayttajallaDto.class);
     }
 }
 
