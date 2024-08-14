@@ -706,6 +706,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Set<String> kaikki = kayttajanOrganisaatioOids();
         return opetussuunnitelmaRepository.findOpsPohja(kaikki).stream()
             .map(p -> mapper.map(p, OpetussuunnitelmaInfoDto.class))
+            .peek(this::fetchKuntaNimet)
+            .peek(this::fetchOrganisaatioNimet)
             .collect(toList());
     }
 

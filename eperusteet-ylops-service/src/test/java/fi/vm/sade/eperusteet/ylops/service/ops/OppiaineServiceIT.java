@@ -13,7 +13,10 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KeskeinenSisaltoalueDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKeskeinensisaltoalueDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenTavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
@@ -42,6 +45,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -323,19 +327,52 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
                 .get()
                 ;
 
-        List<TekstiosaDto> tavoitteet = new ArrayList<>();
-        tavoitteet.add(TestUtils.createTekstiosa("hello", "world"));
-        oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, valinnainen.getId(), vuosiluokka.getId(), tavoitteet);
-        tavoitteet.add(TestUtils.createTekstiosa("foo", "bar"));
-        OpsOppiaineDto get = oppiaineService.get(opsId, valinnainen.getId());
+        List<OpetuksenTavoiteDto> tavoitteet = new ArrayList<>();
+        tavoitteet.add(OpetuksenTavoiteDto.builder()
+                        .tavoite(TestUtils.lt("hello"))
+                        .sisaltoalueet(Collections.singleton(OpetuksenKeskeinensisaltoalueDto.builder()
+                                .sisaltoalueet(KeskeinenSisaltoalueDto.builder()
+                                        .kuvaus(TestUtils.lt("world"))
+                                        .build())
+                                .build()))
+                .build());
         oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, valinnainen.getId(), vuosiluokka.getId(), tavoitteet);
 
-        { // Valinnaisten oppiaineiden tavoitteet (tavoitteet + sisältöalueet)
-            OppiaineenVuosiluokkaDto ovlk = get.getOppiaine().getVuosiluokkakokonaisuudet().iterator().next()
-                    .getVuosiluokat().iterator().next();
-            assertEquals(ovlk.getTavoitteet().size(), 1);
-            assertEquals(ovlk.getSisaltoalueet().size(), 1);
-        }
+        OpsOppiaineDto valinanneOppiaine = oppiaineService.get(opsId, valinnainen.getId());
+        testOppiaineenTavoitteenTekstit(valinanneOppiaine, 0, "hello", "world");
+        UUID tavoite1Tunniste = vuosiluokanTavoitteet(valinanneOppiaine, vuosiluokka.getId()).get(0).getTunniste();
+
+        tavoitteet = vuosiluokanTavoitteet(valinanneOppiaine, vuosiluokka.getId());
+        tavoitteet.add(OpetuksenTavoiteDto.builder()
+                    .tavoite(TestUtils.lt("foo"))
+                    .sisaltoalueet(Collections.singleton(OpetuksenKeskeinensisaltoalueDto.builder()
+                            .sisaltoalueet(KeskeinenSisaltoalueDto.builder()
+                                    .kuvaus(TestUtils.lt("bar"))
+                                    .build())
+                            .build()))
+                    .build());
+        oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, valinnainen.getId(), vuosiluokka.getId(), tavoitteet);
+
+        valinanneOppiaine = oppiaineService.get(opsId, valinnainen.getId());
+        testOppiaineenTavoitteenTekstit(valinanneOppiaine, 0, "hello", "world");
+        assertEquals(tavoite1Tunniste, vuosiluokanTavoitteet(valinanneOppiaine, vuosiluokka.getId()).get(0).getTunniste());
+        testOppiaineenTavoitteenTekstit(valinanneOppiaine, 1, "foo", "bar");
+    }
+
+    private List<OpetuksenTavoiteDto> vuosiluokanTavoitteet(OpsOppiaineDto valinanneOppiaine, Long vuosiluokkaId) {
+        return valinanneOppiaine.getOppiaine().getVuosiluokkakokonaisuudet().stream()
+                .map(OppiaineenVuosiluokkakokonaisuusDto::getVuosiluokat)
+                .flatMap(Collection::stream)
+                .filter(vl -> vl.getId().equals(vuosiluokkaId))
+                .findFirst()
+                .map(OppiaineenVuosiluokkaDto::getTavoitteet)
+                .get();
+    }
+
+    private void testOppiaineenTavoitteenTekstit(OpsOppiaineDto oppiaine, int rivi, String otsikko, String kuvaus) {
+        OpetuksenTavoiteDto tavoite = oppiaine.getOppiaine().getVuosiluokkakokonaisuudet().iterator().next().getVuosiluokat().iterator().next().getTavoitteet().get(rivi);
+        assertEquals(otsikko, tavoite.getTavoite().get(Kieli.FI));
+        assertEquals(kuvaus, tavoite.getSisaltoalueet().iterator().next().getSisaltoalueet().getKuvaus().get(Kieli.FI));
     }
 
     @Test

@@ -4819,7 +4819,7 @@
           "schema" : {
             "type" : "array",
             "items" : {
-              "$ref" : "#/definitions/TekstiosaDto"
+              "$ref" : "#/definitions/OpetuksenTavoiteDto"
             }
           }
         } ],
@@ -10866,7 +10866,7 @@
         "tavoitteet" : {
           "type" : "array",
           "items" : {
-            "$ref" : "#/definitions/TekstiosaDto"
+            "$ref" : "#/definitions/OpetuksenTavoiteDto"
           }
         }
       }
@@ -11151,13 +11151,13 @@
     "Page" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -11194,6 +11194,7 @@
         "first" : {
           "type" : "boolean"
         },
+<<<<<<< HEAD
 >>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
 >>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
 =======
@@ -11203,10 +11204,16 @@
 >>>>>>> 80a0dbd4 (spec fix)
         "last" : {
           "type" : "boolean"
+=======
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+>>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -11237,6 +11244,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+=======
+        "last" : {
+          "type" : "boolean"
+>>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         },
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -11260,13 +11271,13 @@
     "PageOpetussuunnitelmaInfoDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -11303,6 +11314,7 @@
         "first" : {
           "type" : "boolean"
         },
+<<<<<<< HEAD
 >>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
 >>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
 =======
@@ -11312,10 +11324,16 @@
 >>>>>>> 80a0dbd4 (spec fix)
         "last" : {
           "type" : "boolean"
+=======
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+>>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -11346,6 +11364,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+=======
+        "last" : {
+          "type" : "boolean"
+>>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         },
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -11369,13 +11391,13 @@
     "PageOpetussuunnitelmaJulkinenDto" : {
       "type" : "object",
       "properties" : {
-        "totalElements" : {
-          "type" : "integer",
-          "format" : "int64"
-        },
         "totalPages" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "totalElements" : {
+          "type" : "integer",
+          "format" : "int64"
         },
         "size" : {
           "type" : "integer",
@@ -11412,6 +11434,7 @@
         "first" : {
           "type" : "boolean"
         },
+<<<<<<< HEAD
 >>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
 >>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
 =======
@@ -11421,10 +11444,16 @@
 >>>>>>> 80a0dbd4 (spec fix)
         "last" : {
           "type" : "boolean"
+=======
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+>>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         },
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
@@ -11455,6 +11484,10 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+=======
+        "last" : {
+          "type" : "boolean"
+>>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         },
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -11488,6 +11521,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         "paged" : {
           "type" : "boolean"
         },
@@ -11512,27 +11546,35 @@
 <<<<<<< HEAD
 =======
         },
+=======
+>>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         "paged" : {
-          "type" : "boolean"
-        },
-        "unpaged" : {
           "type" : "boolean"
         },
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
 <<<<<<< HEAD
+<<<<<<< HEAD
         },
         "unpaged" : {
           "type" : "boolean"
+=======
+>>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         },
         "pageSize" : {
           "type" : "integer",
           "format" : "int32"
+<<<<<<< HEAD
 >>>>>>> 695354a3 (EP-4217)
 >>>>>>> bf0b549b (EP-4217)
 =======
 >>>>>>> 80a0dbd4 (spec fix)
+=======
+        },
+        "unpaged" : {
+          "type" : "boolean"
+>>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         }
       }
     },
@@ -12416,10 +12458,10 @@
         "empty" : {
           "type" : "boolean"
         },
-        "unsorted" : {
+        "sorted" : {
           "type" : "boolean"
         },
-        "sorted" : {
+        "unsorted" : {
           "type" : "boolean"
         }
       }
