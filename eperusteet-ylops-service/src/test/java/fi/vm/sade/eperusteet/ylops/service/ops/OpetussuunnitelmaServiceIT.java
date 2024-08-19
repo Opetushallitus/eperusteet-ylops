@@ -18,6 +18,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaTilastoDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
@@ -707,7 +708,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testAdminList() {
-        List<OpetussuunnitelmaInfoDto> adminList = opetussuunnitelmaService.getAdminList();
+        List<OpetussuunnitelmaTilastoDto> adminList = opetussuunnitelmaService.getOpetussuunnitelmaTilastot();
         assertThat(adminList).hasSize(1);
         assertThat(adminList.get(0).getJulkaistu()).isNull();
         assertThat(adminList.get(0).getEnsijulkaisu()).isNull();

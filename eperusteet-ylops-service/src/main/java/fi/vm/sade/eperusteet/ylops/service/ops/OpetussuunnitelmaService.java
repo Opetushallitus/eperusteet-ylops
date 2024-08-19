@@ -18,6 +18,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaQuery;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaTilastoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -80,7 +81,7 @@ public interface OpetussuunnitelmaService {
     OpetussuunnitelmaStatistiikkaDto getStatistiikka();
 
     @PreAuthorize("isAuthenticated()")
-    List<OpetussuunnitelmaInfoDto> getAdminList();
+    List<OpetussuunnitelmaTilastoDto> getOpetussuunnitelmaTilastot();
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaKevytDto getOpetussuunnitelma(@P("opsId") Long opsId);
