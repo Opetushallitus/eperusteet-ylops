@@ -15,7 +15,7 @@ public class LaajaalainenosaaminenDto implements ReferenceableDto {
     private Long id;
     private Reference laajaalainenosaaminen;
     private LokalisoituTekstiDto kuvaus;
-    private boolean naytaPerusteenPaatasonLao;
+    private boolean naytaPerusteenPaatasonLao = true;
     private boolean naytaPerusteenVlkTarkennettuLao;
 
 }
