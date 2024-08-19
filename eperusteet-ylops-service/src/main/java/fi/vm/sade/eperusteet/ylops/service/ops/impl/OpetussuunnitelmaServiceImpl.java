@@ -66,6 +66,8 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaQuery;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaTilastoDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaWithLatestTilaUpdateTime;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
@@ -593,9 +595,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public List<OpetussuunnitelmaInfoDto> getAdminList() {
-        return mapper.mapAsList(opetussuunnitelmaRepository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaInfoDto.class).stream()
+    public List<OpetussuunnitelmaTilastoDto> getOpetussuunnitelmaTilastot() {
+        Map<Long, Date> opetussuunnitelmaWithLatestTilaUpdateTimesMaps = opetussuunnitelmaRepository.findAllWithLatestTilaUpdateDate(Tyyppi.OPS.name())
+                .stream().collect(Collectors.toMap(OpetussuunnitelmaWithLatestTilaUpdateTime::getId, OpetussuunnitelmaWithLatestTilaUpdateTime::getViimeisinTilaMuutosAika));
+
+        return mapper.mapAsList(opetussuunnitelmaRepository.findAllByTyyppi(Tyyppi.OPS), OpetussuunnitelmaTilastoDto.class).stream()
                 .peek(dto -> {
+                    dto.setViimeisinTilaMuutosAika(opetussuunnitelmaWithLatestTilaUpdateTimesMaps.get(dto.getId()));
                     fetchKuntaNimet(dto);
                     fetchOrganisaatioNimet(dto);
                 })

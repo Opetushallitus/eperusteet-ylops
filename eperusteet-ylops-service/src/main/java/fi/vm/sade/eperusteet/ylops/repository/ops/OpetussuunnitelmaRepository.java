@@ -5,6 +5,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaWithLatestTilaUpdateTime;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepository;
 import fi.vm.sade.eperusteet.ylops.service.util.Pair;
 import org.springframework.data.domain.Page;
@@ -39,6 +40,13 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
     Opetussuunnitelma findFirst1ByTyyppi(Tyyppi tyyppi);
 
     List<Opetussuunnitelma> findAllByTyyppi(Tyyppi tyyppi);
+
+    @Query(nativeQuery = true,
+            value = "SELECT ops.id, aud.muokattu AS viimeisinTilaMuutosAika " +
+                    "FROM opetussuunnitelma ops " +
+                    "INNER JOIN (SELECT MIN(muokattu) muokattu, tila, id FROM opetussuunnitelma_aud GROUP BY tila, id) aud ON aud.id = ops.id AND aud.tila = ops.tila " +
+                    "WHERE ops.tyyppi = :tyyppi")
+    List<OpetussuunnitelmaWithLatestTilaUpdateTime> findAllWithLatestTilaUpdateDate(String tyyppi);
 
     List<Opetussuunnitelma> findAllByTyyppiAndTilaAndKoulutustyyppi(Tyyppi tyyppi, Tila tila, KoulutusTyyppi kt);
 
