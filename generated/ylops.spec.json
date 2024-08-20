@@ -2344,6 +2344,27 @@
         }
       }
     },
+    "/api/opetussuunnitelmat/{id}/nimi" : {
+      "get" : {
+        "tags" : [ "Opetussuunnitelmat" ],
+        "operationId" : "getOpetussuunnitelmaNimi",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OpetussuunnitelmaNimiDto"
+            }
+          }
+        }
+      }
+    },
     "/api/opetussuunnitelmat/{id}/oikeudet" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
@@ -11180,6 +11201,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> fa766739 (valinnaisen logiikat)
@@ -11190,6 +11212,13 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+=======
+        "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
+          "type" : "boolean"
+>>>>>>> 751ffbc7 (pohjasta kopiointi fix)
         },
         "first" : {
           "type" : "boolean"
@@ -11220,8 +11249,9 @@
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
 >>>>>>> 695354a3 (EP-4217)
 <<<<<<< HEAD
@@ -11300,6 +11330,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> fa766739 (valinnaisen logiikat)
@@ -11310,6 +11341,13 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+=======
+        "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
+          "type" : "boolean"
+>>>>>>> 751ffbc7 (pohjasta kopiointi fix)
         },
         "first" : {
           "type" : "boolean"
@@ -11340,8 +11378,9 @@
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
 >>>>>>> 695354a3 (EP-4217)
 <<<<<<< HEAD
@@ -11420,6 +11459,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 =======
 >>>>>>> fa766739 (valinnaisen logiikat)
@@ -11430,6 +11470,13 @@
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+=======
+        "first" : {
+          "type" : "boolean"
+        },
+        "last" : {
+          "type" : "boolean"
+>>>>>>> 751ffbc7 (pohjasta kopiointi fix)
         },
         "first" : {
           "type" : "boolean"
@@ -11460,8 +11507,9 @@
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
-        "last" : {
-          "type" : "boolean"
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
 >>>>>>> 695354a3 (EP-4217)
 <<<<<<< HEAD
@@ -11522,12 +11570,15 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         "paged" : {
+=======
+        "unpaged" : {
+>>>>>>> 751ffbc7 (pohjasta kopiointi fix)
           "type" : "boolean"
         },
-        "pageNumber" : {
-          "type" : "integer",
-          "format" : "int32"
+        "paged" : {
+          "type" : "boolean"
         },
 =======
 <<<<<<< HEAD
@@ -11557,6 +11608,7 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
         },
+<<<<<<< HEAD
         "unpaged" : {
           "type" : "boolean"
 =======
@@ -11575,6 +11627,11 @@
         "unpaged" : {
           "type" : "boolean"
 >>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
+=======
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+>>>>>>> 751ffbc7 (pohjasta kopiointi fix)
         }
       }
     },
@@ -12458,10 +12515,10 @@
         "empty" : {
           "type" : "boolean"
         },
-        "sorted" : {
+        "unsorted" : {
           "type" : "boolean"
         },
-        "unsorted" : {
+        "sorted" : {
           "type" : "boolean"
         }
       }

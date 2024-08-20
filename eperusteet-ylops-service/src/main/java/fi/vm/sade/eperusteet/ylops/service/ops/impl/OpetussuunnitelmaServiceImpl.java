@@ -666,6 +666,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    public OpetussuunnitelmaNimiDto getOpetussuunnitelmaNimi(Long opsId) {
+        return mapper.map(opetussuunnitelmaRepository.findOne(opsId), OpetussuunnitelmaNimiDto.class);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Set<OpsVuosiluokkakokonaisuusKevytDto> getOpetussuunnitelmanPohjanVuosiluokkakokonaisuudet(Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
@@ -1059,11 +1064,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (pohja != null) {
             ops.setKoulutustyyppi(pohja.getKoulutustyyppi());
             ops.setToteutus(pohja.getToteutus());
-            if (opetussuunnitelmaLuontiDto.getLuontityyppi().equals(OpetussuunnitelmaLuontiDto.Luontityyppi.LEGACY)) {
-                ops.setPohja(pohja);
-            } else {
-                ops.setPohja(opetussuunnitelmaLuontiDto.getLuontityyppi().equals(OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO) && pohja.getPohja() != null ? pohja.getPohja() : pohja);
-            }
+            ops.setPohja(opetussuunnitelmaLuontiDto.getLuontityyppi().equals(OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO) && pohja.getPohja() != null ? pohja.getPohja() : pohja);
             ops.setTila(Tila.LUONNOS);
             ops.setTekstit(new TekstiKappaleViite(Omistussuhde.OMA));
             ops.getTekstit().setLapset(new ArrayList<>());
