@@ -64,8 +64,9 @@ public class OpetussuunnitelmaJulkisetController {
     @RequestMapping(value = "/{id}/julkaisu", method = RequestMethod.GET)
     @Timed
     public ResponseEntity<OpetussuunnitelmaExportDto> getOpetussuunnitelmaJulkaistu(
-            @PathVariable("id") final Long id, @RequestParam(required = false) boolean esikatselu) {
-        return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(id, esikatselu), HttpStatus.OK);
+            @PathVariable("id") final Long id,
+            @RequestParam(required = false) Integer revision) {
+        return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(id, revision), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "/kaikki")

@@ -1491,10 +1491,11 @@
           "type" : "integer",
           "format" : "int64"
         }, {
-          "name" : "esikatselu",
+          "name" : "revision",
           "in" : "query",
           "required" : false,
-          "type" : "boolean"
+          "type" : "integer",
+          "format" : "int32"
         } ],
         "responses" : {
           "200" : {
@@ -2153,14 +2154,14 @@
     "/api/opetussuunnitelmat/tilastot" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
-        "operationId" : "getAdminList",
+        "operationId" : "getOpetussuunnitelmaTilastot",
         "responses" : {
           "200" : {
             "description" : "successful operation",
             "schema" : {
               "type" : "array",
               "items" : {
-                "$ref" : "#/definitions/OpetussuunnitelmaInfoDto"
+                "$ref" : "#/definitions/OpetussuunnitelmaTilastoDto"
               }
             }
           }
@@ -2327,10 +2328,11 @@
           "required" : false,
           "type" : "string"
         }, {
-          "name" : "esikatselu",
+          "name" : "revision",
           "in" : "query",
           "required" : false,
-          "type" : "boolean"
+          "type" : "integer",
+          "format" : "int32"
         } ],
         "responses" : {
           "200" : {
@@ -10260,6 +10262,146 @@
         }
       }
     },
+    "OpetussuunnitelmaTilastoDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "julkaisukielet" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "type" : "string",
+            "enum" : [ "FI", "SV", "SE", "RU", "EN" ]
+          }
+        },
+        "organisaatiot" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/OrganisaatioDto"
+          }
+        },
+        "koulutuksenjarjestaja" : {
+          "$ref" : "#/definitions/OrganisaatioDto"
+        },
+        "kunnat" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/KoodistoDto"
+          }
+        },
+        "kuvaus" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "luoja" : {
+          "type" : "string"
+        },
+        "luotu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "muokattu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "muokkaaja" : {
+          "type" : "string"
+        },
+        "hyvaksyjataho" : {
+          "type" : "string"
+        },
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "perusteenDiaarinumero" : {
+          "type" : "string"
+        },
+        "perusteenId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "tila" : {
+          "type" : "string",
+          "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
+        },
+        "tyyppi" : {
+          "type" : "string",
+          "enum" : [ "OPS", "POHJA" ]
+        },
+        "koulutustyyppi" : {
+          "type" : "string",
+          "enum" : [ "PERUSTUTKINTO", "AMMATTITUTKINTO", "ERIKOISAMMATTITUTKINTO", "AIKUISTENPERUSOPETUS", "LISAOPETUS", "ESIOPETUS", "VARHAISKASVATUS", "PERUSOPETUS", "LUKIOKOULUTUS", "LUKIOVALMISTAVAKOULUTUS", "PERUSOPETUSVALMISTAVA", "AIKUISLUKIOKOULUTUS", "TPO" ]
+        },
+        "toteutus" : {
+          "type" : "string",
+          "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
+        },
+        "paatospaivamaara" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "ryhmaoid" : {
+          "type" : "string"
+        },
+        "ryhmanNimi" : {
+          "type" : "string"
+        },
+        "esikatseltavissa" : {
+          "type" : "boolean"
+        },
+        "ainepainoitteinen" : {
+          "type" : "boolean"
+        },
+        "perusteenVoimassaoloAlkaa" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "perusteenVoimassaoloLoppuu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "tuoPohjanOpintojaksot" : {
+          "type" : "boolean"
+        },
+        "tuoPohjanOppimaarat" : {
+          "type" : "boolean"
+        },
+        "perusteDataTuontiPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "viimeisinSyncPvm" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "viimeisinJulkaisuAika" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "julkaistu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "ensijulkaisu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "viimeisinTilaMuutosAika" : {
+          "type" : "string",
+          "format" : "date-time"
+        }
+      }
+    },
     "OpetussuunnitelmanAikatauluDto" : {
       "type" : "object",
       "properties" : {
@@ -10952,18 +11094,18 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -10998,18 +11140,18 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -11044,18 +11186,18 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
         "first" : {
           "type" : "boolean"
         },
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "last" : {
+          "type" : "boolean"
         },
         "empty" : {
           "type" : "boolean"
@@ -11072,19 +11214,19 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
+        "paged" : {
+          "type" : "boolean"
+        },
+        "pageNumber" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "unpaged" : {
           "type" : "boolean"
         },
         "pageSize" : {
           "type" : "integer",
           "format" : "int32"
-        },
-        "pageNumber" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
-        "paged" : {
-          "type" : "boolean"
         }
       }
     },

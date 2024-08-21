@@ -624,20 +624,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public <T extends NavigationBuilder> NavigationNodeDto buildNavigationWithDate(Long opsId, Date pvm, String kieli, Class<T> clazz) {
-        NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, clazz)
-                .buildNavigation(opsId, kieli);
+    public NavigationNodeDto buildNavigation(Long opsId, String kieli) {
+        NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilder.class).buildNavigation(opsId, kieli);
         return siirraLiitteetLoppuun(navigationNodeDto);
     }
 
     @Override
-    public NavigationNodeDto buildNavigation(Long opsId, String kieli) {
-        return buildNavigationWithDate(opsId, new Date(), kieli, NavigationBuilder.class);
-    }
-
-    @Override
-    public NavigationNodeDto buildNavigationPublic(Long opsId, String kieli, boolean esikatselu) {
-        NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilderPublic.class).buildNavigation(opsId, kieli, esikatselu);
+    public NavigationNodeDto buildNavigationPublic(Long opsId, String kieli, Integer revision) {
+        NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilderPublic.class).buildNavigation(opsId, kieli, revision);
         siirraLiitteetLoppuun(navigationNodeDto);
         NavigationUtil.asetaNumerointi(navigationNodeDto);
         return navigationNodeDto;
@@ -2053,8 +2047,28 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(Long opsId) {
+        return getOpetussuunnitelmaJulkaistuSisalto(opsId, null);
+    }
+
+    @Override
+    public OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(Long opsId, Integer revision) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        OpetussuunnitelmanJulkaisu julkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(ops);
+        if (ops == null || ops.getTila().equals(Tila.POISTETTU)) {
+            throw new NotExistsException("");
+        }
+
+        if (revision != null && revision == 0) {
+            OpetussuunnitelmaExportDto esikatseluDto = getExportedOpetussuunnitelma(opsId);
+            esikatseluDto.setViimeisinJulkaisuAika(null);
+            return esikatseluDto;
+        }
+
+        OpetussuunnitelmanJulkaisu julkaisu;
+        if (revision != null) {
+            julkaisu = julkaisuRepository.findByOpetussuunnitelmaAndRevision(ops, revision);
+        } else {
+            julkaisu = julkaisuRepository.findFirstByOpetussuunnitelmaOrderByRevisionDesc(ops);
+        }
 
         if (julkaisu != null) {
             OpetussuunnitelmaExportDto julkaistuDto = self.getOpetussuunnitelmanJulkaisuWithData(opsId, julkaisu);
@@ -2063,22 +2077,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         return null;
-    }
-
-    @Override
-    public OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(Long opsId, boolean esikatselu) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        if (ops == null || ops.getTila().equals(Tila.POISTETTU)) {
-            throw new NotExistsException("");
-        }
-
-        if (esikatselu) {
-            OpetussuunnitelmaExportDto esikatseluDto = getExportedOpetussuunnitelma(opsId);
-            esikatseluDto.setViimeisinJulkaisuAika(null);
-            return esikatseluDto;
-        }
-
-        return getOpetussuunnitelmaJulkaistuSisalto(opsId);
     }
 
     @Override
@@ -2095,7 +2093,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     }
 
-    @Cacheable(value = "ops-julkaisu", key = "#opsId")
     public OpetussuunnitelmaExportDto getOpetussuunnitelmanJulkaisuWithData(Long opsId, OpetussuunnitelmanJulkaisu julkaisu) {
         ObjectNode data = julkaisu.getData().getOpsData();
         try {
