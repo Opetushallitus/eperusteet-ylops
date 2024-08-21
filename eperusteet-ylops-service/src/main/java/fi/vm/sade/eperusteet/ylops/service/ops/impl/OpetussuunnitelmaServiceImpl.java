@@ -638,8 +638,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     public NavigationNodeDto buildNavigationPublic(Long opsId, String kieli, boolean esikatselu) {
         NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilderPublic.class).buildNavigation(opsId, kieli, esikatselu);
-        NavigationUtil.asetaNumerointi(getOpetussuunnitelma(opsId), navigationNodeDto);
-        return siirraLiitteetLoppuun(navigationNodeDto);
+        siirraLiitteetLoppuun(navigationNodeDto);
+        NavigationUtil.asetaNumerointi(navigationNodeDto);
+        return navigationNodeDto;
     }
 
     @Override
