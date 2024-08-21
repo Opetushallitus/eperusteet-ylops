@@ -56,15 +56,15 @@ public class NavigationBuilderLops2019PublicImpl implements NavigationBuilderPub
     }
 
     @Override
-    public NavigationNodeDto buildNavigation(Long opsId, boolean esikatselu) {
+    public NavigationNodeDto buildNavigation(Long opsId, Integer revision) {
         return NavigationNodeDto.of(NavigationType.root)
-                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, esikatselu).getChildren())
-                .add(oppiaineet(opsId, esikatselu));
+                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, revision).getChildren())
+                .add(oppiaineet(opsId, revision));
     }
 
-    protected NavigationNodeDto oppiaineet(Long opsId, boolean esikatselu) {
+    protected NavigationNodeDto oppiaineet(Long opsId, Integer revision) {
         // Järjestetään oppiaineen koodilla opintojaksot
-        OpetussuunnitelmaExportLops2019Dto opetussuunnitelmaDto = (OpetussuunnitelmaExportLops2019Dto) opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, esikatselu);
+        OpetussuunnitelmaExportLops2019Dto opetussuunnitelmaDto = (OpetussuunnitelmaExportLops2019Dto) opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, revision);
         Map<String, Set<Lops2019OpintojaksoExportDto>> opintojaksotMap = opetussuunnitelmaDto.getOpintojaksot().stream()
                 .flatMap(oj -> oj.getOppiaineet().stream()
                         .map(oa -> new AbstractMap.SimpleImmutableEntry<>(oa.getKoodi(), oj)))

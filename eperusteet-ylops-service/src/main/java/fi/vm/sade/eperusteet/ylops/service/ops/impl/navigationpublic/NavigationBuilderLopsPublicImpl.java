@@ -35,18 +35,18 @@ public class NavigationBuilderLopsPublicImpl implements NavigationBuilderPublic 
     }
 
     @Override
-    public NavigationNodeDto buildNavigation(Long opsId, boolean esikatselu) {
+    public NavigationNodeDto buildNavigation(Long opsId, Integer revision) {
         return NavigationNodeDto.of(NavigationType.root)
-                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, esikatselu).getChildren())
-                .add(oppiaineet(opsId, esikatselu));
+                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, revision).getChildren())
+                .add(oppiaineet(opsId, revision));
     }
 
     protected Class<? extends NavigationBuilder> getNavigationBuilderClass() {
         return NavigationBuilder.class;
     }
 
-    protected NavigationNodeDto oppiaineet(Long opsId, boolean esikatselu) {
-        OpetussuunnitelmaExportLopsDto opetussuunnitelmaDto = (OpetussuunnitelmaExportLopsDto) opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, esikatselu);
+    protected NavigationNodeDto oppiaineet(Long opsId, Integer revision) {
+        OpetussuunnitelmaExportLopsDto opetussuunnitelmaDto = (OpetussuunnitelmaExportLopsDto) opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, revision);
         return NavigationNodeDto.of(NavigationType.oppiaineet)
                 .addAll(opetussuunnitelmaDto.getOppiaineet().stream()
                         .map(oppiaine -> mapOppiaine(oppiaine)));

@@ -46,7 +46,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.jsoup.Jsoup;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Async;
@@ -190,7 +189,6 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     }
 
     @Override
-    @CacheEvict(value = "ops-julkaisu", key = "#opsId")
     @Async("julkaisuTaskExecutor")
     public void addJulkaisuAsync(Long opsId, UusiJulkaisuDto julkaisuDto) {
         log.debug("teeJulkaisu: {}", opsId);

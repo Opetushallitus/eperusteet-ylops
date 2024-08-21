@@ -32,7 +32,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -172,13 +171,10 @@ public interface OpetussuunnitelmaService {
     PerusteInfoDto getPerusteBase(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    <T extends NavigationBuilder> NavigationNodeDto buildNavigationWithDate(@P("opsId") Long opsId, Date pvm, String kieli, Class<T> clazz);
-
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     NavigationNodeDto buildNavigation(@P("opsId") Long opsId, String kieli);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    NavigationNodeDto buildNavigationPublic(@P("opsId") Long opsId, String kieli, boolean esikatselu);
+    NavigationNodeDto buildNavigationPublic(@P("opsId") Long opsId, String kieli, Integer revision);
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     void vaihdaPohja(@P("opsId") Long id, Long pohjaId);
@@ -202,7 +198,7 @@ public interface OpetussuunnitelmaService {
     OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(@P("opsId") Long opsId, boolean esikatselu);
+    OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(@P("opsId") Long opsId, Integer revision);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmaExportDto getOpetussuunnitelmanJulkaisuWithData(Long opsId, OpetussuunnitelmanJulkaisu julkaisu);

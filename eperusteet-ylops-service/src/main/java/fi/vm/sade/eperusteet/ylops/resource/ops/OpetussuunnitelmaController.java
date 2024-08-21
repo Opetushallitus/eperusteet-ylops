@@ -349,9 +349,9 @@ public class OpetussuunnitelmaController {
     public NavigationNodeDto getNavigationPublic(
             @PathVariable final Long id,
             @RequestParam(value = "kieli", required = false, defaultValue = "fi") final String kieli,
-            @RequestParam(value = "esikatselu", required = false) final boolean esikatselu
+            @RequestParam(value = "revision", required = false) final Integer revision
     ) {
-        return opetussuunnitelmaService.buildNavigationPublic(id, kieli, esikatselu);
+        return opetussuunnitelmaService.buildNavigationPublic(id, kieli, revision);
     }
 
     @InternalApi

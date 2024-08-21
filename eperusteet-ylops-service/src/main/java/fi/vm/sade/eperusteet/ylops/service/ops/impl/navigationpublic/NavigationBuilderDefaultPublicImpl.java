@@ -57,8 +57,8 @@ public class NavigationBuilderDefaultPublicImpl implements NavigationBuilderPubl
     }
 
     @Override
-    public NavigationNodeDto buildNavigation(Long opsId, boolean esikatselu) {
-        OpetussuunnitelmaExportDto opetussuunnitelmaDto = opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, esikatselu);
+    public NavigationNodeDto buildNavigation(Long opsId, Integer revision) {
+        OpetussuunnitelmaExportDto opetussuunnitelmaDto = opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, revision);
         return NavigationNodeDto.of(NavigationType.root)
                 .addAll(buildTekstinavi(opsId, opetussuunnitelmaDto.getTekstit()).getChildren());
     }

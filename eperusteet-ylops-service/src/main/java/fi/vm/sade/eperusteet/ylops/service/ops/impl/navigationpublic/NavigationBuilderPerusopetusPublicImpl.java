@@ -43,14 +43,14 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
     }
 
     @Override
-    public NavigationNodeDto buildNavigation(Long opsId, boolean esikatselu) {
-        return buildNavigation(opsId, "fi", esikatselu);
+    public NavigationNodeDto buildNavigation(Long opsId, Integer revision) {
+        return buildNavigation(opsId, "fi", revision);
     }
 
     @Override
-    public NavigationNodeDto buildNavigation(Long opsId, String kieli, boolean esikatselu) {
+    public NavigationNodeDto buildNavigation(Long opsId, String kieli, Integer revision) {
 
-        OpetussuunnitelmaLaajaDto opetussuunnitelmaDto = (OpetussuunnitelmaLaajaDto) opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, esikatselu);
+        OpetussuunnitelmaLaajaDto opetussuunnitelmaDto = (OpetussuunnitelmaLaajaDto) opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, revision);
 
         List<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet = opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream()
                 .sorted(Comparator.comparing(vlk -> vlk.getVuosiluokkakokonaisuus().getNimi().getOrDefault(Kieli.of(kieli))))
@@ -63,7 +63,7 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
                 .collect(Collectors.toList());
 
         return NavigationNodeDto.of(NavigationType.root)
-                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, esikatselu).getChildren())
+                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, revision).getChildren())
                 .addAll(vuosiluokkakokonaisuudet(vuosiluokkakokonaisuudet, oppiaineet, kieli))
                 .add(perusopetusOppiaineet(oppiaineet, kieli));
     }
