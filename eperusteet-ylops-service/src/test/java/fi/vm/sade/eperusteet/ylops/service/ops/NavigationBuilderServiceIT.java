@@ -21,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
+import fi.vm.sade.eperusteet.ylops.service.util.NavigationUtil;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -123,7 +124,8 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
 
         NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilderPublic.class).buildNavigation(ops.getId(), 0);
         assertThat(navi.getType()).isEqualTo(NavigationType.root);
-        assertThat(navi.getChildren()).hasSize(6);
+        assertThat(navi.getChildren().get(0).getType()).isEqualTo(NavigationType.tiedot);
+        assertThat(navi.getChildren()).hasSize(7);
 
         List<NavigationNodeDto> oppiaineet = navi.getChildren().stream()
                 .filter(child -> child.getType().equals(NavigationType.oppiaineet))
@@ -158,7 +160,8 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
 
         {
             NavigationNodeDto navi = opetussuunnitelmaService.buildNavigationPublic(ops.getId(), "fi", 0);
-            assertThat(navi.getChildren()).hasSize(7);
+            assertThat(navi.getChildren().get(0).getMeta().get(NavigationUtil.POST_SEPARATOR)).isNotNull();
+            assertThat(navi.getChildren()).hasSize(8);
             assertThat(CollectionUtil.treeToStream(navi, NavigationNodeDto::getChildren)
                     .filter(node -> node.getMeta().containsKey("numerointi"))
                     .map(node -> node.getMeta().get("numerointi").toString())

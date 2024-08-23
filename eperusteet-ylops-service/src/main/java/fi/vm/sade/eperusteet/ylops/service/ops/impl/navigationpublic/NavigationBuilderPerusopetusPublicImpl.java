@@ -15,6 +15,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
+import fi.vm.sade.eperusteet.ylops.service.util.NavigationUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -62,10 +63,12 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
                 .map(OpsOppiaineExportDto::getOppiaine)
                 .collect(Collectors.toList());
 
-        return NavigationNodeDto.of(NavigationType.root)
-                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, revision).getChildren())
+        return NavigationUtil.initPublic()
+                .add(NavigationNodeDto.of(NavigationType.tavoitteet_sisallot_arviointi))
                 .addAll(vuosiluokkakokonaisuudet(vuosiluokkakokonaisuudet, oppiaineet, kieli))
-                .add(perusopetusOppiaineet(oppiaineet, kieli));
+                .add(perusopetusOppiaineet(oppiaineet, kieli).meta(NavigationUtil.POST_SEPARATOR, true))
+                .addAll(dispatcher.get(NavigationBuilderPublic.class)
+                        .buildNavigation(opsId, revision).getChildren().stream().filter(node -> !node.getType().equals(NavigationType.tiedot)));
     }
 
     private List<NavigationNodeDto> vuosiluokkakokonaisuudet(List<OpsVuosiluokkakokonaisuusDto> opsVuosiluokkakokonaisuudet, List<OppiaineExportDto> oppiaineet, String kieli) {

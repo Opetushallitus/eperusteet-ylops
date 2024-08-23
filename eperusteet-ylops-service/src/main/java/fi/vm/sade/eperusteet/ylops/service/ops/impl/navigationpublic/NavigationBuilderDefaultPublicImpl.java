@@ -9,6 +9,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilderPublic;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.util.NavigationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -59,7 +60,7 @@ public class NavigationBuilderDefaultPublicImpl implements NavigationBuilderPubl
     @Override
     public NavigationNodeDto buildNavigation(Long opsId, Integer revision) {
         OpetussuunnitelmaExportDto opetussuunnitelmaDto = opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, revision);
-        return NavigationNodeDto.of(NavigationType.root)
+        return NavigationUtil.initPublic()
                 .addAll(buildTekstinavi(opsId, opetussuunnitelmaDto.getTekstit()).getChildren());
     }
 

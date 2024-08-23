@@ -57,8 +57,7 @@ public class NavigationBuilderLops2019PublicImpl implements NavigationBuilderPub
 
     @Override
     public NavigationNodeDto buildNavigation(Long opsId, Integer revision) {
-        return NavigationNodeDto.of(NavigationType.root)
-                .addAll(dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, revision).getChildren())
+        return dispatcher.get(NavigationBuilderPublic.class).buildNavigation(opsId, revision)
                 .add(oppiaineet(opsId, revision));
     }
 
