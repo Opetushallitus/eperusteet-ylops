@@ -14,5 +14,5 @@ public enum NavigationType {
     opetussuunnitelma_rakenne,
     termi,
     kommentti,
-    perusopetusoppiaineet, perusopetusoppiaine, valinnaisetoppiaineet, vuosiluokkakokonaisuus, oppiaineenvuosiluokka
+    perusopetusoppiaineet, perusopetusoppiaine, valinnaisetoppiaineet, vuosiluokkakokonaisuus, oppiaineenvuosiluokka, tavoitteet_sisallot_arviointi
 }

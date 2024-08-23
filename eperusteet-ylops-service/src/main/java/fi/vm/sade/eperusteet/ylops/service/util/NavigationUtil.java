@@ -11,7 +11,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 @UtilityClass
 public class NavigationUtil {
 
+    public static final String POST_SEPARATOR = "post_separator";
     private static final Set<NavigationType> NUMEROITAVAT_TYYPIT = Set.of(NavigationType.viite);
+
+    public static NavigationNodeDto initPublic() {
+        return NavigationNodeDto.of(NavigationType.root)
+                .add(NavigationNodeDto.of(NavigationType.tiedot)
+                        .meta(POST_SEPARATOR, true));
+    }
 
     public static NavigationNodeDto asetaNumerointi(NavigationNodeDto node) {
         asetaNumerointi(node.getChildren(), "");
