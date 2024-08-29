@@ -11216,6 +11216,10 @@
         "first" : {
           "type" : "boolean"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "last" : {
           "type" : "boolean"
 >>>>>>> 751ffbc7 (pohjasta kopiointi fix)
@@ -11249,6 +11253,7 @@
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+<<<<<<< HEAD
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
@@ -11293,6 +11298,8 @@
 >>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
 =======
 >>>>>>> 80a0dbd4 (spec fix)
+=======
+>>>>>>> f40ad6c9 (null pointer fix)
         "empty" : {
           "type" : "boolean"
         }
@@ -11345,6 +11352,10 @@
         "first" : {
           "type" : "boolean"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "last" : {
           "type" : "boolean"
 >>>>>>> 751ffbc7 (pohjasta kopiointi fix)
@@ -11378,6 +11389,7 @@
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+<<<<<<< HEAD
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
@@ -11422,6 +11434,8 @@
 >>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
 =======
 >>>>>>> 80a0dbd4 (spec fix)
+=======
+>>>>>>> f40ad6c9 (null pointer fix)
         "empty" : {
           "type" : "boolean"
         }
@@ -11474,6 +11488,10 @@
         "first" : {
           "type" : "boolean"
         },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
+        },
         "last" : {
           "type" : "boolean"
 >>>>>>> 751ffbc7 (pohjasta kopiointi fix)
@@ -11507,6 +11525,7 @@
         "pageable" : {
           "$ref" : "#/definitions/Pageable"
         },
+<<<<<<< HEAD
         "numberOfElements" : {
           "type" : "integer",
           "format" : "int32"
@@ -11551,6 +11570,8 @@
 >>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
 =======
 >>>>>>> 80a0dbd4 (spec fix)
+=======
+>>>>>>> f40ad6c9 (null pointer fix)
         "empty" : {
           "type" : "boolean"
         }
@@ -11571,13 +11592,17 @@
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         "paged" : {
 =======
         "unpaged" : {
 >>>>>>> 751ffbc7 (pohjasta kopiointi fix)
+=======
+        "paged" : {
+>>>>>>> f40ad6c9 (null pointer fix)
           "type" : "boolean"
         },
-        "paged" : {
+        "unpaged" : {
           "type" : "boolean"
         },
 =======

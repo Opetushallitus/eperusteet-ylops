@@ -47,15 +47,15 @@ public class VuosiluokkakokonaisuusController {
             @PathVariable final Long opsId,
             @PathVariable final Long id
     ) {
-        return Responses.ofNullable(new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.get(opsId, id)));
+        return Responses.ofNullable(UnwrappedOpsVuosiluokkakokonaisuusDto.of(vuosiluokkakokonaisuudet.get(opsId, id)));
     }
 
     @RequestMapping(value = "/{tunniste}/pohja", method = RequestMethod.GET)
-    public ResponseEntity<UnwrappedOpsVuosiluokkakokonaisuusDto> getPohjanVuosiluokkakokonaisuus(
+    public UnwrappedOpsVuosiluokkakokonaisuusDto getPohjanVuosiluokkakokonaisuus(
             @PathVariable final Long opsId,
             @PathVariable final UUID tunniste
     ) {
-        return Responses.ofNullable(new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.getPohjanVuosiluokkakokonaisuus(opsId, tunniste)));
+        return UnwrappedOpsVuosiluokkakokonaisuusDto.of(vuosiluokkakokonaisuudet.getPohjanVuosiluokkakokonaisuus(opsId, tunniste));
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
