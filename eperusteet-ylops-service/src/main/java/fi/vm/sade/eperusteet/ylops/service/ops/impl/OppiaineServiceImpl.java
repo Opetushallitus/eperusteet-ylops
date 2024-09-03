@@ -386,6 +386,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
         oppiaine = oppiaineet.save(oppiaine);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.LUONTI);
+
         addOppiaineToChildOpetussuunnitelmat(opsId, oppiaine);
         return mapper.map(oppiaine, OppiaineDto.class);
     }
@@ -554,6 +557,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
         mapper.map(oppiaineDto, oppiaine);
         oppiaine = oppiaineet.save(oppiaine);
+
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.PAIVITYS);
 
         return mapper.map(oppiaine, OppiaineDto.class);
     }
@@ -1264,6 +1269,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                     }
                 });
 
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.PAIVITYS);
         paivitaAlaOpetussuunnitelmienOppiaineenVuosiluokkakokonaisuudenTavoitteet(opsId, oppiaine, v.getVuosiluokkakokonaisuus().getId(), perusteenVuosiluokkakokonaisuus, tavoitteet);
     }
 
