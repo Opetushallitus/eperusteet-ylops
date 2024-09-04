@@ -1175,7 +1175,28 @@
           "200" : {
             "description" : "successful operation",
             "schema" : {
-              "$ref" : "#/definitions/MuokkaustietoKayttajallaDto"
+              "$ref" : "#/definitions/OpetussuunnitelmanMuokkaustietoDto"
+            }
+          }
+        }
+      }
+    },
+    "/api/muokkaustieto/{opsId}/viimeisinpohjatekstisync/pohjaopetussuunnitelma" : {
+      "get" : {
+        "tags" : [ "Muokkaustieto" ],
+        "operationId" : "getOpetussuunnitelmanPohjanViimeisinPohjaTekstiSync",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "$ref" : "#/definitions/OpetussuunnitelmanMuokkaustietoDto"
             }
           }
         }
@@ -9087,7 +9108,7 @@
         },
         "kohde" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi" ]
         },
         "luotu" : {
           "type" : "string",
@@ -9129,7 +9150,7 @@
         },
         "type" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi" ]
         },
         "meta" : {
           "type" : "object",
@@ -10576,12 +10597,63 @@
         }
       }
     },
+    "OpetussuunnitelmanMuokkaustietoDto" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "nimi" : {
+          "type" : "object",
+          "additionalProperties" : {
+            "type" : "string"
+          }
+        },
+        "tapahtuma" : {
+          "type" : "string",
+          "enum" : [ "LUONTI", "PAIVITYS", "PALAUTUS", "POISTO", "JULKAISU", "VIRHE" ]
+        },
+        "opetussuunnitelmaId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "kohdeId" : {
+          "type" : "integer",
+          "format" : "int64"
+        },
+        "kohde" : {
+          "type" : "string",
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi" ]
+        },
+        "luotu" : {
+          "type" : "string",
+          "format" : "date-time"
+        },
+        "muokkaaja" : {
+          "type" : "string"
+        },
+        "lisatieto" : {
+          "type" : "string"
+        },
+        "poistettu" : {
+          "type" : "boolean"
+        },
+        "lisaparametrit" : {
+          "type" : "array",
+          "uniqueItems" : true,
+          "items" : {
+            "$ref" : "#/definitions/OpetussuunnitelmanMuokkaustietoLisaparametritDto"
+          }
+        }
+      }
+    },
     "OpetussuunnitelmanMuokkaustietoLisaparametritDto" : {
       "type" : "object",
       "properties" : {
         "kohde" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi" ]
         },
         "kohdeId" : {
           "type" : "integer",
@@ -11197,22 +11269,12 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> fa766739 (valinnaisen logiikat)
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-=======
+        "last" : {
+          "type" : "boolean"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
         "first" : {
           "type" : "boolean"
         },
@@ -11220,86 +11282,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
->>>>>>> 751ffbc7 (pohjasta kopiointi fix)
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-<<<<<<< HEAD
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
->>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
-=======
-        "first" : {
-          "type" : "boolean"
-        },
->>>>>>> 80a0dbd4 (spec fix)
-        "last" : {
-          "type" : "boolean"
-=======
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
->>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-<<<<<<< HEAD
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
->>>>>>> 695354a3 (EP-4217)
-<<<<<<< HEAD
->>>>>>> bf0b549b (EP-4217)
-=======
-=======
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
->>>>>>> 51eea6e9 (valinnaisen logiikat)
->>>>>>> fa766739 (valinnaisen logiikat)
-        "first" : {
-          "type" : "boolean"
-        },
-=======
->>>>>>> 80a0dbd4 (spec fix)
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-=======
-        "last" : {
-          "type" : "boolean"
->>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
-        },
-<<<<<<< HEAD
-<<<<<<< HEAD
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-=======
-=======
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
->>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
-=======
->>>>>>> 80a0dbd4 (spec fix)
-=======
->>>>>>> f40ad6c9 (null pointer fix)
         "empty" : {
           "type" : "boolean"
         }
@@ -11333,22 +11315,12 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> fa766739 (valinnaisen logiikat)
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-=======
+        "last" : {
+          "type" : "boolean"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
         "first" : {
           "type" : "boolean"
         },
@@ -11356,86 +11328,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
->>>>>>> 751ffbc7 (pohjasta kopiointi fix)
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-<<<<<<< HEAD
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
->>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
-=======
-        "first" : {
-          "type" : "boolean"
-        },
->>>>>>> 80a0dbd4 (spec fix)
-        "last" : {
-          "type" : "boolean"
-=======
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
->>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-<<<<<<< HEAD
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
->>>>>>> 695354a3 (EP-4217)
-<<<<<<< HEAD
->>>>>>> bf0b549b (EP-4217)
-=======
-=======
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
->>>>>>> 51eea6e9 (valinnaisen logiikat)
->>>>>>> fa766739 (valinnaisen logiikat)
-        "first" : {
-          "type" : "boolean"
-        },
-=======
->>>>>>> 80a0dbd4 (spec fix)
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-=======
-        "last" : {
-          "type" : "boolean"
->>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
-        },
-<<<<<<< HEAD
-<<<<<<< HEAD
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-=======
-=======
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
->>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
-=======
->>>>>>> 80a0dbd4 (spec fix)
-=======
->>>>>>> f40ad6c9 (null pointer fix)
         "empty" : {
           "type" : "boolean"
         }
@@ -11469,22 +11361,12 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-=======
->>>>>>> fa766739 (valinnaisen logiikat)
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-=======
+        "last" : {
+          "type" : "boolean"
+        },
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
         "first" : {
           "type" : "boolean"
         },
@@ -11492,86 +11374,6 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "last" : {
-          "type" : "boolean"
->>>>>>> 751ffbc7 (pohjasta kopiointi fix)
-        },
-        "first" : {
-          "type" : "boolean"
-        },
-<<<<<<< HEAD
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
->>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
-=======
-        "first" : {
-          "type" : "boolean"
-        },
->>>>>>> 80a0dbd4 (spec fix)
-        "last" : {
-          "type" : "boolean"
-=======
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
->>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-<<<<<<< HEAD
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-        },
->>>>>>> 695354a3 (EP-4217)
-<<<<<<< HEAD
->>>>>>> bf0b549b (EP-4217)
-=======
-=======
-        "last" : {
-          "type" : "boolean"
-        },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
->>>>>>> 51eea6e9 (valinnaisen logiikat)
->>>>>>> fa766739 (valinnaisen logiikat)
-        "first" : {
-          "type" : "boolean"
-        },
-=======
->>>>>>> 80a0dbd4 (spec fix)
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
-=======
-        "last" : {
-          "type" : "boolean"
->>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
-        },
-<<<<<<< HEAD
-<<<<<<< HEAD
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
-        "last" : {
-          "type" : "boolean"
-        },
-=======
-=======
->>>>>>> 188ac675 (perusopetus oppiaine kopioinnit)
->>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
-=======
->>>>>>> 80a0dbd4 (spec fix)
-=======
->>>>>>> f40ad6c9 (null pointer fix)
         "empty" : {
           "type" : "boolean"
         }
@@ -11587,76 +11389,19 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        "paged" : {
-=======
-        "unpaged" : {
->>>>>>> 751ffbc7 (pohjasta kopiointi fix)
-=======
-        "paged" : {
->>>>>>> f40ad6c9 (null pointer fix)
-          "type" : "boolean"
-        },
-        "unpaged" : {
-          "type" : "boolean"
-        },
-=======
-<<<<<<< HEAD
->>>>>>> 747ba897 (perusopetus oppiaine kopioinnit)
-=======
-<<<<<<< HEAD
->>>>>>> 714594ff (koulun hierarkiapaivitys fix)
-        "unpaged" : {
-          "type" : "boolean"
-        },
-=======
->>>>>>> 80a0dbd4 (spec fix)
-        "pageSize" : {
-          "type" : "integer",
-          "format" : "int32"
-<<<<<<< HEAD
-=======
-        },
-=======
->>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         "paged" : {
           "type" : "boolean"
         },
-        "pageNumber" : {
-          "type" : "integer",
-          "format" : "int32"
-<<<<<<< HEAD
-<<<<<<< HEAD
-        },
-<<<<<<< HEAD
         "unpaged" : {
           "type" : "boolean"
-=======
->>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
         },
         "pageSize" : {
           "type" : "integer",
           "format" : "int32"
-<<<<<<< HEAD
->>>>>>> 695354a3 (EP-4217)
->>>>>>> bf0b549b (EP-4217)
-=======
->>>>>>> 80a0dbd4 (spec fix)
-=======
         },
-        "unpaged" : {
-          "type" : "boolean"
->>>>>>> 0bdb8882 (valinnaisen oppiaineen tavoitteet pohjasta)
-=======
         "pageNumber" : {
           "type" : "integer",
           "format" : "int32"
->>>>>>> 751ffbc7 (pohjasta kopiointi fix)
         }
       }
     },

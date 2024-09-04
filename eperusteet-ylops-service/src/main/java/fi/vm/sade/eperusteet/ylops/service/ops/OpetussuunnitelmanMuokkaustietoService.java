@@ -6,6 +6,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanMuokkaustietoDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 
@@ -43,5 +44,8 @@ public interface OpetussuunnitelmanMuokkaustietoService {
     void poistaOpsMuokkaustieto(@P("opetussuunnitelma") Opetussuunnitelma opetussuunnitelma, String lisatieto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    MuokkaustietoKayttajallaDto getViimeisinPohjatekstiSync(Long opsId);
+    OpetussuunnitelmanMuokkaustietoDto getViimeisinPohjatekstiSync(Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    OpetussuunnitelmanMuokkaustietoDto getOpetussuunnitelmanPohjanViimeisinPohjaTekstiSync(Long opsId);
 }
