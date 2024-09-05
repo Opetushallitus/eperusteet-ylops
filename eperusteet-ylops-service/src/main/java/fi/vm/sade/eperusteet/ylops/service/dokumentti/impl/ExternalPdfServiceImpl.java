@@ -52,6 +52,7 @@ public class ExternalPdfServiceImpl implements ExternalPdfService {
     public void generatePdf(DokumenttiDto dto, OpetussuunnitelmaExportDto opsDto) throws JsonProcessingException {
         if (opsDto == null) {
             opsDto = opetussuunnitelmaService.getExportedOpetussuunnitelma(dto.getOpsId());
+            opsDto.setViimeisinJulkaisuAika(null);
         }
 
         String json = mapper.writeValueAsString(opsDto);
