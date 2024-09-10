@@ -16,6 +16,16 @@ import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
 import fi.vm.sade.eperusteet.ylops.service.security.Permission;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import javax.persistence.EntityManager;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -24,15 +34,6 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import javax.persistence.EntityManager;
-import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Service
 @Transactional
@@ -138,7 +139,7 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
         {// Assert that html is valid
             LokalisoituTeksti updated = lokalisoituTekstiRepository.getOne(kahvaDto.getTekstiId());
             String html = updated.getTeksti().get(kahvaDto.getKieli());
-            Jsoup.isValid(html, Whitelist.relaxed());
+            Jsoup.isValid(html, Safelist.relaxed());
         }
 
         Kommentti2019Dto aloituskommentti = kahvaDto.getAloituskommentti();
