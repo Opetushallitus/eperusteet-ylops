@@ -50,6 +50,7 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     @Override
     public TekstiKappaleDto add(Long opsId, TekstiKappaleViite viite, TekstiKappaleDto tekstiKappaleDto) {
         TekstiKappale tekstiKappale = mapper.map(tekstiKappaleDto, TekstiKappale.class);
+        tekstiKappale.asetaTunniste(tekstiKappaleDto.getTunniste());
         tekstiKappale.setTila(Tila.LUONNOS);
         viite.setTekstiKappale(tekstiKappale);
         tekstiKappale = repository.saveAndFlush(tekstiKappale);
@@ -98,13 +99,14 @@ public class TekstiKappaleServiceImpl implements TekstiKappaleService {
     }
 
     @Override
-    public void removeTekstiKappaleFromOps(Long opsId, Long id) {
+    public void removeTekstiKappaleFromOps(Long opsId, Long tekstikappaleId, Long viiteId) {
         PoistettuTekstiKappale poistettu = new PoistettuTekstiKappale();
-        TekstiKappale tekstiKappale = repository.findOne(id);
+        TekstiKappale tekstiKappale = repository.findOne(tekstikappaleId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
 
         poistettu.setOpetussuunnitelma(ops);
         poistettu.setTekstiKappale(tekstiKappale.getId());
+        poistettu.setParentTekstiKappaleViite(viiteId);
         poistettuTekstiKappaleRepository.save(poistettu);
     }
 

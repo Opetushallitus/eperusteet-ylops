@@ -3,8 +3,8 @@ package fi.vm.sade.eperusteet.ylops.service.teksti;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 
 public interface TekstiKappaleService {
 
@@ -26,6 +26,6 @@ public interface TekstiKappaleService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void delete(@P("opsId") Long opsId, Long id);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    void removeTekstiKappaleFromOps(@P("opsId") Long opsId, Long id);
+    @PreAuthorize("isAuthenticated()")
+    void removeTekstiKappaleFromOps(@P("opsId") Long opsId, Long tekstikappaleId, Long viiteId);
 }

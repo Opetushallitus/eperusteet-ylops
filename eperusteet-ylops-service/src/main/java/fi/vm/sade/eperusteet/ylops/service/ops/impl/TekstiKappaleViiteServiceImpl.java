@@ -35,6 +35,8 @@ import fi.vm.sade.eperusteet.ylops.service.teksti.TekstiKappaleService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
@@ -85,6 +88,10 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     @Autowired
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
+
+    @Lazy
+    @Autowired
+    private TekstiKappaleViiteService self;
 
     @Override
     public <T> T getTekstiKappaleViite(Long opsId, Long viiteId, Class<T> t) {
@@ -252,7 +259,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(ops), MuokkausTapahtuma.PAIVITYS, NavigationType.opetussuunnitelma_rakenne);
     }
 
-
     @Override
     @Transactional
     public void removeTekstiKappaleViite(Long opsId, Long viiteId) {
@@ -270,25 +276,42 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             Sets.newHashSet(viite.getLapset()).forEach(lapsi -> removeTekstiKappaleViite(opsId, lapsi.getId()));
         }
 
-        // Poistetaan viittaus poistettavaan tekstikappale viitteeseen
-        List<TekstiKappaleViite> viittaavat = tekstikappaleviiteRepository.findAllByOriginalId(viiteId);
-        viittaavat.forEach(vierasViite -> {
-            vierasViite.updateOriginal(null);
-        });
-
         tekstikappaleviiteRepository.lock(viite.getRoot());
         TekstiKappale tekstiKappale = viite.getTekstiKappale();
         if (tekstiKappale != null && tekstiKappale.getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
             lockMgr.lock(tekstiKappale.getId());
-            tekstiKappaleService.removeTekstiKappaleFromOps(opsId, tekstiKappale.getId());
+            tekstiKappaleService.removeTekstiKappaleFromOps(opsId, tekstiKappale.getId(), viite.getVanhempi().getId());
         }
 
-        muokkaustietoService.addOpsMuokkausTieto(opsId, new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
+        muokkaustietoService.addOpsMuokkausTieto(opetussuunnitelmaRepository.findOne(opsId), new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
 
         viite.setTekstiKappale(null);
         viite.getVanhempi().getLapset().remove(viite);
         viite.setVanhempi(null);
         tekstikappaleviiteRepository.delete(viite);
+
+        poistaTekstikappaleAlaOpetussuunnitelmista(opsId, tekstiKappale.getTunniste());
+    }
+
+    @Override
+    public Integer alaOpetussuunnitelmaLukumaaraTekstikappaleTunniste(Long opsId, UUID tunniste) {
+        return opetussuunnitelmaRepository.findAllByPohjaId(opsId).stream()
+                .mapToInt(opetussuunnitelma -> tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(opetussuunnitelma.getId(), tunniste.toString()) != null ? 1 : 0)
+                .sum();
+    }
+
+    @Override
+    public TekstiKappaleViiteDto.Matala getTekstiKappaleViiteByTunniste(@P("opsId") Long opsId, UUID tunniste) {
+        return mapper.map(tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(opsId, tunniste.toString()), TekstiKappaleViiteDto.Matala.class);
+    }
+
+    private void poistaTekstikappaleAlaOpetussuunnitelmista(Long opsId, UUID tunniste) {
+        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
+            TekstiKappaleViite viite = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(opetussuunnitelma.getId(), tunniste.toString());
+            if (viite != null) {
+                removeTekstiKappaleViite(opetussuunnitelma.getId(), viite.getId());
+            }
+        });
     }
 
     @Override
@@ -379,21 +402,51 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Override
     public TekstiKappaleViiteDto.Matala getTekstiKappaleViiteOriginal(Long opsId, Long viiteId) {
         TekstiKappaleViite viite = findViite(opsId, viiteId);
-        return mapper.map(viite.getOriginal(), TekstiKappaleViiteDto.Matala.class);
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
+        if (opetussuunnitelma.getPohja() != null) {
+            TekstiKappaleViite pohjaViite = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(
+                    opetussuunnitelma.getPohja().getId(),
+                    viite.getTekstiKappale().getTunniste().toString());
+
+            if (pohjaViite != null) {
+                return mapper.map(pohjaViite, TekstiKappaleViiteDto.Matala.class);
+            }
+        }
+
+        return null;
     }
 
     @Override
     public List<TekstiKappaleViiteDto.Matala> getTekstiKappaleViiteOriginals(Long opsId, Long viiteId) {
-        List<TekstiKappaleViiteDto.Matala> viiteList = new ArrayList<>();
+        return getTekstiKappaleViiteOriginals(opsId, viiteId, TekstiKappaleViiteDto.Matala.class);
+    }
+
+    @Override
+    public <T> List<T> getTekstiKappaleViiteOriginals(Long opsId, Long viiteId, Class<T> clazz) {
+        List<T> viiteList = new ArrayList<>();
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
 
         TekstiKappaleViite viite = findViite(opsId, viiteId);
-        TekstiKappaleViite viiteOriginal = viite.getOriginal();
+        if (opetussuunnitelma.getPohja() != null) {
+            TekstiKappaleViite pohjanViite = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(
+                opetussuunnitelma.getPohja().getId(),
+                viite.getTekstiKappale().getTunniste().toString());
 
-        if (viiteOriginal != null && viiteOriginal.getOriginal() != null && viiteOriginal.isNaytaPohjanTeksti()) {
-            viiteList.add(mapper.map(viiteOriginal.getOriginal(), TekstiKappaleViiteDto.Matala.class));
+            if (pohjanViite != null) {
+                viiteList.add(mapper.map(pohjanViite, clazz));
+
+                if (pohjanViite.isNaytaPohjanTeksti() && opetussuunnitelma.getPohja().getPohja() != null) {
+                    TekstiKappaleViite pohjanPohjanViite = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(
+                        opetussuunnitelma.getPohja().getPohja().getId(),
+                        viite.getTekstiKappale().getTunniste().toString());
+
+                    if (pohjanPohjanViite != null) {
+                        viiteList.add(mapper.map(pohjanPohjanViite, clazz));
+                    }
+                }
+            }
         }
 
-        viiteList.add(mapper.map(viiteOriginal, TekstiKappaleViiteDto.Matala.class));
         return viiteList;
     }
 
@@ -401,16 +454,28 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Transactional
     public TekstiKappaleDto returnRemovedTekstikappale(Long opsId, Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        TekstiKappaleViite teksti = ops.getTekstit().getLapset().get(0);
-        tekstikappaleviiteRepository.lock(teksti.getRoot());
 
         PoistettuTekstiKappale poistettu = poistettuTekstiKappaleRepository.findOne(id);
+        TekstiKappaleViite parentViite = ops.getTekstit();
+        if (poistettu.getParentTekstiKappaleViite() != null) {
+            parentViite = CollectionUtil.treeToStream(ops.getTekstit(), TekstiKappaleViite::getLapset)
+                    .filter(viite -> viite.getId().equals(poistettu.getParentTekstiKappaleViite())).findFirst()
+                    .orElse(parentViite);
+        }
+
+        tekstikappaleviiteRepository.lock(parentViite.getRoot());
         TekstiKappale tekstikappale = tekstiKappaleRepository.findOne(poistettu.getTekstiKappale());
         TekstiKappaleDto dto = mapper.map(tekstikappale, TekstiKappaleDto.class);
         dto.setId(null);
-        addTekstiKappaleViite(opsId, teksti.getId(), new TekstiKappaleViiteDto.Matala(dto), MuokkausTapahtuma.PALAUTUS);
-        Collections.rotate(teksti.getLapset(), 1);
+        addTekstiKappaleViite(opsId, parentViite.getId(), new TekstiKappaleViiteDto.Matala(dto), MuokkausTapahtuma.PALAUTUS);
         poistettu.setPalautettu(true);
+
+        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
+            List<PoistettuTekstiKappale> poistetut = poistettuTekstiKappaleRepository.findPoistetutByOpsIdAndTunniste(opetussuunnitelma.getId(), tekstikappale.getTunniste());
+            poistetut.forEach(poistettuTekstiKappale -> {
+                returnRemovedTekstikappale(opetussuunnitelma.getId(), poistettuTekstiKappale.getId());
+            });
+        });
 
         return dto;
     }
@@ -435,7 +500,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     private void updateTekstiKappale(Long opsId, TekstiKappaleViite viite, TekstiKappaleDto uusiTekstiKappale, boolean requireLock) {
         if (uusiTekstiKappale != null) {
-            if (viite.getOmistussuhde() == Omistussuhde.OMA) {
                 if (viite.getTekstiKappale() != null) {
                     final Long tid = viite.getTekstiKappale().getId();
                     if (requireLock || lockMgr.getLock(tid) != null) {
@@ -443,9 +507,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                     }
                 }
                 tekstiKappaleService.update(opsId, uusiTekstiKappale, requireLock, null);
-            } else {
-                throw new BusinessRuleViolationException("Lainattua tekstikappaletta ei voida muokata");
-            }
         }
     }
 

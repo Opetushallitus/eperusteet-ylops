@@ -14,6 +14,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
@@ -36,9 +37,10 @@ public class OpsPohjaSynkronointiDefaultImpl implements OpsPohjaSynkronointi {
     private OpetussuunnitelmanMuokkaustietoService opetussuunnitelmanMuokkaustietoService;
 
     @Override
-    public void syncTekstitPohjasta(Long opsId) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.getOne(opsId);
-        Opetussuunnitelma pohja = opetussuunnitelmaRepository.getOne(ops.getPohja().getId());
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void syncTekstitPohjasta(Long opsId, Long pohjaId) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        Opetussuunnitelma pohja = opetussuunnitelmaRepository.findOne(pohjaId);
         Set<UUID> aiemmatTekstikappaleTunnisteet = getOpetussuunnitelmaOmatTekstikappaleViiteUUID(ops);
         hierarkiaKopiointiService.kopioiPohjanRakenne(ops, pohja);
         Set<UUID> uudetTekstikappaleTunnisteet = getOpetussuunnitelmaOmatTekstikappaleViiteUUID(ops);
@@ -47,7 +49,7 @@ public class OpsPohjaSynkronointiDefaultImpl implements OpsPohjaSynkronointi {
             throw new BusinessRuleViolationException("hierarkiakopiointi-epaonnistui");
         }
 
-        opetussuunnitelmanMuokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.PAIVITYS, MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU);
+        opetussuunnitelmanMuokkaustietoService.addOpsMuokkausTieto(ops, ops, MuokkausTapahtuma.PAIVITYS, MuokkaustietoLisatieto.POHJA_TEKSTI_SYNKRONOITU);
     }
 
     private Set<UUID> getOpetussuunnitelmaOmatTekstikappaleViiteUUID(Opetussuunnitelma ops) {

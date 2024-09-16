@@ -114,6 +114,10 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
         }
     }
 
+    public static Opetuksentavoite copyOf(Opetuksentavoite other) {
+        return copyOf(other, null);
+    }
+
     static Opetuksentavoite copyOf(Opetuksentavoite other, Map<Long, Opetuksenkohdealue> kohdealueet) {
         Opetuksentavoite ot = new Opetuksentavoite();
         ot.setTunniste(other.getTunniste());

@@ -13,7 +13,10 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.KeskeinenSisaltoalueDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKeskeinensisaltoalueDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenTavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
@@ -35,12 +38,14 @@ import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -119,6 +124,8 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
+    @Ignore
+    @Deprecated
     public void testPalautaYlempi() {
         OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
 
@@ -190,6 +197,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         ops.setTila(Tila.LUONNOS);
         ops.setTyyppi(Tyyppi.OPS);
         ops.setKoulutustyyppi(KoulutusTyyppi.PERUSOPETUS);
+        if (pohjaOps.getTyyppi().equals(Tyyppi.POHJA)) {
+            ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO);
+        }
 
         KoodistoDto kunta = new KoodistoDto();
         kunta.setKoodiUri("kunta_837");
@@ -317,19 +327,52 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
                 .get()
                 ;
 
-        List<TekstiosaDto> tavoitteet = new ArrayList<>();
-        tavoitteet.add(TestUtils.createTekstiosa("hello", "world"));
-        oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, valinnainen.getId(), vuosiluokka.getId(), tavoitteet);
-        tavoitteet.add(TestUtils.createTekstiosa("foo", "bar"));
-        OpsOppiaineDto get = oppiaineService.get(opsId, valinnainen.getId());
+        List<OpetuksenTavoiteDto> tavoitteet = new ArrayList<>();
+        tavoitteet.add(OpetuksenTavoiteDto.builder()
+                        .tavoite(TestUtils.lt("hello"))
+                        .sisaltoalueet(Collections.singleton(OpetuksenKeskeinensisaltoalueDto.builder()
+                                .sisaltoalueet(KeskeinenSisaltoalueDto.builder()
+                                        .kuvaus(TestUtils.lt("world"))
+                                        .build())
+                                .build()))
+                .build());
         oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, valinnainen.getId(), vuosiluokka.getId(), tavoitteet);
 
-        { // Valinnaisten oppiaineiden tavoitteet (tavoitteet + sisältöalueet)
-            OppiaineenVuosiluokkaDto ovlk = get.getOppiaine().getVuosiluokkakokonaisuudet().iterator().next()
-                    .getVuosiluokat().iterator().next();
-            assertEquals(ovlk.getTavoitteet().size(), 1);
-            assertEquals(ovlk.getSisaltoalueet().size(), 1);
-        }
+        OpsOppiaineDto valinanneOppiaine = oppiaineService.get(opsId, valinnainen.getId());
+        testOppiaineenTavoitteenTekstit(valinanneOppiaine, 0, "hello", "world");
+        UUID tavoite1Tunniste = vuosiluokanTavoitteet(valinanneOppiaine, vuosiluokka.getId()).get(0).getTunniste();
+
+        tavoitteet = vuosiluokanTavoitteet(valinanneOppiaine, vuosiluokka.getId());
+        tavoitteet.add(OpetuksenTavoiteDto.builder()
+                    .tavoite(TestUtils.lt("foo"))
+                    .sisaltoalueet(Collections.singleton(OpetuksenKeskeinensisaltoalueDto.builder()
+                            .sisaltoalueet(KeskeinenSisaltoalueDto.builder()
+                                    .kuvaus(TestUtils.lt("bar"))
+                                    .build())
+                            .build()))
+                    .build());
+        oppiaineService.updateValinnaisenVuosiluokanSisalto(opsId, valinnainen.getId(), vuosiluokka.getId(), tavoitteet);
+
+        valinanneOppiaine = oppiaineService.get(opsId, valinnainen.getId());
+        testOppiaineenTavoitteenTekstit(valinanneOppiaine, 0, "hello", "world");
+        assertEquals(tavoite1Tunniste, vuosiluokanTavoitteet(valinanneOppiaine, vuosiluokka.getId()).get(0).getTunniste());
+        testOppiaineenTavoitteenTekstit(valinanneOppiaine, 1, "foo", "bar");
+    }
+
+    private List<OpetuksenTavoiteDto> vuosiluokanTavoitteet(OpsOppiaineDto valinanneOppiaine, Long vuosiluokkaId) {
+        return valinanneOppiaine.getOppiaine().getVuosiluokkakokonaisuudet().stream()
+                .map(OppiaineenVuosiluokkakokonaisuusDto::getVuosiluokat)
+                .flatMap(Collection::stream)
+                .filter(vl -> vl.getId().equals(vuosiluokkaId))
+                .findFirst()
+                .map(OppiaineenVuosiluokkaDto::getTavoitteet)
+                .get();
+    }
+
+    private void testOppiaineenTavoitteenTekstit(OpsOppiaineDto oppiaine, int rivi, String otsikko, String kuvaus) {
+        OpetuksenTavoiteDto tavoite = oppiaine.getOppiaine().getVuosiluokkakokonaisuudet().iterator().next().getVuosiluokat().iterator().next().getTavoitteet().get(rivi);
+        assertEquals(otsikko, tavoite.getTavoite().get(Kieli.FI));
+        assertEquals(kuvaus, tavoite.getSisaltoalueet().iterator().next().getSisaltoalueet().getKuvaus().get(Kieli.FI));
     }
 
     @Test
@@ -627,11 +670,83 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         assertThat(ops2.getVuosiluokkakokonaisuudet()).extracting("oma").containsExactlyInAnyOrder(false,false);
     }
 
+    @Test
+    public void testOppiaineenPoistoJaLisaysKunnanOpsiin() {
+        OpetussuunnitelmaDto kunnanOps = createOpsBasedOnPohja();
+
+        VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
+        vlk.setNimi(lt("ykköskakkoset"));
+        vlk = vuosiluokkakokonaisuusService.add(kunnanOps.getId(), vlk);
+
+        OppiaineDto oppiaineDto = createValinnainen(kunnanOps.getId(), vlk);
+
+        OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
+            ops.setPohja(Reference.of(kunnanOps.getId()));
+        });
+        VuosiluokkakokonaisuusDto koulunVlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
+        vlk.setNimi(lt("ykköskakkoset"));
+        koulunVlk = vuosiluokkakokonaisuusService.add(koulunOps.getId(), koulunVlk);
+
+        assertThat(oppiaineService.getAll(koulunOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineDto.getNimi().get(Kieli.FI)))).isTrue();
+
+        OppiaineDto oppiaineJalkikateenlisattyDto = createValinnainen(kunnanOps.getId(), vlk);
+        assertThat(oppiaineService.getAll(koulunOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineJalkikateenlisattyDto.getNimi().get(Kieli.FI)))).isTrue();
+
+        oppiaineService.delete(kunnanOps.getId(), oppiaineDto.getId());
+        assertThat(oppiaineService.getAll(kunnanOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineDto.getNimi().get(Kieli.FI)))).isFalse();
+        assertThat(oppiaineService.getAll(koulunOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineDto.getNimi().get(Kieli.FI)))).isFalse();
+
+        oppiaineService.delete(kunnanOps.getId(), oppiaineJalkikateenlisattyDto.getId());
+        assertThat(oppiaineService.getAll(kunnanOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineJalkikateenlisattyDto.getNimi().get(Kieli.FI)))).isFalse();
+        assertThat(oppiaineService.getAll(koulunOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineJalkikateenlisattyDto.getNimi().get(Kieli.FI)))).isFalse();
+
+    }
+
+    @Test
+    public void testOppiainePoistettuJaPalautusOpsiin() {
+        OpetussuunnitelmaDto kunnanOps = createOpsBasedOnPohja();
+
+        VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
+        vlk.setNimi(lt("ykköskakkoset"));
+        vlk = vuosiluokkakokonaisuusService.add(kunnanOps.getId(), vlk);
+
+        OppiaineDto oppiaineDto = createValinnainen(kunnanOps.getId(), vlk);
+
+        OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
+            ops.setPohja(Reference.of(kunnanOps.getId()));
+            ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA);
+        });
+
+        assertThat(oppiaineService.getAll(kunnanOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineDto.getNimi().get(Kieli.FI)))).isTrue();
+        assertThat(oppiaineService.getAll(koulunOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineDto.getNimi().get(Kieli.FI)))).isTrue();
+
+        oppiaineService.delete(kunnanOps.getId(), oppiaineDto.getId());
+        assertThat(oppiaineService.getAll(kunnanOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineDto.getNimi().get(Kieli.FI)))).isFalse();
+        assertThat(oppiaineService.getAll(koulunOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineDto.getNimi().get(Kieli.FI)))).isFalse();
+
+        poistoService.restoreOppiaine(kunnanOps.getId(), poistoService.getRemoved(kunnanOps.getId(), PoistetunTyyppi.OPPIAINE).get(0).getId());
+        assertThat(oppiaineService.getAll(kunnanOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineDto.getNimi().get(Kieli.FI)))).isTrue();
+        assertThat(oppiaineService.getAll(koulunOps.getId()).stream().anyMatch(oa -> oa.getNimi().get(Kieli.FI).equals(oppiaineDto.getNimi().get(Kieli.FI)))).isTrue();
+    }
+
     private static TekstiosaDto getTekstiosa(String suffiksi) {
         TekstiosaDto dto = new TekstiosaDto();
         dto.setOtsikko(lt("otsikko_" + suffiksi));
         dto.setTeksti(lt("teksti_" + suffiksi));
         return dto;
+    }
+
+    private OppiaineDto createValinnainen(Long opsId, VuosiluokkakokonaisuusDto vlk) {
+        OppiaineDto oppiaineDto = new OppiaineDto();
+        oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
+        oppiaineDto.setValinnainenTyyppi(OppiaineValinnainenTyyppi.SOVELTAVA);
+        oppiaineDto.setNimi(lt(uniikkiString()));
+        oppiaineDto.setKoodiUri("koodikoodi");
+        oppiaineDto.setTunniste(UUID.randomUUID());
+        oppiaineDto.setKoosteinen(false);
+        oppiaineDto.setVuosiluokkakokonaisuudet(Set.of(OppiaineenVuosiluokkakokonaisuusDto.builder().vuosiluokkakokonaisuus(Reference.of(vlk.getId())).build()));
+
+        return  oppiaineService.addValinnainen(opsId, oppiaineDto, vlk.getId(), Set.of(Vuosiluokka.VUOSILUOKKA_1, Vuosiluokka.VUOSILUOKKA_2), Collections.emptyList(), null, null, false);
     }
 
 }

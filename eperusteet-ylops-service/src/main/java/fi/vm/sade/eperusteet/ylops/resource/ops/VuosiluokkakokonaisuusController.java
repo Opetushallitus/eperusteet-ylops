@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/opetussuunnitelmat/{opsId}/vuosiluokkakokonaisuudet")
@@ -46,7 +47,15 @@ public class VuosiluokkakokonaisuusController {
             @PathVariable final Long opsId,
             @PathVariable final Long id
     ) {
-        return Responses.ofNullable(new UnwrappedOpsVuosiluokkakokonaisuusDto(vuosiluokkakokonaisuudet.get(opsId, id)));
+        return Responses.ofNullable(UnwrappedOpsVuosiluokkakokonaisuusDto.of(vuosiluokkakokonaisuudet.get(opsId, id)));
+    }
+
+    @RequestMapping(value = "/{tunniste}/pohja", method = RequestMethod.GET)
+    public UnwrappedOpsVuosiluokkakokonaisuusDto getPohjanVuosiluokkakokonaisuus(
+            @PathVariable final Long opsId,
+            @PathVariable final UUID tunniste
+    ) {
+        return UnwrappedOpsVuosiluokkakokonaisuusDto.of(vuosiluokkakokonaisuudet.getPohjanVuosiluokkakokonaisuus(opsId, tunniste));
     }
 
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
@@ -69,11 +78,6 @@ public class VuosiluokkakokonaisuusController {
     public Set<OppiaineDto> findOppiaineet(@PathVariable final Long opsId, @PathVariable final Long id) {
         throw new UnsupportedOperationException("Ei ole toteutettu");
     }
-
-//    @RequestMapping(method = RequestMethod.GET)
-//    public Set<VuosiluokkakokonaisuusDto> getAll(@PathVariable("opsId") final Long opsId) {
-//        throw new UnsupportedOperationException("TODO: toteuta");
-//    }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public UnwrappedOpsVuosiluokkakokonaisuusDto updateVuosiluokkakokonaisuus(

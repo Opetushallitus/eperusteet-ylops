@@ -70,14 +70,6 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable, Hi
     @Setter
     private TekstiKappale tekstiKappale;
 
-    @ManyToOne
-    @Getter
-    private TekstiKappaleViite original;
-
-    public void updateOriginal(TekstiKappaleViite other) {
-        original = other;
-    }
-
     /**
      * Kertoo viitattavan tekstikappaleen omistussuhteen.
      * Vain omaa tekstikappaletta voidaan muokata, lainatusta tekstikappaleesta
@@ -130,7 +122,6 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable, Hi
         TekstiKappaleViite tkv = new TekstiKappaleViite();
         tkv.setOmistussuhde(Omistussuhde.OMA);
         tkv.setLapset(new ArrayList<>());
-        tkv.updateOriginal(original);
         tkv.setVanhempi(null);
         tkv.setPakollinen(original.isPakollinen());
         tkv.setNaytaPerusteenTeksti(original.isNaytaPerusteenTeksti());

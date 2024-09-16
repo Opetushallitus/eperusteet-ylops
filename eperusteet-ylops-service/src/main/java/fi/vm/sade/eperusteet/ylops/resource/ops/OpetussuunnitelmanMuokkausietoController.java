@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanMuokkaustietoDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,12 @@ public class OpetussuunnitelmanMuokkausietoController {
     }
 
     @GetMapping("/{opsId}/viimeisinpohjatekstisync")
-    public ResponseEntity<MuokkaustietoKayttajallaDto> getViimeisinPohjatekstiSync(@PathVariable("opsId") final Long opsId) {
+    public ResponseEntity<OpetussuunnitelmanMuokkaustietoDto> getViimeisinPohjatekstiSync(@PathVariable("opsId") final Long opsId) {
         return ResponseEntity.ok(muokkausTietoService.getViimeisinPohjatekstiSync(opsId));
+    }
+
+    @GetMapping("/{opsId}/viimeisinpohjatekstisync/pohjaopetussuunnitelma")
+    public ResponseEntity<OpetussuunnitelmanMuokkaustietoDto> getOpetussuunnitelmanPohjanViimeisinPohjaTekstiSync(@PathVariable("opsId") final Long opsId) {
+        return ResponseEntity.ok(muokkausTietoService.getOpetussuunnitelmanPohjanViimeisinPohjaTekstiSync(opsId));
     }
 }

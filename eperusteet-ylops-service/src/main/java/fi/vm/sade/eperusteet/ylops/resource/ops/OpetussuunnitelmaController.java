@@ -15,6 +15,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaStatistiikkaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaTilastoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusKevytDto;
@@ -135,6 +136,12 @@ public class OpetussuunnitelmaController {
     @Timed
     public ResponseEntity<OpetussuunnitelmaKevytDto> getOpetussuunnitelma(@PathVariable("id") final Long id) {
         return ResponseEntity.ok(opetussuunnitelmaService.getOpetussuunnitelma(id));
+    }
+
+    @RequestMapping(value = "/{id}/nimi", method = RequestMethod.GET)
+    @ResponseBody
+    public ResponseEntity<OpetussuunnitelmaNimiDto> getOpetussuunnitelmaNimi(@PathVariable("id") final Long id) {
+        return ResponseEntity.ok(opetussuunnitelmaService.getOpetussuunnitelmaNimi(id));
     }
 
     @RequestMapping(value = "/{id}/pohja/vuosiluokkakokonaisuudet", method = RequestMethod.GET)

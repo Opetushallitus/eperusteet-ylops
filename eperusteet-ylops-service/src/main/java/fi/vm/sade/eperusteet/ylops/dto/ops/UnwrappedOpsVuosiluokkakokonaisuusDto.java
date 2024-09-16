@@ -18,4 +18,12 @@ public class UnwrappedOpsVuosiluokkakokonaisuusDto {
         oma = dto.isOma();
         vuosiluokkakokonaisuus = dto.getVuosiluokkakokonaisuus();
     }
+
+    public static UnwrappedOpsVuosiluokkakokonaisuusDto of(OpsVuosiluokkakokonaisuusDto dto) {
+        if (dto == null) {
+            return null;
+        }
+
+        return new UnwrappedOpsVuosiluokkakokonaisuusDto(dto);
+    }
 }

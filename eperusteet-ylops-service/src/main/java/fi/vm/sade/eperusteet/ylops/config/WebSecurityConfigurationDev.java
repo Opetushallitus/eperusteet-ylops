@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.config;
 
+import fi.vm.sade.eperusteet.ylops.service.util.DevSecurityRole;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -54,51 +55,64 @@ public class WebSecurityConfigurationDev {
                 .username("test")
                 .password("test")
                 .roles("USER",
-                        "APP_EPERUSTEET",
-                        "APP_EPERUSTEET_CRUD",
-                        "APP_EPERUSTEET_READ",
-                        "APP_EPERUSTEET_MAARAYS_READ",
-                        "APP_EPERUSTEET_MAARAYS_CRUD",
-                        "APP_EPERUSTEET_ADMIN_1.2.246.562.10.00000000001",
-                        "APP_EPERUSTEET_ADMIN_1.2.246.562.28.39318578962",
-                        "APP_EPERUSTEET_CRUD_1.2.246.562.10.00000000001",
-                        "APP_EPERUSTEET_CRUD_1.2.246.562.28.55860281986",
-                        "APP_EPERUSTEET_CRUD_1.2.246.562.28.11287634288",
-                        "APP_EPERUSTEET_CRUD_1.2.246.562.28.85557110211",
-                        "APP_EPERUSTEET_CRUD_1.2.246.562.10.00000000001",
-                        "APP_EPERUSTEET_YLOPS",
-                        "APP_EPERUSTEET_YLOPS_CRUD",
-                        "APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.22840843613",
-                        "APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.68534785412",
-                        "APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.00000000001",
-                        "APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.61057016927",
-                        "APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.13649470005",
-                        "APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.11902547485",
-                        "APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.28.11332956371",
-                        "APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.83037752777",
-                        "APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.346830761110",
-                        "APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.10.00000000001",
-                        "APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.10.20516711478",
-                        "APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.10.83037752777",
-                        "APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.10.346830761110",
-                        "APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.10.90008375488",
-                        "APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.28.25927836418",
-                        "APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.10.81269623245",
-                        "APP_EPERUSTEET_AMOSAA_ADMIN_1.2.246.562.10.15738250156",
-                        "APP_EPERUSTEET_AMOSAA_ADMIN_1.2.246.562.10.54645809036",
-                        "APP_EPERUSTEET_AMOSAA_ADMIN_1.2.246.562.10.00000000001",
-                        "APP_EPERUSTEET_AMOSAA_ADMIN_1.2.246.562.28.37193106103",
-                        "APP_EPERUSTEET_AMOSAA_ADMIN_1.2.246.562.10.81269623245",
-                        "APP_EPERUSTEET_VST",
-                        "APP_EPERUSTEET_TUVA",
-                        "APP_EPERUSTEET_KOTO",
-                        "APP_EPERUSTEET_VST_ADMIN_1.2.246.562.10.54645809036",
-                        "APP_EPERUSTEET_TUVA_ADMIN_1.2.246.562.10.54645809036",
-                        "APP_EPERUSTEET_TUVA_ADMIN_1.2.246.562.10.81269623245",
-                        "APP_EPERUSTEET_KOTO_ADMIN_1.2.246.562.10.54645809036",
-                        "APP_EPERUSTEET_KOTO_ADMIN_1.2.246.562.10.81269623245")
+                        DevSecurityRole.amosaa().admin().oid("1.2.246.562.10.00000000001").build(),
+                        DevSecurityRole.amosaa().admin().oid("1.2.246.562.10.15738250156").build(),
+                        DevSecurityRole.amosaa().admin().oid("1.2.246.562.10.54645809036").build(),
+                        DevSecurityRole.amosaa().admin().oid("1.2.246.562.28.37193106103").build(),
+                        DevSecurityRole.amosaa().build(),
+                        DevSecurityRole.eperusteet().admin().oid("1.2.246.562.10.00000000001").build(),
+                        DevSecurityRole.eperusteet().admin().oid("1.2.246.562.28.39318578962").build(),
+                        DevSecurityRole.eperusteet().build(),
+                        DevSecurityRole.eperusteet().crud().build(),
+                        DevSecurityRole.eperusteet().crud().oid("1.2.246.562.10.00000000001").build(),
+                        DevSecurityRole.eperusteet().crud().oid("1.2.246.562.28.11287634288").build(),
+                        DevSecurityRole.eperusteet().crud().oid("1.2.246.562.28.55860281986").build(),
+                        DevSecurityRole.eperusteet().crud().oid("1.2.246.562.28.85557110211").build(),
+                        DevSecurityRole.eperusteet().read().build(),
+                        DevSecurityRole.koto().admin().oid("1.2.246.562.10.54645809036").build(),
+                        DevSecurityRole.koto().build(),
+                        DevSecurityRole.maarays().crud().build(),
+                        DevSecurityRole.maarays().read().build(),
+                        DevSecurityRole.tuva().admin().oid("1.2.246.562.10.54645809036").build(),
+                        DevSecurityRole.tuva().build(),
+                        DevSecurityRole.vst().admin().oid("1.2.246.562.10.54645809036").build(),
+                        DevSecurityRole.vst().build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.00000000001").build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.20516711478").build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.22840843613").build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.346830761110").build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.83037752777").build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.90008375488").build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.28.11332956371").build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.28.11332956371").build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.28.25927836418").build(),
+                        DevSecurityRole.ylops().build(),
+                        DevSecurityRole.ylops().crud().build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.00000000001").build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.11902547485").build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.13649470005").build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.22840843613").build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.346830761110").build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.61057016927").build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.68534785412").build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.83037752777").build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.28.11332956371").build()
+                )
                 .build();
-        return new InMemoryUserDetailsManager(test);
+        UserDetails ylops_helsinki = User.withDefaultPasswordEncoder()
+                .username("ylopshelsinki")
+                .password("test")
+                .roles("USER",
+                        DevSecurityRole.ylops().build(),
+                        DevSecurityRole.ylops().crud().build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.346830761110").build(),
+                        DevSecurityRole.ylops().read().oid("1.2.246.562.10.00000000001").build()
+                )
+                .build();
+        return new InMemoryUserDetailsManager(
+                test,
+                ylops_helsinki
+        );
     }
 
     @Bean
