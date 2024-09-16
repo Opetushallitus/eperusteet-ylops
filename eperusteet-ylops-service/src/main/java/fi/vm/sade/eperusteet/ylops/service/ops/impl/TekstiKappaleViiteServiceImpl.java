@@ -276,12 +276,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
             Sets.newHashSet(viite.getLapset()).forEach(lapsi -> removeTekstiKappaleViite(opsId, lapsi.getId()));
         }
 
-        // Poistetaan viittaus poistettavaan tekstikappale viitteeseen
-//        List<TekstiKappaleViite> viittaavat = tekstikappaleviiteRepository.findAllByOriginalId(viiteId);
-//        viittaavat.forEach(vierasViite -> {
-//            vierasViite.updateOriginal(null);
-//        });
-
         tekstikappaleviiteRepository.lock(viite.getRoot());
         TekstiKappale tekstiKappale = viite.getTekstiKappale();
         if (tekstiKappale != null && tekstiKappale.getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
@@ -434,20 +428,20 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
         TekstiKappaleViite viite = findViite(opsId, viiteId);
         if (opetussuunnitelma.getPohja() != null) {
-            TekstiKappaleViite viiteOriginal = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(
+            TekstiKappaleViite pohjanViite = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(
                 opetussuunnitelma.getPohja().getId(),
                 viite.getTekstiKappale().getTunniste().toString());
 
-            if (viiteOriginal != null) {
-                viiteList.add(mapper.map(viiteOriginal, clazz));
+            if (pohjanViite != null) {
+                viiteList.add(mapper.map(pohjanViite, clazz));
 
-                if (viiteOriginal.isNaytaPohjanTeksti() && opetussuunnitelma.getPohja().getPohja() != null) {
-                    TekstiKappaleViite viiteOriginal2 = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(
+                if (pohjanViite.isNaytaPohjanTeksti() && opetussuunnitelma.getPohja().getPohja() != null) {
+                    TekstiKappaleViite pohjanPohjanViite = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(
                         opetussuunnitelma.getPohja().getPohja().getId(),
                         viite.getTekstiKappale().getTunniste().toString());
 
-                    if (viiteOriginal2 != null) {
-                        viiteList.add(mapper.map(viiteOriginal2, clazz));
+                    if (pohjanPohjanViite != null) {
+                        viiteList.add(mapper.map(pohjanPohjanViite, clazz));
                     }
                 }
             }
@@ -506,7 +500,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
     private void updateTekstiKappale(Long opsId, TekstiKappaleViite viite, TekstiKappaleDto uusiTekstiKappale, boolean requireLock) {
         if (uusiTekstiKappale != null) {
-//            if (viite.getOmistussuhde() == Omistussuhde.OMA) {
                 if (viite.getTekstiKappale() != null) {
                     final Long tid = viite.getTekstiKappale().getId();
                     if (requireLock || lockMgr.getLock(tid) != null) {
@@ -514,9 +507,6 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                     }
                 }
                 tekstiKappaleService.update(opsId, uusiTekstiKappale, requireLock, null);
-//            } else {
-//                throw new BusinessRuleViolationException("Lainattua tekstikappaletta ei voida muokata");
-//            }
         }
     }
 
