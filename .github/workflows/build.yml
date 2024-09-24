@@ -85,7 +85,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           cd eperusteet-ylops-service
-          mvn clean verify --batch-mode
+          mvn clean verify --batch-mode -Pit
       - name: Upload Coverage to Code Climate
         if: ${{ github.ref_name == 'master' }}
         env:

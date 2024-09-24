@@ -387,7 +387,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         oppiaine.addVuosiluokkaKokonaisuus(oavlk);
         oppiaine = oppiaineet.save(oppiaine);
 
-        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.LUONTI);
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.LUONTI, oppiaine.getNavigationType(), null,
+                Sets.newHashSet(new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.vuosiluokkakokonaisuus, vlkId)));
 
         addOppiaineToChildOpetussuunnitelmat(opsId, oppiaine);
         return mapper.map(oppiaine, OppiaineDto.class);
@@ -399,6 +400,10 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     private void addOppiaineToChildOpetussuunnitelmat(Long opetussuunnitelmaId, Oppiaine oppiaine, UUID parentOppiaineTunniste) {
         opetussuunnitelmaRepository.findAllByPohjaId(opetussuunnitelmaId).forEach(opetussuunnitelma -> {
+            if (oppiaine.getVuosiluokkakokonaisuudet().stream().noneMatch(vlk -> vuosiluokkakokonaisuusRepository.findByOpetussuunnitelmaIdAndTunniste(opetussuunnitelma.getId(), vlk.getVuosiluokkakokonaisuus().getId()) != null)) {
+                return;
+            }
+
             Oppiaine newOppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
             newOppiaine.asetaPohjanOppiaine(oppiaine);
             newOppiaine.setLiittyvaOppiaine(Optional.ofNullable(oppiaine.getLiittyvaOppiaine())
@@ -406,6 +411,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
             if (parentOppiaineTunniste == null) {
                 opetussuunnitelma.addOppiaine(newOppiaine);
+                newOppiaine.getVuosiluokkakokonaisuudet().forEach(oppiaineenvuosiluokkakokonaisuus -> {
+                    Vuosiluokkakokonaisuus vlk = vuosiluokkakokonaisuusRepository.findByOpetussuunnitelmaIdAndTunniste(opetussuunnitelma.getId(), oppiaineenvuosiluokkakokonaisuus.getVuosiluokkakokonaisuus().getId());
+                    muokkaustietoService.addOpsMuokkausTieto(opetussuunnitelma.getId(), newOppiaine, MuokkausTapahtuma.LUONTI, newOppiaine.getNavigationType(), null,
+                            Sets.newHashSet(new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.vuosiluokkakokonaisuus, vlk.getId())));
+                });
+
             } else {
                 Oppiaine parentOppiaine = oppiaineet.findOneByOpsIdAndTunniste(opetussuunnitelma.getId(), parentOppiaineTunniste);
                 Boolean isParentOma = oppiaineet.isOma(opetussuunnitelma.getId(), parentOppiaine.getId());
@@ -558,7 +569,8 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         mapper.map(oppiaineDto, oppiaine);
         oppiaine = oppiaineet.save(oppiaine);
 
-        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.PAIVITYS);
+        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.PAIVITYS, oppiaine.getNavigationType(), null,
+                Sets.newHashSet(new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.vuosiluokkakokonaisuus, vlkId)));
 
         return mapper.map(oppiaine, OppiaineDto.class);
     }
