@@ -409,6 +409,10 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
 
     @Override
     public NavigationType getNavigationType() {
+        if (tyyppi.equals(OppiaineTyyppi.MUU_VALINNAINEN)) {
+            return NavigationType.perusopetuspaikallinenoppiaine;
+        }
+
         return NavigationType.perusopetusoppiaine;
     }
 
