@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "vlkokonaisuus")
@@ -98,17 +99,34 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity i
     private Vuosiluokkakokonaisuus(Vuosiluokkakokonaisuus other) {
         this.tunniste = other.getTunniste();
         this.nimi = other.getNimi();
-        this.siirtymaEdellisesta = new Tekstiosa();
-        this.siirtymaSeuraavaan = new Tekstiosa();
-        this.tehtava = new Tekstiosa();
+        this.siirtymaEdellisesta = Tekstiosa.copyOf(other.getSiirtymaEdellisesta());
+        this.siirtymaSeuraavaan = Tekstiosa.copyOf(other.getSiirtymaEdellisesta());
+        this.tehtava = Tekstiosa.copyOf(other.getSiirtymaEdellisesta());
         this.tila = Tila.LUONNOS;
 
         other.getLaajaalaisetosaamiset().forEach(l -> {
-            Laajaalainenosaaminen lo = new Laajaalainenosaaminen(l);
+            Laajaalainenosaaminen lo = Laajaalainenosaaminen.copyOf(l);
             lo.setVuosiluokkaKokonaisuus(this);
             laajaalaisetosaamiset.add(lo);
         });
+    }
 
+    public static Vuosiluokkakokonaisuus copyEmpty(Vuosiluokkakokonaisuus other) {
+        Vuosiluokkakokonaisuus vlk = new Vuosiluokkakokonaisuus();
+        vlk.setTunniste(other.getTunniste());
+        vlk.setNimi(other.getNimi());
+        vlk.setSiirtymaEdellisesta(new Tekstiosa());
+        vlk.setSiirtymaSeuraavaan(new Tekstiosa());
+        vlk.setTehtava(new Tekstiosa());
+        vlk.setTila(Tila.LUONNOS);
+
+        vlk.setLaajaalaisetosaamiset(other.getLaajaalaisetosaamiset().stream().map(l -> {
+            Laajaalainenosaaminen lo = new Laajaalainenosaaminen(l);
+            lo.setVuosiluokkaKokonaisuus(vlk);
+            return lo;
+        }).collect(Collectors.toSet()));
+
+        return vlk;
     }
 
     public Set<Laajaalainenosaaminen> getLaajaalaisetosaamiset() {

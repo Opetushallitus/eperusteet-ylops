@@ -1175,9 +1175,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 .filter(ovlk -> ops.getVuosiluokkakokonaisuudet().stream()
                         .anyMatch(vk -> vk.getVuosiluokkakokonaisuus().getTunniste()
                                 .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste())))
-                .map(ovlk -> teeKopio
+                .map(ovlk -> luontityyppi == OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO
                         ? new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true)
-                        : new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
+                        : new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyEmpty(ovlk.getVuosiluokkakokonaisuus()), true))
                 .collect(toSet());
         ops.setVuosiluokkakokonaisuudet(ovlkoot);
     }
@@ -1663,7 +1663,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                                 .equals(ovlk.getVuosiluokkakokonaisuus().getTunniste().getId())))
                 .map(ovlk -> teeKopio
                         ? new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyOf(ovlk.getVuosiluokkakokonaisuus()), true)
-                        : new OpsVuosiluokkakokonaisuus(ovlk.getVuosiluokkakokonaisuus(), false))
+                        : new OpsVuosiluokkakokonaisuus(Vuosiluokkakokonaisuus.copyEmpty(ovlk.getVuosiluokkakokonaisuus()), true))
                 .map(ovlk -> mapper.map(ovlk, OpsVuosiluokkakokonaisuusDto.class))
                 .collect(toMap(vlk -> vlk.getVuosiluokkakokonaisuus().getTunniste().toString(), vlk -> vlk));
 

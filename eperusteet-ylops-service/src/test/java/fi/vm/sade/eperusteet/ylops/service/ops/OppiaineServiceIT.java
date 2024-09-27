@@ -667,7 +667,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         ops2 = opetussuunnitelmaService.updateOpetussuunnitelma(ops2);
         assertThat(ops2.getVuosiluokkakokonaisuudet()).hasSize(2);
-        assertThat(ops2.getVuosiluokkakokonaisuudet()).extracting("oma").containsExactlyInAnyOrder(false,false);
+        assertThat(ops2.getVuosiluokkakokonaisuudet()).extracting("oma").containsExactlyInAnyOrder(true,true);
     }
 
     @Test
