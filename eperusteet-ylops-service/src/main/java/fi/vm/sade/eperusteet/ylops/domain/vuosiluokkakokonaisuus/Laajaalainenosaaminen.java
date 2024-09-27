@@ -54,9 +54,15 @@ public class Laajaalainenosaaminen extends AbstractReferenceableEntity {
     public Laajaalainenosaaminen() {
     }
 
+    public static Laajaalainenosaaminen copyOf(Laajaalainenosaaminen other) {
+        Laajaalainenosaaminen lo = new Laajaalainenosaaminen(other);
+        lo.setKuvaus(other.getKuvaus());
+
+        return lo;
+    }
+
     public Laajaalainenosaaminen(Laajaalainenosaaminen other) {
         this.laajaalainenosaaminen = new LaajaalainenosaaminenViite(other.getLaajaalainenosaaminen());
-        this.kuvaus = other.getKuvaus();
     }
 
     public void setVuosiluokkaKokonaisuus(Vuosiluokkakokonaisuus vuosiluokkakokonaisuus) {

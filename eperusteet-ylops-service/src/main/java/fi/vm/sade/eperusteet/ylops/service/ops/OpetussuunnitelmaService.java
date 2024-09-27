@@ -80,7 +80,7 @@ public interface OpetussuunnitelmaService {
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     OpetussuunnitelmaStatistiikkaDto getStatistiikka();
 
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("isAuthenticated() or @profileService.isDevProfileActive()")
     List<OpetussuunnitelmaTilastoDto> getOpetussuunnitelmaTilastot();
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
