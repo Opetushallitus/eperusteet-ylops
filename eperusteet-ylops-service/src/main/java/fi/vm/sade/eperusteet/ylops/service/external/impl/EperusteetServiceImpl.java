@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Throwables;
@@ -9,7 +8,6 @@ import fi.vm.sade.eperusteet.utils.client.RestClientFactory;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-import fi.vm.sade.eperusteet.ylops.dto.PalauteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.TermiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -355,11 +353,6 @@ public class EperusteetServiceImpl implements EperusteetService {
     @Override
     public byte[] getLiite(Long perusteId, UUID id) {
         return client.exchange(eperusteetServiceInternalUrl + "/api/perusteet/{perusteId}/kuvat/{id}", HttpMethod.GET, httpEntity, byte[].class, perusteId, id).getBody();
-    }
-
-    @Override
-    public PalauteDto lahetaPalaute(PalauteDto palaute) throws JsonProcessingException {
-        return ophClientHelper.post(eperusteetServiceInternalUrl, String.format(eperusteetServiceUrl + "/api/palaute"), palaute, PalauteDto.class);
     }
 
     @Override
