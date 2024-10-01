@@ -57,6 +57,8 @@ public class Laajaalainenosaaminen extends AbstractReferenceableEntity {
     public static Laajaalainenosaaminen copyOf(Laajaalainenosaaminen other) {
         Laajaalainenosaaminen lo = new Laajaalainenosaaminen(other);
         lo.setKuvaus(other.getKuvaus());
+        lo.setNaytaPerusteenPaatasonLao(other.isNaytaPerusteenPaatasonLao());
+        lo.setNaytaPerusteenVlkTarkennettuLao(other.isNaytaPerusteenVlkTarkennettuLao());
 
         return lo;
     }

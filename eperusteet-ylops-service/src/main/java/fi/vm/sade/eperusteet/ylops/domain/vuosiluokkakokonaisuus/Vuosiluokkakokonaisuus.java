@@ -121,7 +121,8 @@ public class Vuosiluokkakokonaisuus extends AbstractAuditedReferenceableEntity i
         vlk.setTila(Tila.LUONNOS);
 
         vlk.setLaajaalaisetosaamiset(other.getLaajaalaisetosaamiset().stream().map(l -> {
-            Laajaalainenosaaminen lo = new Laajaalainenosaaminen(l);
+            Laajaalainenosaaminen lo = Laajaalainenosaaminen.copyOf(l);
+            lo.setKuvaus(null);
             lo.setVuosiluokkaKokonaisuus(vlk);
             return lo;
         }).collect(Collectors.toSet()));
