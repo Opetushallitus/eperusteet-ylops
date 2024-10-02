@@ -5,12 +5,14 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonais
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuusLisatieto;
+import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Laajaalainenosaaminen;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetuksenkeskeinenSisaltoalueRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.VuosiluokkakokonaisuusviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -41,6 +44,9 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
 
     @Autowired
     private OpetussuunnitelmanMuokkaustietoService muokkaustietoService;
+
+    @Autowired
+    private VuosiluokkakokonaisuusviiteRepository vuosiluokkakokonaisuusviiteRepository;
 
     @Override
     public VuosiluokkakokonaisuusDto add(Long opsId, VuosiluokkakokonaisuusDto dto) {
@@ -134,7 +140,28 @@ public class VuosiluokkakokonaisuusServiceImpl implements Vuosiluokkakokonaisuus
         OpsVuosiluokkakokonaisuus ovk = new OpsVuosiluokkakokonaisuus(vk, isOma);
 
         muokkaustietoService.addOpsMuokkausTieto(opsId, vk, MuokkausTapahtuma.PAIVITYS);
+        paivitaAlaOpetussuunnitelmaVuosiluokkakokonaisuus(opsId, vk);
         return mapper.map(ovk, OpsVuosiluokkakokonaisuusDto.class);
+    }
+
+    private void paivitaAlaOpetussuunnitelmaVuosiluokkakokonaisuus(Long pohjaOpetussuunnitelmaId, Vuosiluokkakokonaisuus pohjanVuosiluokkakokonaisuus) {
+        opetussuunnitelmaRepository.findAllByPohjaId(pohjaOpetussuunnitelmaId).forEach(opetussuunnitelma -> {
+            Vuosiluokkakokonaisuus vk = kokonaisuudet.findByOpetussuunnitelmaIdAndTunniste(opetussuunnitelma.getId(), pohjanVuosiluokkakokonaisuus.getTunniste().getId());
+            if (vk != null) {
+                vk.getLaajaalaisetosaamiset().forEach(laajaalainenosaaminen -> {
+                    Optional<Laajaalainenosaaminen> pohjanLaajaLainenOsaaminen = pohjanVuosiluokkakokonaisuus.getLaajaalaisetosaamiset().stream()
+                            .filter(l -> l.getLaajaalainenosaaminen().getViite().equals(laajaalainenosaaminen.getLaajaalainenosaaminen().getViite()))
+                            .findFirst();
+                    if (pohjanLaajaLainenOsaaminen.isPresent()) {
+                        laajaalainenosaaminen.setNaytaPerusteenPaatasonLao(pohjanLaajaLainenOsaaminen.get().isNaytaPerusteenPaatasonLao());
+                        laajaalainenosaaminen.setNaytaPerusteenVlkTarkennettuLao(pohjanLaajaLainenOsaaminen.get().isNaytaPerusteenVlkTarkennettuLao());
+                    }
+
+                });
+                kokonaisuudet.save(vk);
+                paivitaAlaOpetussuunnitelmaVuosiluokkakokonaisuus(opetussuunnitelma.getId(), vk);
+            }
+        });
     }
 
     @Override
