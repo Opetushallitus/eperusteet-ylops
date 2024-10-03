@@ -71,7 +71,6 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaTilastoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaWithLatestTilaUpdateTime;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusopetuksenPerusteenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -89,6 +88,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViitePerusteTekstillaDto;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
+import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -196,6 +196,8 @@ import static java.util.stream.Collectors.toSet;
 @Transactional
 @Slf4j
 public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
+    @Autowired
+    private DokumenttiRepository dokumenttiRepository;
 
     static private final Logger logger = LoggerFactory.getLogger(OpetussuunnitelmaServiceImpl.class);
 
@@ -1881,34 +1883,22 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
+
         if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.JULKAISTU) {
             tila = Tila.VALMIS;
         }
 
-        if (ops.getTyyppi() == Tyyppi.OPS && ops.getTila() == Tila.JULKAISTU && tila == Tila.VALMIS) {
-            ops.setTila(tila);
-            ops = opetussuunnitelmaRepository.save(ops);
-        }
-
-        if (tila != ops.getTila() && ops.getTila().mahdollisetSiirtymat(ops.getTyyppi()
-                == Tyyppi.POHJA).contains(tila)) {
-            if (ops.getTyyppi() == Tyyppi.OPS && (tila == Tila.JULKAISTU)) {
-                validointiService.validoiOpetussuunnitelma(id).forEach(Validointi::tuomitse);
-                julkaisuService.addJulkaisu(id,
-                        UusiJulkaisuDto
-                                .builder()
-                                .julkaisutiedote(LokalisoituTekstiDto.of("Julkaisu"))
-                                .build());
-            } else if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.VALMIS) {
-                validointiService.validoiOpetussuunnitelma(id).forEach(Validointi::tuomitse);
+        if (tila != ops.getTila() && ops.getTila().mahdollisetSiirtymat(ops.getTyyppi() == Tyyppi.POHJA).contains(tila)) {
+            if (ops.getTyyppi() == Tyyppi.OPS && ops.getTila() == Tila.POISTETTU && tila == Tila.LUONNOS) {
+                dokumenttiRepository.deleteAllById(ops.getJulkaisut().stream().map(OpetussuunnitelmanJulkaisu::getDokumentit).flatMap(Collection::stream).collect(toList()));
+                julkaisuRepository.deleteAll(ops.getJulkaisut());
             }
 
             ops.setTila(tila);
-            ops = opetussuunnitelmaRepository.save(ops);
-
-            muokkaustietoService.addOpsMuokkausTieto(id, ops, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-tila-" + tila);
         }
 
+        ops = opetussuunnitelmaRepository.save(ops);
+        muokkaustietoService.addOpsMuokkausTieto(id, ops, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-tila-" + tila);
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }
 
@@ -1932,6 +1922,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
         ops.setTila(Tila.LUONNOS);
+        julkaisuRepository.deleteAll(ops.getJulkaisut());
+
         ops = opetussuunnitelmaRepository.save(ops);
         return mapper.map(ops, OpetussuunnitelmaDto.class);
     }

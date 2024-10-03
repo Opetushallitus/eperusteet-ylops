@@ -22,7 +22,7 @@ public enum Tila {
     POISTETTU("poistettu") {
         @Override
         public Set<Tila> mahdollisetSiirtymat(boolean isPohja) {
-            return EnumSet.of(LUONNOS, POISTETTU);
+            return EnumSet.of(LUONNOS, POISTETTU, JULKAISTU);
         }
     },
     JULKAISTU("julkaistu") {
