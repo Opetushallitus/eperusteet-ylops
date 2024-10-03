@@ -322,15 +322,6 @@ public class OpetussuunnitelmaController {
         return new ResponseEntity<>(opetussuunnitelmaService.validoiOpetussuunnitelma(id), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{id}/palauta", method = RequestMethod.POST)
-    @ResponseBody
-    @Timed
-    public ResponseEntity<OpetussuunnitelmaDto> restoreOpetussuunnitelma(
-            @PathVariable("id") final Long id
-    ) {
-        return new ResponseEntity<>(opetussuunnitelmaService.restore(id), HttpStatus.OK);
-    }
-
     @RequestMapping(value = "/oikeudet", method = RequestMethod.GET)
     public ResponseEntity<Map<TargetType, Set<Permission>>> getOikeudet() {
         return new ResponseEntity<>(permissionManager.getOpsPermissions(), HttpStatus.OK);
