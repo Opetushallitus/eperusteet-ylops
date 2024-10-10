@@ -95,7 +95,8 @@ public class OpsExportLops2019Impl implements OpsExport {
     public OpetussuunnitelmaExportDto export(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        OpetussuunnitelmaExportLops2019Dto result = mapper.map(ops, OpetussuunnitelmaExportLops2019Dto.class);
+//        OpetussuunnitelmaExportLops2019Dto result = mapper.map(ops, OpetussuunnitelmaExportLops2019Dto.class);
+        OpetussuunnitelmaExportLops2019Dto result = (OpetussuunnitelmaExportLops2019Dto) dispatcher.get(KoulutustyyppiToteutus.YKSINKERTAINEN, OpsExport.class).export(opsId);
         List<Lops2019OpintojaksoExportDto> opintojaksot = lops2019OpintojaksoService.getAllTuodut(ops.getId(), Lops2019OpintojaksoExportDto.class);
         List<Lops2019PaikallinenOppiaineExportDto> paikallisetOppiaineet = lops2019OppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineExportDto.class);
         PerusteInfoDto peruste = lops2019Service.getPeruste(opsId);

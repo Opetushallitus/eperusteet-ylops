@@ -5,7 +5,6 @@ import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.TekstiKappaleViiteExportDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
@@ -48,10 +47,10 @@ public class OpsExportDefaultImpl implements OpsExport {
     private TekstiKappaleViiteService tekstiKappaleViiteService;
 
     @Override
-    public OpetussuunnitelmaExportDto export(Long opsId) {
+    public OpetussuunnitelmaExportDto export(Long opsId, Class ) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        OpetussuunnitelmaLaajaDto dto = mapper.map(ops, OpetussuunnitelmaLaajaDto.class);
+        OpetussuunnitelmaExportDto dto = mapper.map(ops, OpetussuunnitelmaExportDto.class);
         PerusteInfoDto peruste = lops2019Service.getPeruste(opsId);
         dto.setPeruste(peruste);
         opetussuunnitelmaService.fetchKuntaNimet(dto);
