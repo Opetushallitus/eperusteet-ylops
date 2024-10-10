@@ -47,8 +47,8 @@ public class OpsExportPerusopetusImpl implements OpsExport {
     private VuosiluokkakokonaisuusService vuosiluokkakokonaisuusService;
 
     @Override
-    public OpetussuunnitelmaExportDto export(Long opsId) {
-        OpetussuunnitelmaLaajaDto dto = (OpetussuunnitelmaLaajaDto) dispatcher.get(KoulutustyyppiToteutus.YKSINKERTAINEN, OpsExport.class).export(opsId);
+    public <T extends OpetussuunnitelmaExportDto> T export(Long opsId, Class<T> clz) {
+        OpetussuunnitelmaLaajaDto dto = (OpetussuunnitelmaLaajaDto) dispatcher.get(KoulutustyyppiToteutus.YKSINKERTAINEN, OpsExport.class).export(opsId, clz);
 
         dto.getOppiaineet().forEach(opsOppiaine -> {
             opsOppiaine.getOppiaine().setPohjanOppiaine(oppiaineService.getPohjanVastaavaOppiaine(opsId, opsOppiaine.getOppiaine().getId(), OppiaineExportDto.class));
@@ -61,11 +61,11 @@ public class OpsExportPerusopetusImpl implements OpsExport {
             vlk.setPohjanVuosiluokkakokonaisuus(vuosiluokkakokonaisuusService.getPohjanVuosiluokkakokonaisuus(opsId, UUID.fromString(vlk.getVuosiluokkakokonaisuus().getTunniste().toString())).getVuosiluokkakokonaisuus());
         });
 
-        return dto;
+        return clz.cast(dto);
     }
 
     @Override
-    public Class getExportClass() {
+    public Class<? extends OpetussuunnitelmaExportDto> getExportClass() {
         return OpetussuunnitelmaLaajaDto.class;
     }
 

@@ -10,6 +10,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.domain.utils.KoodistoUtils;
+import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
@@ -516,7 +517,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         opsLuontiDto.setPohja(Reference.of(pohjaDto.getId()));
         OpetussuunnitelmaDto ops = opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
 
-        OpetussuunnitelmaLaajaDto exported = (OpetussuunnitelmaLaajaDto) opetussuunnitelmaService.getExportedOpetussuunnitelma(ops.getId());
+        OpetussuunnitelmaExportDto exported = opetussuunnitelmaService.getExportedOpetussuunnitelma(ops.getId());
         assertThat(exported.getPeruste()).isNotNull();
         assertThat(exported.getPohja()).isNotNull();
         assertThat(exported.getTekstit()).isNotNull();
