@@ -16,12 +16,13 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsExport;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
 
@@ -48,10 +49,10 @@ public class OpsExportLopsImpl implements OpsExport {
     private Lops2019Service lops2019Service;
 
     @Override
-    public OpetussuunnitelmaExportDto export(Long opsId) {
+    public <T extends OpetussuunnitelmaExportDto> T export(Long opsId, Class<T> clz) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        OpetussuunnitelmaExportLopsDto result = mapper.map(ops, OpetussuunnitelmaExportLopsDto.class);
+        OpetussuunnitelmaExportLopsDto result = (OpetussuunnitelmaExportLopsDto) dispatcher.get(KoulutustyyppiToteutus.YKSINKERTAINEN, OpsExport.class).export(opsId, clz);
         PerusteInfoDto peruste = lops2019Service.getPeruste(opsId);
 
         LukioOpetussuunnitelmaRakenneOpsDto rakenne = lukioOpetussuunnitelmaService.getRakenne(opsId);
@@ -68,7 +69,7 @@ public class OpsExportLopsImpl implements OpsExport {
 
         opetussuunnitelmaService.fetchKuntaNimet(result);
         opetussuunnitelmaService.fetchOrganisaatioNimet(result);
-        return result;
+        return clz.cast(result);
     }
 
     @Override
@@ -77,7 +78,7 @@ public class OpsExportLopsImpl implements OpsExport {
     }
 
     @Override
-    public Class getExportClass() {
+    public Class<? extends OpetussuunnitelmaExportDto> getExportClass() {
         return OpetussuunnitelmaExportLopsDto.class;
     }
 }
