@@ -257,13 +257,17 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public OppiaineDto addCopyOppimaara(Long opsId, Long oppiaineId, KopioOppimaaraDto kt) {
-        checkOppimaaraCreateIsAllowed(opsId, oppiaineId);
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
 
-        Opetussuunnitelma opspohja = ops.getAlinPohja();
-
+        Boolean isOmaOppiaine = oppiaineet.isOma(opsId, oppiaineId);
         Oppiaine parent = oppiaineet.findOne(oppiaineId);
+        if (!isOmaOppiaine) {
+            OpsOppiaineDto kopioOppiaine = kopioiMuokattavaksi(opsId, oppiaineId, true);
+            parent = oppiaineet.findOne(kopioOppiaine.getOppiaine().getId());
+        }
+
+        Opetussuunnitelma opspohja = ops.getAlinPohja();
         Oppiaine pohjaparent = oppiaineet.findOneByOpsIdAndTunniste(opspohja.getId(), parent.getTunniste());
         Oppiaine uusi = null;
 
@@ -287,20 +291,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         assertExists(uusi, "Pyydettyä kielitarjonnan oppiainetta ei ole");
         addOppiaineToChildOpetussuunnitelmat(opsId, uusi, parent.getTunniste());
         return mapper.map(uusi, OppiaineDto.class);
-    }
-
-    private void checkOppimaaraCreateIsAllowed(Long opsId, Long oppiaineId) {
-        Boolean isOmaOppiaine = oppiaineet.isOma(opsId, oppiaineId);
-
-        if (isOmaOppiaine == null) {
-            throw new BusinessRuleViolationException("Oppiainetta jolle oppimäärää luodaan, ei ole olemassa.");
-        }
-
-        if (isOmaOppiaine) {
-            return;
-        }
-
-        throw new BusinessRuleViolationException("Oppiaine tulee opetussuunnitelman pohjasta, joten siihen ei voi lisätä oppimäärää.");
     }
 
     @Override
