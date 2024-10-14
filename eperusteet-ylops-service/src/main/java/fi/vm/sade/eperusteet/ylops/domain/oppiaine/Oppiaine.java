@@ -84,12 +84,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @Setter
     private Oppiaine liittyvaOppiaine;
 
-    @Deprecated
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name = "pohjan_oppiaine_id")
-    @Getter
-    private Oppiaine pohjanOppiaine;
-
     /**
      * Laajuus vuosiviikkotunteina (vvh)
      */
