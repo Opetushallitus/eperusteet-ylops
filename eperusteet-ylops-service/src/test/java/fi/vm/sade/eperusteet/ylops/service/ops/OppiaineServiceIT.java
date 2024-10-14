@@ -283,8 +283,8 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         OpsOppiaineDto opsOppiaine = oppiaineService.kopioiMuokattavaksi(alaOps.getId(), oppiaine.getId(), true);
         assertNotEquals("Oppiaineet ovat samat", opsOppiaine.getOppiaine().getId(), oppiaine.getId());
-        assertEquals("Väärä pohja", opsOppiaine.getOppiaine().getPohjanOppiaine().getId(), oppiaine.getId());
         assertNull(opsOppiaine.getOppiaine().getTehtava().getTeksti());
+        assertEquals(opsOppiaine.getOppiaine().getTunniste(), oppiaine.getTunniste());
         opsOppiaine.getOppiaine().getVuosiluokkakokonaisuudet().forEach(vlk -> {
             assertNull(vlk.getArviointi().getTeksti());
             assertNull(vlk.getOhjaus().getTeksti());

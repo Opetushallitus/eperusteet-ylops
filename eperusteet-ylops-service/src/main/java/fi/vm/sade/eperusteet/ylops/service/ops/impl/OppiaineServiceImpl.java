@@ -65,6 +65,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsOppiaineCtx;
 import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -93,6 +94,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 import static java.util.stream.Collectors.toSet;
 
+@Slf4j
 @Service
 @Transactional
 public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> implements OppiaineService {
@@ -405,7 +407,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             }
 
             Oppiaine newOppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
-            newOppiaine.asetaPohjanOppiaine(oppiaine);
+            newOppiaine.tyhjennaTiedot();
             newOppiaine.setLiittyvaOppiaine(Optional.ofNullable(oppiaine.getLiittyvaOppiaine())
                     .map(liittyva -> oppiaineet.findOneByOpsIdAndTunniste(opetussuunnitelma.getId(), liittyva.getTunniste())).orElse(null));
 
@@ -420,7 +422,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
             } else {
                 Oppiaine parentOppiaine = oppiaineet.findOneByOpsIdAndTunniste(opetussuunnitelma.getId(), parentOppiaineTunniste);
                 Boolean isParentOma = oppiaineet.isOma(opetussuunnitelma.getId(), parentOppiaine.getId());
-
                 if (!isParentOma) {
                     kopioiMuokattavaksi(opetussuunnitelma.getId(), parentOppiaine.getId(), true);
                 } else {
@@ -799,16 +800,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Oppiaine newOppiaine = oppiaineet.save(Oppiaine.copyOf(oppiaine));
 
         if (asetaPohjanOppiaine) {
-            newOppiaine.asetaPohjanOppiaine(oppiaine);
+            newOppiaine.tyhjennaTiedot();
             if (newOppiaine.getOppimaarat() != null) {
-                newOppiaine.getOppimaarat().forEach(newoppimaara -> {
-                    Optional<Oppiaine> optOppimaara = oppiaine.getOppimaarat().stream()
-                            .filter(oppimaara -> oppimaara.getKoodiUri().equals(newoppimaara.getKoodiUri()))
-                            .findFirst();
-                    if (optOppimaara.isPresent()) {
-                        newoppimaara.asetaPohjanOppiaine(optOppimaara.get());
-                    }
-                });
+                newOppiaine.getOppimaarat().forEach(Oppiaine::tyhjennaTiedot);
             }
         }
 
@@ -906,11 +900,6 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         lukioOppiaineJarjestysRepository.deleteAll(lukioOppiaineJarjestysRepository
                 .findByOppiaineIds(oppiaine.maarineen().map(Oppiaine::getId).collect(toSet())));
         oppiaineLukiokurssiRepository.deleteAll(oppiaineLukiokurssiRepository.findByOpsAndOppiaine(opsId, oppiaineId));
-
-        oppiaineet.findByPohjanOppiaine(oppiaine).forEach(pohjanOppiainettaKayttavaOppiaine -> {
-            pohjanOppiainettaKayttavaOppiaine.asetaPohjanOppiaine(null);
-            oppiaineet.save(pohjanOppiainettaKayttavaOppiaine);
-        });
 
         poistaOppiaineAlaOpetussuunnitelmista(opsId, oppiaine);
         muokkaustietoService.addOpsMuokkausTieto(ops, oppiaine, MuokkausTapahtuma.POISTO);
