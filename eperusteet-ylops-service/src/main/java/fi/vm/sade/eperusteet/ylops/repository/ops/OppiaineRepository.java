@@ -44,6 +44,4 @@ public interface OppiaineRepository extends JpaWithVersioningRepository<Oppiaine
 
     @Query(value = "select ops from Opetussuunnitelma ops inner join ops.oppiaineet oo inner join oo.oppiaine o on o.id = ?1 where not(ops.id = ?2)")
     Set<Opetussuunnitelma> findOtherOpetussuunnitelmasContainingOpsOppiaine(long oppiaineId, long exceptOpsId);
-
-    Set<Oppiaine> findByPohjanOppiaine(Oppiaine pohjanOppiaine);
 }

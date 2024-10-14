@@ -334,8 +334,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
         }
     }
 
-    public void asetaPohjanOppiaine(Oppiaine pohjanOppiaine) {
-        this.pohjanOppiaine = pohjanOppiaine;
+    public void tyhjennaTiedot() {
         setTehtava(new Tekstiosa());
         setTavoitteet(new Tekstiosa());
         setArviointi(new Tekstiosa());
