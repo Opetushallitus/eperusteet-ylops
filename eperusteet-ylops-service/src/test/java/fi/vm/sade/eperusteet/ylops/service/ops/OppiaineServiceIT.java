@@ -8,6 +8,8 @@ import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineValinnainenTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
@@ -28,6 +30,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OppiaineRepository;
@@ -44,6 +47,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -249,19 +253,27 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
                 .getOppimaarat();
     }
 
-    /**
-     * EP-3122: Testataan että ei ole mahdollista luoda uutta oppimäärää alatason opsiin jos linkitystä pohjaopsiin ei ole
-     * katkaistu.
-     */
     @Test
-    public void testCantAddOppimaara() {
+    @Transactional
+    public void testCanAddOppimaara() {
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+        OppiaineDto vieraatKielet = addVieraatKieletOppiaineWithOppimaara(ops);
         OpetussuunnitelmaDto ylaOps = createOpsBasedOnPohja();
-        OppiaineDto vieraatKielet = addVieraatKieletOppiaineWithOppimaara(ylaOps);
         OpetussuunnitelmaDto alaOps = createOpsBasedOnOps(ylaOps);
 
-        assertThatThrownBy(() -> oppiaineService.addCopyOppimaara(alaOps.getId(), vieraatKielet.getId(), new KopioOppimaaraDto()))
-                .isInstanceOf(BusinessRuleViolationException.class)
-                .hasMessage("Oppiaine tulee opetussuunnitelman pohjasta, joten siihen ei voi lisätä oppimäärää.");
+        Opetussuunnitelma alinPohja = opetussuunnitelmaRepository.findOne(alaOps.getId()).getAlinPohja();
+        OpsOppiaine alimmanPohjanOppiaine = alinPohja.getOppiaineet().stream().filter(oa -> !oa.getOppiaine().getOppimaarat().isEmpty()).findFirst().orElseThrow();
+        UUID tunniste = alimmanPohjanOppiaine.getOppiaine().getOppimaarat().iterator().next().getTunniste();
+
+        OppiaineDto alaOpsinOppiaine = oppiaineService.addCopyOppimaara(
+                alaOps.getId(),
+                alaOps.getOppiaineet().iterator().next().getOppiaine().getId(),
+                KopioOppimaaraDto.builder()
+                        .tunniste(tunniste)
+                        .omaNimi(LokalisoituTekstiDto.of("uusi vieras kieli"))
+                        .build());
+        OpsOppiaineDto opsOppiaine = oppiaineService.get(alaOps.getId(), alaOpsinOppiaine.getId());
+        assertThat(opsOppiaine.isOma()).isTrue();
     }
 
     @Test
