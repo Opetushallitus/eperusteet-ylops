@@ -34,7 +34,7 @@ public class MaintenanceController {
 
     @RequestMapping(value = "/cacheclear/{cache}", method = GET)
     public ResponseEntity clearCache(@PathVariable final String cache) {
-        cacheManager.getCache(cache).clear();
+        maintenanceService.clearCache(cache);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
     }
@@ -48,4 +48,10 @@ public class MaintenanceController {
                 koulutustyypit != null ? koulutustyypit.stream().map(KoulutusTyyppi::of).collect(Collectors.toSet()) : null);
     }
 
+
+    @RequestMapping(value = "/cache/julkaisut", method = GET)
+    public void cacheOpetussuunnitelmaJulkaisut() {
+        maintenanceService.cacheJulkaistutOpetussuunnitelmat();
+        maintenanceService.cacheOpetussuunnitelmaNavigaatiot();
+    }
 }

@@ -41,6 +41,7 @@ import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
 import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
+import fi.vm.sade.eperusteet.ylops.service.util.MaintenanceService;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -116,6 +117,9 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     @Autowired
     @Lazy
     private JulkaisuService self;
+
+    @Autowired
+    private MaintenanceService maintenanceService;
 
     private static final int JULKAISUN_ODOTUSAIKA_SEKUNNEISSA = 60 * 60;
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
@@ -246,6 +250,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         opetussuunnitelma.setTila(Tila.JULKAISTU);
         julkaistuOpetussuunnitelmaTila.setJulkaisutila(JulkaisuTila.JULKAISTU);
         self.saveJulkaistuOpetussuunnitelmaTila(julkaistuOpetussuunnitelmaTila);
+        maintenanceService.clearOpetussuunnitelmaCaches(opsId);
     }
 
     @Override
