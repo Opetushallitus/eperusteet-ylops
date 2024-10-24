@@ -122,5 +122,25 @@
         </resources>
     </cache>
 
+    <cache alias="opetussuunnitelma_julkaisu">
+        <expiry>
+            <ttl unit="seconds">86400</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">9999</heap>
+        </resources>
+    </cache>
+
+    <cache alias="opetussuunnitelma_navigaatio_julkinen">
+        <expiry>
+            <ttl unit="seconds">86400</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">9999</heap>
+        </resources>
+    </cache>
+
 
 </config>
