@@ -8,6 +8,17 @@ import java.util.Set;
 public interface MaintenanceService {
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
+    void clearCache(String cache);
+
+    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     void teeJulkaisut(boolean julkaiseKaikki, Set<KoulutusTyyppi> koulutustyypit);
 
+    @PreAuthorize("isAuthenticated()")
+    void clearOpetussuunnitelmaCaches(Long opetussuunnitelmaId);
+
+    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
+    void cacheOpetussuunnitelmaNavigaatiot();
+
+    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
+    void cacheJulkaistutOpetussuunnitelmat();
 }

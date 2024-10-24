@@ -10,6 +10,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
+import fi.vm.sade.eperusteet.ylops.dto.util.CacheArvot;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -18,7 +19,8 @@ import fi.vm.sade.eperusteet.ylops.service.util.JsonMapper;
 import fi.vm.sade.eperusteet.ylops.service.util.MaintenanceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
+import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -31,13 +33,13 @@ import org.springframework.util.CollectionUtils;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @Slf4j
-@Profile("!test")
 public class MaintenanceServiceImpl implements MaintenanceService {
 
     @Autowired
@@ -50,6 +52,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
     private JulkaisuRepository julkaisuRepository;
 
     @Autowired
+    @Lazy
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
     @Autowired
@@ -57,6 +60,14 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
     @Autowired
     private JsonMapper jsonMapper;
+
+    @Autowired
+    private CacheManager cacheManager;
+
+    @Override
+    public void clearCache(String cache) {
+        Objects.requireNonNull(cacheManager.getCache(cache)).clear();
+    }
 
     @Override
     @Async
@@ -115,4 +126,36 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             return true;
         });
     }
+
+    @Override
+    public void clearOpetussuunnitelmaCaches(Long opetussuunnitelmaId) {
+        opetussuunnitelmaRepository.findOne(opetussuunnitelmaId).getJulkaisukielet().forEach(kieli -> {
+            cacheManager.getCache(CacheArvot.OPETUSSUUNNITELMA_NAVIGAATIO_JULKINEN).evictIfPresent(opetussuunnitelmaId + kieli.toString());
+        });
+        cacheManager.getCache(CacheArvot.OPETUSSUUNNITELMA_JULKAISU).evictIfPresent(opetussuunnitelmaId);
+    }
+
+    @Override
+    public void cacheOpetussuunnitelmaNavigaatiot() {
+        opetussuunnitelmaService.getKaikkiJulkaistutOpetussuunnitelmat().forEach(ops -> {
+            try {
+                ops.getJulkaisukielet().forEach(kieli -> opetussuunnitelmaService.buildNavigationPublic(ops.getId(), kieli.toString(), null));
+            } catch (Exception e) {
+                log.error("Error caching navigation for opetussuunnitelma {}", ops.getId(), e);
+            }
+        });
+    }
+
+    @Override
+    public void cacheJulkaistutOpetussuunnitelmat() {
+        opetussuunnitelmaService.getKaikkiJulkaistutOpetussuunnitelmat().forEach(ops -> {
+            try {
+                opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(ops.getId(), null);
+            } catch(Exception e) {
+                log.error("Error caching julkaistu sisalto for opetussuunnitelma {}", ops.getId(), e);
+            }
+        });
+    }
+
+
 }

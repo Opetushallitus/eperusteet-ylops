@@ -87,6 +87,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViitePerusteTekstillaDto;
+import fi.vm.sade.eperusteet.ylops.dto.util.CacheArvot;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019OpintojaksoRepository;
@@ -128,6 +129,7 @@ import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
+import fi.vm.sade.eperusteet.ylops.service.util.MaintenanceService;
 import fi.vm.sade.eperusteet.ylops.service.util.NavigationUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
@@ -289,6 +291,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private OpetussuunnitelmaAsyncTekstitPohjastaService opetussuunnitelmaAsyncTekstitPohjastaService;
+
+    @Autowired
+    private MaintenanceService maintenanceService;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -641,6 +646,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    @Cacheable(
+            value= CacheArvot.OPETUSSUUNNITELMA_NAVIGAATIO_JULKINEN,
+            condition = "#revision == null",
+            key = "#opsId + #kieli"
+    )
     public NavigationNodeDto buildNavigationPublic(Long opsId, String kieli, Integer revision) {
         NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilderPublic.class).buildNavigation(opsId, kieli, revision);
         siirraLiitteetLoppuun(navigationNodeDto);
@@ -1884,7 +1894,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
         assertExists(ops, "Opetussuunnitelmaa ei ole olemassa");
 
-
         if (ops.getTyyppi() == Tyyppi.POHJA && tila == Tila.JULKAISTU) {
             tila = Tila.VALMIS;
         }
@@ -1898,6 +1907,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             ops.setTila(tila);
         }
 
+        maintenanceService.clearOpetussuunnitelmaCaches(id);
         ops = opetussuunnitelmaRepository.save(ops);
         muokkaustietoService.addOpsMuokkausTieto(id, ops, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-tila-" + tila);
         return mapper.map(ops, OpetussuunnitelmaDto.class);
@@ -2047,6 +2057,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    @Cacheable(
+            value= CacheArvot.OPETUSSUUNNITELMA_JULKAISU,
+            condition = "#revision == null",
+            key = "#opsId"
+    )
     public OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(Long opsId, Integer revision) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         if (ops == null || ops.getTila().equals(Tila.POISTETTU)) {
