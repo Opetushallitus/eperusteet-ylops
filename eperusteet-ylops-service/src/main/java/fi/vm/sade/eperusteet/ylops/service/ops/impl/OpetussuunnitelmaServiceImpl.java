@@ -1847,13 +1847,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         // Ei sallita vuoluokkakokonaisuuksien muutoksia kuin luonnostilassa
         if (opetussuunnitelmaDto.getTila() != Tila.LUONNOS) {
-            if (!opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream()
+            Set<Long> vlkIds = opetussuunnitelmaDto.getVuosiluokkakokonaisuudet().stream()
                     .map(vlk -> vlk.getVuosiluokkakokonaisuus().getId())
-                    .collect(Collectors.toSet())
-                    .equals(ops.getVuosiluokkakokonaisuudet().stream()
-                            .map(vlk -> vlk.getVuosiluokkakokonaisuus().getId())
-                            .collect(Collectors.toSet()))) {
-                throw new BusinessRuleViolationException("Opetussuunnitelman vuosiluokkakokonaisuuksia ei voi vaihtaa kuin luonnoksessa");
+                    .collect(Collectors.toSet());
+            Set<Long> oldVlkIds = ops.getVuosiluokkakokonaisuudet().stream()
+                    .map(vlk -> vlk.getVuosiluokkakokonaisuus().getId())
+                    .collect(Collectors.toSet());
+            if (!vlkIds.containsAll(oldVlkIds)) {
+                throw new BusinessRuleViolationException("julkaistun-opetussuunnitelman-vuosiluokkakokonaisuuksia-ei-voi-poistaa");
             }
         }
 
