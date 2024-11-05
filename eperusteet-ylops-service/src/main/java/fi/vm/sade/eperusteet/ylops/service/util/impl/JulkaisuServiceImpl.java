@@ -248,6 +248,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         }
 
         opetussuunnitelma.setTila(Tila.JULKAISTU);
+        opetussuunnitelma.setEsikatseltavissa(false);
         julkaistuOpetussuunnitelmaTila.setJulkaisutila(JulkaisuTila.JULKAISTU);
         self.saveJulkaistuOpetussuunnitelmaTila(julkaistuOpetussuunnitelmaTila);
         maintenanceService.clearOpetussuunnitelmaCaches(opsId);
