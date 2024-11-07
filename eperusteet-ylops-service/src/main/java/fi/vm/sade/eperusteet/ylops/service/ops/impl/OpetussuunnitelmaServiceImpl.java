@@ -2064,7 +2064,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     )
     public OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(Long opsId, Integer revision) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        if (ops == null || ops.getTila().equals(Tila.POISTETTU)) {
+        boolean esikatselu = revision != null && revision == 0;
+        if (ops == null || ops.getTila().equals(Tila.POISTETTU) || (esikatselu && !ops.isEsikatseltavissa())) {
             throw new NotExistsException("");
         }
 
