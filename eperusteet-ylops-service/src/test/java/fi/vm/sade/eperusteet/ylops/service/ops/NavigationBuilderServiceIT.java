@@ -75,6 +75,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
                 })
                 .collect(Collectors.toSet()));
         opsLuontiDto.setPohja(Reference.of(pohjaDto.getId()));
+        opsLuontiDto.setEsikatseltavissa(true);
         OpetussuunnitelmaDto ops = opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
 
         TekstiKappaleViiteDto.Matala tk = tekstiKappaleViiteService.getTekstiKappaleViite(ops.getId(), ops.getTekstit().getLapset().get(1).getId());
@@ -204,6 +205,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         ops.setTila(Tila.LUONNOS);
         ops.setTyyppi(Tyyppi.OPS);
         ops.setKoulutustyyppi(koulutustyyppi);
+        ops.setEsikatseltavissa(true);
 
         KoodistoDto kunta = new KoodistoDto();
         kunta.setKoodiUri("kunta_837");

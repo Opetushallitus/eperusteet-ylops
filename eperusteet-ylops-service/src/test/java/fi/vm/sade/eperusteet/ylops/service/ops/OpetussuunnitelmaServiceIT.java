@@ -27,6 +27,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteKevytDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
+import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import org.junit.Before;
@@ -712,5 +713,31 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         assertThat(adminList).hasSize(1);
         assertThat(adminList.get(0).getJulkaistu()).isNull();
         assertThat(adminList.get(0).getEnsijulkaisu()).isNull();
+    }
+
+    @Test
+    public void testEsikatseluEiSallittu() {
+
+        OpetussuunnitelmaLuontiDto perusopetusPohja = new OpetussuunnitelmaLuontiDto();
+        perusopetusPohja.setTuoPohjanOpintojaksot(false);
+        perusopetusPohja.setToteutus(KoulutustyyppiToteutus.PERUSOPETUS);
+        perusopetusPohja.setTyyppi(Tyyppi.POHJA);
+        perusopetusPohja.setPerusteenDiaarinumero("perusopetus-diaarinumero");
+        OpetussuunnitelmaDto perusopetusPohjaDto = opetussuunnitelmaService.addPohja(perusopetusPohja);
+        opetussuunnitelmaService.updateTila(perusopetusPohjaDto.getId(), Tila.VALMIS);
+
+        OpetussuunnitelmaDto ops = createOpetussuunnitelma(opsi -> {
+            opsi.setPohja(Reference.of(perusopetusPohjaDto.getId()));
+            opsi.setEsikatseltavissa(false);
+        });
+
+        assertThat(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(ops.getId(), null)).isNull();
+        assertThatThrownBy(() -> opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(ops.getId(), 0)).isInstanceOf(NotExistsException.class);
+
+        ops.setEsikatseltavissa(true);
+        opetussuunnitelmaService.updateOpetussuunnitelma(ops);
+
+        assertThat(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(ops.getId(), null)).isNull();
+        assertThat(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(ops.getId(), 0)).isNotNull();
     }
 }
