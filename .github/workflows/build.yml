@@ -15,7 +15,7 @@ jobs:
         EPERUSTEET_YLOPS_SPECFILE: https://raw.githubusercontent.com/Opetushallitus/eperusteet-ylops/${{ github.ref_name }}/generated/ylops.spec.json
     steps:
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Node 21
         uses: actions/setup-node@v4
