@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
+import fi.vm.sade.eperusteet.ylops.domain.PerusteenHistoriaTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
@@ -1426,7 +1427,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         lisaaPerusteenSisalto(pohja, peruste, null);
 
         opetussuunnitelmaRepository.findByPerusteId(pohja.getCachedPeruste().getPerusteId()).forEach(opetussuunnitelma -> {
-            muokkaustietoService.addOpsMuokkausTieto(opetussuunnitelma.getId(), opetussuunnitelma, MuokkausTapahtuma.PAIVITYS, "tapahtuma-opetussuunnitelma-peruste-paivitys");
+            muokkaustietoService.addOpsMuokkausTieto(
+                    opetussuunnitelma.getId(),
+                    new PerusteenHistoriaTapahtuma(opetussuunnitelma.getCachedPeruste().getPerusteId()),
+                    MuokkausTapahtuma.PAIVITYS,
+                    "tapahtuma-opetussuunnitelma-peruste-paivitys");
         });
     }
 
