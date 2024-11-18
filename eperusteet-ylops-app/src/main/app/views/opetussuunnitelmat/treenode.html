@@ -1,9 +1,0 @@
-<div class="teksti-node">
-  <span ng-show="osio.$$edit" icon-role="drag" ui-tree-handle></span>
-  <a class="rakenne-link" ui-sref="root.opetussuunnitelmat.yksi.sisalto.tekstikappale({tekstikappaleId: kappale.id})"
-     ng-bind="kappale.tekstiKappale.nimi || 'nimeton' | kaanna"></a>
-</div>
-
-<ul ui-tree-nodes ng-model="kappale.lapset">
-  <li ng-repeat="kappale in kappale.lapset" ui-tree-node ng-include="'views/opetussuunnitelmat/treenode.html'"></li>
-</ul>
