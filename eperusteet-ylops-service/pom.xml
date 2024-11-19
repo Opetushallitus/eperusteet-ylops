@@ -25,10 +25,10 @@
         <jackson.version>2.15.4</jackson.version>
         <java.release.version>11</java.release.version>
         <jsoup.version>1.15.3</jsoup.version>
-        <lombok.version>1.18.4</lombok.version>
+        <lombok.version>1.18.34</lombok.version>
         <maven-compiler-plugin.version>3.10.1</maven-compiler-plugin.version>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <metrics.version>4.2.18</metrics.version>
         <org.apache.tomcat.version>9.0.90</org.apache.tomcat.version>
         <pdfbox.version>2.0.29</pdfbox.version>
@@ -296,7 +296,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjtools</artifactId>
-            <version>1.9.19</version>
+            <version>1.9.22.1</version>
         </dependency>
         <dependency>
             <groupId>org.jasig.cas.client</groupId>
@@ -481,7 +481,10 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <jvmArguments>-Dfile.encoding=UTF8</jvmArguments>
+                    <jvmArguments>
+                        -Dfile.encoding=UTF8
+                        --add-opens=java.base/java.lang=ALL-UNNAMED
+                    </jvmArguments>
                 </configuration>
             </plugin>
             <!-- Maven rikkoo muuten ttf fontit -->
@@ -543,6 +546,9 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <argLine>
+                        --add-opens=java.base/java.lang=ALL-UNNAMED
+                    </argLine>
                     <excludes>
                         <exclude>**/ylops/test/**.java</exclude>
                     </excludes>
@@ -556,6 +562,9 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire.version}</version>
                 <configuration>
+                    <argLine>
+                        --add-opens=java.base/java.lang=ALL-UNNAMED
+                    </argLine>
                     <excludes>
                         <exclude>**/ylops/test/**.java</exclude>
                         <exclude>**/*IT.java</exclude>
@@ -887,7 +896,12 @@
                         <artifactId>maven-failsafe-plugin</artifactId>
                         <version>${failsafe.version}</version>
                         <configuration>
-                            <argLine>-Dlog4j2.level=OFF -Xmx2048m -XX:+CMSClassUnloadingEnabled -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.build.directory}/jacoco-it.exec</argLine>
+                            <argLine>
+                                -Dlog4j2.level=OFF
+                                -Xmx2048m
+                                -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.build.directory}/jacoco-it.exec
+                                --add-opens=java.base/java.lang=ALL-UNNAMED
+                            </argLine>
                             <excludes>
                                 <exclude>**/ylops/test/**.java</exclude>
                             </excludes>
@@ -901,7 +915,11 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>${surefire.version}</version>
                         <configuration>
-                            <argLine>-Dlog4j2.level=OFF -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.build.directory}/jacoco-ut.exec</argLine>
+                            <argLine>
+                                -Dlog4j2.level=OFF
+                                -javaagent:${settings.localRepository}/org/jacoco/org.jacoco.agent/${jacoco.version}/org.jacoco.agent-${jacoco.version}-runtime.jar=destfile=${project.build.directory}/jacoco-ut.exec
+                                --add-opens=java.base/java.lang=ALL-UNNAMED
+                            </argLine>
                             <excludes>
                                 <exclude>**/ylops/test/**.java</exclude>
                                 <exclude>**/*IT.java</exclude>
