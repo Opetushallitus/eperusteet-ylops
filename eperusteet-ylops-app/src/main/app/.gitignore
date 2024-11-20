@@ -1,5 +1,0 @@
-*.js
-*.map
-.tscache
-.baseDir.ts
-typings
