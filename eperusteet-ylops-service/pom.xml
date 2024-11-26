@@ -30,14 +30,14 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <metrics.version>4.2.18</metrics.version>
-        <org.apache.tomcat.version>9.0.90</org.apache.tomcat.version>
+        <org.apache.tomcat.version>9.0.96</org.apache.tomcat.version>
         <pdfbox.version>2.0.29</pdfbox.version>
         <postgresql.version>42.5.5</postgresql.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <sade.java-http.version>0.6.1-SNAPSHOT</sade.java-http.version>
         <schema.file>${project.basedir}/target/schema.ddl</schema.file>
         <spring.security.test.version>5.7.11</spring.security.test.version>
-        <spring.session.jdbc.version>2.4.3</spring.session.jdbc.version>
+        <spring.session.jdbc.version>3.3.3</spring.session.jdbc.version>
         <springfox.version>2.7.0</springfox.version>
         <surefire.version>3.2.2</surefire.version>
         <swagger-maven-plugin-version>3.1.7</swagger-maven-plugin-version>
