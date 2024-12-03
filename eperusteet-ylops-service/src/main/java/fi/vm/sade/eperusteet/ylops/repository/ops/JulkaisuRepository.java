@@ -32,6 +32,7 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
             "   SELECT * " +
             "   FROM julkaistu_opetussuunnitelma_data_view data" +
             "   WHERE 1 = 1 " +
+            "   AND CAST(julkaisukielet as text) LIKE LOWER(CONCAT('%',:kieli,'%')) " +
             "   AND (:nimi LIKE '' OR LOWER(nimi->>:kieli) LIKE LOWER(CONCAT('%',:nimi,'%')) OR EXISTS (SELECT 1 FROM jsonb_array_elements(organisaatiot) elem WHERE LOWER(elem->'nimi'->>:kieli) LIKE LOWER(CONCAT('%',:nimi,'%')))) " +
             "   AND (:perusteenDiaarinumero = '' OR peruste->>'diaarinumero' = :perusteenDiaarinumero) " +
             "   AND (COALESCE(:koulutustyypit, NULL) = '' OR koulutustyyppi IN (:koulutustyypit)) " +
