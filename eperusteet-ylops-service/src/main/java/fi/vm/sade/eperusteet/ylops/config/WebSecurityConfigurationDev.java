@@ -96,7 +96,8 @@ public class WebSecurityConfigurationDev {
                         DevSecurityRole.ylops().crud().oid("1.2.246.562.10.61057016927").build(),
                         DevSecurityRole.ylops().crud().oid("1.2.246.562.10.68534785412").build(),
                         DevSecurityRole.ylops().crud().oid("1.2.246.562.10.83037752777").build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.28.11332956371").build()
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.28.11332956371").build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.81269623245").build()
                 )
                 .build();
         UserDetails ylops_helsinki = User.withDefaultPasswordEncoder()
