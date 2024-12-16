@@ -417,12 +417,12 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     }
 
     @Override
-    public List<TekstiKappaleViiteDto.Matala> getTekstiKappaleViiteOriginals(Long opsId, Long viiteId) {
-        return getTekstiKappaleViiteOriginals(opsId, viiteId, TekstiKappaleViiteDto.Matala.class);
+    public List<TekstiKappaleViiteDto.Matala> getPohjanTekstikappaleViite(Long opsId, Long viiteId) {
+        return getPohjanTekstikappaleViite(opsId, viiteId, TekstiKappaleViiteDto.Matala.class);
     }
 
     @Override
-    public <T> List<T> getTekstiKappaleViiteOriginals(Long opsId, Long viiteId, Class<T> clazz) {
+    public <T> List<T> getPohjanTekstikappaleViite(Long opsId, Long viiteId, Class<T> clazz) {
         List<T> viiteList = new ArrayList<>();
         Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findOne(opsId);
 

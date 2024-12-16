@@ -176,7 +176,7 @@ public class OpetussuunnitelmanSisaltoController {
     public ResponseEntity<List<TekstiKappaleViiteDto.Matala>> getTekstiKappaleViiteOriginals(
             @PathVariable("opsId") final Long opsId,
             @PathVariable("viiteId") final Long viiteId) {
-        List<TekstiKappaleViiteDto.Matala> dtos = tekstiKappaleViiteService.getTekstiKappaleViiteOriginals(opsId, viiteId);
+        List<TekstiKappaleViiteDto.Matala> dtos = tekstiKappaleViiteService.getPohjanTekstikappaleViite(opsId, viiteId);
         return new ResponseEntity<>(dtos, HttpStatus.OK);
     }
 
