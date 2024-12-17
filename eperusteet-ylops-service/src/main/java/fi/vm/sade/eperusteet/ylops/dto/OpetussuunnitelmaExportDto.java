@@ -18,4 +18,5 @@ public class OpetussuunnitelmaExportDto extends OpetussuunnitelmaBaseDto {
     private PerusteInfoDto peruste;
     private OpetussuunnitelmaNimiDto pohja;
     private TekstiKappaleViiteExportDto.Puu tekstit;
+    private boolean sisaltaaPerusteenTekstit;
 }

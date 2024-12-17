@@ -18,11 +18,17 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class TekstiKappaleViiteExportDto {
 
+    private Long id;
+    private TekstiKappaleDto tekstiKappale;
+    private TekstiKappaleDto perusteenTekstikappale;
+
+    @Deprecated
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private TekstiKappaleViiteExportDto original;
 
-    private Long id;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private TekstiKappaleViiteExportDto pohjanTeksti;
 
-    private TekstiKappaleDto tekstiKappale;
     private Omistussuhde omistussuhde;
     private boolean pakollinen;
     private boolean valmis;

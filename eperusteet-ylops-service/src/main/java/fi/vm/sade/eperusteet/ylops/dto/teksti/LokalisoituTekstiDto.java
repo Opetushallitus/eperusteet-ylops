@@ -39,6 +39,10 @@ public class LokalisoituTekstiDto {
         return new LokalisoituTekstiDto(null, null, map);
     }
 
+    public static LokalisoituTekstiDto of(Map<Kieli, String> tekstit) {
+        return new LokalisoituTekstiDto(null, null, tekstit);
+    }
+
     public LokalisoituTekstiDto(Long id, Map<Kieli, String> values) {
         this(id, null, values);
     }

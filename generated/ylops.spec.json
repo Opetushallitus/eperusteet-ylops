@@ -8949,7 +8949,7 @@
         },
         "kohde" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi", "peruste" ]
         },
         "luotu" : {
           "type" : "string",
@@ -8991,7 +8991,7 @@
         },
         "type" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi", "peruste" ]
         },
         "meta" : {
           "type" : "object",
@@ -9635,6 +9635,9 @@
         },
         "tekstit" : {
           "$ref" : "#/definitions/Puu"
+        },
+        "sisaltaaPerusteenTekstit" : {
+          "type" : "boolean"
         }
       }
     },
@@ -10428,7 +10431,7 @@
         },
         "kohde" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi", "peruste" ]
         },
         "luotu" : {
           "type" : "string",
@@ -10457,7 +10460,7 @@
       "properties" : {
         "kohde" : {
           "type" : "string",
-          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi" ]
+          "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi", "peruste" ]
         },
         "kohdeId" : {
           "type" : "integer",
@@ -11056,9 +11059,8 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "first" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -11077,14 +11079,15 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
         "last" : {
           "type" : "boolean"
         },
-        "first" : {
-          "type" : "boolean"
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -11102,9 +11105,8 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "first" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -11123,14 +11125,15 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
         "last" : {
           "type" : "boolean"
         },
-        "first" : {
-          "type" : "boolean"
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -11148,9 +11151,8 @@
           "type" : "integer",
           "format" : "int64"
         },
-        "numberOfElements" : {
-          "type" : "integer",
-          "format" : "int32"
+        "first" : {
+          "type" : "boolean"
         },
         "size" : {
           "type" : "integer",
@@ -11169,14 +11171,15 @@
         "sort" : {
           "$ref" : "#/definitions/Sort"
         },
-        "pageable" : {
-          "$ref" : "#/definitions/Pageable"
-        },
         "last" : {
           "type" : "boolean"
         },
-        "first" : {
-          "type" : "boolean"
+        "pageable" : {
+          "$ref" : "#/definitions/Pageable"
+        },
+        "numberOfElements" : {
+          "type" : "integer",
+          "format" : "int32"
         },
         "empty" : {
           "type" : "boolean"
@@ -11186,12 +11189,12 @@
     "Pageable" : {
       "type" : "object",
       "properties" : {
-        "unpaged" : {
-          "type" : "boolean"
-        },
-        "pageSize" : {
+        "offset" : {
           "type" : "integer",
-          "format" : "int32"
+          "format" : "int64"
+        },
+        "sort" : {
+          "$ref" : "#/definitions/Sort"
         },
         "paged" : {
           "type" : "boolean"
@@ -11200,12 +11203,12 @@
           "type" : "integer",
           "format" : "int32"
         },
-        "offset" : {
-          "type" : "integer",
-          "format" : "int64"
+        "unpaged" : {
+          "type" : "boolean"
         },
-        "sort" : {
-          "$ref" : "#/definitions/Sort"
+        "pageSize" : {
+          "type" : "integer",
+          "format" : "int32"
         }
       }
     },
@@ -12061,13 +12064,13 @@
     "Sort" : {
       "type" : "object",
       "properties" : {
+        "empty" : {
+          "type" : "boolean"
+        },
         "unsorted" : {
           "type" : "boolean"
         },
         "sorted" : {
-          "type" : "boolean"
-        },
-        "empty" : {
           "type" : "boolean"
         }
       }
@@ -12213,14 +12216,20 @@
     "TekstiKappaleViiteExportDto" : {
       "type" : "object",
       "properties" : {
-        "original" : {
-          "$ref" : "#/definitions/TekstiKappaleViiteExportDto"
-        },
         "id" : {
           "type" : "integer",
           "format" : "int64"
         },
         "tekstiKappale" : {
+          "$ref" : "#/definitions/TekstiKappaleDto"
+        },
+        "original" : {
+          "$ref" : "#/definitions/TekstiKappaleViiteExportDto"
+        },
+        "pohjanTeksti" : {
+          "$ref" : "#/definitions/TekstiKappaleViiteExportDto"
+        },
+        "perusteenTekstikappale" : {
           "$ref" : "#/definitions/TekstiKappaleDto"
         },
         "omistussuhde" : {
