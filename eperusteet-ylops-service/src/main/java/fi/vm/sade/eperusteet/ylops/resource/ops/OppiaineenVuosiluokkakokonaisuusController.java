@@ -11,7 +11,7 @@ import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Map;
 import java.util.Optional;
@@ -31,8 +30,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet")
-@ApiIgnore
-@Api(value = "OppiaineenVuosiluokkakokonaisuudet")
+@Tag(name = "OppiaineenVuosiluokkakokonaisuudet")
 public class OppiaineenVuosiluokkakokonaisuusController {
 
     @Autowired
@@ -88,20 +86,6 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         return oppiaineService.updateVuosiluokkakokonaisuudenSisalto(opsId, oppiaineId, dto);
     }
 
-    /*
-    @RequestMapping(method = RequestMethod.GET)
-    public Set<OppiaineenVuosiluokkakokonaisuusDto> getAll(
-        @PathVariable("opsId") final Long opsId,
-        @PathVariable("oppiaineId") final Long oppiaineId) {
-        return oppiaineService.getLiitetiedosto(opsId, oppiaineId).getVuosiluokkakokonaisuudet();
-    }
-
-    @RequestMapping(value = "/valinnaiset",method = RequestMethod.GET)
-    public List<OppiaineDto> getValinnaiset(@PathVariable("opsId") final Long opsId) {
-        return oppiaineService.getAll(opsId, true);
-    }
-    */
-
     @RequestMapping(value = "/{id}/peruste", method = RequestMethod.GET)
     @CacheControl(nonpublic = false, age = 3600)
     public ResponseEntity<PerusteOppiaineenVuosiluokkakokonaisuusDto> getOppiaineenVuosiluokkakokonaisuudenPerusteSisalto(
@@ -112,11 +96,12 @@ public class OppiaineenVuosiluokkakokonaisuusController {
         final PerusteDto peruste = ops.getPeruste(opsId);
         final Optional<OppiaineDto> aine = Optional.ofNullable(oppiaineService.get(opsId, oppiaineId).getOppiaine());
 
-        return Responses.of(aine.flatMap(a -> a.getVuosiluokkakokonaisuudet().stream()
+        Optional<PerusteOppiaineenVuosiluokkakokonaisuusDto> dto = aine.flatMap(a -> a.getVuosiluokkakokonaisuudet().stream()
                 .filter(vk -> vk.getId().equals(id))
                 .findAny()
                 .flatMap(ovk -> peruste.getPerusopetus().getOppiaine(a.getTunniste())
-                        .flatMap(poa -> poa.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus())))));
+                        .flatMap(poa -> poa.getVuosiluokkakokonaisuus(ovk.getVuosiluokkakokonaisuus()))));
 
+        return Responses.of(dto);
     }
 }

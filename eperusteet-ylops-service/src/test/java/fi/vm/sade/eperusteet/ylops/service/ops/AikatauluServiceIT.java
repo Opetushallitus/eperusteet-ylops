@@ -9,13 +9,15 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanAikatauluDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
-import java.util.Date;
-import java.util.List;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -24,8 +26,8 @@ public class AikatauluServiceIT extends AbstractIntegrationTest {
 
     private final String TAPAHTUMA_TEKSTI = "tapahtuma tapahtui";
     private OpetussuunnitelmaDto opsDto;
-    private Date TAPAHTUMAPAIVA = new DateTime(2018,1,1,1,1).toDate();
-    private Date TAPAHTUMAPAIVA_UPDATE = new DateTime(2017,1,1,1,1).toDate();
+    private Date TAPAHTUMAPAIVA = new Timestamp(new DateTime(2018,1,1,1,1).toDate().getTime());
+    private Date TAPAHTUMAPAIVA_UPDATE = new Timestamp(new DateTime(2017,1,1,1,1).toDate().getTime());
 
     @Autowired
     OpetussuunnitelmanAikatauluService opetussuunnitelmanAikatauluService;

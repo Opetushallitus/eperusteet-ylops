@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(value = {"/it-test-context.xml", "/it-test-web-context.xml"})
+@ContextConfiguration(value = {"/it-test-context.xml"}) //, "/it-test-web-context.xml"})
 @WebAppConfiguration
 public abstract class AbstractWebIntegrationTest {
 

@@ -38,7 +38,6 @@
     <!-- generic cache manager -->
     <bean id="cacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager"/>
 
-    <!-- import resource="file:///${user.home:''}/oph-configuration/security-context-backend.xml"/ -->
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.service">
         <context:exclude-filter type="regex" expression="fi.vm.sade.eperusteet.ylops.service.external.*"/>
         <context:exclude-filter type="annotation" expression="org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession"/>
@@ -46,10 +45,8 @@
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.repository.impl"/>
     <context:component-scan base-package="fi.vm.sade.eperusteet.utils"/>
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.config"/>
-    <tx:annotation-driven/>
+    <tx:annotation-driven order="100"/>
     <aop:aspectj-autoproxy/>
-
-    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
 
     <beans profile="h2db">
         <bean id="h2db" class="org.h2.tools.Server"
@@ -75,7 +72,7 @@
         </bean>
 
         <bean id="dataSource"
-              class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+              class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
             <property name="driverClassName" value="org.h2.Driver"/>
             <property name="url" value="jdbc:h2:mem:test"/>
         </bean>
@@ -83,27 +80,23 @@
 
     <beans>
         <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-            <property name="persistenceUnitName" value="eperusteet"/>
+            <property name="persistenceUnitName" value="eperusteet-ylops"/>
             <property name="dataSource" ref="dataSource"/>
             <property name="packagesToScan" value="fi.vm.sade.eperusteet.ylops.domain"/>
             <property name="persistenceProviderClass" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
             <property name="jpaPropertyMap">
                 <map>
                     <entry key="hibernate.hbm2ddl.auto" value="create"/>
-                    <entry key="hibernate.show_sql" value="${hibernate.show_sql:false}"/>
-                    <entry key="hibernate.dialect" value="fi.vm.sade.eperusteet.utils.repository.dialect.CustomH2Dialect"/>
-                    <entry key="javax.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/>
+                    <entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+                    <entry key="jakarta.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/>
                     <entry key="hibernate.cache.use_second_level_cache" value="false"/>
-<!--                    <entry key="net.sf.ehcache.configurationResourceName" value="/eperusteet-hibernate-ehcache.xml"/>-->
-<!--                    <entry key="hibernate.cache.region.factory_class" value="org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory"/>-->
-<!--                    <entry key="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.DefaultAuditStrategy"/>-->
+                    <entry key="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.DefaultAuditStrategy"/>
                     <entry key="org.hibernate.envers.allow_identifier_reuse" value="true"/>
-                    <entry key="javax.persistence.validation.factory" value-ref="validator"/>
+                    <entry key="hibernate.id.db_structure_naming_strategy" value="single"/>
                 </map>
             </property>
             <property name="mappingResources">
                 <list>
-                    <value>typedefs-h2.xml</value>
                     <value>orm-h2.xml</value>
                 </list>
             </property>
@@ -117,10 +110,10 @@
         <jpa:repositories base-package="fi.vm.sade.eperusteet.ylops.repository" factory-class="fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean"/>
 
         <bean id="testPermissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.mocks.TestPermissionEvaluator"/>
-        <bean id="permissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator"/>
+<!--        <bean id="permissionEvaluator" class="fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator"/>-->
 
         <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
-            <property name="permissionEvaluator" ref="permissionEvaluator"/>
+            <property name="permissionEvaluator" ref="testPermissionEvaluator"/>
         </bean>
 
         <security:global-method-security secured-annotations="enabled" pre-post-annotations="enabled" >
@@ -147,6 +140,8 @@
                 </security:user-service>
             </security:authentication-provider>
         </security:authentication-manager>
+
+        <tx:annotation-driven transaction-manager="transactionManager"/>
 
         <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased">
             <property name="allowIfAllAbstainDecisions" value="true"/>

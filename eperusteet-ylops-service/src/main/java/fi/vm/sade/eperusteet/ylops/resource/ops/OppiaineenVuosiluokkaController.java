@@ -4,7 +4,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenTavoiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,14 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/opetussuunnitelmat/{opsId}/oppiaineet/{oppiaineId}/vuosiluokkakokonaisuudet/{kokonaisuusId}/vuosiluokat")
-@ApiIgnore
-@Api(value = "OppiaineenVuosiluokat")
+@Tag(name = "OppiaineenVuosiluokat")
 public class OppiaineenVuosiluokkaController {
 
     @Autowired

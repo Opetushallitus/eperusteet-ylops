@@ -2,7 +2,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanAikatauluDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanAikatauluService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/aikataulu")
-@Api("Aikataulu")
+@Tag(name = "Aikataulu")
 public class OpetussuunnitelmanAikatauluController {
 
     @Autowired

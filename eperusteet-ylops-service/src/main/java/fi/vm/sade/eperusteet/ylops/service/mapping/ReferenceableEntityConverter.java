@@ -8,10 +8,10 @@ import ma.glasnost.orika.converter.BidirectionalConverter;
 import ma.glasnost.orika.metadata.Type;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.metamodel.IdentifiableType;
-import javax.persistence.metamodel.ManagedType;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.metamodel.IdentifiableType;
+import jakarta.persistence.metamodel.ManagedType;
 import java.io.Serializable;
 import java.util.IdentityHashMap;
 import java.util.Map;

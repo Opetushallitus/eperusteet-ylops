@@ -1,9 +1,8 @@
 package fi.vm.sade.eperusteet.ylops.resource.hallinta;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
-import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
 import fi.vm.sade.eperusteet.ylops.service.util.MaintenanceService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Profile;
@@ -19,11 +18,10 @@ import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
-@InternalApi
 @RestController
 @RequestMapping(value = "/api/maintenance")
 @Profile("!test")
-@Api("Maintenance")
+@Tag(name = "Maintenance")
 public class MaintenanceController {
 
     @Autowired

@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,6 +13,8 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OppiaineSuppeaDto extends OppiaineBaseDto {
+
+    @Schema(name = "oppimaarat")
     private Set<OppiaineSuppeaDto> oppimaarat;
     private Set<OppiaineenVuosiluokkakokonaisuusSuppeaDto> vuosiluokkakokonaisuudet;
     private String koodiUri;

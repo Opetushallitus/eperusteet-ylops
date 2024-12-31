@@ -3,19 +3,17 @@ package fi.vm.sade.eperusteet.ylops.resource.util;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.Set;
 
 @RestController
 @RequestMapping("/api/kayttaja")
-@Api("Kayttajat")
-@ApiIgnore
+@Tag(name = "Kayttajat")
 public class KayttajaController {
 
     @Autowired

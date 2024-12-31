@@ -14,7 +14,7 @@ import fi.vm.sade.eperusteet.ylops.resource.util.Responses;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.ops.PoistoService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +31,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/opetussuunnitelmat/{opsId}/oppiaineet")
-@Api(value = "Oppiaineet")
+@Tag(name = "Oppiaineet")
 public class OppiaineController {
 
     @Autowired

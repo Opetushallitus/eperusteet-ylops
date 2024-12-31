@@ -3,19 +3,20 @@ package fi.vm.sade.eperusteet.ylops.repository.version;
 import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
 import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo;
 import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo_;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
+import org.springframework.data.jpa.repository.support.JpaEntityInformation;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
-import org.hibernate.envers.query.AuditEntity;
-import org.springframework.data.jpa.repository.support.JpaEntityInformation;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements
         JpaWithVersioningRepository<T, ID> {

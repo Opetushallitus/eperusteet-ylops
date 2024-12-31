@@ -4,8 +4,8 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepositoryCustom;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 public class TekstikappaleviiteRepositoryImpl implements TekstikappaleviiteRepositoryCustom {
 

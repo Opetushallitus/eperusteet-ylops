@@ -4,7 +4,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaisuTila;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +19,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @RequestMapping("/api/opetussuunnitelmat/{opsId}")
-@Api(value = "Julkaisut")
+@Tag(name = "Julkaisut")
 @Description("Opetussuunnitelmien julkaisut")
 public class JulkaisuController {
 

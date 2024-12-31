@@ -7,9 +7,9 @@ import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 
 import java.time.Instant;
 import java.util.Objects;
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.PersistenceException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

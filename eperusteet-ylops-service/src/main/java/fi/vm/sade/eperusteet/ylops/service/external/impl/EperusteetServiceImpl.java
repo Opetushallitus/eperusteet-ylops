@@ -38,7 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,10 +55,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.ExceptionUtil.wrapRuntime;
+import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
-import static javax.servlet.http.HttpServletResponse.SC_OK;
 
 @Slf4j
 @Service

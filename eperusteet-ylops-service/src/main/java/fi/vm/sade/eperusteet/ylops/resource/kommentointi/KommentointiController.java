@@ -3,18 +3,24 @@ package fi.vm.sade.eperusteet.ylops.resource.kommentointi;
 import fi.vm.sade.eperusteet.ylops.dto.ops.Kommentti2019Dto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.KommenttiKahvaDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.Kommentti2019Service;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
 
-import static org.springframework.web.bind.annotation.RequestMethod.*;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 
 @RestController
 @RequestMapping("/api/kommentointi")
-@Api("Kommentointi")
+@Tag(name = "Kommentointi")
 public class KommentointiController {
 
     @Autowired

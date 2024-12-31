@@ -5,7 +5,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 
 import java.io.Serializable;
 import java.util.UUID;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,10 +1,10 @@
 package fi.vm.sade.eperusteet.ylops.service.util.impl;
 
 import fi.vm.sade.eperusteet.ylops.service.util.LogoutService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Optional;
 
 @Service

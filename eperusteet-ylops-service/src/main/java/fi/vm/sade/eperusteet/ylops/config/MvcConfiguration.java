@@ -8,6 +8,7 @@ import fi.vm.sade.eperusteet.ylops.resource.config.MappingModule;
 import fi.vm.sade.eperusteet.ylops.resource.config.ReferenceNamingStrategy;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheHeaderInterceptor;
 import fi.vm.sade.eperusteet.ylops.resource.util.LoggingInterceptor;
+import jakarta.persistence.EntityManagerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,6 @@ import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import javax.persistence.EntityManagerFactory;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +44,6 @@ public class MvcConfiguration implements WebMvcConfigurer {
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/ui/").setViewName("forward:/ui/index.html");
         registry.addRedirectViewController("/ui", "/ui/");
-        registry.addRedirectViewController("/swagger", "/swagger/index.html");
     }
 
     @Override

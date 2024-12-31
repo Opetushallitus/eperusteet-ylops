@@ -17,7 +17,7 @@ public interface PoistetutRepository extends JpaWithVersioningRepository<Poistet
 
     Poistettu findByOpetussuunnitelmaIdAndPoistettuIdAndTyyppi(Long opsId, Long poistettuId, PoistetunTyyppi tyyppi);
 
-    @Query(nativeQuery = true, value = "SELECT * " +
+    @Query(nativeQuery = true, value = "SELECT poistetut.* " +
             "FROM lops2019_poistettu_sisalto poistetut " +
             "INNER JOIN (SELECT id FROM oppiaine_aud WHERE tunniste = CAST(:tunniste AS UUID)) op ON op.id = poistettu_id " +
             "WHERE " +

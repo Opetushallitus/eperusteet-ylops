@@ -40,6 +40,8 @@
         </security:authentication-provider>
     </security:authentication-manager>
 
+    <bean id="mvcHandlerMappingIntrospector" class="org.springframework.web.servlet.handler.HandlerMappingIntrospector" />
+
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.repository"/>
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.service"/>
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.resource" />
