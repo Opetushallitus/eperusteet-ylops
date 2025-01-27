@@ -1,9 +1,8 @@
 package fi.vm.sade.eperusteet.ylops.domain.validation;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class ValidHtmlValidator extends ValidHtmlValidatorBase implements
         ConstraintValidator<ValidHtml, LokalisoituTeksti> {

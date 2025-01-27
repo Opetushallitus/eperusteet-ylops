@@ -3,7 +3,6 @@ package fi.vm.sade.eperusteet.ylops.repository.dialect;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
@@ -23,8 +22,8 @@ public class JsonBType implements UserType, Serializable {
     private final ObjectMapper mapper = InitJacksonConverter.createMapper();
 
     @Override
-    public int[] sqlTypes() {
-        return new int[]{Types.JAVA_OBJECT};
+    public int getSqlType() {
+        return Types.JAVA_OBJECT;
     }
 
     @Override
@@ -35,20 +34,6 @@ public class JsonBType implements UserType, Serializable {
     @Override
     public boolean equals(Object x, Object y) throws HibernateException {
         return Objects.equals(x, y);
-    }
-
-    @Override
-    public Object nullSafeGet(ResultSet rs, String[] names, SharedSessionContractImplementor session, Object owner) throws HibernateException, SQLException {
-        String str = rs.getString(names[0]);
-        if (str != null) {
-            try {
-                JsonNode node = mapper.readTree(str);
-                return node;
-            } catch (IOException e) {
-                throw new BusinessRuleViolationException("datan-luku-epaonnistui");
-            }
-        }
-        return JsonNodeFactory.instance.objectNode();
     }
 
     @Override
@@ -82,6 +67,11 @@ public class JsonBType implements UserType, Serializable {
     @Override
     public int hashCode(Object x) throws HibernateException {
         return 0;
+    }
+
+    @Override
+    public Object nullSafeGet(ResultSet rs, int position, SharedSessionContractImplementor session, Object owner) throws SQLException {
+        return null;
     }
 
     @Override

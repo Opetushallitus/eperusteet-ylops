@@ -1,8 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.util;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
-
-import javax.servlet.http.HttpServletRequest;
 
 public interface LogoutService {
 

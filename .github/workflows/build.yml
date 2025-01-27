@@ -82,7 +82,8 @@ jobs:
 
       - name: Build with Maven
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
         run: |
           cd eperusteet-ylops-service
           mvn clean verify --batch-mode -Pit

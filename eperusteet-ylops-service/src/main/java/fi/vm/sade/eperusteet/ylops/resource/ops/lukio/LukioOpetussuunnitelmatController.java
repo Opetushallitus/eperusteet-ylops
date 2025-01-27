@@ -15,7 +15,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lukio.OpetuksenYleisetTavoitteetPerusteOp
 import fi.vm.sade.eperusteet.ylops.dto.lukio.OpetuksenYleisetTavoitteetUpdateDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.OppaineKurssiTreeStructureDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +30,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @RequestMapping("/api/opetussuunnitelmat/lukio/{opsId}")
-@Api(value = "LukioOpetussuunnitelmat")
+@Tag(name = "LukioOpetussuunnitelmat")
 public class LukioOpetussuunnitelmatController {
 
     @Autowired

@@ -9,7 +9,7 @@
 
     <context:annotation-config/>
     <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.resource">
-        <context:exclude-filter type="annotation" expression="springfox.documentation.swagger1.annotations.EnableSwagger"/>
+<!--        <context:exclude-filter type="annotation" expression="springfox.documentation.swagger1.annotations.EnableSwagger"/>-->
     </context:component-scan>
     <aop:aspectj-autoproxy />
 </beans>

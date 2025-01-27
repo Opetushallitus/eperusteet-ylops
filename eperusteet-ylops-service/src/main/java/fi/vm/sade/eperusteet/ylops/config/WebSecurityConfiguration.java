@@ -1,14 +1,13 @@
 package fi.vm.sade.eperusteet.ylops.config;
 
 import fi.vm.sade.eperusteet.ylops.repository.OphSessionMappingStorage;
-import fi.vm.sade.eperusteet.ylops.service.util.RestClientFactoryImpl;
 import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter;
 import fi.vm.sade.javautils.http.auth.CasAuthenticator;
 import fi.vm.sade.javautils.kayttooikeusclient.OphUserDetailsServiceImpl;
 import lombok.extern.slf4j.Slf4j;
-import org.jasig.cas.client.session.SingleSignOutFilter;
-import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
-import org.jasig.cas.client.validation.TicketValidator;
+import org.apereo.cas.client.session.SingleSignOutFilter;
+import org.apereo.cas.client.validation.Cas20ProxyTicketValidator;
+import org.apereo.cas.client.validation.TicketValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -21,21 +20,20 @@ import org.springframework.security.cas.authentication.CasAuthenticationProvider
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
-
-import javax.annotation.PostConstruct;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 @Slf4j
 @Profile({"!dev & !test"})
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(securedEnabled = true)
 @EnableWebSecurity
 public class WebSecurityConfiguration {
 
@@ -69,24 +67,9 @@ public class WebSecurityConfiguration {
     @Autowired
     private OphSessionMappingStorage ophSessionMappingStorage;
 
-    @PostConstruct
-    public void post() {
-        log.info("caskey " + casKey);
-        log.info("casService " + casService);
-        log.info("casSendRenew " + casSendRenew);
-        log.info("casLogin " + casLogin);
-        log.info("hostAlb " + hostAlb);
-        log.info("webUrlCas " + webUrlCas);
-    }
-
     @Bean
     public CasAuthenticator casAuthenticator() {
         return new CasAuthenticator(this.webUrlCas, eperusteet_username, eperusteet_password, hostAlb, null, false, null);
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new OphUserDetailsServiceImpl(this.hostAlb, RestClientFactoryImpl.CALLER_ID, casAuthenticator());
     }
 
     @Bean
@@ -101,7 +84,7 @@ public class WebSecurityConfiguration {
     @Bean
     public CasAuthenticationProvider casAuthenticationProvider() {
         CasAuthenticationProvider casAuthenticationProvider = new CasAuthenticationProvider();
-        casAuthenticationProvider.setUserDetailsService(userDetailsService());
+        casAuthenticationProvider.setAuthenticationUserDetailsService(new OphUserDetailsServiceImpl());
         casAuthenticationProvider.setServiceProperties(serviceProperties());
         casAuthenticationProvider.setTicketValidator(ticketValidator());
         casAuthenticationProvider.setKey(this.casKey);
@@ -147,18 +130,20 @@ public class WebSecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        HttpSessionRequestCache requestCache = new HttpSessionRequestCache();
+        requestCache.setMatchingRequestParameterName(null);
+
         http
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/buildversion.txt").permitAll()
-                .antMatchers(HttpMethod.GET, "/api/**").permitAll()
-                .antMatchers(HttpMethod.GET, "/").permitAll()
-                .anyRequest().authenticated()
-                .and()
+                .headers(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/actuator/health").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/").permitAll()
+                        .anyRequest().authenticated())
                 .addFilter(casAuthenticationFilter(http))
-                .exceptionHandling()
-                .authenticationEntryPoint(casAuthenticationEntryPoint())
-                .and()
+                .exceptionHandling(handling -> handling.authenticationEntryPoint(casAuthenticationEntryPoint()))
                 .addFilterBefore(singleSignOutFilter(), CasAuthenticationFilter.class)
                 .logout((logout) -> {
                     logout.logoutUrl("/api/logout");
@@ -166,7 +151,7 @@ public class WebSecurityConfiguration {
                     logout.addLogoutHandler(new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.ALL)));
                     logout.invalidateHttpSession(true);
                 })
-                .headers().defaultsDisabled().cacheControl();
+                .requestCache(cache -> cache.requestCache(requestCache));
         return http.build();
     }
 

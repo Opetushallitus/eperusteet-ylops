@@ -1,6 +1,5 @@
 package fi.vm.sade.eperusteet.ylops.resource.ops;
 
-import com.codahale.metrics.annotation.Timed;
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
@@ -21,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaTilastoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
-import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.Permission;
@@ -29,7 +27,7 @@ import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -53,7 +51,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @RequestMapping("/api/opetussuunnitelmat")
-@Api(value = "Opetussuunnitelmat")
+@Tag(name = "Opetussuunnitelmat")
 public class OpetussuunnitelmaController {
 
     @Autowired
@@ -70,7 +68,6 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public List<OpetussuunnitelmaInfoDto> getAll(
             @RequestParam(value = "tyyppi", required = false) Tyyppi tyyppi,
             @RequestParam(value = "tila", required = false) Tila tila) {
@@ -79,7 +76,6 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/sivutettu", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public Page<OpetussuunnitelmaInfoDto> getSivutettu(
             @RequestParam(value = "tyyppi") String tyyppi,
             @RequestParam(value = "tila") String tila,
@@ -99,13 +95,11 @@ public class OpetussuunnitelmaController {
     }
 
     @RequestMapping(value = "/pohjat", method = RequestMethod.GET)
-    @Timed
     public List<OpetussuunnitelmaInfoDto> getOpetussuunnitelmienOpsPohjat() {
         return opetussuunnitelmaService.getOpetussuunnitelmaOpsPohjat();
     }
 
     @RequestMapping(value = "/{id}/organisaatiotarkistus", method = RequestMethod.GET)
-    @Timed
     public OpetussuunnitelmaKevytDto getOpetussuunnitelmaOrganisaatiotarkistuksella(@PathVariable("id") final Long id) {
         return opetussuunnitelmaService.getOpetussuunnitelmaOrganisaatiotarkistuksella(id);
     }
@@ -119,21 +113,18 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/statistiikka", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public ResponseEntity<OpetussuunnitelmaStatistiikkaDto> getStatistiikka() {
         return new ResponseEntity<>(opetussuunnitelmaService.getStatistiikka(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/tilastot", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public ResponseEntity<List<OpetussuunnitelmaTilastoDto>> getOpetussuunnitelmaTilastot() {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaTilastot(), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public ResponseEntity<OpetussuunnitelmaKevytDto> getOpetussuunnitelma(@PathVariable("id") final Long id) {
         return ResponseEntity.ok(opetussuunnitelmaService.getOpetussuunnitelma(id));
     }
@@ -146,14 +137,12 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{id}/pohja/vuosiluokkakokonaisuudet", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public ResponseEntity<Set<OpsVuosiluokkakokonaisuusKevytDto>> getOpetussuunnitelmanPohjanVuosiluokkakokonaisuudet(@PathVariable("id") final Long id) {
         return ResponseEntity.ok(opetussuunnitelmaService.getOpetussuunnitelmanPohjanVuosiluokkakokonaisuudet(id));
     }
 
     @RequestMapping(value = "/{id}/sisalto", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public ResponseEntity<JsonNode> getOpetussuunnitelmaSisalto(
             @PathVariable("id") final Long id,
             @RequestParam String query) {
@@ -163,34 +152,29 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{id}/kaikki", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public ResponseEntity<OpetussuunnitelmaExportDto> getKaikki(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getExportedOpetussuunnitelma(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/opetussuunnitelmat", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public ResponseEntity<List<OpetussuunnitelmaInfoDto>> getLapsiOpetussuunnitelmat(@PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getLapsiOpetussuunnitelmat(id), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/laajaalaisetosaamiset", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public Collection<PerusteLaajaalainenosaaminenDto> getLaajalaisetosamiset(@PathVariable("id") final Long id) {
         return opetussuunnitelmaService.getLaajaalaisetosaamiset(id);
     }
 
     @RequestMapping(value = "/{id}/sync", method = RequestMethod.POST)
-    @Timed
     public ResponseEntity sync(@PathVariable("id") final Long id) {
         opetussuunnitelmaService.syncPohja(id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}/vaihda/{pohjaId}", method = RequestMethod.POST)
-    @Timed
     public ResponseEntity vaihdaPohja(
             @PathVariable("id") final Long id,
             @PathVariable("pohjaId") final Long pohjaId) {
@@ -199,7 +183,6 @@ public class OpetussuunnitelmaController {
     }
 
     @RequestMapping(value = "/{id}/syncTekstitPohjasta", method = RequestMethod.POST)
-    @Timed
     public ResponseEntity syncTekstitPohjasta(
             @PathVariable("id") final Long id) {
         opetussuunnitelmaService.syncTekstitPohjasta(id);
@@ -207,21 +190,18 @@ public class OpetussuunnitelmaController {
     }
 
     @RequestMapping(value = "/{id}/opetussuunnitelmanPohjallaUusiaTeksteja", method = RequestMethod.GET)
-    @Timed
     public ResponseEntity<Boolean> opetussuunnitelmanPohjallaUusiaTeksteja(
             @PathVariable("id") final Long id) {
         return ResponseEntity.ok(opetussuunnitelmaService.opetussuunnitelmanPohjallaUusiaTeksteja(id));
     }
 
     @RequestMapping(value = "/{id}/pohjanperustepaivittynyt", method = RequestMethod.GET)
-    @Timed
     public ResponseEntity<Boolean> pohjanperustepaivittynyt(
             @PathVariable("id") final Long id) {
         return ResponseEntity.ok(opetussuunnitelmaService.pohjanPerustePaivittynyt(id));
     }
 
     @RequestMapping(value = "/{id}/pohjavaihtoehdot", method = RequestMethod.GET)
-    @Timed
     public ResponseEntity<Set<OpetussuunnitelmaInfoDto>> haePohjavaihtoehdot(
             @PathVariable("id") final Long id) {
         Set<OpetussuunnitelmaInfoDto> opetussuunnitelmat = opetussuunnitelmaService.vaihdettavatPohjat(id);
@@ -230,7 +210,6 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    @Timed
     public ResponseEntity<OpetussuunnitelmaBaseDto> addOpetussuunnitelma(
             @RequestBody OpetussuunnitelmaLuontiDto opetussuunnitelmaDto) {
         if (opetussuunnitelmaDto.getTyyppi() == null) {
@@ -248,7 +227,6 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{opsId}/koodisto/{koodisto}", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public ResponseEntity<List<KoodistoKoodiDto>> getKoodistonKoodit(
             @PathVariable("opsId") final Long opsId,
             @PathVariable final String koodisto) {
@@ -258,7 +236,6 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{id}/oppiainejarjestys", method = RequestMethod.POST)
     @ResponseBody
-    @Timed
     public ResponseEntity updateOppiainejarjestys(
             @PathVariable("id") final Long id,
             @RequestBody List<JarjestysDto> oppiainejarjestys) {
@@ -268,7 +245,6 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{id}/oppiaineopintojaksojarjestys", method = RequestMethod.POST)
     @ResponseBody
-    @Timed
     public ResponseEntity updateOppiaineJaOpintojaksojarjestys(
             @PathVariable("id") final Long id,
             @RequestBody List<OppiaineOpintojaksoDto> oppiaineopintojaksojarjestys) {
@@ -278,7 +254,6 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     @ResponseBody
-    @Timed
     public ResponseEntity<OpetussuunnitelmaDto> updateOpetussuunnitelma(
             @PathVariable("id") final Long id,
             @RequestBody OpetussuunnitelmaDto opetussuunnitelmaDto) {
@@ -289,7 +264,6 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{id}/importperustetekstit", method = RequestMethod.POST)
     @ResponseBody
-    @Timed
     public ResponseEntity<OpetussuunnitelmaDto> importPerusteTekstit(
             @PathVariable("id") final Long id,
             @RequestParam(value = "skip", required = false) boolean skip) {
@@ -298,7 +272,6 @@ public class OpetussuunnitelmaController {
     }
 
     @RequestMapping(value = "/{id}/opetussuunnitelmat", method = RequestMethod.POST)
-    @Timed
     public ResponseEntity updateLapsiOpetussuunnitelmat(
             @PathVariable("id") final Long id) {
         opetussuunnitelmaService.updateLapsiOpetussuunnitelmat(id);
@@ -307,7 +280,6 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{id}/tila/{tila}", method = RequestMethod.POST)
     @ResponseBody
-    @Timed
     public ResponseEntity<OpetussuunnitelmaDto> updateTila(
             @PathVariable final Long id,
             @PathVariable Tila tila) {
@@ -316,7 +288,6 @@ public class OpetussuunnitelmaController {
 
     @RequestMapping(value = "/{id}/validoi", method = RequestMethod.GET)
     @ResponseBody
-    @Timed
     public ResponseEntity<List<Validointi>> validoiOpetussuunnitelma(
             @PathVariable("id") final Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.validoiOpetussuunnitelma(id), HttpStatus.OK);
@@ -333,7 +304,6 @@ public class OpetussuunnitelmaController {
         return new ResponseEntity<>(permissionManager.getOpsPermissions(id), HttpStatus.OK);
     }
 
-    @InternalApi
     @RequestMapping(value = "/{id}/navigaatio", method = GET)
     public NavigationNodeDto getNavigation(
             @PathVariable final Long id,
@@ -342,7 +312,6 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.buildNavigation(id, kieli);
     }
 
-    @InternalApi
     @RequestMapping(value = "/{id}/navigaatio/public", method = GET)
     public NavigationNodeDto getNavigationPublic(
             @PathVariable final Long id,
@@ -352,7 +321,6 @@ public class OpetussuunnitelmaController {
         return opetussuunnitelmaService.buildNavigationPublic(id, kieli, revision);
     }
 
-    @InternalApi
     @RequestMapping(value = "/{id}/palauteTekstirakenne", method = GET)
     @ResponseStatus(HttpStatus.OK)
     public void palautaTekstirakenne(@PathVariable final Long id) {

@@ -1,7 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.resource.util;
 
 import fi.vm.sade.eperusteet.ylops.dto.LukkoDto;
-import fi.vm.sade.eperusteet.ylops.resource.config.InternalApi;
 import fi.vm.sade.eperusteet.ylops.service.locking.LockService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,7 +12,6 @@ import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-@InternalApi
 public abstract class AbstractLockController<T> {
 
     @RequestMapping(method = GET)

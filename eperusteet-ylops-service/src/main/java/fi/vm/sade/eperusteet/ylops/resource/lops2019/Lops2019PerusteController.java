@@ -6,7 +6,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,7 +19,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/api/opetussuunnitelmat/{opsId}/peruste")
-@Api("Lops2019PerusteController")
+@Tag(name = "Lops2019PerusteController")
 public class Lops2019PerusteController {
 
     @Autowired

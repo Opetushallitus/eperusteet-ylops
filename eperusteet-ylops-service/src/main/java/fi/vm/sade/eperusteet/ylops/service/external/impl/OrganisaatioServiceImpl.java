@@ -24,7 +24,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,7 +42,7 @@ import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.R
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.CRUD;
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.READ;
 import static fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission.READ_UPDATE;
-import static javax.servlet.http.HttpServletResponse.SC_OK;
+import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 
 @Slf4j
 @Service

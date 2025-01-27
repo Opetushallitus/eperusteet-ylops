@@ -1,9 +1,9 @@
 package fi.vm.sade.eperusteet.ylops.domain.validation;
 
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 import org.jsoup.safety.Safelist;
 
-import javax.validation.Constraint;
-import javax.validation.Payload;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

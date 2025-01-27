@@ -4,6 +4,7 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,6 +28,7 @@ public class PerusteOppiaineDto implements ReferenceableDto {
     private LokalisoituTekstiDto nimi;
     private PerusteTekstiOsaDto tehtava;
     private List<TekstiKappaleDto> vapaatTekstit;
+    @Schema(name = "oppimaarat")
     private Set<PerusteOppiaineDto> oppimaarat;
     private Set<PerusteOpetuksenkohdealueDto> kohdealueet;
     private List<PerusteOppiaineenVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;

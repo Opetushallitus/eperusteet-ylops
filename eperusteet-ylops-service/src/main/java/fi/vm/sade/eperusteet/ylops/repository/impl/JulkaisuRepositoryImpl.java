@@ -7,9 +7,9 @@ import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.PersistenceException;
 import java.io.IOException;
 
 @Profile("!test")

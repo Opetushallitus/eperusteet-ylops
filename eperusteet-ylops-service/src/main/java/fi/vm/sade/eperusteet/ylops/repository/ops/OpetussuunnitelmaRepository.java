@@ -64,43 +64,42 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
                                             @Param("organisaatiot") Collection<String> organisaatiot);
 
     String limitedPagedOpetussuunnitelmat =
-            "FROM Opetussuunnitelma o " +
-                    "JOIN o.organisaatiot org " +
-                    "LEFT JOIN o.nimi nimi " +
+            "FROM Opetussuunnitelma ops " +
+                    "JOIN ops.organisaatiot org " +
+                    "LEFT JOIN ops.nimi nimi " +
                     "LEFT JOIN nimi.teksti teksti " +
-                    "WHERE o.tyyppi = :tyyppi " +
+                    "WHERE ops.tyyppi = :tyyppi " +
                     "AND ( " +
-                    "   (:tila = 'JULKAISTU' AND o.tila != 'POISTETTU' AND (o.julkaisut IS NOT EMPTY OR o.tila = 'JULKAISTU')) " +
-                    "   OR (:tila = 'POISTETTU' AND o.tila = :tila)" +
-                    "   OR (o.tila = :tila AND o.julkaisut IS EMPTY)" +
+                    "   (:tila = fi.vm.sade.eperusteet.ylops.domain.Tila.JULKAISTU AND ops.tila != fi.vm.sade.eperusteet.ylops.domain.Tila.POISTETTU AND (ops.julkaisut IS NOT EMPTY OR ops.tila = fi.vm.sade.eperusteet.ylops.domain.Tila.JULKAISTU)) " +
+                    "   OR (:tila = fi.vm.sade.eperusteet.ylops.domain.Tila.POISTETTU AND ops.tila = :tila)" +
+                    "   OR (ops.tila = :tila AND ops.julkaisut IS EMPTY)" +
                     " ) " +
-                    "AND (coalesce(:nimi, null) IS NULL or LOWER(teksti.teksti) LIKE LOWER(CONCAT('%',:nimi,'%'))) " +
+                    "AND (:nimi IS NULL or LOWER(teksti.teksti) LIKE LOWER(CONCAT('%',:nimi,'%'))) " +
                     "AND teksti.kieli = :kieli " +
-                    "AND (:koulutustyyppi = '' or o.koulutustyyppi = :koulutustyyppi) ";
+                    "AND (:koulutustyyppi IS NULL or ops.koulutustyyppi = :koulutustyyppi) ";
     String limitedPagedOpetussuunnitelmatOrganisaatiot = "AND org IS NOT NULL AND org IN (:organisaatiot)";
 
     @Query(
-            value = "SELECT DISTINCT o, teksti.teksti " + limitedPagedOpetussuunnitelmat + limitedPagedOpetussuunnitelmatOrganisaatiot,
-            countQuery = "SELECT COUNT(distinct o) " + limitedPagedOpetussuunnitelmat + limitedPagedOpetussuunnitelmatOrganisaatiot)
+            value = "SELECT DISTINCT ops, teksti.teksti " + limitedPagedOpetussuunnitelmat + limitedPagedOpetussuunnitelmatOrganisaatiot,
+            countQuery = "SELECT COUNT(distinct ops) " + limitedPagedOpetussuunnitelmat + limitedPagedOpetussuunnitelmatOrganisaatiot)
     Page<Object[]> findSivutettu(
             @Param("tyyppi") Tyyppi tyyppi,
-            @Param("tila") String tila,
+            @Param("tila") Tila tila,
             @Param("nimi") String nimi,
-            @Param("koulutustyyppi") String koulutusTyyppi,
+            @Param("koulutustyyppi") KoulutusTyyppi koulutusTyyppi,
             @Param("organisaatiot") Collection<String> organisaatiot,
             @Param("kieli") Kieli kieli,
-
             Pageable pageable
     );
 
     @Query(
-            value = "SELECT DISTINCT o, teksti.teksti " + limitedPagedOpetussuunnitelmat,
-            countQuery = "SELECT COUNT(distinct o) " + limitedPagedOpetussuunnitelmat)
+            value = "SELECT DISTINCT ops, teksti.teksti " + limitedPagedOpetussuunnitelmat,
+            countQuery = "SELECT COUNT(distinct ops) " + limitedPagedOpetussuunnitelmat)
     Page<Object[]> findSivutettuAdmin(
             @Param("tyyppi") Tyyppi tyyppi,
-            @Param("tila") String tila,
+            @Param("tila") Tila tila,
             @Param("nimi") String nimi,
-            @Param("koulutustyyppi") String koulutusTyyppi,
+            @Param("koulutustyyppi") KoulutusTyyppi koulutusTyyppi,
             @Param("kieli") Kieli kieli,
             Pageable pageable
     );

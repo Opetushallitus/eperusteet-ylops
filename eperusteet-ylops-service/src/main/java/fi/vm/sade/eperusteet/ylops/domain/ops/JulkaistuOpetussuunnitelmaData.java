@@ -1,22 +1,25 @@
 package fi.vm.sade.eperusteet.ylops.domain.ops;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import fi.vm.sade.eperusteet.ylops.repository.dialect.JsonBType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.*;
-
-import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.context.annotation.Profile;
 
 @Profile("!test")
 @Entity
 @Immutable
 @Table(name = "opetussuunnitelman_julkaisu_data")
-@TypeDef(name = "jsonb", defaultForType = JsonBType.class, typeClass = JsonBType.class)
 public class JulkaistuOpetussuunnitelmaData {
 
     @Id
@@ -32,7 +35,7 @@ public class JulkaistuOpetussuunnitelmaData {
     @NotNull
     @Getter
     @Setter
-    @Type(type = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "opsdata")
     private ObjectNode opsData;
 

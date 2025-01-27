@@ -1,7 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.domain;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

@@ -3,7 +3,9 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 import fi.vm.sade.eperusteet.ylops.dto.liite.LiiteDto;
 import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.ops.LiiteService;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Part;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.tika.Tika;
 import org.apache.tika.mime.MimeTypeException;
@@ -26,8 +28,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.imageio.ImageIO;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
@@ -44,7 +44,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/opetussuunnitelmat/{opsId}/kuvat")
-@Api("Liitetiedostot")
+@Tag(name = "Liitetiedostot")
 public class LiitetiedostoController {
 
     private static final int BUFSIZE = 64 * 1024;

@@ -134,6 +134,16 @@ import fi.vm.sade.eperusteet.ylops.service.util.MaintenanceService;
 import fi.vm.sade.eperusteet.ylops.service.util.NavigationUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Validointi;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -153,16 +163,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Subquery;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -518,18 +518,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (SecurityUtil.isUserAdmin()) {
             opetussuunnitelmat = opetussuunnitelmaRepository.findSivutettuAdmin(
                     tyyppi,
-                    tila.name(),
+                    tila,
                     nimi,
-                    koulutustyyppi != null ? koulutustyyppi.name() : "",
+                    koulutustyyppi,
                     Kieli.of(kieli),
                     pageable);
         } else {
             Set<String> organisaatiot = SecurityUtil.getOrganizations(EnumSet.allOf(RolePermission.class));
             opetussuunnitelmat = opetussuunnitelmaRepository.findSivutettu(
                     tyyppi,
-                    tila.name(),
+                    tila,
                     nimi,
-                    koulutustyyppi != null ? koulutustyyppi.name() : "",
+                    koulutustyyppi,
                     organisaatiot,
                     Kieli.of(kieli),
                     pageable);

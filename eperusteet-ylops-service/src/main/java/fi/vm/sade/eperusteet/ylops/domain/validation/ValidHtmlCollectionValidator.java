@@ -1,9 +1,9 @@
 package fi.vm.sade.eperusteet.ylops.domain.validation;
 
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.util.Collection;
 
 public class ValidHtmlCollectionValidator extends ValidHtmlValidatorBase implements
