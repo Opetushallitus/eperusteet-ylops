@@ -165,7 +165,6 @@ import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -420,7 +419,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
         List<String> koulutustyypit = query.getKoulutustyypit();
         if (CollectionUtils.isEmpty(koulutustyypit)) {
-            koulutustyypit = Arrays.asList("");
+            koulutustyypit = List.of();
         }
 
         return julkaisuRepository.findAllJulkisetJulkaisut(
