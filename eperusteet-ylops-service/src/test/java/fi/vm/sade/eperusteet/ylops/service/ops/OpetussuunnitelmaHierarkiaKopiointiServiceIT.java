@@ -72,14 +72,14 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         OpetussuunnitelmaDto luotu = opetussuunnitelmaService.addPohja(ops);
         opetussuunnitelmaService.updateTila(luotu.getId(), Tila.VALMIS);
         this.pohjaOpsId = luotu.getId();
-        this.ops1Id = createOps(luotu.getId());
-        this.ops2Id = createOps(ops1Id);
+        this.ops1Id = createOps(luotu.getId(), OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO);
+        this.ops2Id = createOps(ops1Id, OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA);
 
         TestTransaction.flagForCommit();
         TestTransaction.end();
     }
 
-    private Long createOps(Long pohjaId) {
+    private Long createOps(Long pohjaId, OpetussuunnitelmaLuontiDto.Luontityyppi luontityyppi) {
         OpetussuunnitelmaLuontiDto ops = new OpetussuunnitelmaLuontiDto();
         ops.setNimi(lt(uniikkiString()));
         ops.setKuvaus(lt(uniikkiString()));
@@ -87,6 +87,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         ops.setTyyppi(Tyyppi.OPS);
         ops.setKoulutustyyppi(KoulutusTyyppi.LUKIOKOULUTUS);
         ops.setPohja(Reference.of(pohjaId));
+        ops.setLuontityyppi(luontityyppi);
 
         KoodistoDto kunta = new KoodistoDto();
         kunta.setKoodiUri("kunta_837");
@@ -293,7 +294,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
         assertThat(ops1.getTekstit().getLapset().get(0).getLapset()).hasSize(5);
 
-        Opetussuunnitelma uusiOps = opetussuunnitelmaRepository.getOne(createOps(ops1Id));
+        Opetussuunnitelma uusiOps = opetussuunnitelmaRepository.getOne(createOps(ops1Id, OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA));
         assertThat(ops1.getTekstit().getLapset().get(0).getLapset()).hasSize(5);
         assertThat(findTkNimis(uusiOps, "ops1 oma tekstikappale juuressa")).hasSize(1);
 

@@ -13,26 +13,22 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
+@Getter
+@Setter
 @Embeddable
 @EqualsAndHashCode(of = "oppiaine")
 public class OpsOppiaine implements Serializable {
 
-    @Getter
-    @Setter
     @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
     @NotNull
     private Oppiaine oppiaine;
 
-    @Getter
-    @Setter
     private Integer jnro;
 
     /**
      * Ilmaisee onko oppiaine oma vai lainattu. Vain omaa oppiainetta voidaan muokata,
      * lainatusta oppiaineesta täytyy ensin tehdä oma kopio ennen kuin muokkaus on mahdollista.
      */
-    @Getter
-    @Setter
     @Column(updatable = false)
     private boolean oma;
 

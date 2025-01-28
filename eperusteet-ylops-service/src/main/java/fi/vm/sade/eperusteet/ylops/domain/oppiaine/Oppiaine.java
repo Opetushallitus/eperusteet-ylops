@@ -30,6 +30,7 @@ import jakarta.persistence.Transient;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
@@ -54,6 +55,7 @@ import static java.util.stream.Collectors.toMap;
 @Entity
 @Audited
 @Table(name = "oppiaine")
+@EqualsAndHashCode(of = "tunniste")
 public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copyable<Oppiaine>, HistoriaTapahtuma, Poistettava {
 
     @Getter
@@ -386,18 +388,6 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
 
     public void removeKohdealue(Opetuksenkohdealue kohdealue) {
         this.kohdealueet.remove(kohdealue);
-    }
-
-    //hiberate javaassist proxy "workaround"
-    //ilman equals-metodia objectX.equals(proxy-objectX) on aina false
-    @Override
-    public boolean equals(Object other) {
-        return this == other;
-    }
-
-    @Override
-    public int hashCode() {
-        return System.identityHashCode(this);
     }
 
     @Override
