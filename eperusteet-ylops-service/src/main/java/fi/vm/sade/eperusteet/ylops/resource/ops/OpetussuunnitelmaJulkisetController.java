@@ -38,7 +38,7 @@ public class OpetussuunnitelmaJulkisetController {
             @Parameter(name = "perusteenId", in = ParameterIn.QUERY, array = @ArraySchema(schema = @Schema(type = "string")), description = "perusterajaus"),
             @Parameter(name = "perusteenDiaarinumero", in = ParameterIn.QUERY, array = @ArraySchema(schema = @Schema(type = "string")), description = "perusterajaus")
     })
-    public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(OpetussuunnitelmaQuery query) {
+    public List<OpetussuunnitelmaJulkinenDto> getAllJulkiset(@Parameter(hidden = true) OpetussuunnitelmaQuery query) {
         return opetussuunnitelmaService.getAllJulkiset(query);
     }
 
@@ -51,12 +51,12 @@ public class OpetussuunnitelmaJulkisetController {
     @Parameters({
             @Parameter(name = "koulutustyypit", in = ParameterIn.QUERY, array = @ArraySchema(schema = @Schema(type = "string")), description = "koulutustyypit"),
             @Parameter(name = "nimi", schema = @Schema(implementation = String.class), in = ParameterIn.QUERY, description = "nimi"),
-            @Parameter(name = "kieli", in = ParameterIn.QUERY, array = @ArraySchema(schema = @Schema(type = "string"))),
+            @Parameter(name = "kieli", schema = @Schema(implementation = String.class), in = ParameterIn.QUERY, description = "kieli"),
             @Parameter(name = "perusteenDiaarinumero", schema = @Schema(implementation = String.class), in = ParameterIn.QUERY, description = "perusteenDiaarinumero"),
             @Parameter(name = "sivu", schema = @Schema(implementation = Integer.class), in = ParameterIn.QUERY),
             @Parameter(name = "sivukoko", schema = @Schema(implementation = Integer.class), in = ParameterIn.QUERY),
     })
-    public Page<OpetussuunnitelmaJulkinenDto> getAllJulkaistutOpetussuunnitelmat(OpetussuunnitelmaJulkaistuQuery query) {
+    public Page<OpetussuunnitelmaJulkinenDto> getAllJulkaistutOpetussuunnitelmat(@Parameter(hidden = true) OpetussuunnitelmaJulkaistuQuery query) {
         return opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query);
     }
 
