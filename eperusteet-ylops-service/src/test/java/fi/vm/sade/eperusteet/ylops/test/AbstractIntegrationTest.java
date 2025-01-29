@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.transaction.TestTransaction;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.function.Consumer;
@@ -80,5 +81,17 @@ public class AbstractIntegrationTest {
         opsfn.accept(opsLuontiDto);
 
         return opetussuunnitelmaService.addOpetussuunnitelma(opsLuontiDto);
+    }
+
+    public void startNewTransaction() {
+        if (TestTransaction.isActive()) {
+            TestTransaction.end();
+        }
+        TestTransaction.start();
+        TestTransaction.flagForCommit();
+    }
+
+    public void endTransaction() {
+        TestTransaction.end();
     }
 }

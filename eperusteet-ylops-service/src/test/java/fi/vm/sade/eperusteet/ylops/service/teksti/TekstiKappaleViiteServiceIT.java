@@ -6,6 +6,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -16,13 +17,13 @@ import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
+import jakarta.persistence.EntityManager;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -141,6 +142,7 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
 
         OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
             ops.setPohja(Reference.of(kunnanOps.getId()));
+            ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.LEGACY);
         });
         assertThat(findTkNimi(koulunOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();
 
@@ -161,6 +163,7 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
 
         OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
             ops.setPohja(Reference.of(kunnanOps.getId()));
+            ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.LEGACY);
         });
         assertThat(findTkNimi(kunnanOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();
         assertThat(findTkNimi(koulunOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();

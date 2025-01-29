@@ -185,10 +185,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Set<Liite> liitteet = new HashSet<>();
 
-
-    // FIXME: vanhat toteutuskohtaiset sisällöt mitkä eivät kuuluisi tähän entiteettiin
-    // --------------------------------------------------
-
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(joinColumns = {
             @JoinColumn(name = "opetussuunnitelma_id")}, name = "ops_oppiaine")
@@ -296,11 +292,10 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     }
 
     public void setOppiaineet(Set<OpsOppiaine> oppiaineet) {
-        if (oppiaineet == null) {
-            this.oppiaineet.clear();
-        } else {
+        this.oppiaineet.clear();
+
+        if (oppiaineet != null) {
             this.oppiaineet.addAll(oppiaineet);
-            this.oppiaineet.retainAll(oppiaineet);
         }
     }
 

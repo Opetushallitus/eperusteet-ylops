@@ -482,6 +482,7 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
         ops.setTila(Tila.LUONNOS);
         ops.setTyyppi(Tyyppi.OPS);
         ops.setKoulutustyyppi(koulutustyyppi);
+        ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.LEGACY);
 
         KoodistoDto kunta = new KoodistoDto();
         kunta.setKoodiUri("kunta_837");
