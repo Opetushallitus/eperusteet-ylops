@@ -33,8 +33,8 @@ public class PerusteOppiaineenVuosiluokkakokonaisuusDto implements Referenceable
     private LokalisoituTekstiDto opetuksenTavoitteetOtsikko;
     private LokalisoituTekstiDto vapaaTeksti;
     private List<TekstiKappaleDto> vapaatTekstit;
-    private List<PerusteOpetuksentavoiteDto> tavoitteet;
     private List<PerusteKeskeinensisaltoalueDto> sisaltoalueet;
+    private List<PerusteOpetuksentavoiteDto> tavoitteet;
 
     public Set<Vuosiluokka> getVuosiluokat() {
         return vuosiluokkaKokonaisuus.getVuosiluokat();
