@@ -10,7 +10,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
@@ -68,6 +72,7 @@ public class ExternalController {
     }
 
     @RequestMapping(value = "/opetussuunnitelma/{opetussuunnitelmaId:\\d+}/{custompath}", method = GET)
+    @ResponseBody
     @Operation(
             parameters = {
                     @Parameter(name = "opetussuunnitelmaId", description = "Opetussuunnitelman id", required = true),
@@ -76,6 +81,9 @@ public class ExternalController {
             summary = "Opetussuunnitelman tietojen haku tarkalla sisältörakenteella",
             description = "Url parametreiksi voi antaa opetussuunnitelman id:n lisäksi erilaisia opetussuunnitelman rakenteen osia ja id-kenttien arvoja. Esim. /opetussuunnitelma/11548134/opintojaksot/15598911/nimi/fi antaa opetussuunnitelman (id: 11548134) opintojaksojen tietueen (id: 15598911) nimen suomenkielisenä."
     )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = OpetussuunnitelmaExportDto.class))}),
+    })
     public ResponseEntity<Object> getOpetussuunnitelmaDynamicQuery(HttpServletRequest req, @PathVariable("opetussuunnitelmaId") final long id) {
         return getJulkaistuSisaltoObjectNodeWithQuery(id, requestToQueries(req, DEFAULT_PATH_SKIP_VALUE));
     }
