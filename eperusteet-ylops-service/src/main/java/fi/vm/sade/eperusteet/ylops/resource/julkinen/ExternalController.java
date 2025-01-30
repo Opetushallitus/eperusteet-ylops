@@ -56,18 +56,33 @@ public class ExternalController {
         return opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query);
     }
 
-    @Operation(summary = "Opetussuunnitelman tietojen haku")
+    @Operation(
+            parameters = {
+                    @Parameter(name = "opetussuunnitelmaId", description = "Opetussuunnitelman id", required = true)
+            },
+            summary = "Opetussuunnitelman tietojen haku"
+    )
     @RequestMapping(value = "/opetussuunnitelma/{opetussuunnitelmaId}", method = RequestMethod.GET)
     public ResponseEntity<OpetussuunnitelmaExportDto> getExternalOpetussuunnitelma(@PathVariable("opetussuunnitelmaId") final Long opetussuunnitelmaId) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opetussuunnitelmaId), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/opetussuunnitelma/{opetussuunnitelmaId:\\d+}/{custompath}/**", method = GET)
+    @RequestMapping(value = "/opetussuunnitelma/{opetussuunnitelmaId:\\d+}/{custompath}", method = GET)
     @Operation(
+            parameters = {
+                    @Parameter(name = "opetussuunnitelmaId", description = "Opetussuunnitelman id", required = true),
+                    @Parameter(name = "custompath", description = "Opetussuunnitelman rakenteen osa", required = true)
+            },
             summary = "Opetussuunnitelman tietojen haku tarkalla sisältörakenteella",
             description = "Url parametreiksi voi antaa opetussuunnitelman id:n lisäksi erilaisia opetussuunnitelman rakenteen osia ja id-kenttien arvoja. Esim. /opetussuunnitelma/11548134/opintojaksot/15598911/nimi/fi antaa opetussuunnitelman (id: 11548134) opintojaksojen tietueen (id: 15598911) nimen suomenkielisenä."
     )
     public ResponseEntity<Object> getOpetussuunnitelmaDynamicQuery(HttpServletRequest req, @PathVariable("opetussuunnitelmaId") final long id) {
+        return getJulkaistuSisaltoObjectNodeWithQuery(id, requestToQueries(req, DEFAULT_PATH_SKIP_VALUE));
+    }
+
+    // Springdoc ei generoi rajapintoja /** poluille, joten tämä on tehty erikseen
+    @RequestMapping(value = "/opetussuunnitelma/{opetussuunnitelmaId:\\d+}/{custompath}/**", method = GET)
+    public ResponseEntity<Object> getOpetussuunnitelmaDynamicQueryHidden(HttpServletRequest req, @PathVariable("opetussuunnitelmaId") final long id) {
         return getJulkaistuSisaltoObjectNodeWithQuery(id, requestToQueries(req, DEFAULT_PATH_SKIP_VALUE));
     }
 
