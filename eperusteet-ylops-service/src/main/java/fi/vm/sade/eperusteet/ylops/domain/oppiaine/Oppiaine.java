@@ -30,7 +30,6 @@ import jakarta.persistence.Transient;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
@@ -55,7 +54,6 @@ import static java.util.stream.Collectors.toMap;
 @Entity
 @Audited
 @Table(name = "oppiaine")
-@EqualsAndHashCode(of = "tunniste")
 public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copyable<Oppiaine>, HistoriaTapahtuma, Poistettava {
 
     @Getter
@@ -321,7 +319,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
         if (!koosteinen) {
             throw new IllegalStateException("Oppiaine ei ole koosteinen eikä tue oppimääriä");
         }
-        if (aine.getOppiaine().equals(this) && oppimaarat.remove(aine)) {
+        if (oppimaarat.remove(aine)) {
             aine.oppiaine = null;
         } else {
             throw new IllegalArgumentException("Oppimäärä ei kuulu tähän oppiaineeseen");
@@ -505,4 +503,18 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
         return new OppiaineOpsTunniste(this.tunniste, this.kieliKoodiArvo, this.kieli);
     }
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Oppiaine oppiaine)) return false;
+
+        return Objects.equals(tunniste, oppiaine.tunniste) && Objects.equals(getId(), oppiaine.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hashCode(tunniste);
+        result = 31 * result + Objects.hashCode(getId());
+        return result;
+    }
 }
