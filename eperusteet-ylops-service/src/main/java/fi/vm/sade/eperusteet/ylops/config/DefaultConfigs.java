@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.config;
 
+import com.fasterxml.jackson.core.StreamReadConstraints;
 import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator;
 import jakarta.persistence.EntityManager;
@@ -121,5 +122,11 @@ public class DefaultConfigs {
     @Bean
     public JpaTransactionManager transactionManager() {
         return new JpaTransactionManager(entityManagerFactory().getObject());
+    }
+
+    static {
+        StreamReadConstraints.overrideDefaultStreamReadConstraints(
+                StreamReadConstraints.builder().maxStringLength(200000000).build()
+        );
     }
 }
