@@ -18,6 +18,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -157,11 +158,11 @@ public class DokumenttiController {
         return ResponseEntity.ok(dto);
     }
 
-    @RequestMapping(value = "/kuva", method = RequestMethod.POST)
+    @PostMapping(value = "/kuva", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DokumenttiKuvaDto> addImage(
             @RequestParam Long opsId,
             @RequestParam String tyyppi,
-            @RequestParam(defaultValue = "fi") String kieli,
+            @RequestParam String kieli,
             @RequestPart MultipartFile file) throws IOException {
 
         DokumenttiKuvaDto dto = dokumenttiKuvaService.addImage(opsId, tyyppi, Kieli.of(kieli), file);

@@ -5,6 +5,7 @@ import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaistuQuery;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -67,7 +68,7 @@ public class ExternalController {
             summary = "Opetussuunnitelman tietojen haku"
     )
     @RequestMapping(value = "/opetussuunnitelma/{opetussuunnitelmaId}", method = RequestMethod.GET)
-    public ResponseEntity<OpetussuunnitelmaExportDto> getExternalOpetussuunnitelma(@PathVariable("opetussuunnitelmaId") final Long opetussuunnitelmaId) {
+    public ResponseEntity<OpetussuunnitelmaExportDto> getExternalOpetussuunnitelma(@PathVariable("opetussuunnitelmaId") Long opetussuunnitelmaId) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opetussuunnitelmaId), HttpStatus.OK);
     }
 
@@ -84,19 +85,20 @@ public class ExternalController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = OpetussuunnitelmaExportDto.class))}),
     })
-    public ResponseEntity<Object> getOpetussuunnitelmaDynamicQuery(HttpServletRequest req, @PathVariable("opetussuunnitelmaId") final long id) {
+    public ResponseEntity<Object> getOpetussuunnitelmaDynamicQuery(HttpServletRequest req, @PathVariable("opetussuunnitelmaId") long id, @PathVariable("custompath") String custompath) {
         return getJulkaistuSisaltoObjectNodeWithQuery(id, requestToQueries(req, DEFAULT_PATH_SKIP_VALUE));
     }
 
+    @Hidden
     // Springdoc ei generoi rajapintoja /** poluille, joten tämä on tehty erikseen
     @RequestMapping(value = "/opetussuunnitelma/{opetussuunnitelmaId:\\d+}/{custompath}/**", method = GET)
-    public ResponseEntity<Object> getOpetussuunnitelmaDynamicQueryHidden(HttpServletRequest req, @PathVariable("opetussuunnitelmaId") final long id) {
+    public ResponseEntity<Object> getOpetussuunnitelmaDynamicQueryHidden(HttpServletRequest req, @PathVariable("opetussuunnitelmaId") long id) {
         return getJulkaistuSisaltoObjectNodeWithQuery(id, requestToQueries(req, DEFAULT_PATH_SKIP_VALUE));
     }
 
     @Operation(summary = "Opetussuunnitelman perusteen haku. Palauttaa perusteen version, mikä opetussuunnitelmalla oli käytössä opetussuunnitelman julkaisun hetkellä.")
     @RequestMapping(value = "/opetussuunnitelma/{id}/peruste", method = RequestMethod.GET)
-    public ResponseEntity<JsonNode> getExternalOpetussuunnitelmanPeruste(@PathVariable("id") final Long id) {
+    public ResponseEntity<JsonNode> getExternalOpetussuunnitelmanPeruste(@PathVariable("id") Long id) {
         return new ResponseEntity<>(opetussuunnitelmaService.getJulkaistuOpetussuunnitelmaPeruste(id), HttpStatus.OK);
     }
 
