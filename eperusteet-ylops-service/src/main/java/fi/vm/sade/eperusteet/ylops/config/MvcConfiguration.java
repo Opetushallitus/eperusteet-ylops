@@ -38,6 +38,7 @@ public class MvcConfiguration implements WebMvcConfigurer {
     @Override
     public void configurePathMatch(PathMatchConfigurer matcher) {
         matcher.setUseRegisteredSuffixPatternMatch(true);
+        matcher.setUseTrailingSlashMatch(true);
     }
 
     @Override
