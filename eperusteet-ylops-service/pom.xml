@@ -10,7 +10,7 @@
     </parent>
 
     <name>eperusteet-ylops-service</name>
-    <artifactId>eperusteet-service</artifactId>
+    <artifactId>eperusteet-ylops-service</artifactId>
     <version>3.0.0</version>
 
     <properties>
