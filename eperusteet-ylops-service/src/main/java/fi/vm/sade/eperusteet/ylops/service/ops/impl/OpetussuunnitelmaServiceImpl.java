@@ -944,7 +944,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     private void fetchOpsitJoissaPohjana(OpetussuunnitelmaKevytDto rootOps) {
         Set<String> kayttajaOids = kayttajanOrganisaatioOids();
-        Set<Opetussuunnitelma> opsitJoissaPohjana = opetussuunnitelmaRepository.findAllByPohjaId(rootOps.getId());
+        Set<Opetussuunnitelma> opsitJoissaPohjana = opetussuunnitelmaRepository.findAllByPohjaId(rootOps.getId())
+                .stream()
+                .filter(ops -> CollectionUtils.isNotEmpty(ops.getLapset()) || !ops.getTila().equals(Tila.POISTETTU))
+                .collect(toSet());
         List<OpetussuunnitelmaNimiDto> opsit = new ArrayList<>();
 
         opsitJoissaPohjana.forEach(ops -> {

@@ -123,6 +123,11 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
     private Opetussuunnitelma pohja;
 
+    @Getter
+    @OneToMany(mappedBy = "pohja")
+    @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
+    private List<Opetussuunnitelma> lapset;
+
     @Enumerated(value = EnumType.STRING)
     @NotNull
     @Getter
