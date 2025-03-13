@@ -5,25 +5,22 @@ import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ServiceException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
 import jakarta.annotation.Nullable;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.ValidationException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.ConversionNotSupportedException;
 import org.springframework.beans.TypeMismatchException;
-import org.springframework.core.NestedCheckedException;
-import org.springframework.core.NestedRuntimeException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.transaction.TransactionSystemException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpMediaTypeNotAcceptableException;
@@ -35,6 +32,7 @@ import org.springframework.web.bind.UnsatisfiedServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
@@ -46,9 +44,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @ControllerAdvice
 public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(ExceptionHandlingConfig.class);
 
     @ExceptionHandler(TransactionSystemException.class)
     public ResponseEntity<Object> handleTransactionExceptions(TransactionSystemException e, WebRequest request) {
@@ -75,7 +73,7 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
         if ("ClientAbortException".equals(exceptionSimpleName)) {
             Principal principal = request.getUserPrincipal();
             String username = principal != null ? principal.getName() : "<NONE>";
-            LOG.warn("ClientAbortException: message={} username={}, remoteAddr={}, userAgent={}, requestedURL={}",
+            log.warn("ClientAbortException: message={} username={}, remoteAddr={}, userAgent={}, requestedURL={}",
                     ex.getLocalizedMessage(), username, request.getRemoteAddr(), request.getHeader("User-Agent"),
                     request.getRequestURL());
             return null;
@@ -85,11 +83,12 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(value = {
-            NestedRuntimeException.class,
-            NestedCheckedException.class,
-            ServletException.class,
-            ValidationException.class})
+            Exception.class})
     public ResponseEntity<Object> handleAllExceptions(Exception e, WebRequest request) throws Exception {
+        if (e instanceof AuthenticationException || e instanceof AccessDeniedException) {
+            throw e;
+        }
+
         HttpStatus status = HttpStatus.BAD_REQUEST;
         ResponseStatus rs = e.getClass().getAnnotation(ResponseStatus.class);
         if (rs != null) {
@@ -178,11 +177,24 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
         map.put("koodi", status);
 
         if (suppresstrace) {
-            LOG.warn("Virhetilanne: " + ex.getLocalizedMessage());
+            log.warn("Virhetilanne: {}", ex.getLocalizedMessage());
         } else {
-            LOG.error("Virhetilanne: ", ex);
+            log.error("Virhetilanne: ", ex);
         }
 
+        logRequest(request);
         return super.handleExceptionInternal(ex, map, headers, status, request);
+    }
+
+    private void logRequest(WebRequest webRequest) {
+        if (webRequest instanceof ServletWebRequest) {
+            ServletWebRequest servletWebRequest = (ServletWebRequest) webRequest;
+
+            String method = servletWebRequest.getRequest().getMethod();
+            String path = servletWebRequest.getRequest().getRequestURI();
+            String queryString = servletWebRequest.getRequest().getQueryString();
+
+            log.error("Request: {} {}?{}", method, path, (queryString != null ? queryString : ""));
+        }
     }
 }
