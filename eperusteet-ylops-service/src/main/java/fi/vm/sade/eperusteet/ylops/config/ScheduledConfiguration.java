@@ -24,7 +24,7 @@ public class ScheduledConfiguration {
     @Autowired
     private MaintenanceService maintenanceService;
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void cleanOphSession() {
         ophSessionMappingStorage.clean();
     }
