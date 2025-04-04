@@ -20,7 +20,6 @@ import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaisuKevyt;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -125,7 +124,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
     @Override
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(Long opsId) {
+    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutJaViimeisinStatus(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
         List<OpetussuunnitelmanJulkaisuDto> julkaisut = mapper.mapAsList(julkaisuRepository.findAllByOpetussuunnitelma(ops), OpetussuunnitelmanJulkaisuDto.class);
@@ -144,10 +143,10 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     }
 
     @Override
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(Long opsId) {
+    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(Long opsId) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        List<OpetussuunnitelmaJulkaisuKevyt> julkaisut = julkaisuRepository.findKevytdataByOpetussuunnitelma(ops);
+        List<OpetussuunnitelmanJulkaisu> julkaisut = julkaisuRepository.findAllByOpetussuunnitelma(ops);
         return mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuDto.class);
     }
 

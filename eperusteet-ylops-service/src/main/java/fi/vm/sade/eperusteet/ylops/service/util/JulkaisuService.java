@@ -13,10 +13,10 @@ import java.util.List;
 public interface JulkaisuService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(@P("opsId") Long opsId);
+    List<OpetussuunnitelmanJulkaisuDto> getJulkaisutJaViimeisinStatus(@P("opsId") Long opsId);
 
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(@P("opsId") Long opsId);
+    @PreAuthorize("permitAll()")
+    List<OpetussuunnitelmanJulkaisuDto> getJulkaisut(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'TILANVAIHTO')")
     void addJulkaisu(@P("opsId") Long opsId, UusiJulkaisuDto julkaisuDto);
