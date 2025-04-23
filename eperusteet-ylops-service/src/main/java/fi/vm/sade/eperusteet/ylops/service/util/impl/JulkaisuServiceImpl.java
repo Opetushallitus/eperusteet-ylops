@@ -268,6 +268,7 @@ public class JulkaisuServiceImpl implements JulkaisuService {
         julkaisu.setData(vanhaJulkaisu.getData());
         julkaisu = julkaisuRepository.save(julkaisu);
 
+        maintenanceService.clearOpetussuunnitelmaCaches(opsId);
         muokkaustietoService.addOpsMuokkausTieto(opsId, opetussuunnitelma, MuokkausTapahtuma.JULKAISU);
         return taytaKayttajaTiedot(mapper.map(julkaisu, OpetussuunnitelmanJulkaisuDto.class));
     }
