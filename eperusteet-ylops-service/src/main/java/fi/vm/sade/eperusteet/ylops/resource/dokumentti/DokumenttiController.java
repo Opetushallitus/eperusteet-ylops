@@ -7,6 +7,7 @@ import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiKuvaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.pdf.PdfData;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.resource.util.CacheControl;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiKuvaService;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
@@ -20,7 +21,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,8 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Base64;
-import java.util.Objects;
 
 @Slf4j
 @Tag(name = "Dokumentit")
@@ -77,18 +75,22 @@ public class DokumenttiController {
     public ResponseEntity<Object> get(
             @PathVariable("fileName") String fileName
     ) {
+        return pdfDataResponse(fileName, dokumenttiService.getData(Long.valueOf(FilenameUtils.removeExtension(fileName))), "pdf");
+    }
+
+    @RequestMapping(value = "/{fileName}/html", method = RequestMethod.GET, produces = "text/html")
+    @ResponseBody
+    @CacheControl(age = CacheControl.ONE_YEAR, nonpublic = false)
+    public ResponseEntity<Object> getDokumenttihtml(
+            @PathVariable("fileName") String fileName
+    ) {
+        return pdfDataResponse(fileName, dokumenttiService.getHtml(Long.valueOf(FilenameUtils.removeExtension(fileName))), "html");
+    }
+
+    private ResponseEntity<Object> pdfDataResponse(String fileName, byte[] data, String type) {
         Long dokumenttiId = Long.valueOf(FilenameUtils.removeExtension(fileName));
-        String extension = FilenameUtils.getExtension(fileName);
 
-        byte[] pdfdata = dokumenttiService.get(dokumenttiId);
-
-        // Tarkistetaan tiedostopääte jos asetettu kutsuun
-        if (!ObjectUtils.isEmpty(extension) && !Objects.equals(extension, "pdf")) {
-            log.error("Got wrong file extension");
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
-        if (pdfdata == null || pdfdata.length == 0) {
+        if (data == null || data.length == 0) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -97,7 +99,7 @@ public class DokumenttiController {
         }
 
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + ".pdf\"");
+        headers.set("Content-disposition", "inline; filename=\"" + dokumenttiId + "." + type + "\"");
         DokumenttiDto dokumenttiDto = dokumenttiService.getDto(dokumenttiId);
         if (dokumenttiDto != null) {
             OpetussuunnitelmaKevytDto opsDto = opetussuunnitelmaService.getOpetussuunnitelma(dokumenttiDto.getOpsId());
@@ -105,13 +107,13 @@ public class DokumenttiController {
                 LokalisoituTekstiDto nimi = opsDto.getNimi();
                 if (nimi != null && nimi.getTekstit().containsKey(dokumenttiDto.getKieli())) {
                     headers.set("Content-disposition", "inline; filename=\""
-                            + nimi.getTekstit().get(dokumenttiDto.getKieli()) + ".pdf\"");
+                            + nimi.getTekstit().get(dokumenttiDto.getKieli()) + "." + type + "\"");
                 }
             }
         }
         // estetään googlea indeksoimasta pdf:iä
         headers.set("X-Robots-Tag", "noindex");
-        return new ResponseEntity<>(pdfdata, headers, HttpStatus.OK);
+        return new ResponseEntity<>(data, headers, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/ops", method = RequestMethod.GET)
@@ -201,7 +203,7 @@ public class DokumenttiController {
     @ResponseBody
     public ResponseEntity<String> savePdfData(@PathVariable("dokumenttiId") Long dokumenttiId,
                                               @RequestBody PdfData pdfData) {
-        dokumenttiService.updateDokumenttiPdfData(Base64.getDecoder().decode(pdfData.getData()), dokumenttiId);
+        dokumenttiService.updateDokumenttiPdfData(pdfData, dokumenttiId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

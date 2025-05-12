@@ -9,6 +9,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
+import fi.vm.sade.eperusteet.ylops.dto.pdf.PdfData;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.JulkaisuRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
@@ -206,7 +208,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
 
     @Override
     @Transactional(readOnly = true)
-    public byte[] get(Long id) {
+    public byte[] getData(Long id) {
         Dokumentti dokumentti = dokumenttiRepository.findOne(id);
         if (dokumentti == null) {
             return null;
@@ -215,9 +217,19 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     }
 
     @Override
-    public void updateDokumenttiPdfData(byte[] pdfData, Long dokumenttiId) {
+    public byte[] getHtml(Long id) {
+        Dokumentti dokumentti = dokumenttiRepository.findOne(id);
+        if (dokumentti == null) {
+            return null;
+        }
+        return dokumentti.getHtml();
+    }
+
+    @Override
+    public void updateDokumenttiPdfData(PdfData pdfData, Long dokumenttiId) {
         Dokumentti dokumentti = dokumenttiRepository.findById(dokumenttiId).orElseThrow();
-        dokumentti.setData(pdfData);
+        dokumentti.setData(Base64.getDecoder().decode(pdfData.getData()));
+        dokumentti.setHtml(Base64.getDecoder().decode(pdfData.getHtml()));
         dokumentti.setVirhekoodi(null);
         dokumentti.setTila(DokumenttiTila.VALMIS);
         dokumentti.setValmistumisaika(new Date());
