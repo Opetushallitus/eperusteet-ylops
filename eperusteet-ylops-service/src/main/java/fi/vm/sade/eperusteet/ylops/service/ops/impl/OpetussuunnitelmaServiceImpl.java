@@ -216,6 +216,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     private TekstiKappaleRepository tekstiKappaleRepository;
 
     @Autowired
+    private TekstikappaleviiteRepository tekstikappaleviiteRepository;
+
+    @Autowired
     private TekstiKappaleViiteService tekstiKappaleViiteService;
 
     @Autowired
@@ -1236,19 +1239,25 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     private void kasitteleTekstit(TekstiKappaleViite vanha, TekstiKappaleViite parent, OpetussuunnitelmaLuontiDto.Luontityyppi luontityyppi) {
+        tekstikappaleviiteRepository.saveAndFlush(parent);
         List<TekstiKappaleViite> vanhaLapset = vanha.getLapset();
         if (vanhaLapset != null) {
             vanhaLapset.stream()
                     .filter(vanhaTkv -> vanhaTkv.getTekstiKappale() != null)
                     .forEach(vanhaTkv -> {
-                        TekstiKappaleViite tkv = copyTekstikappaleViiteFromOpsToOps(parent, vanhaTkv, luontityyppi);
-                        kasitteleTekstit(vanhaTkv, tkv, luontityyppi);
+                        try {
+                            TekstiKappaleViite tkv = copyTekstikappaleViiteFromOpsToOps(parent, vanhaTkv, luontityyppi);
+                            kasitteleTekstit(vanhaTkv, tkv, luontityyppi);
+                        } catch (Exception e) {
+                            log.error("tekstikappaleviite: {}", vanhaTkv.getId());
+                            throw new BusinessRuleViolationException("teksti-kappale-viitteen-kopiointi-ei-onnistunut", e);
+                        }
                     });
         }
     }
 
     private TekstiKappaleViite copyTekstikappaleViiteFromOpsToOps(TekstiKappaleViite parent, TekstiKappaleViite vanhaTkv, OpetussuunnitelmaLuontiDto.Luontityyppi luontityyppi) {
-        TekstiKappaleViite tkv = viiteRepository.save(new TekstiKappaleViite());
+        TekstiKappaleViite tkv = viiteRepository.saveAndFlush(new TekstiKappaleViite());
         tkv.setOmistussuhde(Omistussuhde.OMA);
         tkv.setLapset(new ArrayList<>());
         tkv.setVanhempi(parent);
@@ -1260,7 +1269,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (luontityyppi.equals(OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA)) {
             copy.setTeksti(null);
         }
-        copy = tekstiKappaleRepository.save(copy);
+        copy = tekstiKappaleRepository.saveAndFlush(copy);
         tkv.setTekstiKappale(copy);
         parent.getLapset().add(tkv);
         return tkv;

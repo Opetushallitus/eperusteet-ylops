@@ -176,11 +176,12 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
         }
         map.put("koodi", status);
 
-        if (suppresstrace) {
-            log.warn("Virhetilanne: {}", ex.getLocalizedMessage());
-        } else {
+//        if (suppresstrace) {
+//            log.warn("Virhetilanne: {}", ex.getLocalizedMessage());
+//        } else {
             log.error("Virhetilanne: ", ex);
-        }
+            log.error("Stacktrace: {}", ExceptionUtils.getStackTrace(ex));
+//        }
 
         logRequest(request);
         return super.handleExceptionInternal(ex, map, headers, status, request);
