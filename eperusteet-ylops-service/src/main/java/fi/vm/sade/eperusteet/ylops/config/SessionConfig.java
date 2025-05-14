@@ -13,7 +13,7 @@ import org.springframework.session.web.context.AbstractHttpSessionApplicationIni
 
 @Profile("!test")
 @Configuration
-@EnableJdbcHttpSession(maxInactiveIntervalInSeconds = 7200)
+@EnableJdbcHttpSession // (maxInactiveIntervalInSeconds = 7200)
 public class SessionConfig extends AbstractHttpSessionApplicationInitializer {
 
     @Autowired
