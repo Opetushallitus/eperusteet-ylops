@@ -140,7 +140,7 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
             List<String> reasons = new ArrayList<>();
             List<String> lisatiedot = new ArrayList<>();
             for (ConstraintViolation<?> constraintViolation : ((ConstraintViolationException) ex).getConstraintViolations()) {
-                reasons.add(constraintViolation.getPropertyPath().toString() + ": " + constraintViolation.getMessage());
+                reasons.add(constraintViolation.getMessage());
                 lisatiedot.add(constraintViolation.getRootBeanClass().toString() + ":" +
                         constraintViolation.getInvalidValue().toString() + ":" +
                         constraintViolation.getPropertyPath().toString() + ":" +
