@@ -263,7 +263,7 @@ public class ValidointiServiceImpl implements ValidointiService {
 
         List<Validointi> validoinnit = new ArrayList<>();
 
-        List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAll(opsId, Lops2019OpintojaksoDto.class);
+        List<Lops2019OpintojaksoDto> opintojaksot = opintojaksoService.getAllTuodut(opsId, Lops2019OpintojaksoDto.class);
         List<Lops2019ModuuliDto> moduulit = haeValidoitavatModuulit(opsId);
         Map<String, Lops2019ModuuliDto> moduulitMap = moduulit.stream().collect(Collectors.toMap(m -> m.getKoodi().getUri(), Function.identity()));
         Map<String, List<Lops2019OpintojaksoDto>> liitokset = lops2019Service.getModuuliToOpintojaksoMap(opintojaksot);
@@ -315,9 +315,9 @@ public class ValidointiServiceImpl implements ValidointiService {
             Validointi validointi = new Validointi(ValidationCategory.OPPIAINE);
             oppiaineRepository.findAllBySisalto(ops.getLops2019()).forEach(oa -> {
                 NavigationNodeDto oppiaineNavigationNode = NavigationNodeDto
-                        .of(NavigationType.oppiaine, mapper.map(oa.getNimi(), LokalisoituTekstiDto.class), oa.getId())
+                        .of(oa.getNavigationType(), mapper.map(oa.getNimi(), LokalisoituTekstiDto.class), oa.getId())
                         .meta("koodi", mapper.map(oa.getKoodi(), KoodiDto.class));
-                validoiVirhe(validointi, "oppiaineesta-opintojakso", oppiaineNavigationNode, !opintojaksot.stream().anyMatch(oj -> oj.getOppiaineet().stream()
+                validoiVirhe(validointi, "oppiaineesta-opintojakso", oppiaineNavigationNode, opintojaksot.stream().noneMatch(oj -> oj.getOppiaineet().stream()
                         .map(Lops2019OpintojaksonOppiaineDto::getKoodi)
                         .collect(Collectors.toSet())
                         .contains(oa.getKoodi())));
