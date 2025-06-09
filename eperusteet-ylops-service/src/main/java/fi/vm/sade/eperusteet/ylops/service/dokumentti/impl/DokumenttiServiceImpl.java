@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -186,6 +187,11 @@ public class DokumenttiServiceImpl implements DokumenttiService {
             dokumenttiStateService.save(dto);
         }
         return dto;
+    }
+
+    @Override
+    public void cleanStuckPrintings() {
+        dokumenttiRepository.cleanStuckPrintings(LocalDateTime.now().minusHours(3));
     }
 
     @Override
