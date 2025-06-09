@@ -42,6 +42,9 @@ public interface DokumenttiService {
     @PreAuthorize("isAuthenticated()")
     DokumenttiDto query(Long id);
 
+    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
+    void cleanStuckPrintings();
+
     void updateDokumenttiTila(DokumenttiTila tila, Long dokumenttiId);
 
     void updateDokumenttiPdfData(byte[] pdfData, Long dokumenttiId);

@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.config;
 
 import fi.vm.sade.eperusteet.ylops.dto.util.CacheArvot;
 import fi.vm.sade.eperusteet.ylops.repository.OphSessionMappingStorage;
+import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
 import fi.vm.sade.eperusteet.ylops.service.util.MaintenanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -24,9 +25,18 @@ public class ScheduledConfiguration {
     @Autowired
     private MaintenanceService maintenanceService;
 
+    @Autowired
+    private DokumenttiService dokumenttiService;
+
     @Scheduled(cron = "0 0 * * * *")
     public void cleanOphSession() {
         ophSessionMappingStorage.clean();
+    }
+
+    @Scheduled(cron = "0 30 * * * *")
+    public void fixStuckPrintings() {
+        SecurityContextHolder.getContext().setAuthentication(useAdminAuth());
+        dokumenttiService.cleanStuckPrintings();
     }
 
     @Scheduled(cron = "0 0 1 * * *")
