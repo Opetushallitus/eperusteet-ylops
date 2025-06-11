@@ -14,6 +14,7 @@ import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioTyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
@@ -46,6 +47,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -294,6 +296,73 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         luotu = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
         assertEquals(Tila.VALMIS, luotu.getTila());
+    }
+
+    @Test
+    public void testUpdateOppilaitokset() {
+        List<OpetussuunnitelmaInfoDto> opsit = opetussuunnitelmaService.getAll(Tyyppi.OPS);
+        assertEquals(1, opsit.size());
+
+        Long id = opsit.get(0).getId();
+
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(id);
+
+        ops.setKoulutuksenjarjestaja(OrganisaatioDto.builder()
+                .oid("1.2.246.562.10.00000000001")
+                .nimi(lt("Etelä-Hervannan koulu"))
+                .tyypit(List.of(OrganisaatioTyyppi.OPPILAITOS))
+                .build());
+        ops.setOrganisaatiot(Set.of(
+                OrganisaatioDto.builder()
+                        .oid("1.2.246.562.10.00000000001")
+                        .nimi(lt("Etelä-Hervannan koulu"))
+                        .tyypit(List.of(OrganisaatioTyyppi.OPPILAITOS))
+                        .build(),
+                OrganisaatioDto.builder()
+                        .oid("1.2.246.562.10.00000000002")
+                        .nimi(lt("Etelä-Hervannan koulu 2"))
+                        .tyypit(List.of(OrganisaatioTyyppi.OPPILAITOS))
+                        .build()
+        ));
+        setUser("testAdmin");
+        assertThat(opetussuunnitelmaService.updateOpetussuunnitelma(ops)).isNotNull();
+
+        setUser("test");
+        assertThatThrownBy(() -> opetussuunnitelmaService.updateOpetussuunnitelma(ops)).hasMessage("virheelliset-organisaatiot");
+
+        ops.setOrganisaatiot(Set.of(
+                OrganisaatioDto.builder()
+                        .oid("1.2.246.562.10.00000000001")
+                        .nimi(lt("Etelä-Hervannan koulu"))
+                        .tyypit(List.of(OrganisaatioTyyppi.OPPILAITOS))
+                        .build()
+        ));
+        assertThat(opetussuunnitelmaService.updateOpetussuunnitelma(ops)).isNotNull();
+
+        ops.setKoulutuksenjarjestaja(OrganisaatioDto.builder()
+                .oid("1.2.246.562.10.00000000001")
+                .nimi(lt("Hervannan"))
+                .tyypit(List.of(OrganisaatioTyyppi.KUNTA))
+                .build());
+        setUser("testAdmin");
+        assertThat(opetussuunnitelmaService.updateOpetussuunnitelma(ops)).isNotNull();
+
+        setUser("test");
+        assertThatThrownBy(() -> opetussuunnitelmaService.updateOpetussuunnitelma(ops)).hasMessage("virheelliset-organisaatiot");
+
+        ops.setOrganisaatiot(Set.of(
+                OrganisaatioDto.builder()
+                        .oid("1.2.246.562.10.00000000001")
+                        .nimi(lt("Etelä-Hervannan koulu"))
+                        .tyypit(List.of(OrganisaatioTyyppi.OPPILAITOS))
+                        .build(),
+                OrganisaatioDto.builder()
+                        .oid("1.2.246.562.10.00000000002")
+                        .nimi(lt("Etelä-Hervannan koulu 2"))
+                        .tyypit(List.of(OrganisaatioTyyppi.OPPILAITOS))
+                        .build()
+        ));
+        assertThat(opetussuunnitelmaService.updateOpetussuunnitelma(ops)).isNotNull();
     }
 
     @Test

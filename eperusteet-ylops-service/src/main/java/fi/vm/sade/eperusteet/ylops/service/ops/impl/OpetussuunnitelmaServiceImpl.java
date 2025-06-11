@@ -1847,6 +1847,26 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Organisaatioita ei voi poistaa");
         }
 
+        if (!SecurityUtil.isUserAdmin()) {
+
+            Set<OrganisaatioDto> oppilaitokset = opetussuunnitelmaDto.getOrganisaatiot().stream()
+                    .filter(org -> Optional.ofNullable(org).map(OrganisaatioDto::getTyypit).orElse(List.of())
+                            .contains(OrganisaatioTyyppi.OPPILAITOS))
+                    .collect(Collectors.toUnmodifiableSet());
+
+            List<String> koulutuksenjarjestajaTyypit = Optional.ofNullable(opetussuunnitelmaDto.getKoulutuksenjarjestaja())
+                    .map(OrganisaatioDto::getTyypit)
+                    .orElse(List.of());
+
+            if (koulutuksenjarjestajaTyypit.contains(OrganisaatioTyyppi.OPPILAITOS) && oppilaitokset.size() != 1) {
+                throw new BusinessRuleViolationException("virheelliset-organisaatiot");
+            }
+
+            if (koulutuksenjarjestajaTyypit.contains(OrganisaatioTyyppi.KUNTA) && oppilaitokset.size() == 1) {
+                throw new BusinessRuleViolationException("virheelliset-organisaatiot");
+            }
+        }
+
         // Käyttäjällä ei oikeutta tulevassa organisaatiossa
         Set<String> userOids = SecurityUtil.getOrganizations(EnumSet.of(RolePermission.CRUD,
                 RolePermission.ADMIN));
