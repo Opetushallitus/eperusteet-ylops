@@ -26,7 +26,7 @@ public interface DokumenttiRepository extends CustomJpaRepository<Dokumentti, Lo
     @Query(nativeQuery = true,
         value = "UPDATE dokumentti " +
                 "SET tila = 'EPAONNISTUI' " +
-                "WHERE tila = 'LUODAAN' " +
+                "WHERE tila IN ('LUODAAN', 'JONOSSA') " +
                 "AND aloitusaika < :cutoff")
     void cleanStuckPrintings(@Param("cutoff") LocalDateTime cutoff);
 }
