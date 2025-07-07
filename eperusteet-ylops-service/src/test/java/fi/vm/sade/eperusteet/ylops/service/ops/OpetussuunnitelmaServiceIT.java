@@ -15,6 +15,9 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioTyyppi;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
@@ -29,6 +32,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import org.junit.Before;
@@ -73,6 +77,9 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     TekstikappaleviiteRepository tekstikappaleviiteRepository;
+
+    @Autowired
+    Lops2019OpintojaksoService lops2019OpintojaksoService;
 
     private Long opsId;
 
@@ -813,5 +820,52 @@ public class OpetussuunnitelmaServiceIT extends AbstractIntegrationTest {
 
         assertThat(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(ops.getId(), null)).isNull();
         assertThat(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(ops.getId(), 0)).isNotNull();
+    }
+
+    @Test
+    public void testLukioOpetussuunnitelmaKopiointi() {
+        OpetussuunnitelmaLuontiDto lukioPohja = new OpetussuunnitelmaLuontiDto();
+        lukioPohja.setToteutus(KoulutustyyppiToteutus.LOPS2019);
+        lukioPohja.setTyyppi(Tyyppi.POHJA);
+        lukioPohja.setPerusteenDiaarinumero("1/2/3");
+        OpetussuunnitelmaDto lukioPohjaDto = opetussuunnitelmaService.addPohja(lukioPohja);
+        opetussuunnitelmaService.updateTila(lukioPohjaDto.getId(), Tila.VALMIS);
+
+        OpetussuunnitelmaDto kunnanOpsi = createOpetussuunnitelma((ops) -> {
+            ops.setKoulutustyyppi(KoulutusTyyppi.LUKIOKOULUTUS);
+            ops.setPohja(Reference.of(lukioPohjaDto.getId()));
+        });
+
+        Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                .nimi(LokalisoituTekstiDto.of("Opintojakso Biologia"))
+                .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_bi").build()))
+                .moduulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_bi2_1").build()))
+                .build();
+
+        opintojaksoDto = lops2019OpintojaksoService.addOpintojakso(kunnanOpsi.getId(), opintojaksoDto);
+
+        {
+            OpetussuunnitelmaDto kunnanOpsiKopio = createOpetussuunnitelma((ops) -> {
+                ops.setKoulutustyyppi(KoulutusTyyppi.LUKIOKOULUTUS);
+                ops.setPohja(Reference.of(kunnanOpsi.getId()));
+                ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO);
+            });
+
+            Opetussuunnitelma kunnanOpsiKopioDb = opetussuunnitelmaRepository.findOne(kunnanOpsiKopio.getId());
+            assertThat(kunnanOpsiKopioDb.getLops2019().getOpintojaksot()).isNotEmpty();
+            assertThat(kunnanOpsiKopioDb.getLops2019().getOpintojaksot().iterator().next().getNimi().getTeksti().get(Kieli.FI)).isEqualTo(opintojaksoDto.getNimi().get(Kieli.FI));
+            assertThat(kunnanOpsiKopioDb.getLops2019().getOpintojaksot().iterator().next().getOppiaineet()).isNotEmpty();
+        }
+
+        {
+            OpetussuunnitelmaDto kunnanOpsiKopio = createOpetussuunnitelma((ops) -> {
+                ops.setKoulutustyyppi(KoulutusTyyppi.LUKIOKOULUTUS);
+                ops.setPohja(Reference.of(kunnanOpsi.getId()));
+                ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA);
+            });
+
+            Opetussuunnitelma kunnanOpsiKopioDb = opetussuunnitelmaRepository.findOne(kunnanOpsiKopio.getId());
+            assertThat(kunnanOpsiKopioDb.getLops2019().getOpintojaksot()).isEmpty();
+        }
     }
 }
