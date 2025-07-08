@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -39,9 +40,10 @@ public class OppiaineenVuosiluokkaController {
             @PathVariable("oppiaineId") final Long oppiaineId,
             @PathVariable("kokonaisuusId") final Long kokonaisuusId,
             @PathVariable("id") final Long id,
+            @RequestParam(value = "valuta", required = false) final boolean valuta,
             @RequestBody OppiaineenVuosiluokkaDto dto) {
         dto.setId(id);
-        return oppiaineService.updateVuosiluokanSisalto(opsId, oppiaineId, kokonaisuusId, dto);
+        return oppiaineService.updateVuosiluokanSisalto(opsId, oppiaineId, kokonaisuusId, dto, valuta);
     }
 
     @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)

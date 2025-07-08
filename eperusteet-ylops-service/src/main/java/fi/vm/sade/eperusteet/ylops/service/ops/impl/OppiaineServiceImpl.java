@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl;
 
 import com.google.common.collect.Sets;
+import fi.vm.sade.eperusteet.ylops.domain.AbstractReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.LaajaalainenosaaminenViite;
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
@@ -989,7 +990,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     }
 
     @Override
-    public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(Long opsId, Long oppiaineId, Long kokonaisuusId, OppiaineenVuosiluokkaDto dto) {
+    public OppiaineenVuosiluokkaDto updateVuosiluokanSisalto(Long opsId, Long oppiaineId, Long kokonaisuusId, OppiaineenVuosiluokkaDto dto, boolean valutaAlaOpetussuunnitelmiin) {
         if (!oppiaineet.isOma(opsId, oppiaineId)) {
             throw new BusinessRuleViolationException("vain-omaa-oppiainetta-saa-muokata");
         }
@@ -1039,7 +1040,52 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                         new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.perusopetusoppiaine, oppiaineId),
                         new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.vuosiluokkakokonaisuus, kokonaisuusId)));
 
+        if (valutaAlaOpetussuunnitelmiin) {
+            paivitaAlaOpetussuunnitelmenOppaineenVuosiluokanSisalto(opsId, oppiaineId, oppiaineenVuosiluokka);
+        }
         return mapper.map(oppiaineenVuosiluokka, OppiaineenVuosiluokkaDto.class);
+    }
+
+    private void paivitaAlaOpetussuunnitelmenOppaineenVuosiluokanSisalto(Long parentOpsId, Long parentOppiaineId, Oppiaineenvuosiluokka parentOppiaineenVuosiluokka) {
+        Oppiaine parentOppiaine = oppiaineet.findOne(parentOppiaineId);
+        opetussuunnitelmaRepository.findAllByPohjaId(parentOpsId).forEach(opetussuunnitelma -> {
+            findOppiaineOrOppimaaraByTunniste(opetussuunnitelma.getId(), parentOppiaine).ifPresent(oppiaine -> {
+                oppiaine.getVuosiluokkakokonaisuudet().stream()
+                        .filter(ov -> ov.getVuosiluokkakokonaisuus().getId().equals(parentOppiaineenVuosiluokka.getKokonaisuus().getVuosiluokkakokonaisuus().getId()))
+                        .findFirst()
+                        .ifPresent(oppiaineenvuosiluokkakokonaisuus -> {
+                            oppiaineenvuosiluokkakokonaisuus.getVuosiluokat().stream()
+                            .filter(vuosiluokka -> vuosiluokka.getVuosiluokka().equals(parentOppiaineenVuosiluokka.getVuosiluokka()))
+                            .findFirst().ifPresent(oppiaineenvuosiluokka -> {
+                                Map<Long, Opetuksenkohdealue> kohdealueet = oppiaine.getKohdealueet().stream()
+                                        .collect(Collectors.toMap(AbstractReferenceableEntity::getId, ka -> new Opetuksenkohdealue(ka.getNimi())));
+
+                                oppiaineenvuosiluokkakokonaisuus.removeVuosiluokka(oppiaineenvuosiluokka);
+                                oppiaineenvuosiluokkakokonaisuusRepository.saveAndFlush(oppiaineenvuosiluokkakokonaisuus);
+
+                                oppiaineenvuosiluokkakokonaisuus.addVuosiluokka(Oppiaineenvuosiluokka.copyOf(parentOppiaineenVuosiluokka, kohdealueet));
+                                oppiaineenvuosiluokkakokonaisuusRepository.saveAndFlush(oppiaineenvuosiluokkakokonaisuus);
+
+                                Oppiaineenvuosiluokka oppiaineenVuosiluokka = oppiaineenvuosiluokkakokonaisuus.getVuosiluokat().stream()
+                                        .filter(vl -> vl.getVuosiluokka().equals(parentOppiaineenVuosiluokka.getVuosiluokka()))
+                                        .findFirst()
+                                        .orElseThrow(() -> new BusinessRuleViolationException("Oppiaineen vuosiluokkaa ei löydy"));
+
+                                muokkaustietoService.addOpsMuokkausTieto(
+                                        opetussuunnitelma.getId(),
+                                        oppiaineenVuosiluokka,
+                                        MuokkausTapahtuma.PAIVITYS,
+                                        oppiaineenVuosiluokka.getNavigationType(),
+                                        oppiaineenVuosiluokka.getVuosiluokka().toString(),
+                                        Sets.newHashSet(
+                                                new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.perusopetusoppiaine, oppiaine.getId()),
+                                                new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.vuosiluokkakokonaisuus, oppiaineenvuosiluokkakokonaisuus.getId())));
+                            });
+                        });
+
+                paivitaAlaOpetussuunnitelmenOppaineenVuosiluokanSisalto(opetussuunnitelma.getId(), oppiaine.getId(), parentOppiaineenVuosiluokka);
+            });
+        });
     }
 
     @Override
