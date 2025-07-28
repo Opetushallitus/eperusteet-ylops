@@ -183,6 +183,7 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @NotNull
     private Set<Kieli> julkaisukielet = new HashSet<>();
 
+    @Getter
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "opetussuunnitelma_liite",
             inverseJoinColumns = {@JoinColumn(name = "liite_id")},

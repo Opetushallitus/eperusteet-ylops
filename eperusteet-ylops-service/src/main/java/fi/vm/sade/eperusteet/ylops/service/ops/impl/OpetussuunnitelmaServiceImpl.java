@@ -15,6 +15,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache_;
+import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Opintojakso;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OpintojaksonOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OppiaineJarjestys;
@@ -1102,6 +1103,13 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     lisaaTeemaopinnotJosPohjassa(ops, pohja);
                 }
             }
+
+            if (opetussuunnitelmaLuontiDto.getLuontityyppi() == OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO) {
+                for(Liite liite : pohja.getLiitteet()) {
+                    ops.attachLiite(liite);
+                }
+            }
+
         } else {
             throw new BusinessRuleViolationException("Valmista opetussuunnitelman pohjaa ei löytynyt");
         }
