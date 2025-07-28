@@ -23,4 +23,11 @@ public class Lops2019OppiaineJarjestys extends AbstractAuditedReferenceableEntit
     @Setter
     @Column
     private Integer jarjestys;
+
+    public static Lops2019OppiaineJarjestys copy(Lops2019OppiaineJarjestys oppiaineJarjestys) {
+        Lops2019OppiaineJarjestys uusi = new Lops2019OppiaineJarjestys();
+        uusi.setKoodi(oppiaineJarjestys.getKoodi());
+        uusi.setJarjestys(oppiaineJarjestys.getJarjestys());
+        return uusi;
+    }
 }

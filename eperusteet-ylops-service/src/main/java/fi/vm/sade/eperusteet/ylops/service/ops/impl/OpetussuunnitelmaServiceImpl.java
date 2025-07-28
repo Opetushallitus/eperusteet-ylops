@@ -1027,22 +1027,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
     }
 
-    public void kopioiPohjanSisallotOpetussuunnitelmaan(Opetussuunnitelma pohja, Opetussuunnitelma ops) {
-        if (pohja == null) {
-            throw new BusinessRuleViolationException("pohjaa-ei-loytynyt");
-        }
-
-        if (ops == null) {
-            throw new BusinessRuleViolationException("opetussuunnitelmaa-ei-loytynyt");
-        }
-
-        if (!KoulutustyyppiToteutus.LOPS2019.equals(pohja.getToteutus()) || !pohja.getToteutus().equals(ops.getToteutus())) {
-            throw new BusinessRuleViolationException("toteutustyyppi-ei-tuettu");
-        }
-
-        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA);
-    }
-
     @Override
     @Transactional
     public OpetussuunnitelmaDto addOpetussuunnitelma(OpetussuunnitelmaLuontiDto opetussuunnitelmaLuontiDto) {
@@ -1106,7 +1090,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 sisalto.setOpetussuunnitelma(ops);
                 ops.setLops2019(sisalto);
                 ops = opetussuunnitelmaRepository.save(ops);
-                kopioiPohjanSisallotOpetussuunnitelmaan(pohja, ops);
+                luoOpsPohjastaLukio(pohja, ops, opetussuunnitelmaLuontiDto.getLuontityyppi());
             }
             else {
                 luoOpsPohjasta(pohja, ops, opetussuunnitelmaLuontiDto.getLuontityyppi());
@@ -1142,6 +1126,26 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                     dto.setTunniste(opsOppiaine.getOppiaine().getTunniste());
                     lukioOpetussuunnitelmaService.addAbstraktiOppiaine(opsId, dto);
                 });
+    }
+
+    private void luoOpsPohjastaLukio(Opetussuunnitelma pohja, Opetussuunnitelma ops, OpetussuunnitelmaLuontiDto.Luontityyppi luontityyppi) {
+        if (pohja == null) {
+            throw new BusinessRuleViolationException("pohjaa-ei-loytynyt");
+        }
+
+        if (ops == null) {
+            throw new BusinessRuleViolationException("opetussuunnitelmaa-ei-loytynyt");
+        }
+
+        if (!KoulutustyyppiToteutus.LOPS2019.equals(pohja.getToteutus()) || !pohja.getToteutus().equals(ops.getToteutus())) {
+            throw new BusinessRuleViolationException("toteutustyyppi-ei-tuettu");
+        }
+
+        kasitteleTekstit(pohja.getTekstit(), ops.getTekstit(), luontityyppi);
+
+        if (luontityyppi == OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO) {
+            ops.getLops2019().copyFrom(pohja.getLops2019());
+        }
     }
 
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops, OpetussuunnitelmaLuontiDto.Luontityyppi luontityyppi) {
