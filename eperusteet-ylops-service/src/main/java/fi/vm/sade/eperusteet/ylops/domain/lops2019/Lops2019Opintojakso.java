@@ -6,14 +6,6 @@ import fi.vm.sade.eperusteet.ylops.domain.Poistettava;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
-import org.hibernate.validator.constraints.NotEmpty;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -24,6 +16,14 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+import org.hibernate.validator.constraints.NotEmpty;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -152,11 +152,15 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
     static public Lops2019Opintojakso copy(Lops2019Opintojakso original) {
         if (original != null) {
             Lops2019Opintojakso result = new Lops2019Opintojakso();
-            result.setKeskeisetSisallot(original.getKeskeisetSisallot());
             result.setKoodi(original.getKoodi());
             result.setKuvaus(original.getKuvaus());
-            result.setTavoitteet(original.getTavoitteet());
             result.setNimi(original.getNimi());
+            result.setTavoitteet(original.getTavoitteet().stream()
+                    .map(Lops2019OpintojaksonTavoite::copy)
+                    .collect(Collectors.toList()));
+            result.setKeskeisetSisallot(original.getKeskeisetSisallot().stream()
+                    .map(Lops2019OpintojaksonKeskeinenSisalto::copy)
+                    .collect(Collectors.toList()));
             result.setLaajaAlainenOsaaminen(original.getLaajaAlainenOsaaminen().stream()
                     .map(Lops2019LaajaAlainenOsaaminen::copy)
                     .collect(Collectors.toSet()));
