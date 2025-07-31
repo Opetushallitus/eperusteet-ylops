@@ -112,7 +112,7 @@ public class Oppiaineenvuosiluokka extends AbstractAuditedReferenceableEntity im
         }
     }
 
-    static Oppiaineenvuosiluokka copyOf(final Oppiaineenvuosiluokka other, final Map<Long, Opetuksenkohdealue> kohdealueet) {
+    public static Oppiaineenvuosiluokka copyOf(final Oppiaineenvuosiluokka other, final Map<Long, Opetuksenkohdealue> kohdealueet) {
         Oppiaineenvuosiluokka ovl = new Oppiaineenvuosiluokka();
         ovl.setVuosiluokka(other.getVuosiluokka());
         ovl.setTavoitteet(
