@@ -39,7 +39,6 @@ public class OpetuksenKeskeinensisaltoalue implements Serializable {
     @Setter
     @ManyToOne(optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "sisaltoalueet_id")
-    @NotNull
     private Keskeinensisaltoalue sisaltoalueet;
 
     @Getter
