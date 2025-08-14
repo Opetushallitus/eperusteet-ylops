@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.domain.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
+import lombok.Getter;
 import org.jsoup.safety.Safelist;
 
 import java.lang.annotation.Documented;
@@ -26,6 +27,7 @@ public @interface ValidHtml {
 
     Class<? extends Payload>[] payload() default {};
 
+    @Getter
     enum WhitelistType {
         MINIMAL(Safelist.none()),
         SIMPLIFIED(Safelist.none().addTags("p", "strong", "em", "i", "s", "ol", "li", "ul")),
@@ -37,10 +39,6 @@ public @interface ValidHtml {
 
         WhitelistType(Safelist whitelist) {
             this.whitelist = whitelist;
-        }
-
-        public Safelist getWhitelist() {
-            return whitelist;
         }
 
         private static Safelist getNormalWhiteList() {
