@@ -13,6 +13,8 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtmlValidator;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoBaseDto;
@@ -242,6 +244,9 @@ public class ValidointiServiceImpl implements ValidointiService {
 
     private void validoiLokalisoituTeksti(Validointi validointi, Set<Kieli> kielet, LokalisoituTeksti teksti, NavigationNodeDto navigationNodeDto) {
         validoiLokalisoituTeksti("kielisisaltoa-ei-loytynyt-opsin-kielilla", validointi, kielet, teksti, navigationNodeDto);
+        if (!ValidHtmlValidator.isValid(teksti, ValidHtml.WhitelistType.NORMAL.getWhitelist())) {
+            validointi.virhe("tekstin-sisalto-virheellinen-html", navigationNodeDto);
+        }
     }
 
     private void validoiLokalisoituTeksti(String kuvaus, Validointi validointi, Set<Kieli> kielet, LokalisoituTeksti teksti, NavigationNodeDto navigationNodeDto) {
