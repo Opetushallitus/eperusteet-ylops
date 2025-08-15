@@ -1,0 +1,3 @@
+alter table opetuksen_tavoite_keskeinen_sisaltoalue drop constraint if exists opetuksen_tavoite_keskeinen_sisaltoalue_pkey;
+
+alter table opetuksen_tavoite_keskeinen_sisaltoalue alter column sisaltoalueet_id drop not null;
