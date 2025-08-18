@@ -13,6 +13,6 @@ public class ProfileService {
     private Environment environment;
 
     public boolean isDevProfileActive() {
-        return Arrays.asList(environment.getActiveProfiles()).contains("dev");
+        return Arrays.asList(environment.getActiveProfiles()).contains("local");
     }
 }
