@@ -31,7 +31,7 @@ import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
 @Slf4j
-@Profile({"!dev & !test"})
+@Profile({"!local & !test"})
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 @EnableWebSecurity
