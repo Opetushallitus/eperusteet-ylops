@@ -870,7 +870,15 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
 
     @Override
     public PoistettuOppiaineDto delete(Long opsId, Long oppiaineId) {
-        checkOppiaineDeleteIsAllowed(opsId, oppiaineId);
+        return delete(opsId, oppiaineId, false);
+    }
+
+    @Override
+    public PoistettuOppiaineDto delete(Long opsId, Long oppiaineId, boolean pakotettuPoistoYlaOpsista) {
+        if (!pakotettuPoistoYlaOpsista) {
+            checkOppiaineDeleteIsAllowed(opsId, oppiaineId);
+        }
+
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         Oppiaine oppiaine = getOppiaine(opsId, oppiaineId);
         oppiaineet.lock(oppiaine);
@@ -909,7 +917,7 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
     private void poistaOppiaineAlaOpetussuunnitelmista(Long opsId, Oppiaine parentOpsOppiaine) {
         opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
             Optional<Oppiaine> oppiaine = findOppiaineOrOppimaaraByTunniste(opetussuunnitelma.getId(), parentOpsOppiaine);
-            oppiaine.ifPresent(value -> delete(opetussuunnitelma.getId(), value.getId()));
+            oppiaine.ifPresent(value -> delete(opetussuunnitelma.getId(), value.getId(), true));
         });
     }
 
