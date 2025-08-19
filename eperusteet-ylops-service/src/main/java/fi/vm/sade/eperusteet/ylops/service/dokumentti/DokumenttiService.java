@@ -4,6 +4,7 @@ import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiTila;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiDto;
+import fi.vm.sade.eperusteet.ylops.dto.pdf.PdfData;
 import fi.vm.sade.eperusteet.ylops.service.exception.DokumenttiException;
 import org.springframework.security.access.prepost.PreAuthorize;
 
@@ -25,7 +26,10 @@ public interface DokumenttiService {
     DokumenttiDto getDto(Long id);
 
     @PreAuthorize("permitAll()")
-    byte[] get(Long id);
+    byte[] getData(Long id);
+
+    @PreAuthorize("permitAll()")
+    byte[] getHtml(Long id);
 
     @PreAuthorize("permitAll()")
     Long getLatestValmisDokumenttiId(Long opsId, Kieli kieli);
@@ -47,5 +51,5 @@ public interface DokumenttiService {
 
     void updateDokumenttiTila(DokumenttiTila tila, Long dokumenttiId);
 
-    void updateDokumenttiPdfData(byte[] pdfData, Long dokumenttiId);
+    void updateDokumenttiPdfData(PdfData pdfData, Long dokumenttiId);
 }

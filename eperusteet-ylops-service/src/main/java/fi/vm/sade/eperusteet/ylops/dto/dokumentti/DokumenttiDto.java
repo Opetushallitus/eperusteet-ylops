@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,4 +24,5 @@ public class DokumenttiDto {
     private DokumenttiTila tila = DokumenttiTila.EI_OLE;
     private String virhekoodi = "";
     private Boolean julkaisuDokumentti = false;
+    private List<String> dataTyypit;
 }
