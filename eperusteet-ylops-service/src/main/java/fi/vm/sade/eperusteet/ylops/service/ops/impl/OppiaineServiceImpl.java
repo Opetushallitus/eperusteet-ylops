@@ -1058,6 +1058,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         Oppiaine parentOppiaine = oppiaineet.findOne(parentOppiaineId);
         opetussuunnitelmaRepository.findAllByPohjaId(parentOpsId).forEach(opetussuunnitelma -> {
             findOppiaineOrOppimaaraByTunniste(opetussuunnitelma.getId(), parentOppiaine).ifPresent(oppiaine -> {
+
+                if (!oppiaineet.isOma(opetussuunnitelma.getId(), oppiaine.getId())) {
+                    return;
+                }
+
                 oppiaine.getVuosiluokkakokonaisuudet().stream()
                         .filter(ov -> ov.getVuosiluokkakokonaisuus().getId().equals(parentOppiaineenVuosiluokka.getKokonaisuus().getVuosiluokkakokonaisuus().getId()))
                         .findFirst()
