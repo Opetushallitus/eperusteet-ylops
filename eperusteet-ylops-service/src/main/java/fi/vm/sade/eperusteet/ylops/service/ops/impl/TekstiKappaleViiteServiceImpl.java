@@ -278,7 +278,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
         tekstikappaleviiteRepository.lock(viite.getRoot());
         TekstiKappale tekstiKappale = viite.getTekstiKappale();
-        if (tekstiKappale != null && tekstiKappale.getTila().equals(Tila.LUONNOS) && findViitteet(opsId, viiteId).size() == 1) {
+        if (tekstiKappale != null ) {
             lockMgr.lock(tekstiKappale.getId());
             tekstiKappaleService.removeTekstiKappaleFromOps(opsId, tekstiKappale.getId(), viite.getVanhempi().getId());
         }
