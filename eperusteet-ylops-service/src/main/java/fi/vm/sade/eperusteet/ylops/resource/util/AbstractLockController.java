@@ -17,7 +17,7 @@ public abstract class AbstractLockController<T> {
     @RequestMapping(method = GET)
     public ResponseEntity<LukkoDto> checkLock(T ctx) {
         LukkoDto lock = service().getLock(ctx);
-        return lock == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
+        return lock == null ? new ResponseEntity<>(HttpStatus.NO_CONTENT)
                 : new ResponseEntity<>(lock, Etags.eTagHeader(lock.getRevisio()), HttpStatus.OK);
     }
 
