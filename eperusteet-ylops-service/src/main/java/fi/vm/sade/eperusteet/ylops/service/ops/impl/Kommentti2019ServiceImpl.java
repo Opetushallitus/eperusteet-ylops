@@ -120,7 +120,10 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
      */
     @Override
     public KommenttiKahvaDto addKommenttiKahva(KommenttiKahvaDto kahvaDto) {
-        LokalisoituTeksti teksti = lokalisoituTekstiRepository.getOne(kahvaDto.getTekstiId());
+        LokalisoituTeksti teksti = lokalisoituTekstiRepository.findOne(kahvaDto.getTekstiId());
+        if (teksti == null) {
+            throw new BusinessRuleViolationException("sisallon-kommentointi-ei-sallittu");
+        }
         List<KommenttiKahva> ketjut = teksti.getKetjut().stream()
                 .filter(kommenttiKahva -> kommenttiKahva.getKieli().equals(kahvaDto.getKieli()))
                 .sorted(Comparator.comparingInt(KommenttiKahva::getStart).reversed())

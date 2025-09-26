@@ -177,19 +177,24 @@ public class ValidointiServiceImpl implements ValidointiService {
                     .filter(OpsOppiaine::isOma)
                     .map(OpsOppiaine::getOppiaine)
                     .forEach(oa -> peruste.getPerusopetus().getOppiaine(oa.getTunniste()).ifPresent(poppiaine -> {
-                        validoiOppiaine(validointi, oa, julkaisukielet);
+                        validoiOppiaine(validointi, ops, oa, julkaisukielet);
                     }));
         }
 
         return Collections.singletonList(validointi);
     }
 
-    private void validoiOppiaine(Validointi validointi, Oppiaine oa, Set<Kieli> kielet) {
-        validoiLokalisoituTeksti(validointi, kielet, oa.getNimi(), NavigationNodeDto.of(NavigationType.oppiaine, new LokalisoituTekstiDto(null, oa.getNimi().getTeksti()), oa.getId()));
+    private void validoiOppiaine(Validointi validointi, Opetussuunnitelma opetussuunnitelma, Oppiaine oa, Set<Kieli> kielet) {
+        if (!opetussuunnitelma.getVuosiluokkakokonaisuudet().isEmpty()) {
+            validoiLokalisoituTeksti(validointi, kielet, oa.getNimi(), NavigationNodeDto.of(
+                    NavigationType.perusopetusoppiaine,
+                    new LokalisoituTekstiDto(null, oa.getNimi().getTeksti()),
+                    oa.getId()).meta("vlkId", opetussuunnitelma.getVuosiluokkakokonaisuudet().iterator().next().getVuosiluokkakokonaisuus().getId()));
+        }
 
         if (oa.getOppimaarat() != null) {
             for (Oppiaine om : oa.getOppimaarat()) {
-                validoiOppiaine(validointi, om, kielet);
+                validoiOppiaine(validointi, opetussuunnitelma, om, kielet);
             }
         }
     }
