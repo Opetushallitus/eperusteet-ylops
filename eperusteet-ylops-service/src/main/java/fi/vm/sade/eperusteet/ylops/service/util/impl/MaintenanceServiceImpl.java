@@ -137,7 +137,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
     @Override
     public void cacheOpetussuunnitelmaNavigaatiot() {
-        opetussuunnitelmaService.getKaikkiJulkaistutOpetussuunnitelmat().forEach(ops -> {
+        opetussuunnitelmaService.getKaikkiJulkaistutOpetussuunnitelmat(KoulutusTyyppi.PERUSOPETUS.toString()).forEach(ops -> {
             try {
                 ops.getJulkaisukielet().forEach(kieli -> opetussuunnitelmaService.buildNavigationPublic(ops.getId(), kieli.toString(), null));
             } catch (Exception e) {
@@ -148,7 +148,7 @@ public class MaintenanceServiceImpl implements MaintenanceService {
 
     @Override
     public void cacheJulkaistutOpetussuunnitelmat() {
-        opetussuunnitelmaService.getKaikkiJulkaistutOpetussuunnitelmat().forEach(ops -> {
+        opetussuunnitelmaService.getKaikkiJulkaistutOpetussuunnitelmat(KoulutusTyyppi.PERUSOPETUS.toString()).forEach(ops -> {
             try {
                 opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(ops.getId(), null);
             } catch(Exception e) {

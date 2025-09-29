@@ -56,6 +56,14 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
                     "   FROM julkaistu_opetussuunnitelma_Data_view data) t")
     List<String> findAllJulkaistutOpetussuunnitelmat();
 
+    @Query(nativeQuery = true, value =
+            "SELECT CAST(row_to_json(t) as text) FROM ( " +
+                    "   SELECT * " +
+                    "   FROM julkaistu_opetussuunnitelma_Data_view data" +
+                    "   WHERE koulutustyyppi = :koulutustyyppi" +
+                    ") t")
+    List<String> findAllJulkaistutOpetussuunnitelmat(@Param("koulutustyyppi") String koulutustyyppi);
+
     OpetussuunnitelmanJulkaisu findOneByDokumentitIn(Set<Long> dokumentit);
 
     @Query(nativeQuery = true,

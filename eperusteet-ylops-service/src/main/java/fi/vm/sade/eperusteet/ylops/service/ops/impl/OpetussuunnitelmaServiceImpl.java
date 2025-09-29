@@ -472,6 +472,12 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
+    public List<OpetussuunnitelmaJulkinenDto> getKaikkiJulkaistutOpetussuunnitelmat(String koulutustyypi) {
+        return julkaisuRepository.findAllJulkaistutOpetussuunnitelmat(koulutustyypi).stream()
+                .map(this::convertToOpetussuunnitelmaDto).collect(Collectors.toList());
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public OpetussuunnitelmaJulkinenDto getOpetussuunnitelmaJulkinen(Long id) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(id);
