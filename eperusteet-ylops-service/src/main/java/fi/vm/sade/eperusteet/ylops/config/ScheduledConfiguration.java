@@ -1,9 +1,10 @@
 package fi.vm.sade.eperusteet.ylops.config;
 
-import fi.vm.sade.eperusteet.ylops.dto.util.CacheArvot;
 import fi.vm.sade.eperusteet.ylops.repository.OphSessionMappingStorage;
 import fi.vm.sade.eperusteet.ylops.service.dokumentti.DokumenttiService;
+import fi.vm.sade.eperusteet.ylops.service.scheduled.task.ScheduledTask;
 import fi.vm.sade.eperusteet.ylops.service.util.MaintenanceService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -14,9 +15,13 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Configuration
 @EnableScheduling
 @Profile("!test & !docker")
+@Slf4j
 public class ScheduledConfiguration {
 
     @Autowired
@@ -27,6 +32,9 @@ public class ScheduledConfiguration {
 
     @Autowired
     private DokumenttiService dokumenttiService;
+
+    @Autowired
+    private List<ScheduledTask> tasks = new ArrayList<>();
 
     @Scheduled(cron = "0 0 * * * *")
     public void cleanOphSession() {
@@ -39,13 +47,22 @@ public class ScheduledConfiguration {
         dokumenttiService.cleanStuckPrintings();
     }
 
-    @Scheduled(cron = "0 0 1 * * *")
-    public void cacheOpetussuunnitelmaJulkaisut() {
+// ToBe decided: otetaanko käyttöön enää
+// @Scheduled(cron = "0 * * * * *")
+    public void tasks() {
         SecurityContextHolder.getContext().setAuthentication(useAdminAuth());
-        maintenanceService.clearCache(CacheArvot.OPETUSSUUNNITELMA_JULKAISU);
-        maintenanceService.clearCache(CacheArvot.OPETUSSUUNNITELMA_NAVIGAATIO_JULKINEN);
-        maintenanceService.cacheJulkaistutOpetussuunnitelmat();
-        maintenanceService.cacheOpetussuunnitelmaNavigaatiot();
+
+        for (ScheduledTask task : tasks) {
+            try {
+                log.debug("Starting {} job", task.getName());
+                task.execute();
+                log.debug("{} is done.", task.getName());
+            } catch (Exception e) {
+                log.debug("{} is already running.", task.getName());
+            }
+        }
+
+        SecurityContextHolder.getContext().setAuthentication(null);
     }
 
     private Authentication useAdminAuth() {
