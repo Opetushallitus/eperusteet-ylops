@@ -28,4 +28,16 @@ public class PaikallinenLaajaAlainenOsaaminen extends AbstractAuditedReferenceab
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti kuvaus;
 
+    public static PaikallinenLaajaAlainenOsaaminen copy(PaikallinenLaajaAlainenOsaaminen original) {
+        if (original == null) {
+            return null;
+        }
+
+        PaikallinenLaajaAlainenOsaaminen copy = new PaikallinenLaajaAlainenOsaaminen();
+        copy.setKoodi(original.getKoodi());
+        copy.setKuvaus(original.getKuvaus());
+
+        return copy;
+    }
+
 }

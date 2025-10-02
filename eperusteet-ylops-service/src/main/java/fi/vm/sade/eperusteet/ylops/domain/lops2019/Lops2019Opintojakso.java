@@ -155,6 +155,8 @@ public class Lops2019Opintojakso extends AbstractAuditedReferenceableEntity impl
             result.setKoodi(original.getKoodi());
             result.setKuvaus(original.getKuvaus());
             result.setNimi(original.getNimi());
+            result.setArviointi(original.getArviointi());
+            result.setOpiskeluymparistoTyotavat(original.getOpiskeluymparistoTyotavat());
             result.setTavoitteet(original.getTavoitteet().stream()
                     .map(Lops2019OpintojaksonTavoite::copy)
                     .collect(Collectors.toList()));
