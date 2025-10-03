@@ -130,7 +130,10 @@ public class Lops2019Oppiaine extends AbstractAuditedReferenceableEntity impleme
             result.setKuvaus(original.getKuvaus());
             result.setPakollistenModuulienKuvaus(original.getPakollistenModuulienKuvaus());
             result.setValinnaistenModuulienKuvaus(original.getPakollistenModuulienKuvaus());
-            result.setLaajaAlainenOsaaminen(original.getLaajaAlainenOsaaminen());
+            result.setLaajaAlainenOsaaminen(original.getLaajaAlainenOsaaminen()
+                    .stream()
+                    .map(PaikallinenLaajaAlainenOsaaminen::copy)
+                    .toList());
             result.setArviointi(Lops2019PaikallinenArviointi.copy(original.getArviointi()));
             result.setTehtava(Lops2019Tehtava.copy(original.getTehtava()));
             result.setOpiskeluymparistoTyotavat(Lops2019OpiskeluymparistoTyotavat.copy(original.getOpiskeluymparistoTyotavat()));

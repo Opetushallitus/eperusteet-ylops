@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.lops2019;
 
+import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -19,9 +20,11 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.envers.Audited;
+import org.springframework.web.bind.annotation.Mapping;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -41,6 +44,11 @@ public class Lops2019Sisalto extends AbstractAuditedEntity implements Serializab
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @JoinColumn(name = "opetussuunnitelma_id", nullable = false)
     private Opetussuunnitelma opetussuunnitelma;
+
+    @Getter
+    @Setter
+    @OneToMany(mappedBy = "sisalto", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST})
+    private Set<Lops2019Oppiaine> oppiaineet;
 
     @Getter
     @OrderColumn
@@ -79,5 +87,8 @@ public class Lops2019Sisalto extends AbstractAuditedEntity implements Serializab
         this.opintojaksot = other.getOpintojaksot().stream().map(Lops2019Opintojakso::copy).collect(Collectors.toSet());
         this.piilotetutOpintojaksot = other.getPiilotetutOpintojaksot().stream().map(Lops2019Opintojakso::copy).collect(Collectors.toSet());
         this.oppiaineJarjestykset = other.getOppiaineJarjestykset().stream().map(Lops2019OppiaineJarjestys::copy).collect(Collectors.toSet());
+        this.oppiaineet = Optional.ofNullable(other.getOppiaineet()).orElse(Sets.newHashSet()).stream().map(Lops2019Oppiaine::copy)
+                .peek(oa -> oa.setSisalto(this))
+                .collect(Collectors.toSet());
     }
 }
