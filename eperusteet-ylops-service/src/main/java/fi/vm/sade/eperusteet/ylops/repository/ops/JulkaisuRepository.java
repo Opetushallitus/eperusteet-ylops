@@ -10,6 +10,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -36,6 +37,8 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
             "   AND (:nimi LIKE '' OR LOWER(nimi->>:kieli) LIKE LOWER(CONCAT('%',:nimi,'%')) OR EXISTS (SELECT 1 FROM jsonb_array_elements(organisaatiot) elem WHERE LOWER(elem->'nimi'->>:kieli) LIKE LOWER(CONCAT('%',:nimi,'%')))) " +
             "   AND (:perusteenDiaarinumero = '' OR peruste->>'diaarinumero' = :perusteenDiaarinumero) " +
             "   AND (COALESCE(:koulutustyypit, NULL) IS NULL OR koulutustyyppi IN (:koulutustyypit)) " +
+            "   AND (COALESCE(:julkaistuJalkeen, NULL) IS NULL OR julkaisuaika >= :julkaistuJalkeen) " +
+            "   AND (COALESCE(:julkaistuEnnen, NULL) IS NULL OR julkaisuaika < :julkaistuEnnen) " +
             "   order by nimi->>:kieli asc " +
             ") t";
 
@@ -48,6 +51,8 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
             @Param("kieli") String kieli,
             @Param("perusteenDiaarinumero") String perusteenDiaarinumero,
             @Param("koulutustyypit") List<String> koulutustyypit,
+            @Param("julkaistuJalkeen") LocalDateTime julkaistuJalkeen,
+            @Param("julkaistuEnnen") LocalDateTime julkaistuEnnen,
             Pageable pageable);
 
     @Query(nativeQuery = true, value =

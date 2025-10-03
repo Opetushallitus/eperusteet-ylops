@@ -428,6 +428,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 query.getKieli(),
                 query.getPerusteenDiaarinumero(),
                 koulutustyypit,
+                query.getJulkaistuJalkeen() != null ? query.getJulkaistuJalkeen().atStartOfDay() : null,
+                query.getJulkaistuEnnen() != null ? query.getJulkaistuEnnen().atStartOfDay() : null,
                 pageable)
                 .map(this::convertToOpetussuunnitelmaDto);
     }

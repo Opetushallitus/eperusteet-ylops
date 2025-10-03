@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,4 +19,7 @@ public class OpetussuunnitelmaJulkaistuQuery implements Serializable {
     private String perusteenDiaarinumero = "";
     private int sivu = 0;
     private int sivukoko = 10;
+
+    private LocalDate julkaistuJalkeen;
+    private LocalDate julkaistuEnnen;
 }
