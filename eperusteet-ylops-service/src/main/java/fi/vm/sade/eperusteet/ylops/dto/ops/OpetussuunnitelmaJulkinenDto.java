@@ -14,6 +14,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -31,4 +33,5 @@ public class OpetussuunnitelmaJulkinenDto implements Serializable {
     private Tyyppi tyyppi;
     private boolean esikatseltavissa;
     private KoulutustyyppiToteutus toteutus;
+    private Date julkaisuaika;
 }

@@ -50,12 +50,17 @@ public class ExternalController {
     @Operation(summary = "Opetussuunnitelmien haku")
     @RequestMapping(method = RequestMethod.GET, value = "/opetussuunnitelmat")
     @Parameters({
-            @Parameter(name = "nimi", schema = @Schema(implementation = String.class), in = ParameterIn.QUERY, description = "nimi"),
+            @Parameter(name = "nimi", schema = @Schema(implementation = String.class), in = ParameterIn.QUERY, description = "Perusteen nimi"),
             @Parameter(name = "kieli", in = ParameterIn.QUERY, array = @ArraySchema(schema = @Schema(type = "string"))),
-            @Parameter(name = "perusteenDiaarinumero", schema = @Schema(implementation = String.class), in = ParameterIn.QUERY, description = "perusteenDiaarinumero"),
-            @Parameter(name = "koulutustyypit", in = ParameterIn.QUERY, array = @ArraySchema(schema = @Schema(type = "string")), description = "koulutustyypit"),
+            @Parameter(name = "perusteenDiaarinumero", schema = @Schema(implementation = String.class), in = ParameterIn.QUERY, description = "Perusteen diaarinumero"),
+            @Parameter(name = "koulutustyypit", in = ParameterIn.QUERY, array = @ArraySchema(schema = @Schema(type = "string")), description = "Perusteen koulutustyypit"),
+            @Parameter(name = "organisaatio", schema = @Schema(implementation = String.class), in = ParameterIn.QUERY, description = "Organisaation oid"),
             @Parameter(name = "sivu", schema = @Schema(implementation = Integer.class), in = ParameterIn.QUERY),
             @Parameter(name = "sivukoko", schema = @Schema(implementation = Integer.class), in = ParameterIn.QUERY),
+            @Parameter(name = "julkaistuJalkeen", schema = @Schema(type = "string", format = "date"), in = ParameterIn.QUERY,
+                    description = "Alkupäivä (ISO 8601, esim. 2025-10-03)"),
+            @Parameter(name = "julkaistuEnnen", schema = @Schema(type = "string", format = "date"), in = ParameterIn.QUERY,
+                    description = "Loppupäivä (ISO 8601, esim. 2025-10-31)")
     })
     public Page<OpetussuunnitelmaJulkinenDto> getOpetussuunnitelmat(@Parameter(hidden = true) OpetussuunnitelmaJulkaistuQuery query) {
         return opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query);
