@@ -508,12 +508,12 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
         if (this == o) return true;
         if (!(o instanceof Oppiaine oppiaine)) return false;
 
-        return Objects.equals(tunniste, oppiaine.tunniste) && Objects.equals(getId(), oppiaine.getId());
+        return Objects.equals(nimi.getTunniste(), oppiaine.nimi.getTunniste()) && Objects.equals(getId(), oppiaine.getId());
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(tunniste);
+        int result = Objects.hashCode(nimi.getTunniste());
         result = 31 * result + Objects.hashCode(getId());
         return result;
     }
