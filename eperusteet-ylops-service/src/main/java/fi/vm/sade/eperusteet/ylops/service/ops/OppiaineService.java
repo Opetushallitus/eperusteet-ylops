@@ -61,7 +61,7 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
     OpsOppiaineDto update(@P("opsId") Long opsId, OppiaineDto oppiaineDto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    OpsOppiaineDto update(Long opsId, Long vuosiluokkakokonaisuusId, OppiaineDto oppiaineDto);
+    OpsOppiaineDto update(Long opsId, Long vuosiluokkakokonaisuusId, OppiaineDto oppiaineDto, boolean valutaAlaOpetussuunnitelmiin);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     OppiaineDto updateValinnainen(@P("opsId") Long opsId, OppiaineDto oppiaineDto, Long vlkId,
@@ -121,4 +121,7 @@ public interface OppiaineService extends LockService<OpsOppiaineCtx> {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     List<PoistettuOppiaineDto> getRemoved(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    boolean oppimaaraKaytossaKaikissaAlaOpetussuunnitelmissa(@P("opsId") Long opsId, Long oppiaineId);
 }

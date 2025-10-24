@@ -18,13 +18,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -173,10 +167,14 @@ public class OppiaineController {
     }
 
     @RequestMapping(value = "/{id}/vlk/{vlkId}", method = RequestMethod.POST)
-    public UnwrappedOpsOppiaineDto updateOppiaineWithVlk(@PathVariable final Long opsId, @PathVariable final Long vlkId, @PathVariable final Long id,
-                                                  @RequestBody OppiaineDto dto) {
+    public UnwrappedOpsOppiaineDto updateOppiaineWithVlk(
+            @PathVariable final Long opsId,
+            @PathVariable final Long vlkId,
+            @PathVariable final Long id,
+            @RequestParam(value = "valuta", required = false) final boolean valuta,
+            @RequestBody OppiaineDto dto) {
         dto.setId(id);
-        return new UnwrappedOpsOppiaineDto(oppiaineService.update(opsId, vlkId, dto));
+        return new UnwrappedOpsOppiaineDto(oppiaineService.update(opsId, vlkId, dto, valuta));
     }
 
     @RequestMapping(value = "/{id}/valinnainen", method = RequestMethod.POST)
@@ -238,6 +236,11 @@ public class OppiaineController {
             @PathVariable final Long opsId,
             @PathVariable final Long id) {
         return new UnwrappedOpsOppiaineDto(oppiaineService.palautaYlempi(opsId, id));
+    }
+
+    @GetMapping("/{id}/kaytossaAlaOpseissa")
+    public boolean oppimaaraKaytossaKaikissaAlaOpetussuunnitelmissa(@PathVariable final Long opsId, @PathVariable final Long id) {
+        return oppiaineService.oppimaaraKaytossaKaikissaAlaOpetussuunnitelmissa(opsId, id);
     }
 
 }
