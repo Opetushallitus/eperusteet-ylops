@@ -9,6 +9,7 @@ import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineValinnainenTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -16,21 +17,7 @@ import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.KeskeinenSisaltoalueDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.KopioOppimaaraDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenKeskeinensisaltoalueDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetuksenTavoiteDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -51,15 +38,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -196,6 +175,12 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
     private OppiaineDto addVieraatKieletOppiaineWithOppimaara(OpetussuunnitelmaDto ops) {
         OppiaineDto vieraatKielet = TestUtils.createKoosteinenOppiaine("Vieraat kielet");
         vieraatKielet.setOppimaarat(Collections.singleton(TestUtils.createOppimaara("Ranska B2")));
+        return oppiaineService.add(ops.getId(), vieraatKielet);
+    }
+
+    private OppiaineDto addVieraatKieletOppiaineWithOppimaara(OpetussuunnitelmaDto ops, String... oppimaarat) {
+        OppiaineDto vieraatKielet = TestUtils.createKoosteinenOppiaine("Vieraat kielet");
+        vieraatKielet.setOppimaarat(Arrays.stream(oppimaarat).map(TestUtils::createOppimaara).collect(Collectors.toSet()));
         return oppiaineService.add(ops.getId(), vieraatKielet);
     }
 
@@ -341,33 +326,99 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
     @Test
     @Transactional
     public void testKoulunOpsinOppiainemaaraOikea() {
+        OpetussuunnitelmaDto kunnanOps = createKuntaOpsOppimaarilla();
+        OpetussuunnitelmaDto koulunOps = createKoulunOpsKunnanOpsista(kunnanOps);
+
+        List<OppiaineDto> koulunOppiaineet = oppiaineService.getAll(koulunOps.getId());
+        assertThat(koulunOppiaineet).hasSize(1);
+        OppiaineDto koulunOppiaine = koulunOppiaineet.get(0);
+        assertThat(koulunOppiaine.getOppimaarat()).hasSize(4);
+    }
+
+    @Test
+    @Transactional
+    public void testValutaOppimaaraAlaOpetussuunnitelmaan() {
+        startNewTransaction();
+        setUp();
+        OpetussuunnitelmaDto kunnanOps = createKuntaOpsOppimaarilla();
+        startNewTransaction();
+        OpetussuunnitelmaDto koulunOps = createKoulunOpsKunnanOpsista(kunnanOps);
+        OpetussuunnitelmaDto koulunOps2 = createKoulunOpsKunnanOpsista(kunnanOps);
+        checkOpppimaaraCount(koulunOps.getId(), 4);
+        checkOpppimaaraCount(koulunOps2.getId(), 4);
+
+        Oppiaine oppimaaraB2 = findOppimaaraByNimi(koulunOps.getId(), "oppimaara b2");
+        assertThat(oppimaaraB2.getOppiaine().getOppimaarat()).contains(oppimaaraB2);
+
+        startNewTransaction();
+        oppiaineService.delete(koulunOps.getId(), oppimaaraB2.getId());
+
+        startNewTransaction();
+
+        checkOpppimaaraCount(koulunOps.getId(), 3);
+        checkOpppimaaraCount(koulunOps.getPohja().getId(), 4);
+        checkOpppimaaraCount(koulunOps2.getId(), 4);
+
+        // valuttamatta jättäminen päivityksessä ei palauta oppimäärää
+        kunnanOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(koulunOps.getPohja().getId());
+        Oppiaine kunnanOppimaaraB2 = findOppimaaraByNimi(kunnanOps.getId(), "oppimaara b2");
+        OppiaineDto kunnanOppimaaraDto = oppiaineService.get(kunnanOps.getId(), kunnanOppimaaraB2.getId()).getOppiaine();
+        oppiaineService.update(koulunOps.getPohja().getId(), null, kunnanOppimaaraDto, false);
+
+        // valutus palauttaa oppimäärän koulun opsiin
+        checkOpppimaaraCount(koulunOps.getId(), 3);
+        checkOpppimaaraCount(koulunOps2.getId(), 4);
+        oppiaineService.update(kunnanOps.getId(), null, kunnanOppimaaraDto, true);
+
+        startNewTransaction();
+        checkOpppimaaraCount(koulunOps.getId(), 4);
+        checkOpppimaaraCount(koulunOps2.getId(), 4);
+
+        endTransaction();
+    }
+
+    private void checkOpppimaaraCount(Long opsId, int expectedCount) {
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+        long oppimaaraCount = ops.getOppiaineet()
+                .stream()
+                .map(OpsOppiaineDto::getOppiaine)
+                .mapToLong(oa -> oa.getOppimaarat().size())
+                .sum();
+        Assertions.assertThat(oppimaaraCount).isEqualTo(expectedCount);
+    }
+
+    private OpetussuunnitelmaDto createKuntaOpsOppimaarilla() {
         OpetussuunnitelmaDto kunnanOps = createOpsBasedOnPohja();
+        VuosiluokkakokonaisuusDto vlk = new VuosiluokkakokonaisuusDto(vlkViiteRef);
+        vlk.setNimi(lt("ykköskakkoset"));
+        vuosiluokkakokonaisuusService.add(kunnanOps.getId(), vlk);
+
         OppiaineDto oppiaineDto = TestUtils.createKoosteinenOppiaine("oppiaine1");
+
         OppiaineSuppeaDto oppimaaraA1dto = TestUtils.createOppimaara("oppimaara a1");
         OppiaineSuppeaDto oppimaaraA2dto = TestUtils.createOppimaara("oppimaara a2");
         OppiaineSuppeaDto oppimaaraB1dto = TestUtils.createOppimaara("oppimaara b1");
         OppiaineSuppeaDto oppimaaraB2dto = TestUtils.createOppimaara("oppimaara b2");
 
         oppiaineDto.setOppimaarat(Set.of(oppimaaraA1dto, oppimaaraA2dto, oppimaaraB1dto, oppimaaraB2dto));
-        oppiaineDto = oppiaineService.add(kunnanOps.getId(), oppiaineDto);
+        oppiaineService.add(kunnanOps.getId(), oppiaineDto);
 
-        Oppiaine oppimaaraA1 = findOppimaaraByNimi(oppiaineDto, "oppimaara a1");
-        Oppiaine oppimaaraA2 = findOppimaaraByNimi(oppiaineDto, "oppimaara a2");
-        Oppiaine oppimaaraB1 = findOppimaaraByNimi(oppiaineDto, "oppimaara b1");
-        Oppiaine oppimaaraB2 = findOppimaaraByNimi(oppiaineDto, "oppimaara b2");
+        Oppiaine oppimaaraA1 = findOppimaaraByNimi(kunnanOps.getId(), "oppimaara a1");
+        Oppiaine oppimaaraA2 = findOppimaaraByNimi(kunnanOps.getId(), "oppimaara a2");
+        Oppiaine oppimaaraB1 = findOppimaaraByNimi(kunnanOps.getId(), "oppimaara b1");
+        Oppiaine oppimaaraB2 = findOppimaaraByNimi(kunnanOps.getId(), "oppimaara b2");
 
         updateOppimaaraTunniste(oppimaaraA2, oppimaaraA1.getTunniste());
         updateOppimaaraTunniste(oppimaaraB2, oppimaaraB1.getTunniste());
 
-        OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
-            ops.setPohja(Reference.of(kunnanOps.getId()));
-            ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA);
-        });
+        return kunnanOps;
+    }
 
-        List<OppiaineDto> koulunOppiaineet = oppiaineService.getAll(koulunOps.getId());
-        assertThat(koulunOppiaineet).hasSize(1);
-        OppiaineDto koulunOppiaine = koulunOppiaineet.get(0);
-        assertThat(koulunOppiaine.getOppimaarat()).hasSize(4);
+    private OpetussuunnitelmaDto createKoulunOpsKunnanOpsista(OpetussuunnitelmaDto kunnanOps) {
+        return opetussuunnitelmaService.addOpetussuunnitelma(
+                createOpetussuunnitelmaLuonti(kunnanOps, ops -> {
+                    ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA);
+                }));
     }
 
     private void updateOppimaaraTunniste(Oppiaine oppimaara, UUID uusiTunniste) {
@@ -378,7 +429,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         entityManager.flush();
     }
 
-    private Oppiaine findOppimaaraByNimi(OppiaineDto oppiaine, String nimi) {
+    private Oppiaine findOppimaaraByNimi(Long opsId, String nimi) {
+        OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
+        OppiaineDto oppiaine = ops.getOppiaineet().stream().map(OpsOppiaineDto::getOppiaine).findFirst().orElseThrow();
         return oppiaineRepo.findOne(oppiaine.getOppimaarat().stream()
                 .filter(om -> om.getNimi().get(Kieli.FI).equals(nimi))
                 .findFirst()

@@ -7,6 +7,7 @@ import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositor
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -49,4 +50,17 @@ public interface OppiaineRepository extends JpaWithVersioningRepository<Oppiaine
 
     @Query(value = "select ops from Opetussuunnitelma ops inner join ops.oppiaineet oo inner join oo.oppiaine o on o.id = ?1 where not(ops.id = ?2)")
     Set<Opetussuunnitelma> findOtherOpetussuunnitelmasContainingOpsOppiaine(long oppiaineId, long exceptOpsId);
+
+    @Query(nativeQuery = true,
+            value = """
+            SELECT opetussuunnitelma.id
+            FROM opetussuunnitelma
+            INNER JOIN ops_oppiaine ON opetussuunnitelma.id = ops_oppiaine.opetussuunnitelma_id
+            INNER JOIN oppiaine ON ops_oppiaine.oppiaine_id = oppiaine.id
+            INNER JOIN oppiaine oppimaara ON oppimaara.oppiaine_id = oppiaine.id
+            INNER JOIN lokalisoituteksti ON lokalisoituteksti.id = oppimaara.nimi_id
+            WHERE pohja_id = :pohjaId
+            AND lokalisoituteksti.tunniste = :tunniste
+            """)
+    List<Long> findOpetussuunnitelmatContainingOpsOppiaine(Long pohjaId, UUID tunniste);
 }
