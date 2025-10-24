@@ -506,14 +506,15 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     }
 
     @Override
-    public boolean equals(Object o) {
+    public final boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Oppiaine oppiaine = (Oppiaine) o;
+        if (!(o instanceof Oppiaine oppiaine)) return false;
 
         return new EqualsBuilder()
                 .append(tunniste, oppiaine.tunniste)
-                .append(nimi.getTunniste(), oppiaine.getNimi().getTunniste())
+                .append(
+                        Optional.ofNullable(nimi).map(LokalisoituTeksti::getTunniste).orElse(null),
+                        Optional.ofNullable(oppiaine.getNimi()).map(LokalisoituTeksti::getTunniste).orElse(null))
                 .append(getId(), oppiaine.getId())
                 .isEquals();
     }
@@ -522,7 +523,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     public int hashCode() {
         return new HashCodeBuilder(17, 37)
                 .append(tunniste)
-                .append(nimi.getTunniste())
+                .append(Optional.ofNullable(nimi).map(LokalisoituTeksti::getTunniste).orElse(null))
                 .append(getId())
                 .toHashCode();
     }

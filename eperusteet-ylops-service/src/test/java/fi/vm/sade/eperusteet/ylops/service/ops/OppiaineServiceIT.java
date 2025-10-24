@@ -340,9 +340,7 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Test
     @Transactional
-    public void testKoulunOpisnOppiainemääräOikea() {
-        startNewTransaction();
-        setUp();
+    public void testKoulunOpsinOppiainemaaraOikea() {
         OpetussuunnitelmaDto kunnanOps = createOpsBasedOnPohja();
         OppiaineDto oppiaineDto = TestUtils.createKoosteinenOppiaine("oppiaine1");
         OppiaineSuppeaDto oppimaaraA1dto = TestUtils.createOppimaara("oppimaara a1");
@@ -353,17 +351,14 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         oppiaineDto.setOppimaarat(Set.of(oppimaaraA1dto, oppimaaraA2dto, oppimaaraB1dto, oppimaaraB2dto));
         oppiaineDto = oppiaineService.add(kunnanOps.getId(), oppiaineDto);
 
-        startNewTransaction();
         Oppiaine oppimaaraA1 = findOppimaaraByNimi(oppiaineDto, "oppimaara a1");
         Oppiaine oppimaaraA2 = findOppimaaraByNimi(oppiaineDto, "oppimaara a2");
         Oppiaine oppimaaraB1 = findOppimaaraByNimi(oppiaineDto, "oppimaara b1");
         Oppiaine oppimaaraB2 = findOppimaaraByNimi(oppiaineDto, "oppimaara b2");
 
-        startNewTransaction();
         updateOppimaaraTunniste(oppimaaraA2, oppimaaraA1.getTunniste());
         updateOppimaaraTunniste(oppimaaraB2, oppimaaraB1.getTunniste());
 
-        startNewTransaction();
         OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
             ops.setPohja(Reference.of(kunnanOps.getId()));
             ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA);
@@ -373,8 +368,6 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         assertThat(koulunOppiaineet).hasSize(1);
         OppiaineDto koulunOppiaine = koulunOppiaineet.get(0);
         assertThat(koulunOppiaine.getOppimaarat()).hasSize(4);
-
-        endTransaction();
     }
 
     private void updateOppimaaraTunniste(Oppiaine oppimaara, UUID uusiTunniste) {
@@ -382,13 +375,14 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         query.setParameter("tunniste", uusiTunniste);
         query.setParameter("id", oppimaara.getId());
         query.executeUpdate();
+        entityManager.flush();
     }
 
     private Oppiaine findOppimaaraByNimi(OppiaineDto oppiaine, String nimi) {
         return oppiaineRepo.findOne(oppiaine.getOppimaarat().stream()
                 .filter(om -> om.getNimi().get(Kieli.FI).equals(nimi))
                 .findFirst()
-                .get()
+                .orElseThrow(() -> new java.util.NoSuchElementException("No oppimaara found with name: " + nimi))
                 .getId());
     }
 

@@ -68,10 +68,10 @@ public abstract class TestUtils {
     public static OppiaineDto createOppiaine(Consumer<OppiaineDto> withOppiaine) {
         OppiaineDto oppiaineDto = new OppiaineDto();
         oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
-        withOppiaine.accept(oppiaineDto);
         oppiaineDto.setKoodiUri("koodikoodi");
         oppiaineDto.setTunniste(UUID.randomUUID());
         oppiaineDto.setKoodiArvo("VK");
+        withOppiaine.accept(oppiaineDto);
         return oppiaineDto;
     }
 
@@ -84,10 +84,10 @@ public abstract class TestUtils {
     public static OppiaineSuppeaDto createOppimaara(Consumer<OppiaineSuppeaDto> withOppiaine) {
         OppiaineSuppeaDto oppimaara = new OppiaineSuppeaDto();
         oppimaara.setTyyppi(OppiaineTyyppi.YHTEINEN);
-        withOppiaine.accept(oppimaara);
         oppimaara.setKoodiUri("oppimaarakoodi");
         oppimaara.setTunniste(UUID.randomUUID());
         oppimaara.setKoosteinen(false);
+        withOppiaine.accept(oppimaara);
         return oppimaara;
     }
 
