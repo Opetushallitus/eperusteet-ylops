@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public abstract class TestUtils {
     public static LokalisoituTeksti lokalisoituTekstiOf(Kieli kieli, String teksti) {
@@ -51,31 +52,42 @@ public abstract class TestUtils {
     }
 
     public static OppiaineDto createOppiaine(String nimi){
-        return createOppiaine(nimi, false);
+        return createOppiaine((oppiaine -> {
+            oppiaine.setNimi(lt(nimi));
+            oppiaine.setKoosteinen(false);
+        }));
     }
 
     public static OppiaineDto createKoosteinenOppiaine(String nimi){
-        return createOppiaine(nimi, true);
+        return createOppiaine((oppiaine -> {
+            oppiaine.setNimi(lt(nimi));
+            oppiaine.setKoosteinen(true);
+        }));
     }
 
-    private static OppiaineDto createOppiaine(String nimi, boolean isKoosteinen) {
+    public static OppiaineDto createOppiaine(Consumer<OppiaineDto> withOppiaine) {
         OppiaineDto oppiaineDto = new OppiaineDto();
         oppiaineDto.setTyyppi(OppiaineTyyppi.YHTEINEN);
-        oppiaineDto.setNimi(lt(nimi));
         oppiaineDto.setKoodiUri("koodikoodi");
         oppiaineDto.setTunniste(UUID.randomUUID());
-        oppiaineDto.setKoosteinen(isKoosteinen);
         oppiaineDto.setKoodiArvo("VK");
+        withOppiaine.accept(oppiaineDto);
         return oppiaineDto;
     }
 
-    public static OppiaineSuppeaDto createOppimaara(String nimi) {
+    public static OppiaineSuppeaDto createOppimaara(String nimi){
+        return createOppimaara((oppiaine -> {
+            oppiaine.setNimi(lt(nimi));
+        }));
+    }
+
+    public static OppiaineSuppeaDto createOppimaara(Consumer<OppiaineSuppeaDto> withOppiaine) {
         OppiaineSuppeaDto oppimaara = new OppiaineSuppeaDto();
         oppimaara.setTyyppi(OppiaineTyyppi.YHTEINEN);
-        oppimaara.setNimi(lt(nimi));
         oppimaara.setKoodiUri("oppimaarakoodi");
         oppimaara.setTunniste(UUID.randomUUID());
         oppimaara.setKoosteinen(false);
+        withOppiaine.accept(oppimaara);
         return oppimaara;
     }
 
