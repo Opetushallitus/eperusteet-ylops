@@ -6,6 +6,7 @@ import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.Vuosiluokkakokonaisuusviite;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineValinnainenTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
@@ -39,6 +40,8 @@ import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationExcept
 import fi.vm.sade.eperusteet.ylops.service.mocks.EperusteetServiceMock;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import fi.vm.sade.eperusteet.ylops.test.util.TestUtils;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Query;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -92,6 +95,9 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private PoistoService poistoService;
+
+    @Autowired
+    private EntityManager entityManager;
 
     private Long opsId;
     private Reference vlkViiteRef;
@@ -330,6 +336,60 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
             assertNull(vlk.getTyotavat().getTeksti());
             assertNull(vlk.getYleistavoitteet().getTeksti());
         });
+    }
+
+    @Test
+    @Transactional
+    public void testKoulunOpisnOppiainemääräOikea() {
+        startNewTransaction();
+        setUp();
+        OpetussuunnitelmaDto kunnanOps = createOpsBasedOnPohja();
+        OppiaineDto oppiaineDto = TestUtils.createKoosteinenOppiaine("oppiaine1");
+        OppiaineSuppeaDto oppimaaraA1dto = TestUtils.createOppimaara("oppimaara a1");
+        OppiaineSuppeaDto oppimaaraA2dto = TestUtils.createOppimaara("oppimaara a2");
+        OppiaineSuppeaDto oppimaaraB1dto = TestUtils.createOppimaara("oppimaara b1");
+        OppiaineSuppeaDto oppimaaraB2dto = TestUtils.createOppimaara("oppimaara b2");
+
+        oppiaineDto.setOppimaarat(Set.of(oppimaaraA1dto, oppimaaraA2dto, oppimaaraB1dto, oppimaaraB2dto));
+        oppiaineDto = oppiaineService.add(kunnanOps.getId(), oppiaineDto);
+
+        startNewTransaction();
+        Oppiaine oppimaaraA1 = findOppimaaraByNimi(oppiaineDto, "oppimaara a1");
+        Oppiaine oppimaaraA2 = findOppimaaraByNimi(oppiaineDto, "oppimaara a2");
+        Oppiaine oppimaaraB1 = findOppimaaraByNimi(oppiaineDto, "oppimaara b1");
+        Oppiaine oppimaaraB2 = findOppimaaraByNimi(oppiaineDto, "oppimaara b2");
+
+        startNewTransaction();
+        updateOppimaaraTunniste(oppimaaraA2, oppimaaraA1.getTunniste());
+        updateOppimaaraTunniste(oppimaaraB2, oppimaaraB1.getTunniste());
+
+        startNewTransaction();
+        OpetussuunnitelmaDto koulunOps = createOpetussuunnitelma(ops -> {
+            ops.setPohja(Reference.of(kunnanOps.getId()));
+            ops.setLuontityyppi(OpetussuunnitelmaLuontiDto.Luontityyppi.VIITTEILLA);
+        });
+
+        List<OppiaineDto> koulunOppiaineet = oppiaineService.getAll(koulunOps.getId());
+        assertThat(koulunOppiaineet).hasSize(1);
+        OppiaineDto koulunOppiaine = koulunOppiaineet.get(0);
+        assertThat(koulunOppiaine.getOppimaarat()).hasSize(4);
+
+        endTransaction();
+    }
+
+    private void updateOppimaaraTunniste(Oppiaine oppimaara, UUID uusiTunniste) {
+        Query query = entityManager.createNativeQuery("UPDATE oppiaine SET tunniste = :tunniste WHERE id = :id");
+        query.setParameter("tunniste", uusiTunniste);
+        query.setParameter("id", oppimaara.getId());
+        query.executeUpdate();
+    }
+
+    private Oppiaine findOppimaaraByNimi(OppiaineDto oppiaine, String nimi) {
+        return oppiaineRepo.findOne(oppiaine.getOppimaarat().stream()
+                .filter(om -> om.getNimi().get(Kieli.FI).equals(nimi))
+                .findFirst()
+                .get()
+                .getId());
     }
 
     @Test

@@ -32,6 +32,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
@@ -504,17 +506,24 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     }
 
     @Override
-    public final boolean equals(Object o) {
+    public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Oppiaine oppiaine)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
+        Oppiaine oppiaine = (Oppiaine) o;
 
-        return Objects.equals(nimi.getTunniste(), oppiaine.nimi.getTunniste()) && Objects.equals(getId(), oppiaine.getId());
+        return new EqualsBuilder()
+                .append(tunniste, oppiaine.tunniste)
+                .append(nimi.getTunniste(), oppiaine.getNimi().getTunniste())
+                .append(getId(), oppiaine.getId())
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        int result = Objects.hashCode(nimi.getTunniste());
-        result = 31 * result + Objects.hashCode(getId());
-        return result;
+        return new HashCodeBuilder(17, 37)
+                .append(tunniste)
+                .append(nimi.getTunniste())
+                .append(getId())
+                .toHashCode();
     }
 }
