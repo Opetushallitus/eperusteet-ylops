@@ -9,7 +9,6 @@ import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineValinnainenTyyppi;
-import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
@@ -344,8 +343,8 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
         startNewTransaction();
         OpetussuunnitelmaDto koulunOps = createKoulunOpsKunnanOpsista(kunnanOps);
         OpetussuunnitelmaDto koulunOps2 = createKoulunOpsKunnanOpsista(kunnanOps);
-        checkOpppimaaraCount(koulunOps.getId(), 4);
-        checkOpppimaaraCount(koulunOps2.getId(), 4);
+        checkOppimaaraCount(koulunOps.getId(), 4);
+        checkOppimaaraCount(koulunOps2.getId(), 4);
 
         Oppiaine oppimaaraB2 = findOppimaaraByNimi(koulunOps.getId(), "oppimaara b2");
         assertThat(oppimaaraB2.getOppiaine().getOppimaarat()).contains(oppimaaraB2);
@@ -355,29 +354,27 @@ public class OppiaineServiceIT extends AbstractIntegrationTest {
 
         startNewTransaction();
 
-        checkOpppimaaraCount(koulunOps.getId(), 3);
-        checkOpppimaaraCount(koulunOps.getPohja().getId(), 4);
-        checkOpppimaaraCount(koulunOps2.getId(), 4);
+        checkOppimaaraCount(koulunOps.getId(), 3);
+        checkOppimaaraCount(koulunOps.getPohja().getId(), 4);
+        checkOppimaaraCount(koulunOps2.getId(), 4);
 
         // valuttamatta jättäminen päivityksessä ei palauta oppimäärää
         kunnanOps = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(koulunOps.getPohja().getId());
         Oppiaine kunnanOppimaaraB2 = findOppimaaraByNimi(kunnanOps.getId(), "oppimaara b2");
         OppiaineDto kunnanOppimaaraDto = oppiaineService.get(kunnanOps.getId(), kunnanOppimaaraB2.getId()).getOppiaine();
         oppiaineService.update(koulunOps.getPohja().getId(), null, kunnanOppimaaraDto, false);
+        checkOppimaaraCount(koulunOps.getId(), 3);
+        checkOppimaaraCount(koulunOps2.getId(), 4);
 
         // valutus palauttaa oppimäärän koulun opsiin
-        checkOpppimaaraCount(koulunOps.getId(), 3);
-        checkOpppimaaraCount(koulunOps2.getId(), 4);
         oppiaineService.update(kunnanOps.getId(), null, kunnanOppimaaraDto, true);
-
         startNewTransaction();
-        checkOpppimaaraCount(koulunOps.getId(), 4);
-        checkOpppimaaraCount(koulunOps2.getId(), 4);
-
+        checkOppimaaraCount(koulunOps.getId(), 4);
+        checkOppimaaraCount(koulunOps2.getId(), 4);
         endTransaction();
     }
 
-    private void checkOpppimaaraCount(Long opsId, int expectedCount) {
+    private void checkOppimaaraCount(Long opsId, int expectedCount) {
         OpetussuunnitelmaDto ops = opetussuunnitelmaService.getOpetussuunnitelmaKaikki(opsId);
         long oppimaaraCount = ops.getOppiaineet()
                 .stream()
