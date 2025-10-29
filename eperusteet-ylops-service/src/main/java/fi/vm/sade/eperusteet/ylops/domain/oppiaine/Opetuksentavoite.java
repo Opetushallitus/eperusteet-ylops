@@ -7,6 +7,8 @@ import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
@@ -51,9 +53,8 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
 
     @Getter
     @Setter
-    @ElementCollection(fetch = FetchType.LAZY)
-    @BatchSize(size = 25)
     @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "opetuksentavoite")
+    @Fetch(FetchMode.SUBSELECT)
     private Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = new HashSet<>();
 
     @Getter
