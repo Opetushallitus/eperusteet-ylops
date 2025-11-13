@@ -53,7 +53,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     private static final String HIERARKIA_HAKU = "v2/hierarkia/hae?";
     private static final String HAKU = "v2/hae?";
     private static final String KUNTA_KRITEERI = "kunta=";
-    private static final String STATUS_KRITEERI = "&aktiiviset=true&suunnitellut=true&lakkautetut=false";
+    private static final String STATUS_KRITEERI = "&aktiiviset=true&suunnitellut=true&lakkautetut=true";
     private static final String ORGANISAATIO_KRITEERI = "oidRestrictionList=";
     private static final String KOULUTUSTOIMIJAT_KRITEERI = "&organisaatiotyyppi=Koulutustoimija";
 
