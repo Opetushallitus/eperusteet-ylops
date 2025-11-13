@@ -139,8 +139,6 @@ public class WebSecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/actuator/metrics/jvm.memory.used").authenticated()
-                        .requestMatchers("/actuator/metrics/**").denyAll()
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/").permitAll()
                         .anyRequest().authenticated())

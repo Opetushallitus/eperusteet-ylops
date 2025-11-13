@@ -53,8 +53,8 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
 
     @Getter
     @Setter
+    @BatchSize(size = 25)
     @OneToMany(orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, mappedBy = "opetuksentavoite")
-    @Fetch(FetchMode.SUBSELECT)
     private Set<OpetuksenKeskeinensisaltoalue> sisaltoalueet = new HashSet<>();
 
     @Getter
