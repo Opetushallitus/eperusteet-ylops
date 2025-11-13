@@ -39,8 +39,6 @@ public class WebSecurityConfigurationDev {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/actuator/health").permitAll()
-                        .requestMatchers("/actuator/metrics/jvm.memory.used").permitAll()
-                        .requestMatchers("/actuator/metrics/**").denyAll()
                         .requestMatchers(HttpMethod.GET, "/api/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/").permitAll()
