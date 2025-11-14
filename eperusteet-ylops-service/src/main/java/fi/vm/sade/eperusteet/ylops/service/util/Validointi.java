@@ -3,16 +3,12 @@ package fi.vm.sade.eperusteet.ylops.service.util;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
+@Data
 @NoArgsConstructor
 public class Validointi {
 
@@ -26,7 +22,7 @@ public class Validointi {
         this.kategoria = kategoria;
     }
 
-    @Getter
+    @Data
     @AllArgsConstructor
     @Builder
     static public class Virhe {
@@ -35,28 +31,35 @@ public class Validointi {
     }
 
     public Validointi addAll(List<Virhe> virheet) {
-        this.virheet.addAll(virheet);
+        this.virheet.addAll(virheet.stream().filter(v -> !sisaltaaVirheen(this.virheet, v)).toList());
         return this;
     }
 
     public Validointi addVirhe(Virhe virhe) {
+        if (sisaltaaVirheen(this.virheet, virhe)) {
+            return this;
+        }
         this.virheet.add(virhe);
         return this;
     }
 
     public Validointi addHuomautus(Virhe huomautukset) {
+        if (sisaltaaVirheen(this.huomautukset, huomautukset)) {
+            return this;
+        }
         this.huomautukset.add(huomautukset);
         return this;
     }
 
     public Validointi virhe(String kuvaus, NavigationNodeDto navigationNode) {
+        if (sisaltaaVirheen(this.virheet, new Virhe(kuvaus, navigationNode))) {
+            return this;
+        }
         virheet.add(new Virhe(kuvaus, navigationNode));
         return this;
     }
 
-    public void tuomitse() {
-        if (!virheet.isEmpty()) {
-            throw new ValidointiException(this);
-        }
+    private boolean sisaltaaVirheen(List<Virhe> virheet, Virhe virhe) {
+        return virheet.stream().anyMatch(v -> v.equals(virhe));
     }
 }

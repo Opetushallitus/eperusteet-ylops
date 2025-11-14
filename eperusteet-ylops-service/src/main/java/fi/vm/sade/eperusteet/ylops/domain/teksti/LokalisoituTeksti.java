@@ -174,20 +174,9 @@ public class LokalisoituTeksti implements Serializable {
     }
 
     public boolean hasKielet(Set<Kieli> kielet) {
-        boolean hasSomething = false;
-        Map<Kieli, String> mteksti = getTeksti();
-
-        for (Kieli kieli : kielet) {
-            String str = mteksti.get(kieli);
-            if (str != null && !str.isEmpty()) {
-                hasSomething = true;
-                break;
-            }
-        }
-
-        if (hasSomething) {
+        if (!getTeksti().isEmpty()) {
             for (Kieli kieli : kielet) {
-                String sisalto = mteksti.get(kieli);
+                String sisalto = getTeksti().get(kieli);
                 if (sisalto == null || sisalto.isEmpty()) {
                     return false;
                 }
