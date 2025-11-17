@@ -29,6 +29,7 @@ public class OrganisaatioLaajaDto extends OrganisaatioDto {
     private String parentOid;
     private String parentOidPath;
     private List<OrganisaatioLaajaDto> children;
+    private String status;
 
     public List<String> getParentPath() {
         if (StringUtils.isEmpty(this.parentOidPath)) {
