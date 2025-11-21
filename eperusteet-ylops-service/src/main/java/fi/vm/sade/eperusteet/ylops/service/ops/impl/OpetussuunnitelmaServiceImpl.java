@@ -1444,9 +1444,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         pohja.getOppiaineJarjestykset().clear();
         pohja.setViimeisinSyncPvm(new Date());
 
+        cacheManager.getCache("perusteet").evict(pohja.getPerusteenDiaarinumero());
+        cacheManager.getCache("perusteet").evict(pohja.getCachedPeruste().getPerusteId());
+
         PerusteDto peruste = eperusteetService.getPerusteUpdateCache(pohja.getPerusteenDiaarinumero());
         pohja.setCachedPeruste(perusteCacheRepository.findNewestEntryForPeruste(peruste.getId()));
-        cacheManager.getCache("perusteet").evict(peruste.getId());
         lisaaPerusteenSisalto(pohja, peruste, null);
 
         opetussuunnitelmaRepository.findByPerusteId(pohja.getCachedPeruste().getPerusteId()).forEach(opetussuunnitelma -> {
