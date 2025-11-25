@@ -2062,7 +2062,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public void vaihdaPohja(Long id, Long pohjaId) {
-        dispatcher.get(KoulutustyyppiToteutus.LOPS2019, OpsPohjanVaihto.class).vaihdaPohja(id, pohjaId);
+        Opetussuunnitelma opetussuunnitelma = opetussuunnitelmaRepository.findById(id).orElseThrow();
+        dispatcher.get(opetussuunnitelma.getToteutus(), OpsPohjanVaihto.class).vaihdaPohja(id, pohjaId);
     }
 
     @Override
