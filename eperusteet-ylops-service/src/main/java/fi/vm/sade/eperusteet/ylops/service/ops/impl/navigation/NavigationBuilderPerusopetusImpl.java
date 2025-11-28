@@ -6,12 +6,7 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineSuppeaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineenVuosiluokkakokonaisuusSuppeaDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpsOppiaineKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.ops.VuosiluokkakokonaisuusSuppeaDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.*;
 import fi.vm.sade.eperusteet.ylops.service.ops.NavigationBuilder;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpsDispatcher;
@@ -20,11 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
