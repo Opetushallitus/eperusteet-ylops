@@ -20,9 +20,7 @@ public class OpetussuunnitelmaCacheTask extends AbstractScheduledTask{
 
     @Override
     public void executeTask(Date viimeisinajoaika) {
-        maintenanceService.clearCache(CacheArvot.OPETUSSUUNNITELMA_JULKAISU);
         maintenanceService.clearCache(CacheArvot.OPETUSSUUNNITELMA_NAVIGAATIO_JULKINEN);
-        maintenanceService.cacheJulkaistutOpetussuunnitelmat();
         maintenanceService.cacheOpetussuunnitelmaNavigaatiot();
     }
 }

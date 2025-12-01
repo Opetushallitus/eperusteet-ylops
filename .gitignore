@@ -10,6 +10,7 @@ npm-debug.log
 
 *.iml
 .idea/
+.vscode/
 .DS_Store
 .tscache
 .baseDir.ts
@@ -19,4 +20,3 @@ yarn-error.log
 
 */logs/
 eperusteet-ylops-service/logs
-
