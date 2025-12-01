@@ -2108,11 +2108,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    @Cacheable(
-            value= CacheArvot.OPETUSSUUNNITELMA_JULKAISU,
-            condition = "#revision == null",
-            key = "#opsId"
-    )
     public OpetussuunnitelmaExportDto getOpetussuunnitelmaJulkaistuSisalto(Long opsId, Integer revision) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         boolean esikatselu = revision != null && revision == 0;

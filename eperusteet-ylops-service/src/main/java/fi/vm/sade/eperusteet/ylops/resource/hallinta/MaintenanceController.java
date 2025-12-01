@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.resource.hallinta;
 
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.service.util.MaintenanceService;
+import fi.vm.sade.eperusteet.ylops.service.util.MemoryStatisticsService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,8 +32,11 @@ public class MaintenanceController {
     @Autowired
     private MaintenanceService maintenanceService;
 
+    @Autowired
+    private MemoryStatisticsService memoryStatisticsService;
+
     @RequestMapping(value = "/cacheclear/{cache}", method = GET)
-    public ResponseEntity clearCache(@PathVariable final String cache) {
+    public ResponseEntity<Void> clearCache(@PathVariable final String cache) {
         maintenanceService.clearCache(cache);
         return ResponseEntity.status(HttpStatus.OK)
                 .build();
@@ -49,7 +54,28 @@ public class MaintenanceController {
 
     @RequestMapping(value = "/cache/julkaisut", method = GET)
     public void cacheOpetussuunnitelmaJulkaisut() {
-        maintenanceService.cacheJulkaistutOpetussuunnitelmat();
         maintenanceService.cacheOpetussuunnitelmaNavigaatiot();
+    }
+
+    @RequestMapping(value = "/cache/memory", method = GET)
+    public ResponseEntity<Map<String, Object>> getCacheMemorySummary() {
+        Map<String, Object> summary = memoryStatisticsService.getCacheMemorySummary();
+        
+        if (summary.containsKey("error")) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(summary);
+        }
+        
+        return ResponseEntity.ok(summary);
+    }
+
+    @RequestMapping(value = "/cache/statistics", method = GET)
+    public ResponseEntity<Map<String, Map<String, Object>>> getCacheStatistics() {
+        Map<String, Map<String, Object>> statistics = memoryStatisticsService.getCacheStatistics();
+        
+        if (statistics.containsKey("_error")) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(statistics);
+        }
+        
+        return ResponseEntity.ok(statistics);
     }
 }

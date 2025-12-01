@@ -1,6 +1,12 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.ehcache.org/v3"
-        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd">
+        xmlns:jsr107="http://www.ehcache.org/v3/jsr107"
+        xsi:schemaLocation="http://www.ehcache.org/v3 http://www.ehcache.org/schema/ehcache-core-3.0.xsd
+                            http://www.ehcache.org/v3/jsr107 http://www.ehcache.org/schema/ehcache-107-ext-3.0.xsd">
+
+    <service>
+        <jsr107:defaults enable-statistics="true" enable-management="true"/>
+    </service>
 
     <cache alias="tilastot">
         <expiry>
@@ -82,26 +88,6 @@
         </resources>
     </cache>
 
-    <cache alias="ops-julkaisu">
-        <expiry>
-            <ttl unit="seconds">28800</ttl>
-        </expiry>
-
-        <resources>
-            <heap unit="entries">50</heap>
-        </resources>
-    </cache>
-
-    <cache alias="ops-navigation">
-        <expiry>
-            <ttl unit="seconds">86400</ttl>
-        </expiry>
-
-        <resources>
-            <heap unit="entries">500</heap>
-        </resources>
-    </cache>
-
     <cache alias="lokalisoinnit">
         <expiry>
             <ttl unit="seconds">600</ttl>
@@ -109,26 +95,6 @@
 
         <resources>
             <heap unit="entries">10000</heap>
-        </resources>
-    </cache>
-
-    <cache alias="ylops-lokalisoinnit">
-        <expiry>
-            <ttl unit="seconds">600</ttl>
-        </expiry>
-
-        <resources>
-            <heap unit="entries">3</heap>
-        </resources>
-    </cache>
-
-    <cache alias="opetussuunnitelma_julkaisu">
-        <expiry>
-            <ttl unit="seconds">86400</ttl>
-        </expiry>
-
-        <resources>
-            <heap unit="entries">9999</heap>
         </resources>
     </cache>
 

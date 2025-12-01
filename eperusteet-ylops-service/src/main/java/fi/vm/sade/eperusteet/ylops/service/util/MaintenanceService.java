@@ -18,7 +18,4 @@ public interface MaintenanceService {
 
     @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
     void cacheOpetussuunnitelmaNavigaatiot();
-
-    @PreAuthorize("hasPermission(null, 'pohja', 'LUONTI')")
-    void cacheJulkaistutOpetussuunnitelmat();
 }

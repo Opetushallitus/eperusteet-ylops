@@ -132,7 +132,6 @@ public class MaintenanceServiceImpl implements MaintenanceService {
         opetussuunnitelmaRepository.findOne(opetussuunnitelmaId).getJulkaisukielet().forEach(kieli -> {
             cacheManager.getCache(CacheArvot.OPETUSSUUNNITELMA_NAVIGAATIO_JULKINEN).evictIfPresent(opetussuunnitelmaId + kieli.toString());
         });
-        cacheManager.getCache(CacheArvot.OPETUSSUUNNITELMA_JULKAISU).evictIfPresent(opetussuunnitelmaId);
     }
 
     @Override
@@ -145,17 +144,4 @@ public class MaintenanceServiceImpl implements MaintenanceService {
             }
         });
     }
-
-    @Override
-    public void cacheJulkaistutOpetussuunnitelmat() {
-        opetussuunnitelmaService.getKaikkiJulkaistutOpetussuunnitelmat(KoulutusTyyppi.PERUSOPETUS.toString()).forEach(ops -> {
-            try {
-                opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(ops.getId(), null);
-            } catch(Exception e) {
-                log.error("Error caching julkaistu sisalto for opetussuunnitelma {}", ops.getId(), e);
-            }
-        });
-    }
-
-
 }

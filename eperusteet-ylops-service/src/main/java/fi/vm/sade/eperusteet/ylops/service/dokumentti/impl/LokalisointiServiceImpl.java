@@ -56,7 +56,6 @@ public class LokalisointiServiceImpl implements LokalisointiService {
     }
 
     @Override
-    @Cacheable("ylops-lokalisoinnit")
     public Map<Kieli, List<LokalisointiDto>> getAll() {
         Map<Kieli, List<LokalisointiDto>> result = new HashMap<>();
         extractCategoryToMap(result, "eperusteet-ylops");
