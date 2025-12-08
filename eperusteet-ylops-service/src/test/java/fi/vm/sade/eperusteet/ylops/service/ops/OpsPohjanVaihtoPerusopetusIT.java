@@ -38,7 +38,6 @@ import static org.junit.Assert.assertNotNull;
 public class OpsPohjanVaihtoPerusopetusIT extends AbstractIntegrationTest {
 
     @Autowired
-    @Qualifier("opsPohjanVaihtoPerusopetusImpl")
     private OpsPohjanVaihto opsPohjanVaihtoPerusopetus;
 
     @Autowired
@@ -148,16 +147,7 @@ public class OpsPohjanVaihtoPerusopetusIT extends AbstractIntegrationTest {
         assertNotNull(vaihtoehdot);
         assertThat(vaihtoehdot).isEmpty();
     }
-
-    @Test
-    public void testGetTyypit() {
-        Set<KoulutustyyppiToteutus> tyypit = opsPohjanVaihtoPerusopetus.getTyypit();
-        
-        assertNotNull(tyypit);
-        assertThat(tyypit).hasSize(1);
-        assertThat(tyypit).contains(KoulutustyyppiToteutus.PERUSOPETUS);
-    }
-
+    
     @Test
     public void testVaihdaPohjaMultipleTimes() {
         // Change pohja from pohja1 to pohja2

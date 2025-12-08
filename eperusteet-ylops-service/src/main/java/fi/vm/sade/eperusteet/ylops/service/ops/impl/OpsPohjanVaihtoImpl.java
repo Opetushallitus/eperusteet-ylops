@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Component
 @Transactional
-public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
+public class OpsPohjanVaihtoImpl implements OpsPohjanVaihto {
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
 
@@ -53,19 +53,23 @@ public class OpsPohjanVaihtoLops2019Impl implements OpsPohjanVaihto {
             throw new BusinessRuleViolationException("pohja-vaihdettavissa-vain-samaan-perusteeseen");
         }
 
-        Set<String> a = ops.getOrganisaatiot();
+        Set<String> a = vanha.getOrganisaatiot();
         Set<String> b = uusi.getOrganisaatiot();
         if (!a.containsAll(b)) {
             throw new BusinessRuleViolationException("uuden-pohjan-organisaatiot-vaarat");
         }
 
-        hierarkiaKopiointiService.kopioiPohjanRakenne(ops, uusi);
         ops.setPohja(uusi);
     }
 
     @Override
     public Set<KoulutustyyppiToteutus> getTyypit() {
-        return Sets.newHashSet(KoulutustyyppiToteutus.LOPS2019);
+        return Sets.newHashSet(
+                KoulutustyyppiToteutus.LOPS2019,
+                KoulutustyyppiToteutus.PERUSOPETUS,
+                KoulutustyyppiToteutus.TPO,
+                KoulutustyyppiToteutus.YKSINKERTAINEN
+        );
     }
 
     @Override
