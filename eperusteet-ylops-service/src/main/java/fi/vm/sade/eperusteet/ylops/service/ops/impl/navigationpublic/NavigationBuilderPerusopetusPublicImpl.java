@@ -1,7 +1,9 @@
 package fi.vm.sade.eperusteet.ylops.service.ops.impl.navigationpublic;
 
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
@@ -69,9 +71,8 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
     @SneakyThrows
     @Override
     public NavigationNodeDto buildNavigation(Long opsId, String kieli, Integer revision) {
-
         OpetussuunnitelmaLaajaDto opetussuunnitelmaDto = (OpetussuunnitelmaLaajaDto) opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opsId, revision);
-        EperusteetPerusteDto eperusteetPerusteDto = objectMapper.treeToValue(opetussuunnitelmaService.getJulkaistuOpetussuunnitelmaPeruste(opsId), EperusteetPerusteDto.class);
+        EperusteetPerusteDto eperusteetPerusteDto = opetussuunnitelmanPerusteDto(opetussuunnitelmaDto);
         Map<UUID, OppiaineDto> perusteenOppiaineet =
                 Stream.concat(
                                 eperusteetPerusteDto.getPerusopetus().getOppiaineet().stream(),
@@ -180,5 +181,12 @@ public class NavigationBuilderPerusopetusPublicImpl implements NavigationBuilder
                     return oppiaineNavigationNode;
                 })
                 .collect(Collectors.toList());
+    }
+
+    private EperusteetPerusteDto opetussuunnitelmanPerusteDto(OpetussuunnitelmaLaajaDto opetussuunnitelmaDto) throws JsonProcessingException {
+        JsonNode perusteNode = eperusteetService.getPerusteenJulkaisuByGlobalversionMuutosaika(
+                opetussuunnitelmaDto.getPeruste().getId(),
+                opetussuunnitelmaDto.getPeruste().getGlobalVersion().getAikaleima());
+        return  objectMapper.treeToValue(perusteNode, EperusteetPerusteDto.class);
     }
 }
