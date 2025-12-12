@@ -53,12 +53,6 @@ public class OpsPohjanVaihtoImpl implements OpsPohjanVaihto {
             throw new BusinessRuleViolationException("pohja-vaihdettavissa-vain-samaan-perusteeseen");
         }
 
-        Set<String> a = vanha.getOrganisaatiot();
-        Set<String> b = uusi.getOrganisaatiot();
-        if (!a.containsAll(b)) {
-            throw new BusinessRuleViolationException("uuden-pohjan-organisaatiot-vaarat");
-        }
-
         ops.setPohja(uusi);
     }
 
