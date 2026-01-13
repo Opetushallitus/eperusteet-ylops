@@ -102,4 +102,10 @@ public class Lops2019OppiaineController {
         return oppiaineService.revertTo(opsId, oppiaineId, versio);
     }
 
+    @RequestMapping(value = "/pohja", method = RequestMethod.GET)
+    public List<Lops2019PaikallinenOppiaineDto> getPohjanPaikallisetOppiaineet(
+            @PathVariable final Long opsId) {
+        return oppiaineService.getPohjanPaikallisetOppiaineet(opsId);
+    }
+
 }

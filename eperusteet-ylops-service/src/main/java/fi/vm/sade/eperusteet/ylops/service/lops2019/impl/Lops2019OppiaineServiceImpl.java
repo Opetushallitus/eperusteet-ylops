@@ -130,6 +130,16 @@ public class Lops2019OppiaineServiceImpl implements Lops2019OppiaineService {
     }
 
     @Override
+    public List<Lops2019PaikallinenOppiaineDto> getPohjanPaikallisetOppiaineet(Long opsId) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
+        if (ops.getPohja() != null) {
+            return mapper.mapAsList(oppiaineRepository.findAllBySisalto(ops.getPohja().getLops2019()), Lops2019PaikallinenOppiaineDto.class);
+        }
+
+        return List.of();
+    }
+
+    @Override
     public Lops2019PaikallinenOppiaineDto getTuotu(Long opsId, Long oppiaineId) {
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         Optional<Lops2019Oppiaine> tuotuOppiaine = getTuodut(ops).stream().filter(tuotu -> tuotu.getId().equals(oppiaineId)).findFirst();

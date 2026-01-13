@@ -24,6 +24,9 @@ public interface Lops2019OppiaineService {
     Lops2019PaikallinenOppiaineDto getOne(@P("opsId") Long opsId, Long oppiaineId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    List<Lops2019PaikallinenOppiaineDto> getPohjanPaikallisetOppiaineet(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     Lops2019PaikallinenOppiaineDto getTuotu(@P("opsId") Long opsId, Long oppiaineId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
