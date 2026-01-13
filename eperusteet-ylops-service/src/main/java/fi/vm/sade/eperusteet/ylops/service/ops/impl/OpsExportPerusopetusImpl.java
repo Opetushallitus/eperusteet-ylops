@@ -16,10 +16,12 @@ import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 @Transactional
@@ -50,7 +52,20 @@ public class OpsExportPerusopetusImpl implements OpsExport {
     public <T extends OpetussuunnitelmaExportDto> T export(Long opsId, Class<T> clz) {
         OpetussuunnitelmaLaajaDto dto = (OpetussuunnitelmaLaajaDto) dispatcher.get(KoulutustyyppiToteutus.YKSINKERTAINEN, OpsExport.class).export(opsId, clz);
 
+        dto.setOppiaineet(dto.getOppiaineet().stream()
+                .filter(oppiaine -> oppiaine.getOppiaine().getVuosiluokkakokonaisuudet().stream()
+                        .anyMatch(opvlk -> !opvlk.getPiilotettu()))
+        .collect(Collectors.toSet()));
+
         dto.getOppiaineet().forEach(opsOppiaine -> {
+
+            if (!CollectionUtils.isEmpty(opsOppiaine.getOppiaine().getOppimaarat())) {
+                opsOppiaine.getOppiaine().setOppimaarat(opsOppiaine.getOppiaine().getOppimaarat().stream()
+                        .filter(oppiaine -> oppiaine.getVuosiluokkakokonaisuudet().stream()
+                                .anyMatch(opvlk -> !opvlk.getPiilotettu()))
+                        .collect(Collectors.toSet()));
+            }
+
             opsOppiaine.getOppiaine().setPohjanOppiaine(oppiaineService.getPohjanVastaavaOppiaine(opsId, opsOppiaine.getOppiaine().getId(), OppiaineExportDto.class));
             if (!ObjectUtils.isEmpty(opsOppiaine.getOppiaine().getOppimaarat())) {
                 opsOppiaine.getOppiaine().getOppimaarat().forEach(oppimaara -> oppimaara.setPohjanOppiaine(oppiaineService.getPohjanVastaavaOppiaine(opsId, oppimaara.getId(), OppiaineExportDto.class)));
