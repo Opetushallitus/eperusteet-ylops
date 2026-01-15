@@ -20,7 +20,7 @@ jobs:
       - name: Set up Node 21
         uses: actions/setup-node@v4
         with:
-          node-version: '21.7.3'
+          node-version: '22.19.0'
           
       - name: Enable corepack for nodejs
         run: corepack enable    
