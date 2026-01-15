@@ -53,7 +53,8 @@ public class OpsExportPerusopetusImpl implements OpsExport {
         OpetussuunnitelmaLaajaDto dto = (OpetussuunnitelmaLaajaDto) dispatcher.get(KoulutustyyppiToteutus.YKSINKERTAINEN, OpsExport.class).export(opsId, clz);
 
         dto.setOppiaineet(dto.getOppiaineet().stream()
-                .filter(oppiaine -> oppiaine.getOppiaine().getVuosiluokkakokonaisuudet().stream()
+                .filter(oppiaine -> CollectionUtils.isEmpty(oppiaine.getOppiaine().getVuosiluokkakokonaisuudet())
+                        || oppiaine.getOppiaine().getVuosiluokkakokonaisuudet().stream()
                         .anyMatch(opvlk -> !opvlk.getPiilotettu()))
         .collect(Collectors.toSet()));
 
@@ -61,7 +62,8 @@ public class OpsExportPerusopetusImpl implements OpsExport {
 
             if (!CollectionUtils.isEmpty(opsOppiaine.getOppiaine().getOppimaarat())) {
                 opsOppiaine.getOppiaine().setOppimaarat(opsOppiaine.getOppiaine().getOppimaarat().stream()
-                        .filter(oppiaine -> oppiaine.getVuosiluokkakokonaisuudet().stream()
+                        .filter(oppiaine -> CollectionUtils.isEmpty(oppiaine.getVuosiluokkakokonaisuudet())
+                                || oppiaine.getVuosiluokkakokonaisuudet().stream()
                                 .anyMatch(opvlk -> !opvlk.getPiilotettu()))
                         .collect(Collectors.toSet()));
             }
