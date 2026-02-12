@@ -43,6 +43,7 @@ public class WebSecurityConfigurationDev {
                         .requestMatchers(HttpMethod.GET, "/api-docs/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/dokumentit/pdf/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/peruste/arkistoitu/**").permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .logout(logout -> {
