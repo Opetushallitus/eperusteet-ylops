@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.ops.PoistettuPeruste;
 import fi.vm.sade.eperusteet.ylops.dto.JarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.OppiaineOpintojaksoDto;
@@ -20,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaTilastoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpsVuosiluokkakokonaisuusKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteLaajaalainenosaaminenDto;
+import fi.vm.sade.eperusteet.ylops.repository.ops.PoistettuPerusteRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.security.Permission;
@@ -65,6 +67,9 @@ public class OpetussuunnitelmaController {
 
     @Autowired
     private JulkaisuService julkaisuService;
+
+    @Autowired
+    private PoistettuPerusteRepository poistettuPerusteRepository;
 
     @RequestMapping(method = RequestMethod.GET)
     @ResponseBody
