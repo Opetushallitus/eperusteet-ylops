@@ -41,6 +41,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti tavoite;
 
+    @Deprecated
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Getter
     @Setter
@@ -67,6 +68,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
     @BatchSize(size = 25)
     private Set<LaajaalainenosaaminenViite> laajattavoitteet = new HashSet<>();
 
+    @Deprecated
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @BatchSize(size = 25)
     @JoinTable(name = "opetuksen_tavoite_tavoitteen_arviointi",
@@ -83,6 +85,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
             inverseJoinColumns = @JoinColumn(name = "kohdealueet_id"))
     private Set<Opetuksenkohdealue> kohdealueet = new HashSet<>();
 
+    @Deprecated
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Getter
     @Setter
@@ -90,6 +93,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
     private LokalisoituTeksti arvioinninKuvaus;
 
+    @Deprecated
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Getter
     @Setter
@@ -97,6 +101,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
     private LokalisoituTeksti vapaaTeksti;
 
+    @Deprecated
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @Getter
     @Setter
@@ -104,6 +109,7 @@ public class Opetuksentavoite extends AbstractReferenceableEntity {
     @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
     private LokalisoituTeksti tavoitteistaJohdetutOppimisenTavoitteet;
 
+    @Deprecated
     public Set<Tavoitteenarviointi> getArvioinninkohteet() {
         return new HashSet<>(arvioinninkohteet);
     }

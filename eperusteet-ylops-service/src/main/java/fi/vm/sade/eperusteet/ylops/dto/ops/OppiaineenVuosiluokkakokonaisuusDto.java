@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
@@ -14,6 +15,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
     private Long id;
     private Reference vuosiluokkakokonaisuus;
@@ -23,7 +25,6 @@ public class OppiaineenVuosiluokkakokonaisuusDto implements ReferenceableDto {
     private TekstiosaDto ohjaus;
     private TekstiosaDto arviointi;
     private TekstiosaDto tavoitteistaJohdetutOppimisenTavoitteet;
-    private TekstiosaDto sisaltoalueinfo;
     private Integer jnro;
     private Boolean piilotettu;
 
