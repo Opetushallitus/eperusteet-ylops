@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -17,18 +18,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class OpetuksenTavoiteDto implements ReferenceableDto {
     private Long id;
     private UUID tunniste;
-
     private LokalisoituTekstiDto tavoite;
     private Set<Reference> laajattavoitteet;
     private Set<Reference> kohdealueet;
-    private Set<TavoitteenArviointiDto> arvioinninkohteet;
     private Set<OpetuksenKeskeinensisaltoalueDto> sisaltoalueet;
-    private LokalisoituTekstiDto arvioinninKuvaus;
-    private LokalisoituTekstiDto arvioinninOtsikko;
-    private LokalisoituTekstiDto vapaaTeksti;
-    private LokalisoituTekstiDto tavoitteistaJohdetutOppimisenTavoitteet;
-    private List<OppiaineenTavoitteenOpetuksenTavoiteDto> oppiaineenTavoitteenOpetuksenTavoitteet;
 }
