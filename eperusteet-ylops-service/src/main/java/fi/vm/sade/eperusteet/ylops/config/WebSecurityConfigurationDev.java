@@ -19,6 +19,7 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
@@ -151,5 +152,16 @@ public class WebSecurityConfigurationDev {
         AffirmativeBased affirmativeBased = new AffirmativeBased(List.of(new RoleVoter()));
         affirmativeBased.setAllowIfAllAbstainDecisions(true);
         return affirmativeBased;
+    }
+
+    @Bean
+    public StrictHttpFirewall httpFirewall() {
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowedHostnames(hostname -> 
+            List.of(
+              "localhost"
+            )
+            .contains(hostname));
+        return firewall;
     }
 }
