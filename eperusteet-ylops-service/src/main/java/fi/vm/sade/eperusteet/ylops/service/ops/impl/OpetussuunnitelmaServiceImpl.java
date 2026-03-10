@@ -454,7 +454,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             if (NumberUtils.isCreatable(element)) {
                 return subquery + String.format("?(@.id==%s)", element);
             }
-            return subquery + "." + element;
+            return subquery + "." + element.toLowerCase();
         });
 
         try {
