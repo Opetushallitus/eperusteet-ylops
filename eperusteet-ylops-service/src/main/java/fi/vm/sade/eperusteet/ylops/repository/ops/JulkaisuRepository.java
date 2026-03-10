@@ -85,7 +85,7 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
 
     @Query(nativeQuery = true,
         value = """
-                    SELECT CAST(jsonb_path_query(julkaisu_data.opsdata, CAST(:query AS jsonpath)) AS text)
+                    SELECT CAST(jsonb_path_query(jsonb_lower_keys(julkaisu_data.opsdata), CAST(:query AS jsonpath)) AS text)
                     FROM opetussuunnitelman_julkaisu julkaisu
                     INNER JOIN opetussuunnitelman_julkaisu_data julkaisu_data ON julkaisu.data_id = julkaisu_data.id
                     WHERE julkaisu.ops_id = :opetussuunnitelmaId
