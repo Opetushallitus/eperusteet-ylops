@@ -24,8 +24,16 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
 
     OpetussuunnitelmanJulkaisu findByOpetussuunnitelmaAndRevision(Opetussuunnitelma opetussuunnitelma, Integer revision);
 
-    @Query("SELECT julkaisu FROM OpetussuunnitelmanJulkaisu julkaisu WHERE julkaisu.opetussuunnitelma = :ops")
-    List<OpetussuunnitelmaJulkaisuKevyt> findKevytdataByOpetussuunnitelma(@Param("ops") Opetussuunnitelma ops);
+    @Query(
+      nativeQuery = true,
+      value = """
+      SELECT julkaisu.id, julkaisu.revision, julkaisu.luotu, 
+        to_timestamp((data.opsdata->'peruste'->'globalVersion'->>'aikaleima')::bigint / 1000.0) as perusteJulkaisuAika
+      FROM opetussuunnitelman_julkaisu julkaisu
+      INNER JOIN opetussuunnitelman_julkaisu_data data ON julkaisu.data_id = data.id
+      WHERE julkaisu.ops_id = :opsId
+      """)
+    List<OpetussuunnitelmaJulkaisuKevyt> findKevytdataByOpetussuunnitelmaId(@Param("opsId") Long opsId);
 
     OpetussuunnitelmanJulkaisu findByOpetussuunnitelmaAndRevision(Opetussuunnitelma opetussuunnitelma, int revision);
 

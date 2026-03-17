@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaistuOpetussuunnitelmaTila;
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaisuTila;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import org.springframework.context.annotation.Profile;
@@ -20,7 +21,7 @@ public class JulkaisuServiceMock implements JulkaisuService {
     }
 
     @Override
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(Long opsId) {
+    public List<OpetussuunnitelmanJulkaisuKevytDto> getJulkaisutKevyt(Long opsId) {
         return null;
     }
 
