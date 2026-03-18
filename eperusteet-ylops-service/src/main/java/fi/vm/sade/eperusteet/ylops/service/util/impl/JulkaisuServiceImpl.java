@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoKayttajallaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaisuKevyt;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.JulkaisuRepositoryCustom;
@@ -144,11 +145,9 @@ public class JulkaisuServiceImpl implements JulkaisuService {
     }
 
     @Override
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(Long opsId) {
-        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
-        assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
-        List<OpetussuunnitelmaJulkaisuKevyt> julkaisut = julkaisuRepository.findKevytdataByOpetussuunnitelma(ops);
-        return mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuDto.class);
+    public List<OpetussuunnitelmanJulkaisuKevytDto> getJulkaisutKevyt(Long opsId) {
+        List<OpetussuunnitelmaJulkaisuKevyt> julkaisut = julkaisuRepository.findKevytdataByOpetussuunnitelmaId(opsId);
+        return mapper.mapAsList(julkaisut, OpetussuunnitelmanJulkaisuKevytDto.class);
     }
 
     @Override

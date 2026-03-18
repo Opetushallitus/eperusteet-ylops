@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.resource.ops;
 
 import fi.vm.sade.eperusteet.ylops.domain.ops.JulkaisuTila;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmanJulkaisuKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.UusiJulkaisuDto;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -59,7 +60,7 @@ public class JulkaisuController {
     }
 
     @RequestMapping(value = "/julkaisut/kevyt", method = RequestMethod.GET)
-    public List<OpetussuunnitelmanJulkaisuDto> getJulkaisutKevyt(
+    public List<OpetussuunnitelmanJulkaisuKevytDto> getJulkaisutKevyt(
             @PathVariable final Long opsId) {
         return julkaisuService.getJulkaisutKevyt(opsId);
     }

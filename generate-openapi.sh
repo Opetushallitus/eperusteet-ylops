@@ -26,7 +26,7 @@ case "${1:-}" in
     gen_openapi_ext
     ;;
   *)
-    echo "Usage: $0 {gen_openapi|gen_openapi_ext}"
+    echo "Usage: $0 {openapi|openapi_ext}"
     exit 1
     ;;
 esac
