@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
+import fi.vm.sade.eperusteet.utils.dto.peruste.lops2019.tutkinnonrakenne.KoodiDto;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,4 +22,5 @@ public class TekstiKappaleDto {
     private String tila;
     private String tunniste;
     private String osanTyyppi;
+    private KoodiDto koodi;
 }

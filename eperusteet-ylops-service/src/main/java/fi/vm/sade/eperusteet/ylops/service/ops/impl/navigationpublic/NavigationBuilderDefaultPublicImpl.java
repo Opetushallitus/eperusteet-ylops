@@ -36,10 +36,12 @@ public class NavigationBuilderDefaultPublicImpl implements NavigationBuilderPubl
         TekstiKappaleDto perusteenTekstikappale = null;
         LokalisoituTekstiDto nimi = null;
 
+        Object koodi = null;
         if (root.getPerusteTekstikappaleId() != null) {
             perusteenTekstikappale = opetussuunnitelmaService.getPerusteTekstikappale(opsId, root.getPerusteTekstikappaleId());
             if (perusteenTekstikappale != null) {
                 nimi = perusteenTekstikappale.getNimi();
+                koodi = perusteenTekstikappale.getKoodi();
             }
         }
 
@@ -49,6 +51,7 @@ public class NavigationBuilderDefaultPublicImpl implements NavigationBuilderPubl
 
         return NavigationNodeDto
                 .of(root.isLiite() ? NavigationType.liite : NavigationType.viite, nimi, root.getId())
+                .meta("koodi", koodi)
                 .addAll(Optional.ofNullable(root.getLapset())
                         .map(lapset -> lapset.stream()
                                 .filter(tkv -> !tkv.isPiilotettu())

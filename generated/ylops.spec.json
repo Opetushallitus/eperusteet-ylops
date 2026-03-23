@@ -9089,6 +9089,30 @@
           }
         }
       },
+      "KoodiDto" : {
+        "type" : "object",
+        "properties" : {
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "arvo" : {
+            "type" : "string"
+          },
+          "uri" : {
+            "type" : "string"
+          },
+          "koodisto" : {
+            "type" : "string"
+          },
+          "versio" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }
+      },
       "KoodistoDto" : {
         "type" : "object",
         "properties" : {
@@ -9754,6 +9778,9 @@
           },
           "valmis" : {
             "type" : "boolean"
+          },
+          "koodi" : {
+            "$ref" : "#/components/schemas/KoodiDto"
           }
         }
       },
@@ -11626,30 +11653,6 @@
         "properties" : {
           "sisalto" : {
             "$ref" : "#/components/schemas/TekstiKappaleViiteDto"
-          }
-        }
-      },
-      "KoodiDto" : {
-        "type" : "object",
-        "properties" : {
-          "nimi" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          },
-          "arvo" : {
-            "type" : "string"
-          },
-          "uri" : {
-            "type" : "string"
-          },
-          "koodisto" : {
-            "type" : "string"
-          },
-          "versio" : {
-            "type" : "integer",
-            "format" : "int64"
           }
         }
       },
@@ -13947,13 +13950,13 @@
       "PageOpetussuunnitelmaInfoDto" : {
         "type" : "object",
         "properties" : {
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "totalElements" : {
             "type" : "integer",
             "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "size" : {
             "type" : "integer",
@@ -13972,15 +13975,15 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
+          "numberOfElements" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "first" : {
             "type" : "boolean"
           },
           "last" : {
             "type" : "boolean"
-          },
-          "numberOfElements" : {
-            "type" : "integer",
-            "format" : "int32"
           },
           "pageable" : {
             "$ref" : "#/components/schemas/PageableObject"
@@ -14003,12 +14006,12 @@
           "unpaged" : {
             "type" : "boolean"
           },
-          "paged" : {
-            "type" : "boolean"
-          },
           "pageSize" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "paged" : {
+            "type" : "boolean"
           },
           "pageNumber" : {
             "type" : "integer",
@@ -14679,13 +14682,13 @@
       "PageOpetussuunnitelmaJulkinenDto" : {
         "type" : "object",
         "properties" : {
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "totalElements" : {
             "type" : "integer",
             "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "size" : {
             "type" : "integer",
@@ -14704,15 +14707,15 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
+          "numberOfElements" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "first" : {
             "type" : "boolean"
           },
           "last" : {
             "type" : "boolean"
-          },
-          "numberOfElements" : {
-            "type" : "integer",
-            "format" : "int32"
           },
           "pageable" : {
             "$ref" : "#/components/schemas/PageableObject"
