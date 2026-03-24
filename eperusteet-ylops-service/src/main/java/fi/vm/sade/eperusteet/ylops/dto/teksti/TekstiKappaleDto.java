@@ -1,8 +1,11 @@
 package fi.vm.sade.eperusteet.ylops.dto.teksti;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
+import fi.vm.sade.eperusteet.utils.dto.peruste.lops2019.tutkinnonrakenne.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +15,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class TekstiKappaleDto {
     private Long id;
     private Date luotu;
@@ -26,6 +30,7 @@ public class TekstiKappaleDto {
     private UUID tunniste;
     private Boolean pakollinen;
     private Boolean valmis;
+    private KoodiDto koodi;
 
     public TekstiKappaleDto(LokalisoituTekstiDto nimi, LokalisoituTekstiDto teksti, Tila tila) {
         this.nimi = nimi;

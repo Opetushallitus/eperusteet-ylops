@@ -2100,6 +2100,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         }
 
         Date perusteenJulkaisuaika = eperusteetService.viimeisinPerusteenJulkaisuaika(ops.getCachedPeruste().getPerusteId());
+        if (perusteenJulkaisuaika == null) {
+            return false;
+        }
         return perusteenJulkaisuaika.compareTo(ops.getViimeisinSyncPvm() != null ? ops.getViimeisinSyncPvm() : new Date(0l)) > 0;
     }
 
@@ -2188,10 +2191,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                         .findFirst()
                         .orElse(null);
                 if (perusteenTekstikappaleViite != null) {
-                    return new TekstiKappaleDto(
-                            new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTekstiKappale().getNimi().asMap()),
-                            new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTekstiKappale().getTeksti().asMap()),
-                            null);
+                    return TekstiKappaleDto.builder()
+                            .nimi(new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTekstiKappale().getNimi().asMap()))
+                            .teksti(new LokalisoituTekstiDto(perusteenTekstikappaleViite.getTekstiKappale().getTeksti().asMap()))
+                            .koodi(perusteenTekstikappaleViite.getTekstiKappale().getKoodi())
+                            .build();
                 }
             }
         }
