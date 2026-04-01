@@ -1,6 +1,8 @@
 package fi.vm.sade.eperusteet.ylops.resource.config;
 
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ServiceException;
 import fi.vm.sade.eperusteet.ylops.service.exception.ValidointiException;
@@ -161,6 +163,9 @@ public class ExceptionHandlingConfig extends ResponseEntityExceptionHandler {
         } else if (ex instanceof ValidointiException) {
             map.put("syy", ex.getLocalizedMessage());
             map.put("data", ((ValidointiException) ex).getValidointi());
+          } else if (ex instanceof BusinessRuleViolationException) {
+            suppresstrace = true;
+            map.put("syy", ex.getLocalizedMessage());
         } else if (ex instanceof ServiceException) {
             map.put("syy", "jarjestelmavirhe-ohje");
         } else if (ex instanceof IllegalArgumentException) {
