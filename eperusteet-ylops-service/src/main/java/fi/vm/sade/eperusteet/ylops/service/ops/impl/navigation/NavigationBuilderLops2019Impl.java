@@ -76,6 +76,15 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
     @Autowired
     protected DtoMapper mapper;
 
+    private static final List<String> PAIKALLISET_LAAJENNUKSET_SALLITTU_OPPIAINE_KOODIT = List.of(
+      "oppiaineetjaoppimaaratlops2021_ai3",
+      "oppiaineetjaoppimaaratlops2021_ai12",
+      "oppiaineetjaoppimaaratlops2021_ux",
+      "oppiaineetjaoppimaaratlops2021_vka1",
+      "oppiaineetjaoppimaaratlops2021_vkaab3",
+      "oppiaineetjaoppimaaratlops2021_vkb",
+      "oppiaineetjaoppimaaratlops2021_vksk");
+
     @Override
     public Set<KoulutustyyppiToteutus> getTyypit() {
         return Sets.newHashSet(KoulutustyyppiToteutus.LOPS2019);
@@ -116,7 +125,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 oppiaineet,
                 paikallisetOppiaineet,
                 oa -> navigationOppiaineet.add(mapOppiaine((Lops2019OppiaineKevytDto) oa, opintojaksotMap, opsId, oppiaineJarjestykset)),
-                poa -> navigationOppiaineet.add(mapPaikallinenOppiaine((Lops2019PaikallinenOppiaineKevytDto) poa, opintojaksotMap))
+                poa -> null
         );
 
         return NavigationNodeDto.of(NavigationType.oppiaineet)
@@ -141,7 +150,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
             Long opsId,
             Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset
     ) {
-        NavigationNodeDto result = NavigationNodeDto
+        NavigationNodeDto oppiaineNodeDto = NavigationNodeDto
                 .of(NavigationType.oppiaine, mapper.map(oa.getNimi(), LokalisoituTekstiDto.class), oa.getId())
                 .meta("koodi", mapper.map(oa.getKoodi(), KoodiDto.class));
 
@@ -165,51 +174,74 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 .collect(Collectors.toList());
 
         if (!ObjectUtils.isEmpty(oa.getOppimaarat()) || !ObjectUtils.isEmpty(paikallisetOppimaarat)) {
-            NavigationNodeDto oppimaaratNode = NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-subtype", true)
-                    .meta("navigation-subtype", true);
+            oppiaineNodeDto.add(NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-sub-type", "subtype"));
 
-            Lops2019Utils.sortOppiaineet(
-                    new HashSet<>(mapper.mapAsList(oppiaineJarjestykset, Lops2019OppiaineJarjestysDto.class)),
-                    oa.getOppimaarat(),
-                    paikallisetOppimaarat.stream().filter(getPaikallinenFilter(opintojaksotMap)).collect(Collectors.toList()),
-                    om -> oppimaaratNode.add(mapOppiaine((Lops2019OppiaineKevytDto) om, opintojaksotMap, opsId, oppiaineJarjestykset)) != null,
-                    pom -> oppimaaratNode.add(mapPaikallinenOppiaine((Lops2019PaikallinenOppiaineKevytDto) pom, opintojaksotMap)) != null
-            );
+            if (!ObjectUtils.isEmpty(oppiaineJarjestykset)) {
+              Lops2019Utils.sortOppiaineet(
+                      new HashSet<>(mapper.mapAsList(oppiaineJarjestykset, Lops2019OppiaineJarjestysDto.class)),
+                      oa.getOppimaarat(),
+                      paikallisetOppimaarat.stream().filter(getPaikallinenFilter(opintojaksotMap)).collect(Collectors.toList()),
+                      om -> oppiaineNodeDto.add(mapOppiaine((Lops2019OppiaineKevytDto) om, opintojaksotMap, opsId, oppiaineJarjestykset)) != null,
+                      pom -> oppiaineNodeDto.add(mapPaikallinenOppiaine((Lops2019PaikallinenOppiaineKevytDto) pom, opintojaksotMap)) != null
+              );
+            } else {
+              if (!ObjectUtils.isEmpty(oa.getOppimaarat())) {
+                 oa.getOppimaarat().forEach(om -> oppiaineNodeDto.add(mapOppiaine((Lops2019OppiaineKevytDto) om, opintojaksotMap, opsId, oppiaineJarjestykset)));
+              }
 
-            result.add(oppimaaratNode);
+              if (!ObjectUtils.isEmpty(paikallisetOppimaarat)) {
+                paikallisetOppimaarat.forEach(poa -> oppiaineNodeDto.add(mapPaikallinenOppiaine((Lops2019PaikallinenOppiaineKevytDto) poa, opintojaksotMap)));
+              }
+            }
         }
+  
+        if (ObjectUtils.isEmpty(oa.getModuulit()) 
+            && Optional.ofNullable(oa).map(Lops2019OppiaineKevytDto::getKoodi).map(koodi -> koodi.getUri()).isPresent()
+            && PAIKALLISET_LAAJENNUKSET_SALLITTU_OPPIAINE_KOODIT.stream().anyMatch(sallittuLaajennusKoodi -> oa.getKoodi().getUri().startsWith(sallittuLaajennusKoodi))) {
+        
+            oppiaineNodeDto.add(
+              NavigationNodeDto.of(NavigationType.uusi_paikallinen_oppiaine)
+              .meta("navigation-sub-type", "add")
+              .meta("koodi", oa.getKoodi().getUri()));
+        } else if (ObjectUtils.isEmpty(oa.getOppimaarat())) {
 
-        if (oa.getKoodi() != null && oa.getKoodi().getUri() != null
-                && opintojaksotMap.containsKey(oa.getKoodi().getUri())
-                && !ObjectUtils.isEmpty(opintojaksotMap.get(oa.getKoodi().getUri()))) {
-            Set<Lops2019OpintojaksoDto> oaOpintojaksot = opintojaksotMap.get(oa.getKoodi().getUri());
-            result.add(NavigationNodeDto.of(NavigationType.opintojaksot).meta("navigation-subtype", true)
-                    .addAll(oaOpintojaksot.stream()
-                            .map(oj -> {
-                                Optional<Lops2019OpintojaksonOppiaineDto> ojOaOpt = oj.getOppiaineet().stream()
-                                        .filter(ojOa -> ojOa.getKoodi() != null)
-                                        .filter(ojOa -> ojOa.getKoodi().equals(oa.getKoodi().getUri()))
-                                        .findAny();
-                                return new Pair<>(oj, ojOaOpt);
-                            })
-                            // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
-                            // Toissijaisesti opintojakson koodin mukaan.
-                            .sorted(comparing(p -> p.getFirst().getKoodi()))
-                            .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
-                                    -> Optional.ofNullable(p.getSecond().isPresent()
-                                    ? p.getSecond().get().getJarjestys()
-                                    : null).orElse(Integer.MAX_VALUE)))
-                            .map(p -> NavigationNodeDto.of(
-                                    NavigationType.opintojakso,
-                                    mapper.map(p.getFirst().getNimi(), LokalisoituTekstiDto.class),
-                                    p.getFirst().getId())
-                                    .meta("koodi", p.getFirst().getKoodi()))));
+          oppiaineNodeDto.add(NavigationNodeDto.of(NavigationType.opintojaksot).meta("navigation-sub-type", "subtype"));
+          if (oa.getKoodi() != null && oa.getKoodi().getUri() != null
+                  && opintojaksotMap.containsKey(oa.getKoodi().getUri())
+                  && !ObjectUtils.isEmpty(opintojaksotMap.get(oa.getKoodi().getUri()))) {
+              Set<Lops2019OpintojaksoDto> oaOpintojaksot = opintojaksotMap.get(oa.getKoodi().getUri());
+              oppiaineNodeDto.addAll(oaOpintojaksot.stream()
+                              .map(oj -> {
+                                  Optional<Lops2019OpintojaksonOppiaineDto> ojOaOpt = oj.getOppiaineet().stream()
+                                          .filter(ojOa -> ojOa.getKoodi() != null)
+                                          .filter(ojOa -> ojOa.getKoodi().equals(oa.getKoodi().getUri()))
+                                          .findAny();
+                                  return new Pair<>(oj, ojOaOpt);
+                              })
+                              // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
+                              // Toissijaisesti opintojakson koodin mukaan.
+                              .sorted(comparing(p -> p.getFirst().getKoodi()))
+                              .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
+                                      -> Optional.ofNullable(p.getSecond().isPresent()
+                                      ? p.getSecond().get().getJarjestys()
+                                      : null).orElse(Integer.MAX_VALUE)))
+                              .map(p -> NavigationNodeDto.of(
+                                      NavigationType.opintojakso,
+                                      mapper.map(p.getFirst().getNimi(), LokalisoituTekstiDto.class),
+                                      p.getFirst().getId())
+                                      .meta("koodi", p.getFirst().getKoodi())));
+          }
+  
+          oppiaineNodeDto.add(
+            NavigationNodeDto.of(NavigationType.uusi_opintojakso)
+            .meta("navigation-sub-type", "add")
+            .meta("koodi", oa.getKoodi().getUri()));
         }
 
         List<Lops2019ModuuliDto> moduulit = oa.getModuulit();
         if (!ObjectUtils.isEmpty(moduulit)) {
-            result.add(NavigationNodeDto.of(NavigationType.moduulit).meta("navigation-subtype", true)
-                    .addAll(moduulit.stream()
+            oppiaineNodeDto.add(NavigationNodeDto.of(NavigationType.moduulit).meta("navigation-sub-type", "subtype"));
+            oppiaineNodeDto.addAll(moduulit.stream()
                             .map(m -> NavigationNodeDto.of(
                                     NavigationType.moduuli,
                                     mapper.map(m.getNimi(), LokalisoituTekstiDto.class),
@@ -217,48 +249,56 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                                     .meta("oppiaine", m.getOppiaine() != null ? m.getOppiaine().getId() : null)
                                     .meta("koodi", mapper.map(m.getKoodi(), KoodiDto.class))
                                     .meta("laajuus", m.getLaajuus())
-                                    .meta("pakollinen", m.isPakollinen()))));
+                                    .meta("pakollinen", m.isPakollinen())));
         }
 
-        return result;
+
+        return oppiaineNodeDto;
     }
 
     private NavigationNodeDto mapPaikallinenOppiaine(
             Lops2019PaikallinenOppiaineKevytDto poa,
             Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap
     ) {
-        NavigationNodeDto result = NavigationNodeDto
+        NavigationNodeDto paikallinenOppiaineNodeDto = NavigationNodeDto
                 .of(NavigationType.poppiaine, mapper.map(poa.getNimi(), LokalisoituTekstiDto.class), poa.getId())
                 .meta("koodi", poa.getKoodi());
 
+        paikallinenOppiaineNodeDto.add(
+          NavigationNodeDto.of(NavigationType.opintojaksot)
+            .meta("navigation-sub-type", "subtype"));
         if (poa.getKoodi() != null
                 && opintojaksotMap.containsKey(poa.getKoodi())
                 && !ObjectUtils.isEmpty(opintojaksotMap.get(poa.getKoodi()))) {
             Set<Lops2019OpintojaksoDto> poaOpintojaksot = opintojaksotMap.get(poa.getKoodi());
-            result.add(NavigationNodeDto.of(NavigationType.opintojaksot).meta("navigation-subtype", true)
-                    .addAll(poaOpintojaksot.stream()
-                            .map(oj -> {
-                                Optional<Lops2019OpintojaksonOppiaineDto> ojOaOpt = oj.getOppiaineet().stream()
-                                        .filter(ojOa -> ojOa.getKoodi() != null)
-                                        .filter(ojOa -> ojOa.getKoodi().equals(poa.getKoodi()))
-                                        .findAny();
-                                return new Pair<>(oj, ojOaOpt);
-                            })
-                            // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
-                            // Toissijaisesti opintojakson koodin mukaan.
-                            .sorted(comparing(p -> p.getFirst().getKoodi()))
-                            .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
-                                    -> Optional.ofNullable(p.getSecond().isPresent()
-                                    ? p.getSecond().get().getJarjestys()
-                                    : null).orElse(Integer.MAX_VALUE)))
-                            .map(p -> NavigationNodeDto.of(
-                                    NavigationType.opintojakso,
-                                    mapper.map(p.getFirst().getNimi(), LokalisoituTekstiDto.class),
-                                    p.getFirst().getId())
-                                    .meta("koodi", p.getFirst().getKoodi()))));
-        }
+            paikallinenOppiaineNodeDto.addAll(poaOpintojaksot.stream()
+            .map(oj -> {
+              Optional<Lops2019OpintojaksonOppiaineDto> ojOaOpt = oj.getOppiaineet().stream()
+              .filter(ojOa -> ojOa.getKoodi() != null)
+              .filter(ojOa -> ojOa.getKoodi().equals(poa.getKoodi()))
+              .findAny();
+              return new Pair<>(oj, ojOaOpt);
+            })
+            // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
+            // Toissijaisesti opintojakson koodin mukaan.
+            .sorted(comparing(p -> p.getFirst().getKoodi()))
+            .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
+            -> Optional.ofNullable(p.getSecond().isPresent()
+            ? p.getSecond().get().getJarjestys()
+            : null).orElse(Integer.MAX_VALUE)))
+            .map(p -> NavigationNodeDto.of(
+              NavigationType.opintojakso,
+              mapper.map(p.getFirst().getNimi(), LokalisoituTekstiDto.class),
+              p.getFirst().getId())
+              .meta("koodi", p.getFirst().getKoodi())));
+            }
+            
+          paikallinenOppiaineNodeDto.add(
+            NavigationNodeDto.of(NavigationType.uusi_opintojakso)
+              .meta("navigation-sub-type", "add")
+              .meta("koodi", poa.getKoodi()));
 
-        return result;
+        return paikallinenOppiaineNodeDto;
     }
 
 }

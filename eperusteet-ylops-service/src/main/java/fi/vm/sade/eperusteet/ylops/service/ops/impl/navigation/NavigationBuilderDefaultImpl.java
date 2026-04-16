@@ -42,14 +42,22 @@ public class NavigationBuilderDefaultImpl implements NavigationBuilder {
                 ? mapper.map(root.getTekstiKappale().getNimi(), LokalisoituTekstiDto.class)
                 : null;
 
-        return NavigationNodeDto
+        NavigationNodeDto tekstikappaleetNavigationDto = NavigationNodeDto
                 .of(root.isLiite() ? NavigationType.liite : NavigationType.viite, nimi, root.getId())
+                .meta("piilotettu", root.isPiilotettu())
                 .addAll(Optional.ofNullable(root.getLapset())
                         .map(lapset -> lapset.stream()
                                 .filter(tkv -> tekstikappaleFilter().test(tkv))
                                 .map(this::buildTekstinavi)
                                 .collect(Collectors.toList()))
                         .orElse(new ArrayList<>()));
+
+        tekstikappaleetNavigationDto.add(
+          NavigationNodeDto.of(NavigationType.uusi_tekstikappale)
+            .meta("navigation-sub-type", "add")
+            .meta("parent-tekstikappale-id", root.getId()));
+                        
+        return tekstikappaleetNavigationDto;
     }
 
     @Override

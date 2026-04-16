@@ -125,6 +125,9 @@ import fi.vm.sade.eperusteet.ylops.service.ops.TekstiKappaleViiteService;
 import fi.vm.sade.eperusteet.ylops.service.ops.ValidointiService;
 import fi.vm.sade.eperusteet.ylops.service.ops.VuosiluokkakokonaisuusService;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
+import fi.vm.sade.eperusteet.ylops.service.security.Permission;
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
+import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
@@ -160,9 +163,11 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.method.P;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
+import org.springframework.security.core.Authentication;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -295,6 +300,9 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Autowired
     private MaintenanceService maintenanceService;
+
+    @Autowired
+    private PermissionManager permissionManager;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -657,8 +665,15 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
 
     @Override
     public NavigationNodeDto buildNavigation(Long opsId, String kieli) {
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilder.class).buildNavigation(opsId, kieli);
-        return siirraLiitteetLoppuun(navigationNodeDto);
+        siirraLiitteetLoppuun(navigationNodeDto);
+        NavigationUtil.asetaNumerointi(navigationNodeDto);
+        NavigationUtil.tarkistaOikeudet(navigationNodeDto, 
+          !ops.getTyyppi().equals(Tyyppi.POHJA) &&
+          permissionManager.hasPermission(SecurityContextHolder.getContext()
+            .getAuthentication(), opsId, TargetType.OPETUSSUUNNITELMA, Permission.MUOKKAUS));
+        return navigationNodeDto;
     }
 
     @Override

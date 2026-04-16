@@ -130,10 +130,22 @@ public class WebSecurityConfigurationDev {
                         DevSecurityRole.ylops().read().oid("1.2.246.562.10.00000000001").build()
                 )
                 .build();
+
+        UserDetails ophadmin = User.withDefaultPasswordEncoder()
+                .username("ophadmin")
+                .password("test")
+                .roles("USER",
+                        DevSecurityRole.ylops().build(),
+                        DevSecurityRole.ylops().crud().build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.00000000001").build()
+                )
+                .build();
+
         return new InMemoryUserDetailsManager(
                 test,
                 ylops_helsinki,
-                ylops_rautavaara
+                ylops_rautavaara,
+                ophadmin
         );
     }
 

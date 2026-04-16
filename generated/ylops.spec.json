@@ -10730,6 +10730,9 @@
           "inputStream" : {
             "type" : "object"
           },
+          "submittedFileName" : {
+            "type" : "string"
+          },
           "contentType" : {
             "type" : "string"
           },
@@ -10738,9 +10741,6 @@
             "items" : {
               "type" : "string"
             }
-          },
-          "submittedFileName" : {
-            "type" : "string"
           }
         }
       },
@@ -13542,7 +13542,7 @@
           },
           "type" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi", "peruste" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste" ]
           },
           "meta" : {
             "type" : "object",
@@ -13950,13 +13950,13 @@
       "PageOpetussuunnitelmaInfoDto" : {
         "type" : "object",
         "properties" : {
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "totalPages" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
           },
           "size" : {
             "type" : "integer",
@@ -14003,19 +14003,19 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
-          "unpaged" : {
-            "type" : "boolean"
-          },
-          "pageSize" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "paged" : {
             "type" : "boolean"
           },
           "pageNumber" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "pageSize" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "unpaged" : {
+            "type" : "boolean"
           }
         }
       },
@@ -14682,13 +14682,13 @@
       "PageOpetussuunnitelmaJulkinenDto" : {
         "type" : "object",
         "properties" : {
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "totalPages" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
           },
           "size" : {
             "type" : "integer",
@@ -14752,7 +14752,7 @@
           },
           "kohde" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi", "peruste" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste" ]
           },
           "luotu" : {
             "type" : "string",
@@ -14784,7 +14784,7 @@
         "properties" : {
           "kohde" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi", "peruste" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste" ]
           },
           "kohdeId" : {
             "type" : "integer",
@@ -14819,7 +14819,7 @@
           },
           "kohde" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "tavoitteet_sisallot_arviointi", "peruste" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste" ]
           },
           "luotu" : {
             "type" : "string",
