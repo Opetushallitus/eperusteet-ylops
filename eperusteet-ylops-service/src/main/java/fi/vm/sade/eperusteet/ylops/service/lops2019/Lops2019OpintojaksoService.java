@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.service.lops2019;
 
 import fi.vm.sade.eperusteet.ylops.domain.MuokkausTapahtuma;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
@@ -13,13 +14,13 @@ import java.util.List;
 
 public interface Lops2019OpintojaksoService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    <T extends Lops2019OpintojaksoDto> List<T> getAll(@P("opsId") Long opsId, Class<T> clz);
+    <T extends Lops2019OpintojaksoBaseDto> List<T> getAll(@P("opsId") Long opsId, Class<T> clz);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    <T extends Lops2019OpintojaksoDto> List<T> getTuodut(@P("opsId") Long opsId, Class<T> clz);
+    <T extends Lops2019OpintojaksoBaseDto> List<T> getTuodut(@P("opsId") Long opsId, Class<T> clz);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    <T extends Lops2019OpintojaksoDto> List<T> getAllTuodut(@P("opsId") Long opsId, Class<T> clz);
+    <T extends Lops2019OpintojaksoBaseDto> List<T> getAllTuodut(@P("opsId") Long opsId, Class<T> clz);
 
     List<Lops2019OpintojaksoDto> getAll(@P("opsId") Long opsId);
 

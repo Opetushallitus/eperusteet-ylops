@@ -7,18 +7,14 @@ import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019OppiaineJarjestys;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineJarjestysDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineKevytDto;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OppiaineKevytDto;
-import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
-import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.Lops2019OppiaineKaikkiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.oppiaineet.moduuli.Lops2019ModuuliDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
-import fi.vm.sade.eperusteet.ylops.repository.lops2019.Lops2019SisaltoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
-import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019Service;
@@ -53,16 +49,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
     protected OpsDispatcher dispatcher;
 
     @Autowired
-    private EperusteetService eperusteetService;
-
-    @Autowired
     private Lops2019OpintojaksoService opintojaksoService;
-
-    @Autowired
-    private Lops2019SisaltoRepository lops2019SisaltoRepository;
-
-    @Autowired
-    private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Autowired
     protected Lops2019Service lopsService;
@@ -103,7 +90,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
 
     protected NavigationNodeDto oppiaineet(Long opsId) {
         // Järjestetään oppiaineen koodilla opintojaksot
-        Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap = opintojaksoService.getAllTuodut(opsId, Lops2019OpintojaksoDto.class).stream()
+        Map<String, Set<Lops2019OpintojaksoKevytDto>> opintojaksotMap = opintojaksoService.getAllTuodut(opsId, Lops2019OpintojaksoKevytDto.class).stream()
                 .flatMap(oj -> oj.getOppiaineet().stream()
                         .map(oa -> new AbstractMap.SimpleImmutableEntry<>(oa.getKoodi(), oj)))
                 .collect(Collectors.groupingBy(
@@ -111,8 +98,8 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                         Collectors.mapping(Map.Entry::getValue, toSet())
                 ));
 
-        List<Lops2019OppiaineKevytDto> oppiaineet = getOppiaineet(opsId, opintojaksotMap);
-        List<Lops2019PaikallinenOppiaineKevytDto> paikallisetOppiaineet = getPaikallisetOppiaineet(opsId, opintojaksotMap);
+        List<Lops2019OppiaineKevytDto> perusteOppiaineet = mapper.mapAsList(lopsService.getPerusteOppiaineet(opsId), Lops2019OppiaineKevytDto.class);
+        List<Lops2019PaikallinenOppiaineKevytDto> paikallisetOppiaineet = oppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineKevytDto.class);
 
         Opetussuunnitelma ops = opsRepository.findOne(opsId);
         assertExists(ops, "Pyydettyä opetussuunnitelmaa ei ole olemassa");
@@ -122,9 +109,9 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
 
         Lops2019Utils.sortOppiaineet(
                 new HashSet<>(mapper.mapAsList(oppiaineJarjestykset, Lops2019OppiaineJarjestysDto.class)),
-                oppiaineet,
+                perusteOppiaineet,
                 paikallisetOppiaineet,
-                oa -> navigationOppiaineet.add(mapOppiaine((Lops2019OppiaineKevytDto) oa, opintojaksotMap, opsId, oppiaineJarjestykset)),
+                oa -> navigationOppiaineet.add(mapOppiaine((Lops2019OppiaineKevytDto) oa, opintojaksotMap, opsId, oppiaineJarjestykset, paikallisetOppiaineet, perusteOppiaineet)),
                 poa -> null
         );
 
@@ -132,32 +119,26 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 .addAll(navigationOppiaineet);
     }
 
-    protected List<Lops2019OppiaineKevytDto> getOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
-        return mapper.mapAsList(lopsService.getPerusteOppiaineet(opsId), Lops2019OppiaineKevytDto.class);
-    }
-
-    protected List<Lops2019PaikallinenOppiaineKevytDto> getPaikallisetOppiaineet(Long opsId, Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
-        return oppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineKevytDto.class);
-    }
-
-    protected Predicate<Lops2019PaikallinenOppiaineKevytDto> getPaikallinenFilter(Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap) {
+    protected Predicate<Lops2019PaikallinenOppiaineKevytDto> getPaikallinenFilter(Map<String, Set<Lops2019OpintojaksoKevytDto>> opintojaksotMap) {
         return pao -> true;
     }
 
     private NavigationNodeDto mapOppiaine(
             Lops2019OppiaineKevytDto oa,
-            Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap,
+            Map<String, Set<Lops2019OpintojaksoKevytDto>> opintojaksotMap,
             Long opsId,
-            Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset
+            Set<Lops2019OppiaineJarjestys> oppiaineJarjestykset,
+            List<Lops2019PaikallinenOppiaineKevytDto> kaikkiPaikallisetOppiaineet,
+            List<Lops2019OppiaineKevytDto> perusteOppiaineet
     ) {
         NavigationNodeDto oppiaineNodeDto = NavigationNodeDto
                 .of(NavigationType.oppiaine, mapper.map(oa.getNimi(), LokalisoituTekstiDto.class), oa.getId())
                 .meta("koodi", mapper.map(oa.getKoodi(), KoodiDto.class));
 
-        List<Lops2019PaikallinenOppiaineKevytDto> paikallisetOppimaarat = oppiaineService.getAll(opsId, Lops2019PaikallinenOppiaineKevytDto.class).stream()
+        List<Lops2019PaikallinenOppiaineKevytDto> paikallisetOppimaarat = kaikkiPaikallisetOppiaineet.stream()
                 .filter(poa -> {
                     String parentKoodi = poa.getPerusteenOppiaineUri();
-                    Optional<Lops2019OppiaineKaikkiDto> orgOaOpt = lopsService.getPerusteOppiaineet(opsId).stream()
+                    Optional<Lops2019OppiaineKevytDto> orgOaOpt = perusteOppiaineet.stream()
                             .filter(oaOrg -> oaOrg.getId().equals(oa.getId()))
                             .findAny();
                     if (parentKoodi != null) {
@@ -181,12 +162,12 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                       new HashSet<>(mapper.mapAsList(oppiaineJarjestykset, Lops2019OppiaineJarjestysDto.class)),
                       oa.getOppimaarat(),
                       paikallisetOppimaarat.stream().filter(getPaikallinenFilter(opintojaksotMap)).collect(Collectors.toList()),
-                      om -> oppiaineNodeDto.add(mapOppiaine((Lops2019OppiaineKevytDto) om, opintojaksotMap, opsId, oppiaineJarjestykset)) != null,
+                      om -> oppiaineNodeDto.add(mapOppiaine((Lops2019OppiaineKevytDto) om, opintojaksotMap, opsId, oppiaineJarjestykset, kaikkiPaikallisetOppiaineet, perusteOppiaineet)) != null,
                       pom -> oppiaineNodeDto.add(mapPaikallinenOppiaine((Lops2019PaikallinenOppiaineKevytDto) pom, opintojaksotMap)) != null
               );
             } else {
               if (!ObjectUtils.isEmpty(oa.getOppimaarat())) {
-                 oa.getOppimaarat().forEach(om -> oppiaineNodeDto.add(mapOppiaine((Lops2019OppiaineKevytDto) om, opintojaksotMap, opsId, oppiaineJarjestykset)));
+                 oa.getOppimaarat().forEach(om -> oppiaineNodeDto.add(mapOppiaine((Lops2019OppiaineKevytDto) om, opintojaksotMap, opsId, oppiaineJarjestykset, kaikkiPaikallisetOppiaineet, perusteOppiaineet)));
               }
 
               if (!ObjectUtils.isEmpty(paikallisetOppimaarat)) {
@@ -209,7 +190,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
           if (oa.getKoodi() != null && oa.getKoodi().getUri() != null
                   && opintojaksotMap.containsKey(oa.getKoodi().getUri())
                   && !ObjectUtils.isEmpty(opintojaksotMap.get(oa.getKoodi().getUri()))) {
-              Set<Lops2019OpintojaksoDto> oaOpintojaksot = opintojaksotMap.get(oa.getKoodi().getUri());
+              Set<Lops2019OpintojaksoKevytDto> oaOpintojaksot = opintojaksotMap.get(oa.getKoodi().getUri());
               oppiaineNodeDto.addAll(oaOpintojaksot.stream()
                               .map(oj -> {
                                   Optional<Lops2019OpintojaksonOppiaineDto> ojOaOpt = oj.getOppiaineet().stream()
@@ -221,7 +202,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                               // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
                               // Toissijaisesti opintojakson koodin mukaan.
                               .sorted(comparing(p -> p.getFirst().getKoodi()))
-                              .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
+                              .sorted(comparing((Pair<Lops2019OpintojaksoKevytDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
                                       -> Optional.ofNullable(p.getSecond().isPresent()
                                       ? p.getSecond().get().getJarjestys()
                                       : null).orElse(Integer.MAX_VALUE)))
@@ -258,7 +239,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
 
     private NavigationNodeDto mapPaikallinenOppiaine(
             Lops2019PaikallinenOppiaineKevytDto poa,
-            Map<String, Set<Lops2019OpintojaksoDto>> opintojaksotMap
+            Map<String, Set<Lops2019OpintojaksoKevytDto>> opintojaksotMap
     ) {
         NavigationNodeDto paikallinenOppiaineNodeDto = NavigationNodeDto
                 .of(NavigationType.poppiaine, mapper.map(poa.getNimi(), LokalisoituTekstiDto.class), poa.getId())
@@ -270,7 +251,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
         if (poa.getKoodi() != null
                 && opintojaksotMap.containsKey(poa.getKoodi())
                 && !ObjectUtils.isEmpty(opintojaksotMap.get(poa.getKoodi()))) {
-            Set<Lops2019OpintojaksoDto> poaOpintojaksot = opintojaksotMap.get(poa.getKoodi());
+            Set<Lops2019OpintojaksoKevytDto> poaOpintojaksot = opintojaksotMap.get(poa.getKoodi());
             paikallinenOppiaineNodeDto.addAll(poaOpintojaksot.stream()
             .map(oj -> {
               Optional<Lops2019OpintojaksonOppiaineDto> ojOaOpt = oj.getOppiaineet().stream()
@@ -282,7 +263,7 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
             // Ensisijaisesti järjestetään opintojakson oppiaineen järjestyksen mukaan.
             // Toissijaisesti opintojakson koodin mukaan.
             .sorted(comparing(p -> p.getFirst().getKoodi()))
-            .sorted(comparing((Pair<Lops2019OpintojaksoDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
+            .sorted(comparing((Pair<Lops2019OpintojaksoKevytDto, Optional<Lops2019OpintojaksonOppiaineDto>> p)
             -> Optional.ofNullable(p.getSecond().isPresent()
             ? p.getSecond().get().getJarjestys()
             : null).orElse(Integer.MAX_VALUE)))
