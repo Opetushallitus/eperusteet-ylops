@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
 import fi.vm.sade.eperusteet.utils.CollectionUtil;
+import fi.vm.sade.eperusteet.utils.dto.peruste.lops2019.tutkinnonrakenne.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutustyyppiToteutus;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
@@ -30,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -90,7 +92,7 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
         OpetussuunnitelmaDto ops = createOpetussuunnitelma(KoulutustyyppiToteutus.LOPS2019);
         NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilder.class).buildNavigation(ops.getId());
         assertThat(navi.getType()).isEqualTo(NavigationType.root);
-        assertThat(navi.getChildren()).hasSize(7);
+        assertThat(navi.getChildren()).hasSize(8);
         assertThat(navi.getChildren().get(0).getType()).isEqualTo(NavigationType.viite);
     }
 
@@ -148,15 +150,88 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
+    public void testNavigationBuilderLops2019_withPaikallinenOppiaineJaOpintojaksot() {
+        OpetussuunnitelmaDto ops = createOpetussuunnitelma(KoulutustyyppiToteutus.LOPS2019);
+
+        Lops2019PaikallinenOppiaineDto oppiaineDto = Lops2019PaikallinenOppiaineDto.builder()
+                .nimi(LokalisoituTekstiDto.of("Biologia"))
+                .kuvaus(LokalisoituTekstiDto.of("Kuvaus"))
+                .koodi("paikallinen2")
+                .perusteenOppiaineUri("oppiaineet_bi")
+                .build();
+        oppiaineService.addOppiaine(ops.getId(), oppiaineDto);
+
+        {
+            Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                    .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("oppiaineet_bi").build()))
+                    .moduulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_bi2_1").build()))
+                    .build();
+
+            opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
+        }
+        {
+            Lops2019OpintojaksoDto opintojaksoDto = Lops2019OpintojaksoDto.builder()
+                    .oppiaineet(Collections.singleton(Lops2019OpintojaksonOppiaineDto.builder().koodi("paikallinen2").build()))
+                    .moduulit(Collections.singleton(Lops2019OpintojaksonModuuliDto.builder().koodiUri("moduulit_bi5").build()))
+                    .build();
+
+            opintojaksoService.addOpintojakso(ops.getId(), opintojaksoDto);
+        }
+
+        NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilder.class).buildNavigation(ops.getId());
+        assertThat(navi.getType()).isEqualTo(NavigationType.root);
+        assertThat(navi.getChildren().get(0).getType()).isEqualTo(NavigationType.viite);
+        assertThat(navi.getChildren()).hasSize(8);
+
+        List<NavigationNodeDto> oppiaineet = navi.getChildren().stream()
+                .filter(child -> child.getType().equals(NavigationType.oppiaineet))
+                .collect(Collectors.toList());
+        assertThat(oppiaineet).hasSize(1);
+
+        NavigationNodeDto biologia = CollectionUtil.treeToStream(oppiaineet.get(0), NavigationNodeDto::getChildren)
+                .filter(n -> n.getType() == NavigationType.oppiaine)
+                .filter(n -> Optional.ofNullable(n.getMeta().get("koodi"))
+                        .filter(KoodiDto.class::isInstance)
+                        .map(KoodiDto.class::cast)
+                        .map(k -> "oppiaineet_bi".equals(k.getUri()))
+                        .orElse(false))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Valtakunnallinen biologia-oppiaine puuttuu navigoinnista"));
+
+        assertThat(CollectionUtil.treeToStream(biologia, NavigationNodeDto::getChildren)
+                .anyMatch(n -> n.getType() == NavigationType.poppiaine)).isTrue();
+
+        assertThat(CollectionUtil.treeToStream(biologia, NavigationNodeDto::getChildren)
+                .filter(n -> n.getType() == NavigationType.opintojakso))
+                .hasSize(2);
+
+        List<NavigationNodeDto> moduuliNodes = CollectionUtil.treeToStream(biologia, NavigationNodeDto::getChildren)
+                .filter(n -> n.getType() == NavigationType.moduuli)
+                .collect(Collectors.toList());
+        assertThat(moduuliNodes).hasSizeGreaterThanOrEqualTo(2);
+        assertThat(moduuliNodes.stream()
+                .map(n -> n.getMeta().get("koodi"))
+                .filter(KoodiDto.class::isInstance)
+                .map(KoodiDto.class::cast)
+                .map(KoodiDto::getUri)
+                .collect(Collectors.toSet()))
+                .contains("moduulit_bi2_1", "moduulit_bi5");
+    }
+
+    @Test
     public void testNavigationBuilder_yksinkertainen() {
         OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(createOpetussuunnitelma(KoulutusTyyppi.ESIOPETUS, "OPH-2791-2018"), KoulutusTyyppi.ESIOPETUS);
 
         {
             NavigationNodeDto navi = opetussuunnitelmaService.buildNavigation(ops.getId(), "fi");
-            assertThat(navi.getChildren()).hasSize(7);
+            assertThat(navi.getChildren()).hasSize(8);
+            assertThat(navi.getChildren().stream()
+                    .filter(node -> node.getType().equals(NavigationType.viite))
+                    .collect(Collectors.toUnmodifiableSet())).hasSize(7);
+            assertThat(navi.getChildren().get(7).getType()).isEqualTo(NavigationType.uusi_tekstikappale);
             assertThat(CollectionUtil.treeToStream(navi, NavigationNodeDto::getChildren)
                     .filter(node -> node.getMeta().containsKey("numerointi"))
-                    .collect(Collectors.toUnmodifiableSet())).isEmpty();
+                    .collect(Collectors.toUnmodifiableSet())).isNotEmpty();
         }
 
         {
