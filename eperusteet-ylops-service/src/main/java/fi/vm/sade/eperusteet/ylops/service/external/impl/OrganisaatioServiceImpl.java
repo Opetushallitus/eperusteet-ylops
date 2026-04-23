@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -23,11 +24,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -50,6 +53,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
 
     private static final String VIRKAILIJA_HAKU = "/virkailija/haku";
     private static final String ORGANISAATIOT = "/rest/organisaatio/";
+    private static final String ORGANISAATIO_API_CHILDOIDS_PATH = "/api/{organisaatioOid}/childoids";
     private static final String HIERARKIA_HAKU = "v2/hierarkia/hae?";
     private static final String HAKU = "v2/hae?";
     private static final String KUNTA_KRITEERI = "kunta=";
@@ -147,6 +151,30 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
                 e.printStackTrace();
                 return null;
             }
+        }
+
+        @Cacheable("organisaatio-childoids")
+        public List<String> getOrganisaatioChildOids(String organisaatioOid) {
+            if (organisaatioOid == null || organisaatioOid.isBlank()) {
+                return Collections.emptyList();
+            }
+            OphHttpClient httpClient = restClientFactory.get(serviceUrl, false);
+            String url = UriComponentsBuilder.fromUriString(serviceUrl + ORGANISAATIO_API_CHILDOIDS_PATH)
+                    .buildAndExpand(organisaatioOid)
+                    .encode()
+                    .toUriString();
+            OphHttpRequest request = OphHttpRequest.Builder.get(url).build();
+            return httpClient.<List<String>>execute(request)
+                    .expectedStatus(SC_OK)
+                    .mapWith(text -> {
+                        try {
+                            return mapper.readValue(text, new TypeReference<List<String>>() { });
+                        } catch (IOException ex) {
+                            LOG.warn("Organisaation childoids-haku epäonnistui oidille {}: {}", organisaatioOid, ex.getMessage());
+                            return Collections.emptyList();
+                        }
+                    })
+                    .orElse(Collections.emptyList());
         }
 
         private ArrayNode flattenTree(JsonNode tree, String childTreeName, Predicate<JsonNode> filter) {
@@ -321,6 +349,11 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     @Override
     public JsonNode getOrganisaatio(String organisaatioOid) {
         return client.getOrganisaatio(organisaatioOid);
+    }
+
+    @Override
+    public List<String> getOrganisaatioChildOids(String organisaatioOid) {
+        return client.getOrganisaatioChildOids(organisaatioOid);
     }
 
     @Override

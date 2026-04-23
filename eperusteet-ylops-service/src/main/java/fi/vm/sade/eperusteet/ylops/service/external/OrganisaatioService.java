@@ -17,6 +17,9 @@ public interface OrganisaatioService {
     JsonNode getOrganisaatio(String organisaatioOid);
 
     @PreAuthorize("isAuthenticated()")
+    List<String> getOrganisaatioChildOids(String organisaatioOid);
+
+    @PreAuthorize("isAuthenticated()")
     JsonNode getOrganisaatioVirkailijat(Set<String> organisaatioOids);
 
     @PreAuthorize("isAuthenticated()")

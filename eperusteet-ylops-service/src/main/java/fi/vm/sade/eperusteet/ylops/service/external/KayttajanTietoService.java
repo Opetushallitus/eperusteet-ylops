@@ -1,14 +1,19 @@
 package fi.vm.sade.eperusteet.ylops.service.external;
 
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanOrganisaatiotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioTyyppi;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 public interface KayttajanTietoService {
 
@@ -38,5 +43,8 @@ public interface KayttajanTietoService {
 
     @PreAuthorize("isAuthenticated()")
     List<KayttajanTietoDto> haeKayttajatiedot(List<String> oid);
+
+    @PreAuthorize("isAuthenticated()")
+    KayttajanOrganisaatiotDto getKayttajanOrganisaatiot();
 
 }
