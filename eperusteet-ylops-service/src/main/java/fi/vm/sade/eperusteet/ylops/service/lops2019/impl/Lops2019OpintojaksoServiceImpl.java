@@ -9,6 +9,7 @@ import fi.vm.sade.eperusteet.ylops.domain.lops2019.PoistetunTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.KoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.RevisionDto;
+import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoPerusteDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksonModuuliDto;
@@ -150,7 +151,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     }
 
     @Override
-    public <T extends Lops2019OpintojaksoDto> List<T> getAll(Long opsId, Class<T> clz) {
+    public <T extends Lops2019OpintojaksoBaseDto> List<T> getAll(Long opsId, Class<T> clz) {
         Opetussuunnitelma opetussuunnitelma = getOpetussuunnitelma(opsId);
         return mapLaajuudet(opetussuunnitelma.getLops2019().getOpintojaksot(), opsId, clz);
     }
@@ -166,7 +167,7 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     }
 
     @Override
-    public <T extends Lops2019OpintojaksoDto> List<T> getTuodut(Long opsId, Class<T> clz) {
+    public <T extends Lops2019OpintojaksoBaseDto> List<T> getTuodut(Long opsId, Class<T> clz) {
         Opetussuunnitelma ops = getOpetussuunnitelma(opsId);
         Set<Lops2019Opintojakso> opintojaksot = new HashSet<>();
         Set<Long> poistetut = poistetutRepository.findAllByOpetussuunnitelmaAndTyyppi(ops, PoistetunTyyppi.TUOTU_OPINTOJAKSO).stream()
@@ -186,21 +187,24 @@ public class Lops2019OpintojaksoServiceImpl implements Lops2019OpintojaksoServic
     }
 
     @Override
-    public <T extends Lops2019OpintojaksoDto> List<T> getAllTuodut(Long opsId, Class<T> clz) {
+    public <T extends Lops2019OpintojaksoBaseDto> List<T> getAllTuodut(Long opsId, Class<T> clz) {
         List<T> opintojaksot = getAll(opsId, clz);
         opintojaksot.addAll(getTuodut(opsId, clz));
         return opintojaksot;
     }
 
-    private <T extends Lops2019OpintojaksoDto> List<T> mapLaajuudet(Set<Lops2019Opintojakso> opintojaksot, Long opsId, Class<T> clz) {
+    private <T extends Lops2019OpintojaksoBaseDto> List<T> mapLaajuudet(Set<Lops2019Opintojakso> opintojaksot, Long opsId, Class<T> clz) {
         return opintojaksot.stream()
                 .map(oj -> mapper.map(oj, clz))
                 .map(oj -> {
-                    oj.setLaajuus(getOpintojaksonLaajuus(opsId, oj));
-                    if (oj.getPaikallisetOpintojaksot() != null) {
-                        oj.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
-                            paikallinenOpintojakso.setLaajuus(getOpintojaksonLaajuus(opsId, paikallinenOpintojakso));
-                        });
+                    if (Lops2019OpintojaksoDto.class.isAssignableFrom(clz)) {
+                        Lops2019OpintojaksoDto full = (Lops2019OpintojaksoDto) oj;
+                        full.setLaajuus(getOpintojaksonLaajuus(opsId, full));
+                        if (full.getPaikallisetOpintojaksot() != null) {
+                            full.getPaikallisetOpintojaksot().forEach(paikallinenOpintojakso -> {
+                                paikallinenOpintojakso.setLaajuus(getOpintojaksonLaajuus(opsId, paikallinenOpintojakso));
+                            });
+                        }
                     }
                     return oj;
                 })

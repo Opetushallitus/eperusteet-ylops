@@ -14,6 +14,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -77,10 +78,11 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
     private Collection<NavigationNodeDto> perusteenOppiaineet(List<OppiaineSuppeaDto> oppiaineet, String kieli, VuosiluokkakokonaisuusSuppeaDto vlk) {
         List<OppiaineSuppeaDto> perusteenOppiaineet = oppiaineet.stream()
           .filter(oppiaine -> oppiaine.getTyyppi() == OppiaineTyyppi.YHTEINEN)
-          .filter(oppiaine -> oppiaine.getVuosiluokkakokonaisuudet().stream()
-              .map(OppiaineenVuosiluokkakokonaisuusSuppeaDto::getVuosiluokkakokonaisuus)
-              .collect(Collectors.toList())
-              .contains(vlk.getTunniste()))
+          .filter(oppiaine -> ObjectUtils.isEmpty(oppiaine.getVuosiluokkakokonaisuudet()) 
+              || oppiaine.getVuosiluokkakokonaisuudet().stream()
+                .map(OppiaineenVuosiluokkakokonaisuusSuppeaDto::getVuosiluokkakokonaisuus)
+                .collect(Collectors.toList())
+                .contains(vlk.getTunniste()))
           .collect(Collectors.toList());
         if (perusteenOppiaineet.isEmpty()) {
             return null;
