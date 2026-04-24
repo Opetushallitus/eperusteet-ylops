@@ -38,6 +38,16 @@
         </resources>
     </cache>
 
+    <cache alias="organisaatio-childoids">
+        <expiry>
+            <ttl unit="seconds">6000</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">1000</heap>
+        </resources>
+    </cache>
+
     <cache alias="organisaatio-ryhma">
         <expiry>
             <ttl unit="seconds">6000</ttl>

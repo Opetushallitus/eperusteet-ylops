@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.service.external;
 
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanOrganisaatiotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
 
@@ -38,5 +39,8 @@ public interface KayttajanTietoService {
 
     @PreAuthorize("isAuthenticated()")
     List<KayttajanTietoDto> haeKayttajatiedot(List<String> oid);
+
+    @PreAuthorize("isAuthenticated()")
+    KayttajanOrganisaatiotDto getKayttajanOrganisaatiot();
 
 }

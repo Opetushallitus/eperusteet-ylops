@@ -4,12 +4,18 @@ import com.google.common.collect.Sets;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
+import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanOrganisaatiotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioTyyppi;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajaClient;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajanTietoService;
+import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -22,6 +28,7 @@ import java.security.Principal;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Future;
 
@@ -35,6 +42,10 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     @Autowired
     @Lazy
     private OpetussuunnitelmaService opetussuunnitelmaService;
+
+    @Autowired
+    @Lazy
+    private OrganisaatioService organisaatioService;
 
     @Autowired
     @Lazy
@@ -102,6 +113,33 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
     @Override
     public Set<String> haeOrganisaatioOikeudet() {
         return SecurityUtil.getOrganizations(new HashSet<>(Arrays.asList(ADMIN, CRUD)));
+    }
+
+    @Override
+    public KayttajanOrganisaatiotDto getKayttajanOrganisaatiot() {
+        Set<String> organisaatioOids = new HashSet<>();
+        Set<String> kunnat = new HashSet<>();
+        haeOrganisaatioOikeudet().stream()
+            .map(oid -> organisaatioService.getOrganisaatio(oid, OrganisaatioLaajaDto.class))
+            .filter(Objects::nonNull)
+            .forEach(o -> {
+              if (CollectionUtils.isEmpty(o.getTyypit()) 
+                  || !o.getTyypit().contains(OrganisaatioTyyppi.OPPILAITOS)) {
+                organisaatioOids.addAll(organisaatioService.getOrganisaatioChildOids(o.getOid()));
+              }
+              organisaatioOids.add(o.getOid());
+              organisaatioOids.addAll(o.getParentPath());
+
+              if (o.getKotipaikkaUri() != null) {
+                kunnat.add(o.getKotipaikkaUri());
+              }
+            });
+        organisaatioOids.remove(SecurityUtil.OPH_OID);
+
+        return KayttajanOrganisaatiotDto.builder()
+            .kunnat(kunnat)
+            .organisaatioOids(organisaatioOids)
+            .build();
     }
 
 }

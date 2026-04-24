@@ -5,6 +5,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioQueryDto;
 import fi.vm.sade.eperusteet.ylops.service.external.OrganisaatioService;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -15,6 +16,11 @@ public class OrganisaatioServiceMock implements OrganisaatioService {
     @Override
     public JsonNode getOrganisaatio(String organisaatioOid) {
         return null;
+    }
+
+    @Override
+    public List<String> getOrganisaatioChildOids(String organisaatioOid) {
+        return Collections.emptyList();
     }
 
     @Override

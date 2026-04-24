@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @Data
@@ -14,7 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder
-public class OrganisaatioDto {
+public class OrganisaatioDto implements Serializable {
     private String oid;
     private List<String> tyypit;
     private LokalisoituTekstiDto nimi;
