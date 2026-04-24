@@ -4,10 +4,8 @@ import fi.vm.sade.eperusteet.ylops.dto.kayttaja.EtusivuDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanOrganisaatiotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanProjektitiedotDto;
 import fi.vm.sade.eperusteet.ylops.dto.kayttaja.KayttajanTietoDto;
-import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioTyyppi;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Future;
 
