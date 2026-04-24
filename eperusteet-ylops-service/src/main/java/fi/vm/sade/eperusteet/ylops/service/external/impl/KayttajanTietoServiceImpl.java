@@ -120,6 +120,7 @@ public class KayttajanTietoServiceImpl implements KayttajanTietoService {
         Set<String> organisaatioOids = new HashSet<>();
         Set<String> kunnat = new HashSet<>();
         haeOrganisaatioOikeudet().stream()
+            .filter(oid -> !oid.equals(SecurityUtil.OPH_OID))
             .map(oid -> organisaatioService.getOrganisaatio(oid, OrganisaatioLaajaDto.class))
             .filter(Objects::nonNull)
             .forEach(o -> {
