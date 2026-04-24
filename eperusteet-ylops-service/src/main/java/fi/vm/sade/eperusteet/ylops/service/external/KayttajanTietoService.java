@@ -11,8 +11,6 @@ import java.util.concurrent.Future;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 
-import com.fasterxml.jackson.databind.JsonNode;
-
 public interface KayttajanTietoService {
 
     @PreAuthorize("isAuthenticated()")
