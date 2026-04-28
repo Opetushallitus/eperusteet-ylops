@@ -48,6 +48,7 @@ import java.util.UUID;
 public class LiitetiedostoController {
 
     private static final int BUFSIZE = 64 * 1024;
+    private static final int LIITE_PREVIEW_WIDTH_PX = 130;
     final Tika tika = new Tika();
 
     @Autowired
@@ -60,14 +61,15 @@ public class LiitetiedostoController {
         SUPPORTED_TYPES = Collections.unmodifiableSet(tmp);
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
-    public void reScaleImg(@PathVariable @P("opsId") Long opsId,
-                           @PathVariable UUID id,
-                           @RequestParam Integer width,
-                           @RequestParam Integer height,
-                           @RequestParam Part file) {
-        //TODO implement image rescaling
+    @RequestMapping(value = "/{fileName}/preview", method = RequestMethod.GET)
+    @CacheControl(age = CacheControl.ONE_YEAR)
+    public void getLiitetiedostoPreview(
+            @PathVariable Long opsId,
+            @PathVariable String fileName,
+            @RequestHeader(value = "If-None-Match", required = false) String etag,
+            HttpServletResponse response
+    ) throws IOException {
+        serveLiitetiedosto(opsId, fileName, etag, response, LIITE_PREVIEW_WIDTH_PX);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -121,18 +123,6 @@ public class LiitetiedostoController {
         return os;
     }
 
-    private BufferedImage scaleImage(BufferedImage img, int maxDimension) {
-        int w = (img.getWidth() > img.getHeight() ? maxDimension :
-                (int) (((double) img.getWidth() / img.getHeight()) * maxDimension));
-
-        int h = (img.getHeight() > img.getWidth() ? maxDimension :
-                (int) (((double) img.getHeight() / img.getWidth()) * maxDimension));
-
-        BufferedImage preview = new BufferedImage(w, h, img.getType());
-        preview.createGraphics().drawImage(img.getScaledInstance(w, h, Image.SCALE_SMOOTH), 0, 0, null);
-        return preview;
-    }
-
     @RequestMapping(value = "/{fileName}", method = RequestMethod.GET)
     @CacheControl(age = CacheControl.ONE_YEAR)
     public void getLiitetiedosto(
@@ -140,6 +130,16 @@ public class LiitetiedostoController {
             @PathVariable String fileName,
             @RequestHeader(value = "If-None-Match", required = false) String etag,
             HttpServletResponse response
+    ) throws IOException {
+        serveLiitetiedosto(opsId, fileName, etag, response, null);
+    }
+
+    private void serveLiitetiedosto(
+            Long opsId,
+            String fileName,
+            String etag,
+            HttpServletResponse response,
+            Integer previewTargetWidth
     ) throws IOException {
         UUID id = UUID.fromString(FilenameUtils.removeExtension(fileName));
         LiiteDto dto = liitteet.get(opsId, id);
@@ -150,7 +150,13 @@ public class LiitetiedostoController {
             response.setHeader("Content-Type", dto.getTyyppi());
             response.setHeader("ETag", id.toString());
             try (OutputStream os = response.getOutputStream()) {
-                liitteet.export(opsId, id, os);
+                if (previewTargetWidth == null) {
+                    liitteet.export(opsId, id, os);
+                } else {
+                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                    liitteet.export(opsId, id, buffer);
+                    writeRescaledImageIfApplicable(os, buffer.toByteArray(), dto.getTyyppi(), previewTargetWidth);
+                }
                 os.flush();
             }
         } else {
@@ -162,7 +168,34 @@ public class LiitetiedostoController {
                 response.setStatus(HttpStatus.NOT_FOUND.value());
             }
         }
+    }
 
+    private void writeRescaledImageIfApplicable(
+            OutputStream os,
+            byte[] data,
+            String contentType,
+            int targetWidth
+    ) throws IOException {
+        if (contentType == null || !SUPPORTED_TYPES.contains(contentType)) {
+            os.write(data);
+            return;
+        }
+        BufferedImage img = ImageIO.read(new ByteArrayInputStream(data));
+        if (img == null) {
+            os.write(data);
+            return;
+        }
+        BufferedImage scaled = scaleImageToTargetWidth(img, targetWidth);
+        String format = contentType.replace("image/", "");
+        ImageIO.write(scaled, format, os);
+    }
+
+    private BufferedImage scaleImageToTargetWidth(BufferedImage img, int targetWidth) {
+        int newW = targetWidth;
+        int newH = (int) Math.round((double) img.getHeight() * newW / img.getWidth());
+        BufferedImage scaled = new BufferedImage(newW, newH, img.getType());
+        scaled.createGraphics().drawImage(img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH), 0, 0, null);
+        return scaled;
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
