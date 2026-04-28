@@ -49,6 +49,7 @@ public class LiitetiedostoController {
 
     private static final int BUFSIZE = 64 * 1024;
     private static final int LIITE_PREVIEW_WIDTH_PX = 130;
+    private static final int MAX_PREVIEW_BYTES = 10 * 1024 * 1024; // 10 MB
     final Tika tika = new Tika();
 
     @Autowired
@@ -150,19 +151,42 @@ public class LiitetiedostoController {
             response.setHeader("Content-Type", dto.getTyyppi());
             response.setHeader("ETag", id.toString());
             try (OutputStream os = response.getOutputStream()) {
-                if (previewTargetWidth == null) {
-                    liitteet.export(opsId, id, os);
-                } else {
+                if (previewTargetWidth != null && SUPPORTED_TYPES.contains(dto.getTyyppi())) {
                     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                     liitteet.export(opsId, id, buffer);
-                    writeRescaledImageIfApplicable(os, buffer.toByteArray(), dto.getTyyppi(), previewTargetWidth);
+                    if (buffer.size() <= MAX_PREVIEW_BYTES) {
+                        writeRescaledImageIfApplicable(os, buffer.toByteArray(), dto.getTyyppi(), previewTargetWidth);
+                    } else {
+                        buffer.writeTo(os);
+                    }
+                } else {
+                    liitteet.export(opsId, id, os);
                 }
                 os.flush();
             }
         } else {
             response.setHeader("ETag", id.toString());
             try (OutputStream os = response.getOutputStream()) {
-                liitteet.exportLiitePerusteelta(opsId, id, os);
+                if (previewTargetWidth != null) {
+                    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+                    liitteet.exportLiitePerusteelta(opsId, id, buffer);
+                    byte[] data = buffer.toByteArray();
+                    if (data.length <= MAX_PREVIEW_BYTES) {
+                        String contentType = tika.detect(data);
+                        if (SUPPORTED_TYPES.contains(contentType)) {
+                            response.setHeader("Content-Type", contentType);
+                            writeRescaledImageIfApplicable(os, data, contentType, previewTargetWidth);
+                        } else {
+                            response.setHeader("Content-Type", MediaType.APPLICATION_OCTET_STREAM_VALUE);
+                            os.write(data);
+                        }
+                    } else {
+                        response.setHeader("Content-Type", MediaType.APPLICATION_OCTET_STREAM_VALUE);
+                        buffer.writeTo(os);
+                    }
+                } else {
+                    liitteet.exportLiitePerusteelta(opsId, id, os);
+                }
                 os.flush();
             } catch (Exception e) {
                 response.setStatus(HttpStatus.NOT_FOUND.value());
@@ -193,8 +217,16 @@ public class LiitetiedostoController {
     private BufferedImage scaleImageToTargetWidth(BufferedImage img, int targetWidth) {
         int newW = targetWidth;
         int newH = (int) Math.round((double) img.getHeight() * newW / img.getWidth());
-        BufferedImage scaled = new BufferedImage(newW, newH, img.getType());
-        scaled.createGraphics().drawImage(img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH), 0, 0, null);
+        int imageType = img.getType() != BufferedImage.TYPE_CUSTOM
+                ? img.getType()
+                : (img.getColorModel().hasAlpha() ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
+        BufferedImage scaled = new BufferedImage(newW, newH, imageType);
+        Graphics2D graphics = scaled.createGraphics();
+        try {
+            graphics.drawImage(img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH), 0, 0, null);
+        } finally {
+            graphics.dispose();
+        }
         return scaled;
     }
 
