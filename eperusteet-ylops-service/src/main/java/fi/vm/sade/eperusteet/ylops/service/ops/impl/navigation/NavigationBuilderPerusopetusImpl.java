@@ -145,6 +145,10 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
                       .filter(oppiaineenVlk -> oppiaineenVlk.getVuosiluokkakokonaisuus().equals(vlk.getTunniste()))
                       .findFirst();
 
+                    if (vuosiluokkakokonaisuus.isPresent()) {
+                      oppiaineNavigationNode.meta("piilotettu", vuosiluokkakokonaisuus.get().getPiilotettu());
+                    } 
+
                     if (vuosiluokkakokonaisuus.isPresent() && !vuosiluokkakokonaisuus.get().getVuosiluokat().isEmpty()) {
                       oppiaineNavigationNode.add(NavigationNodeDto.of(NavigationType.tavoitteet_ja_sisallot).meta("navigation-sub-type", "subtype"));
                       vuosiluokkakokonaisuus.get().getVuosiluokat().stream()
