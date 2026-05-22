@@ -118,6 +118,17 @@ public class WebSecurityConfigurationDev {
                 )
                 .build();
 
+        UserDetails toukoVoutilaisen = User.withDefaultPasswordEncoder()
+                .username("toukokoulu")
+                .password("test")
+                .roles("USER",
+                        DevSecurityRole.ylops().build(),
+                        DevSecurityRole.ylops().crud().build(),
+                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.26464466668").build(),
+                        DevSecurityRole.ylops().read().oid("1.2.246.562.10.00000000001").build()
+                )
+                .build();
+
         return new InMemoryUserDetailsManager(
                 test,
                 realUser,
@@ -125,7 +136,8 @@ public class WebSecurityConfigurationDev {
                 ylops_rautavaara,
                 ophadmin,
                 apollo,
-                apollokoulu
+                apollokoulu,
+                toukoVoutilaisen
         );
     }
 
