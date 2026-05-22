@@ -113,7 +113,7 @@ public class DokumenttiServiceImpl implements DokumenttiService {
     @Override
     @Transactional(readOnly = true)
     public DokumenttiDto getLatestDokumentti(Long opsId, Kieli kieli) {
-        Dokumentti dokumentti = dokumenttiRepository.findFirstByOpsIdAndKieliOrderByAloitusaikaDesc(opsId, kieli);
+        Dokumentti dokumentti = dokumenttiRepository.findFirstByOpsIdAndKieliAndAloitusaikaIsNotNullOrderByAloitusaikaDesc(opsId, kieli);
 
         if (dokumentti != null) {
             DokumenttiDto dokumenttiDto = mapper.map(dokumentti, DokumenttiDto.class);
