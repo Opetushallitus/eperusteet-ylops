@@ -1349,7 +1349,12 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                     }
                 });
 
-        muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.PAIVITYS);
+        opetussuunnitelmaRepository.findOne(opsId).getVuosiluokkakokonaisuudet().stream()
+          .filter(vlk -> vlk.getVuosiluokkakokonaisuus().getTunniste().getId().equals(v.getVuosiluokkakokonaisuus().getId()))
+          .findFirst().ifPresent(vlk -> {
+            muokkaustietoService.addOpsMuokkausTieto(opsId, oppiaine, MuokkausTapahtuma.PAIVITYS, oppiaine.getNavigationType(), null,
+                    Sets.newHashSet(new OpetussuunnitelmanMuokkaustietoLisaparametrit(NavigationType.vuosiluokkakokonaisuus, vlk.getVuosiluokkakokonaisuus().getId())));
+          });
         paivitaAlaOpetussuunnitelmienOppiaineenVuosiluokkakokonaisuudenTavoitteet(opsId, oppiaine, v.getVuosiluokkakokonaisuus().getId(), perusteenVuosiluokkakokonaisuus, tavoitteet);
     }
 
