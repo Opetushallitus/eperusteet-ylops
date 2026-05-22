@@ -18,7 +18,7 @@ import java.util.Set;
 public interface DokumenttiRepository extends CustomJpaRepository<Dokumentti, Long> {
     List<Dokumentti> findByOpsIdAndKieliAndTila(Long opsId, Kieli kieli, DokumenttiTila tila, Sort sort);
 
-    Dokumentti findFirstByOpsIdAndKieliOrderByAloitusaikaDesc(Long opsId, Kieli kieli);
+    Dokumentti findFirstByOpsIdAndKieliAndAloitusaikaIsNotNullOrderByAloitusaikaDesc(Long opsId, Kieli kieli);
 
     Dokumentti findByIdInAndKieli(Set<Long> id, Kieli kieli);
 
