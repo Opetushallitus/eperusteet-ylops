@@ -22,7 +22,10 @@ public class NavigationNodeDto {
     private Long id;
     private LokalisoituTekstiDto label;
     private NavigationType type;
+
+    @Builder.Default
     private Map<String, Object> meta = new HashMap<>();
+    @Builder.Default
     private List<NavigationNodeDto> children = new ArrayList<>();
 
     static public NavigationNodeDto of(NavigationType type, LokalisoituTekstiDto label, Long id) {
@@ -30,6 +33,8 @@ public class NavigationNodeDto {
         result.setType(type);
         result.setLabel(label);
         result.setId(id);
+        result.setMeta(new HashMap<>());
+        result.setChildren(new ArrayList<>());
         return result;
     }
 

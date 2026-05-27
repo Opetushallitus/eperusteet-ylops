@@ -6,9 +6,17 @@ import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.ValidationCategory;
 import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Keskeinensisaltoalue;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Opetuksentavoite;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.ops.OpsVuosiluokkakokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.teksti.Tekstiosa;
+import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
@@ -56,6 +64,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -170,32 +179,169 @@ public class ValidointiServiceImpl implements ValidointiService {
             validointi.virhe("paatospaivamaaraa-ei-ole-asetettu", navigationNodeDto);
         }
 
-        //TODO Should we use same version of Peruste for with the Opetuusuunnitelma was based on if available?
-        PerusteDto peruste = eperusteetService.getPeruste(ops.getPerusteenDiaarinumero());
-        if (peruste.getPerusopetus() != null) {
+        if (KoulutustyyppiToteutus.PERUSOPETUS.equals(ops.getToteutus())) {
             ops.getOppiaineet().stream()
                     .filter(OpsOppiaine::isOma)
                     .map(OpsOppiaine::getOppiaine)
-                    .forEach(oa -> peruste.getPerusopetus().getOppiaine(oa.getTunniste()).ifPresent(poppiaine -> {
-                        validoiOppiaine(validointi, ops, oa, julkaisukielet);
-                    }));
+                    .forEach(oa -> validoiOppiaine(validointi, ops, oa, julkaisukielet));
         }
 
         return Collections.singletonList(validointi);
     }
 
     private void validoiOppiaine(Validointi validointi, Opetussuunnitelma opetussuunnitelma, Oppiaine oa, Set<Kieli> kielet) {
-        if (!opetussuunnitelma.getVuosiluokkakokonaisuudet().isEmpty()) {
-            validoiLokalisoituTeksti(validointi, kielet, oa.getNimi(), NavigationNodeDto.of(
-                    NavigationType.perusopetusoppiaine,
-                    new LokalisoituTekstiDto(null, oa.getNimi().getTeksti()),
-                    oa.getId()).meta("vlkId", opetussuunnitelma.getVuosiluokkakokonaisuudet().iterator().next().getVuosiluokkakokonaisuus().getId()));
+        Long vlkId = resolveVlkId(opetussuunnitelma, oa);
+        NavigationNodeDto oppiaineNode = oppiaineNavigationNode(oa, vlkId);
+
+        validoiLokalisoituTeksti(validointi, kielet, oa.getNimi(), oppiaineNode, ValidHtml.WhitelistType.MINIMAL);
+        validoiHtml(validointi, oa.getValtakunnallinenPakollinenKuvaus(), oppiaineNode);
+        validoiHtml(validointi, oa.getValtakunnallinenSyventavaKurssiKuvaus(), oppiaineNode);
+        validoiHtml(validointi, oa.getValtakunnallinenSoveltavaKurssiKuvaus(), oppiaineNode);
+        validoiHtml(validointi, oa.getPaikallinenSyventavaKurssiKuvaus(), oppiaineNode);
+        validoiHtml(validointi, oa.getPaikallinenSoveltavaKurssiKuvaus(), oppiaineNode);
+        validoiTekstiosa(validointi, oa.getTehtava(), oppiaineNode);
+        validoiTekstiosa(validointi, oa.getTavoitteet(), oppiaineNode);
+        validoiTekstiosa(validointi, oa.getArviointi(), oppiaineNode);
+
+        if (oa.getVapaatTekstit() != null) {
+            oa.getVapaatTekstit().forEach(vt ->
+                    validoiHtml(validointi, vt.getPaikallinenTarkennus(), oppiaineNode, ValidHtml.WhitelistType.SIMPLIFIED));
         }
+
+        oa.getVuosiluokkakokonaisuudet().forEach(ovk ->
+                validoiOppiaineenvuosiluokkakokonaisuus(validointi, opetussuunnitelma, oa, ovk, kielet));
 
         if (oa.getOppimaarat() != null) {
             for (Oppiaine om : oa.getOppimaarat()) {
                 validoiOppiaine(validointi, opetussuunnitelma, om, kielet);
             }
+        }
+    }
+
+    private Long resolveVlkId(Opetussuunnitelma ops, Oppiaine oa) {
+        return oa.getVuosiluokkakokonaisuudet().stream()
+                .findFirst()
+                .flatMap(ovk -> ops.getVuosiluokkakokonaisuudet().stream()
+                        .map(OpsVuosiluokkakokonaisuus::getVuosiluokkakokonaisuus)
+                        .filter(vlk -> vlk.getTunniste().getId().equals(ovk.getVuosiluokkakokonaisuus().getId()))
+                        .map(Vuosiluokkakokonaisuus::getId)
+                        .findFirst())
+                .orElseGet(() -> ops.getVuosiluokkakokonaisuudet().stream()
+                        .findFirst()
+                        .map(v -> v.getVuosiluokkakokonaisuus().getId())
+                        .orElse(null));
+    }
+
+    private Long resolveVlkId(Opetussuunnitelma ops, Oppiaineenvuosiluokkakokonaisuus ovk) {
+        UUID viiteId = ovk.getVuosiluokkakokonaisuus().getId();
+        return ops.getVuosiluokkakokonaisuudet().stream()
+                .map(OpsVuosiluokkakokonaisuus::getVuosiluokkakokonaisuus)
+                .filter(vlk -> vlk.getTunniste().getId().equals(viiteId))
+                .map(Vuosiluokkakokonaisuus::getId)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private NavigationNodeDto oppiaineNavigationNode(Oppiaine oa, Long vlkId) {
+        NavigationNodeDto node = NavigationNodeDto.of(
+                oa.getTyyppi().equals(OppiaineTyyppi.YHTEINEN) ? NavigationType.perusopetusoppiaine : NavigationType.perusopetuspaikallinenoppiaine,
+                oa.getNimi() != null ? new LokalisoituTekstiDto(null, oa.getNimi().getTeksti()) : null,
+                oa.getId());
+        if (vlkId != null) {
+            node.meta("vlkId", vlkId);
+        }
+        return node;
+    }
+
+    private NavigationNodeDto vuosiluokkaNavigationNode(Oppiaine oa, Oppiaineenvuosiluokka vuosiluokka, Long vlkId) {
+        NavigationNodeDto node = NavigationNodeDto.builder()
+                .type(NavigationType.paikallinenoppiainevuosiluokka)
+                .label(oa.getNimi() != null ? new LokalisoituTekstiDto(null, oa.getNimi().getTeksti()) : null)
+                .build()
+                .meta("oppiaineId", oa.getId())
+                .meta("vuosiluokkaId", vuosiluokka.getId())
+                .meta("validationPostLabel", vuosiluokka.getVuosiluokka().toString() + "-luokka");
+        if (vlkId != null) {
+            node.meta("vlkId", vlkId);
+        }
+        return node;
+    }
+
+    private void validoiOppiaineenvuosiluokkakokonaisuus(
+            Validointi validointi,
+            Opetussuunnitelma opetussuunnitelma,
+            Oppiaine oa,
+            Oppiaineenvuosiluokkakokonaisuus ovk,
+            Set<Kieli> kielet) {
+        Long vlkId = resolveVlkId(opetussuunnitelma, ovk);
+        NavigationNodeDto oppiaineNode = oppiaineNavigationNode(oa, vlkId);
+
+        validoiTekstiosa(validointi, ovk.getTehtava(), oppiaineNode);
+        validoiTekstiosa(validointi, ovk.getYleistavoitteet(), oppiaineNode);
+        validoiTekstiosa(validointi, ovk.getTyotavat(), oppiaineNode);
+        validoiTekstiosa(validointi, ovk.getOhjaus(), oppiaineNode);
+        validoiTekstiosa(validointi, ovk.getArviointi(), oppiaineNode);
+        validoiTekstiosa(validointi, ovk.getTavoitteistaJohdetutOppimisenTavoitteet(), oppiaineNode);
+
+        ovk.getVuosiluokat().forEach(vl -> validoiOppiaineenvuosiluokka(validointi, oa, vl, kielet, vlkId));
+    }
+
+    private void validoiOppiaineenvuosiluokka(
+            Validointi validointi,
+            Oppiaine oa,
+            Oppiaineenvuosiluokka vuosiluokka,
+            Set<Kieli> kielet,
+            Long vlkId) {
+        NavigationNodeDto vuosiluokkaNode = vuosiluokkaNavigationNode(oa, vuosiluokka, vlkId);
+
+        validoiHtml(validointi, vuosiluokka.getVapaaTeksti(), vuosiluokkaNode, ValidHtml.WhitelistType.SIMPLIFIED);
+        vuosiluokka.getSisaltoalueet().forEach(sa -> validoiKeskeinensisaltoalue(validointi, sa, vuosiluokkaNode));
+        vuosiluokka.getTavoitteet().forEach(t -> validoiOpetuksentavoite(validointi, t, vuosiluokkaNode));
+    }
+
+    private void validoiKeskeinensisaltoalue(
+            Validointi validointi,
+            Keskeinensisaltoalue sisaltoalue,
+            NavigationNodeDto navigationNodeDto) {
+        validoiHtml(validointi, sisaltoalue.getNimi(), navigationNodeDto, ValidHtml.WhitelistType.MINIMAL);
+        validoiHtml(validointi, sisaltoalue.getKuvaus(), navigationNodeDto, ValidHtml.WhitelistType.NORMAL);
+    }
+
+    private void validoiOpetuksentavoite(
+            Validointi validointi,
+            Opetuksentavoite tavoite,
+            NavigationNodeDto navigationNodeDto) {
+        validoiHtml(validointi, tavoite.getTavoite(), navigationNodeDto, ValidHtml.WhitelistType.NORMAL);
+
+        if (tavoite.getSisaltoalueet() != null) {
+            tavoite.getSisaltoalueet().forEach(oks -> {
+                validoiHtml(validointi, oks.getOmaKuvaus(), navigationNodeDto, ValidHtml.WhitelistType.NORMAL);
+                if (oks.getSisaltoalueet() != null) {
+                    validoiKeskeinensisaltoalue(validointi, oks.getSisaltoalueet(), navigationNodeDto);
+                }
+            });
+        }
+    }
+
+    private void validoiTekstiosa(Validointi validointi, Tekstiosa tekstiosa, NavigationNodeDto navigationNodeDto) {
+        if (tekstiosa == null) {
+            return;
+        }
+        validoiHtml(validointi, tekstiosa.getOtsikko(), navigationNodeDto, ValidHtml.WhitelistType.MINIMAL);
+        validoiHtml(validointi, tekstiosa.getTeksti(), navigationNodeDto);
+    }
+
+    private void validoiHtml(Validointi validointi, LokalisoituTeksti teksti, NavigationNodeDto navigationNodeDto) {
+        validoiHtml(validointi, teksti, navigationNodeDto, ValidHtml.WhitelistType.NORMAL);
+    }
+
+    private void validoiHtml(
+            Validointi validointi,
+            LokalisoituTeksti teksti,
+            NavigationNodeDto navigationNodeDto,
+            ValidHtml.WhitelistType whitelist) {
+        if (teksti != null && !ValidHtmlValidator.isValid(teksti, whitelist.getWhitelist())) {
+            validointi.virhe("tekstin-sisalto-virheellinen-html", navigationNodeDto);
         }
     }
 
@@ -248,10 +394,17 @@ public class ValidointiServiceImpl implements ValidointiService {
     }
 
     private void validoiLokalisoituTeksti(Validointi validointi, Set<Kieli> kielet, LokalisoituTeksti teksti, NavigationNodeDto navigationNodeDto) {
+        validoiLokalisoituTeksti(validointi, kielet, teksti, navigationNodeDto, ValidHtml.WhitelistType.NORMAL);
+    }
+
+    private void validoiLokalisoituTeksti(
+            Validointi validointi,
+            Set<Kieli> kielet,
+            LokalisoituTeksti teksti,
+            NavigationNodeDto navigationNodeDto,
+            ValidHtml.WhitelistType whitelist) {
         validoiLokalisoituTeksti("kielisisaltoa-ei-loytynyt-opsin-kielilla", validointi, kielet, teksti, navigationNodeDto);
-        if (!ValidHtmlValidator.isValid(teksti, ValidHtml.WhitelistType.NORMAL.getWhitelist())) {
-            validointi.virhe("tekstin-sisalto-virheellinen-html", navigationNodeDto);
-        }
+        validoiHtml(validointi, teksti, navigationNodeDto, whitelist);
     }
 
     private void validoiLokalisoituTeksti(String kuvaus, Validointi validointi, Set<Kieli> kielet, LokalisoituTeksti teksti, NavigationNodeDto navigationNodeDto) {
