@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Component
@@ -78,11 +79,6 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
     private Collection<NavigationNodeDto> perusteenOppiaineet(List<OppiaineSuppeaDto> oppiaineet, String kieli, VuosiluokkakokonaisuusSuppeaDto vlk) {
         List<OppiaineSuppeaDto> perusteenOppiaineet = oppiaineet.stream()
           .filter(oppiaine -> oppiaine.getTyyppi() == OppiaineTyyppi.YHTEINEN)
-          .filter(oppiaine -> ObjectUtils.isEmpty(oppiaine.getVuosiluokkakokonaisuudet()) 
-              || oppiaine.getVuosiluokkakokonaisuudet().stream()
-                .map(OppiaineenVuosiluokkakokonaisuusSuppeaDto::getVuosiluokkakokonaisuus)
-                .collect(Collectors.toList())
-                .contains(vlk.getTunniste()))
           .collect(Collectors.toList());
         if (perusteenOppiaineet.isEmpty()) {
             return null;
@@ -91,13 +87,17 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
         return oppiaineet(perusteenOppiaineet, NavigationType.perusopetusoppiaine, NavigationType.oppiaineenvuosiluokka, kieli, vlk);
     }
 
+    private Predicate<OppiaineSuppeaDto> filterOppiaineet(VuosiluokkakokonaisuusSuppeaDto vlk) {
+      return oppiaine -> ObjectUtils.isEmpty(oppiaine.getVuosiluokkakokonaisuudet()) 
+              || oppiaine.getVuosiluokkakokonaisuudet().stream()
+                .map(OppiaineenVuosiluokkakokonaisuusSuppeaDto::getVuosiluokkakokonaisuus)
+                .collect(Collectors.toList())
+                .contains(vlk.getTunniste());
+    }
+
     private Collection<NavigationNodeDto> valinnaisetOppiaineet(List<OppiaineSuppeaDto> oppiaineet, String kieli, VuosiluokkakokonaisuusSuppeaDto vlk) {
       List<OppiaineSuppeaDto> valinnaiset = oppiaineet.stream()
         .filter(oppiaine -> oppiaine.getTyyppi() != OppiaineTyyppi.YHTEINEN)
-        .filter(oppiaine -> oppiaine.getVuosiluokkakokonaisuudet().stream()
-                .map(OppiaineenVuosiluokkakokonaisuusSuppeaDto::getVuosiluokkakokonaisuus)
-                .collect(Collectors.toList())
-                .contains(vlk.getTunniste()))
         .collect(Collectors.toList());
       if (valinnaiset.isEmpty()) {
           return null;
@@ -118,6 +118,7 @@ public class NavigationBuilderPerusopetusImpl implements NavigationBuilder {
         }
 
         return oppiaineet.stream()
+                .filter(filterOppiaineet(vlk))
                 .map(oppiaine -> {
                     NavigationNodeDto oppiaineNavigationNode = NavigationNodeDto.of(
                       oppiaineNavigationType, 
