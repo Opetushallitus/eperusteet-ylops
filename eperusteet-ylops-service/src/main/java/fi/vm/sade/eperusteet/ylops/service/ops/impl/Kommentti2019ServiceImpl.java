@@ -217,7 +217,9 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
         hasOpsPermissions(kommenttiDto.getOpsId());
         Kommentti2019 kommentti = mapper.map(kommenttiDto, Kommentti2019.class);
         kommentti = kommenttiRepository.save(kommentti);
-        return mapper.map(kommentti, Kommentti2019Dto.class);
+        Kommentti2019Dto savedKommenttiDto = mapper.map(kommentti, Kommentti2019Dto.class);
+        asetaNimi(savedKommenttiDto);
+        return savedKommenttiDto;
     }
 
     @Override
@@ -229,7 +231,9 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
 
         kommentti.setSisalto(kommenttiDto.getSisalto());
         kommenttiRepository.save(kommentti);
-        return mapper.map(kommentti, Kommentti2019Dto.class);
+        Kommentti2019Dto updatedKommenttiDto = mapper.map(kommentti, Kommentti2019Dto.class);
+        asetaNimi(updatedKommenttiDto);
+        return updatedKommenttiDto;
     }
 
     private Kommentti2019 getOne(UUID uuid) {

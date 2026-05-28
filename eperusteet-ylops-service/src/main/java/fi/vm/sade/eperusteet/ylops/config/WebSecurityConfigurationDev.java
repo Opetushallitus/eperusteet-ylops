@@ -60,55 +60,9 @@ public class WebSecurityConfigurationDev {
 
     @Bean
     public UserDetailsService users() {
-        UserDetails test = User.withDefaultPasswordEncoder()
-                .username("test")
-                .password("test")
-                .roles("USER",
-                        DevSecurityRole.amosaa().admin().oid("1.2.246.562.10.00000000001").build(),
-                        DevSecurityRole.amosaa().admin().oid("1.2.246.562.10.15738250156").build(),
-                        DevSecurityRole.amosaa().admin().oid("1.2.246.562.10.54645809036").build(),
-                        DevSecurityRole.amosaa().admin().oid("1.2.246.562.28.37193106103").build(),
-                        DevSecurityRole.amosaa().build(),
-                        DevSecurityRole.eperusteet().admin().oid("1.2.246.562.10.00000000001").build(),
-                        DevSecurityRole.eperusteet().admin().oid("1.2.246.562.28.39318578962").build(),
-                        DevSecurityRole.eperusteet().build(),
-                        DevSecurityRole.eperusteet().crud().build(),
-                        DevSecurityRole.eperusteet().crud().oid("1.2.246.562.10.00000000001").build(),
-                        DevSecurityRole.eperusteet().crud().oid("1.2.246.562.28.11287634288").build(),
-                        DevSecurityRole.eperusteet().crud().oid("1.2.246.562.28.55860281986").build(),
-                        DevSecurityRole.eperusteet().crud().oid("1.2.246.562.28.85557110211").build(),
-                        DevSecurityRole.eperusteet().read().build(),
-                        DevSecurityRole.koto().admin().oid("1.2.246.562.10.54645809036").build(),
-                        DevSecurityRole.koto().build(),
-                        DevSecurityRole.maarays().crud().build(),
-                        DevSecurityRole.maarays().read().build(),
-                        DevSecurityRole.tuva().admin().oid("1.2.246.562.10.54645809036").build(),
-                        DevSecurityRole.tuva().build(),
-                        DevSecurityRole.vst().admin().oid("1.2.246.562.10.54645809036").build(),
-                        DevSecurityRole.vst().build(),
-                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.00000000001").build(),
-                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.20516711478").build(),
-                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.22840843613").build(),
-                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.346830761110").build(),
-                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.83037752777").build(),
-                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.90008375488").build(),
-                        DevSecurityRole.ylops().admin().oid("1.2.246.562.28.11332956371").build(),
-                        DevSecurityRole.ylops().admin().oid("1.2.246.562.28.11332956371").build(),
-                        DevSecurityRole.ylops().admin().oid("1.2.246.562.28.25927836418").build(),
-                        DevSecurityRole.ylops().build(),
-                        DevSecurityRole.ylops().crud().build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.00000000001").build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.11902547485").build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.13649470005").build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.22840843613").build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.346830761110").build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.61057016927").build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.68534785412").build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.83037752777").build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.28.11332956371").build(),
-                        DevSecurityRole.ylops().crud().oid("1.2.246.562.10.81269623245").build()
-                )
-                .build();
+        UserDetails test = createUserDetails("test");
+        UserDetails realUser = createUserDetails("1.2.246.562.24.83949384228");
+
         UserDetails ylops_helsinki = User.withDefaultPasswordEncoder()
                 .username("ylopshelsinki")
                 .password("test")
@@ -165,12 +119,64 @@ public class WebSecurityConfigurationDev {
 
         return new InMemoryUserDetailsManager(
                 test,
+                realUser,
                 ylops_helsinki,
                 ylops_rautavaara,
                 ophadmin,
                 apollo,
                 apollokoulu
         );
+    }
+
+    private UserDetails createUserDetails(String username) {
+        return User.withDefaultPasswordEncoder()
+                .username(username)
+                .password("test")
+                .roles("USER",
+                    DevSecurityRole.amosaa().admin().oid("1.2.246.562.10.00000000001").build(),
+                    DevSecurityRole.amosaa().admin().oid("1.2.246.562.10.15738250156").build(),
+                    DevSecurityRole.amosaa().admin().oid("1.2.246.562.10.54645809036").build(),
+                    DevSecurityRole.amosaa().admin().oid("1.2.246.562.28.37193106103").build(),
+                    DevSecurityRole.amosaa().build(),
+                    DevSecurityRole.eperusteet().admin().oid("1.2.246.562.10.00000000001").build(),
+                    DevSecurityRole.eperusteet().admin().oid("1.2.246.562.28.39318578962").build(),
+                    DevSecurityRole.eperusteet().build(),
+                    DevSecurityRole.eperusteet().crud().build(),
+                    DevSecurityRole.eperusteet().crud().oid("1.2.246.562.10.00000000001").build(),
+                    DevSecurityRole.eperusteet().crud().oid("1.2.246.562.28.11287634288").build(),
+                    DevSecurityRole.eperusteet().crud().oid("1.2.246.562.28.55860281986").build(),
+                    DevSecurityRole.eperusteet().crud().oid("1.2.246.562.28.85557110211").build(),
+                    DevSecurityRole.eperusteet().read().build(),
+                    DevSecurityRole.koto().admin().oid("1.2.246.562.10.54645809036").build(),
+                    DevSecurityRole.koto().build(),
+                    DevSecurityRole.maarays().crud().build(),
+                    DevSecurityRole.maarays().read().build(),
+                    DevSecurityRole.tuva().admin().oid("1.2.246.562.10.54645809036").build(),
+                    DevSecurityRole.tuva().build(),
+                    DevSecurityRole.vst().admin().oid("1.2.246.562.10.54645809036").build(),
+                    DevSecurityRole.vst().build(),
+                    DevSecurityRole.ylops().admin().oid("1.2.246.562.10.00000000001").build(),
+                    DevSecurityRole.ylops().admin().oid("1.2.246.562.10.20516711478").build(),
+                    DevSecurityRole.ylops().admin().oid("1.2.246.562.10.22840843613").build(),
+                    DevSecurityRole.ylops().admin().oid("1.2.246.562.10.346830761110").build(),
+                    DevSecurityRole.ylops().admin().oid("1.2.246.562.10.83037752777").build(),
+                    DevSecurityRole.ylops().admin().oid("1.2.246.562.10.90008375488").build(),
+                    DevSecurityRole.ylops().admin().oid("1.2.246.562.28.11332956371").build(),
+                    DevSecurityRole.ylops().admin().oid("1.2.246.562.28.11332956371").build(),
+                    DevSecurityRole.ylops().admin().oid("1.2.246.562.28.25927836418").build(),
+                    DevSecurityRole.ylops().build(),
+                    DevSecurityRole.ylops().crud().build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.00000000001").build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.11902547485").build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.13649470005").build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.22840843613").build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.346830761110").build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.61057016927").build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.68534785412").build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.83037752777").build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.28.11332956371").build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.81269623245").build())
+                .build();
     }
 
     @Bean
