@@ -23,6 +23,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import jakarta.persistence.EntityManager;
@@ -182,7 +183,7 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
     }
 
     private String haeNimi(String oid) {
-        if (!StringUtils.isEmpty(oid)) {
+        if (!ObjectUtils.isEmpty(oid)) {
             try {
                 KayttajanTietoDto kayttaja = kayttajanTietoService.haeAsync(oid).get();
                 String kutsumanimi = kayttaja.getKutsumanimi();
@@ -192,7 +193,7 @@ public class Kommentti2019ServiceImpl implements Kommentti2019Service {
                     return oid;
                 }
                 return etunimi + " " + kayttaja.getSukunimi();
-            } catch (ExecutionException | InterruptedException e) {
+            } catch (Exception e) {
                 return oid;
             }
         }
