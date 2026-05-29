@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.dto.ops;
 
+import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ReferenceableDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiosaDto;
 import lombok.AllArgsConstructor;
@@ -27,4 +28,5 @@ public class OppiaineDto extends OppiaineBaseDto implements ReferenceableDto {
     private Date muokattu;
     private OppiaineDto pohjanOppiaine;
     private List<VapaatekstiPaikallinentarkennusDto> vapaatTekstit = new ArrayList<>();
+    private Reference oppiaine;
 }
