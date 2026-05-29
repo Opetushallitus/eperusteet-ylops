@@ -742,7 +742,11 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
                 if (revisions.size() > 1) {
                     Revision revision = revisions.get(revisions.size() - 1);
                     opetuksenkohdealue = opetuksenkohdealueRepository.findRevision(revision.getId(), revision.getNumero());
-                    Opetuksenkohdealue a = opetuksenkohdealueRepository.save(opetuksenkohdealue);
+                    LokalisoituTeksti nimi = opetuksenkohdealue.getNimi();
+                    LokalisoituTeksti restoredNimi = nimi != null
+                            ? LokalisoituTeksti.of(nimi.getTeksti(), nimi.getTunniste())
+                            : null;
+                    Opetuksenkohdealue a = opetuksenkohdealueRepository.save(new Opetuksenkohdealue(restoredNimi));
                     kohdealueet.add(a);
                     ids.put(opetuksenkohdealue.getId(), a);
                 }
