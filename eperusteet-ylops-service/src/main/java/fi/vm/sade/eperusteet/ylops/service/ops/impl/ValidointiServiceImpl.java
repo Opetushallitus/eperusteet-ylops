@@ -193,12 +193,13 @@ public class ValidointiServiceImpl implements ValidointiService {
         Long vlkId = resolveVlkId(opetussuunnitelma, oa);
         NavigationNodeDto oppiaineNode = oppiaineNavigationNode(oa, vlkId);
 
+        if (CollectionUtils.isEmpty(oa.getOppimaarat()) && 
+                (oa.getVuosiluokkakokonaisuudet().stream().allMatch(ovk -> ovk.getPiilotettu())
+                || oa.getVuosiluokkakokonaisuudet().stream().allMatch(ovk -> ovk.getVuosiluokat().stream().allMatch(vl -> CollectionUtils.isEmpty(vl.getTavoitteet()))))) {
+            return;
+        }
+
         validoiLokalisoituTeksti(validointi, kielet, oa.getNimi(), oppiaineNode, ValidHtml.WhitelistType.MINIMAL);
-        validoiHtml(validointi, oa.getValtakunnallinenPakollinenKuvaus(), oppiaineNode);
-        validoiHtml(validointi, oa.getValtakunnallinenSyventavaKurssiKuvaus(), oppiaineNode);
-        validoiHtml(validointi, oa.getValtakunnallinenSoveltavaKurssiKuvaus(), oppiaineNode);
-        validoiHtml(validointi, oa.getPaikallinenSyventavaKurssiKuvaus(), oppiaineNode);
-        validoiHtml(validointi, oa.getPaikallinenSoveltavaKurssiKuvaus(), oppiaineNode);
         validoiTekstiosa(validointi, oa.getTehtava(), oppiaineNode);
         validoiTekstiosa(validointi, oa.getTavoitteet(), oppiaineNode);
         validoiTekstiosa(validointi, oa.getArviointi(), oppiaineNode);
@@ -276,6 +277,10 @@ public class ValidointiServiceImpl implements ValidointiService {
         Long vlkId = resolveVlkId(opetussuunnitelma, ovk);
         NavigationNodeDto oppiaineNode = oppiaineNavigationNode(oa, vlkId);
 
+        if (ovk.getVuosiluokat().stream().allMatch(vlk -> CollectionUtils.isEmpty(vlk.getTavoitteet())) || ovk.getPiilotettu()) {
+            return;
+        }
+
         validoiTekstiosa(validointi, ovk.getTehtava(), oppiaineNode);
         validoiTekstiosa(validointi, ovk.getYleistavoitteet(), oppiaineNode);
         validoiTekstiosa(validointi, ovk.getTyotavat(), oppiaineNode);
@@ -321,6 +326,8 @@ public class ValidointiServiceImpl implements ValidointiService {
                 }
             });
         }
+
+        validoiHtml(validointi, tavoite.getTavoite(), navigationNodeDto, ValidHtml.WhitelistType.NORMAL);
     }
 
     private void validoiTekstiosa(Validointi validointi, Tekstiosa tekstiosa, NavigationNodeDto navigationNodeDto) {
