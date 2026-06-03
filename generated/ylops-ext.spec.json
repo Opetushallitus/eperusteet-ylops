@@ -22,30 +22,28 @@
         "parameters" : [ {
           "name" : "nimi",
           "in" : "query",
-          "description" : "Opetussuunnitelman nimi",
+          "description" : "Osittainen nimihaku annetulla kielellä (`kieli`): osuu opetussuunnitelman nimeen tai julkaisuun liitettyjen organisaatioiden nimiin. Tyhjä arvo jättää rajauksen käyttämättä.",
           "schema" : {
             "type" : "string"
           }
         }, {
           "name" : "kieli",
           "in" : "query",
+          "description" : "Kielikoodi (esim. `fi`, `sv`, `en`). Rajaa tuloksiin julkaisut, joissa kyseinen kieli on julkaisukielten joukossa, ja määrää millä kielellä nimikenttiä verrataan sekä tulosten lajittelujärjestyksen. Oletus: `fi`.",
           "schema" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
+            "type" : "string"
           }
         }, {
           "name" : "perusteenDiaarinumero",
           "in" : "query",
-          "description" : "Opetussuunnitelman perusteen diaarinumero",
+          "description" : "Opetussuunnitelman perusteen diaarinumero; täsmällinen vastaavuus (`=`). Tyhjä arvo jättää rajauksen käyttämättä.",
           "schema" : {
             "type" : "string"
           }
         }, {
           "name" : "koulutustyypit",
           "in" : "query",
-          "description" : "Opetussuunnitelmien koulutustyypit",
+          "description" : "Yksi tai useampi koulutustyyppi (koodiarvo). Tuloksessa vain näihin tyyppeihin kuuluvat julkaisut; tyhjä lista ei rajaa tyypin perusteella.",
           "schema" : {
             "type" : "array",
             "items" : {
@@ -55,13 +53,14 @@
         }, {
           "name" : "organisaatio",
           "in" : "query",
-          "description" : "Organisaation oid",
+          "description" : "Organisaation OID tai sen osa; osittainen vastaavuus julkaisuun liitettyjen organisaatioiden OID:eihin. Tyhjä arvo jättää rajauksen käyttämättä.",
           "schema" : {
             "type" : "string"
           }
         }, {
           "name" : "sivu",
           "in" : "query",
+          "description" : "Sivunumero (0-pohjainen), Spring Data -paginointi. Oletus: `0`.",
           "schema" : {
             "type" : "integer",
             "format" : "int32"
@@ -69,6 +68,7 @@
         }, {
           "name" : "sivukoko",
           "in" : "query",
+          "description" : "Sivun koko eli tulosten määrä per sivu. Oletus: `10`.",
           "schema" : {
             "type" : "integer",
             "format" : "int32"
@@ -76,7 +76,7 @@
         }, {
           "name" : "julkaistuJalkeen",
           "in" : "query",
-          "description" : "Alkupäivä (ISO 8601, esim. 2025-10-03)",
+          "description" : "Alkuraja julkaisuajalle: mukaan julkaisut, joiden julkaisuhetki on annetun päivän keskiyön (`00:00`) tai sen jälkeen (päivä mukana). ISO 8601 -päivämäärä, esim. `2025-10-03`.",
           "schema" : {
             "type" : "string",
             "format" : "date"
@@ -84,7 +84,7 @@
         }, {
           "name" : "julkaistuEnnen",
           "in" : "query",
-          "description" : "Loppupäivä (ISO 8601, esim. 2025-10-31)",
+          "description" : "Loppuraja julkaisuajalle: mukaan vain julkaisut, joiden julkaisuhetki on ennen annetun päivän keskiyötä (`00:00`) — annettu päivämäärä itsessään ei sisälly rajaukseen. ISO 8601 -päivämäärä, esim. `2025-10-31`.",
           "schema" : {
             "type" : "string",
             "format" : "date"
@@ -359,14 +359,14 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
-          "pageSize" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "paged" : {
             "type" : "boolean"
           },
           "pageNumber" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "pageSize" : {
             "type" : "integer",
             "format" : "int32"
           },
@@ -386,6 +386,30 @@
           },
           "unsorted" : {
             "type" : "boolean"
+          }
+        }
+      },
+      "KoodiDto" : {
+        "type" : "object",
+        "properties" : {
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "arvo" : {
+            "type" : "string"
+          },
+          "uri" : {
+            "type" : "string"
+          },
+          "koodisto" : {
+            "type" : "string"
+          },
+          "versio" : {
+            "type" : "integer",
+            "format" : "int64"
           }
         }
       },
@@ -690,6 +714,9 @@
           },
           "valmis" : {
             "type" : "boolean"
+          },
+          "koodi" : {
+            "$ref" : "#/components/schemas/KoodiDto"
           }
         }
       },
