@@ -23,4 +23,8 @@ public class OpetussuunnitelmaJulkaistuQuery implements Serializable {
 
     private LocalDate julkaistuJalkeen;
     private LocalDate julkaistuEnnen;
+
+    public int getSivukoko() {
+      return Math.min(sivukoko, 50);
+    }
 }
