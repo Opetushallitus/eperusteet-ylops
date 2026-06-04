@@ -4,7 +4,6 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Omistussuhde;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
-import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaHierarkiaKopiointiService;
@@ -30,9 +29,6 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
 
     @Autowired
     private TekstiKappaleRepository tekstiKappaleRepository;
-
-    @Autowired
-    private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @Override
     public void kopioiPohjanRakenne(Opetussuunnitelma ops, Opetussuunnitelma pohja) {
