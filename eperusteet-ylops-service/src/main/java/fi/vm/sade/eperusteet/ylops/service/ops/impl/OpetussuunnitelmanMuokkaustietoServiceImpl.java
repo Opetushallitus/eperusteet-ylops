@@ -14,6 +14,7 @@ import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmanMuokkaustietoRepository;
 import fi.vm.sade.eperusteet.ylops.service.external.KayttajaClient;
 import fi.vm.sade.eperusteet.ylops.service.mapping.DtoMapper;
+import fi.vm.sade.eperusteet.ylops.service.ops.MuokkaustietoTekstikappaleViiteKohdeIdService;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmanMuokkaustietoService;
 import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -47,11 +48,16 @@ public class OpetussuunnitelmanMuokkaustietoServiceImpl implements Opetussuunnit
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
+    @Autowired
+    private MuokkaustietoTekstikappaleViiteKohdeIdService muokkaustietoTekstikappaleViiteKohdeIdService;
+
     @Override
     public List<MuokkaustietoKayttajallaDto> getOpsMuokkausTietos(Long opsId, Date viimeisinLuontiaika, int lukumaara) {
 
         List<MuokkaustietoKayttajallaDto> muokkaustiedot = mapper
                 .mapAsList(muokkausTietoRepository.findTop10ByOpetussuunnitelmaIdAndLuotuBeforeOrderByLuotuDesc(opsId, viimeisinLuontiaika, lukumaara),  MuokkaustietoKayttajallaDto.class);
+
+        muokkaustietoTekstikappaleViiteKohdeIdService.korjaa(opsId, muokkaustiedot);
 
         Map<String, KayttajanTietoDto> kayttajatiedot = kayttajaClient
                 .haeKayttajatiedot(muokkaustiedot.stream().map(MuokkaustietoKayttajallaDto::getMuokkaaja).collect(Collectors.toList()))

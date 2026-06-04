@@ -178,4 +178,11 @@ public interface OpetussuunnitelmaRepository extends JpaWithVersioningRepository
             "ORDER BY muokattu DESC " +
             "LIMIT 1")
     Long findEdellinenTekstitId(@Param("opetussuunnitelmaId") Long id);
+
+    @Query(nativeQuery = true, value = "SELECT DISTINCT aud.tekstit_id " +
+            "FROM opetussuunnitelma_aud aud " +
+            "WHERE aud.id = :opetussuunnitelmaId " +
+            "AND aud.tekstit_id IS NOT NULL " +
+            "AND aud.tekstit_id != (SELECT tekstit_id FROM opetussuunnitelma WHERE id = :opetussuunnitelmaId)")
+    List<Long> findAiemmatTekstitIdt(@Param("opetussuunnitelmaId") Long opetussuunnitelmaId);
 }
