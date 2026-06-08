@@ -195,7 +195,7 @@ public class OpetussuunnitelmaController {
     }
 
     @RequestMapping(value = "/{id}/opetussuunnitelmanPohjallaUusiaTeksteja", method = RequestMethod.GET)
-    public ResponseEntity<Boolean> opetussuunnitelmanPohjallaUusiaTeksteja(
+    public ResponseEntity<OpetussuunnitelmaNimiDto> opetussuunnitelmanPohjallaUusiaTeksteja(
             @PathVariable("id") final Long id) {
         return ResponseEntity.ok(opetussuunnitelmaService.opetussuunnitelmanPohjallaUusiaTeksteja(id));
     }

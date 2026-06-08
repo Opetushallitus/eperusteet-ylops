@@ -2102,7 +2102,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     }
 
     @Override
-    public boolean opetussuunnitelmanPohjallaUusiaTeksteja(Long id) {
+    public OpetussuunnitelmaNimiDto opetussuunnitelmanPohjallaUusiaTeksteja(Long id) {
         return dispatcher.get(id, OpsPohjaSynkronointi.class).opetussuunnitelmanPohjallaUusiaTeksteja(id);
     }
 
