@@ -190,7 +190,7 @@ public interface OpetussuunnitelmaService {
     void syncTekstitPohjasta(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    boolean opetussuunnitelmanPohjallaUusiaTeksteja(@P("opsId") Long opsId);
+    OpetussuunnitelmaNimiDto opetussuunnitelmanPohjallaUusiaTeksteja(@P("opsId") Long opsId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     boolean pohjanPerustePaivittynyt(@P("opsId") Long opsId);

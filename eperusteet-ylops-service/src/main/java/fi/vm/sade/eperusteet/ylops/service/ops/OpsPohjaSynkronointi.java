@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.ops;
 
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.parameters.P;
 
@@ -13,5 +14,5 @@ public interface OpsPohjaSynkronointi extends OpsToteutus {
     void syncTekstitPohjasta(@P("opsId") Long opsId, @P("pohjaId") Long pohjaId);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
-    boolean opetussuunnitelmanPohjallaUusiaTeksteja(@P("opsId") Long opsId);
+    OpetussuunnitelmaNimiDto opetussuunnitelmanPohjallaUusiaTeksteja(@P("opsId") Long opsId);
 }

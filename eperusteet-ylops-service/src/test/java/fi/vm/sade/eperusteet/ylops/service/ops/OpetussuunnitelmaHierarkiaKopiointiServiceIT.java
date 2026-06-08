@@ -11,6 +11,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
@@ -38,9 +39,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Transactional
 public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegrationTest {
-
-    @Autowired
-    private OpetussuunnitelmaHierarkiaKopiointiService hierarkiaKopiointiService;
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
@@ -323,11 +321,11 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
 
     @Test
     public void lukumaaratSamat() {
-        assertThat(opsPohjaSynkronointi.opetussuunnitelmanPohjallaUusiaTeksteja(ops2Id)).isFalse();
+        assertThat(opsPohjaSynkronointi.opetussuunnitelmanPohjallaUusiaTeksteja(ops2Id)).isNull();
 
         TekstiKappaleViiteDto.Matala tk1 = addTekstikappale("ops1 oma tekstikappale", ops1Id);
 
-        assertThat(opsPohjaSynkronointi.opetussuunnitelmanPohjallaUusiaTeksteja(ops2Id)).isFalse();
+        assertThat(opsPohjaSynkronointi.opetussuunnitelmanPohjallaUusiaTeksteja(ops2Id)).isNull();
     }
 
     @Test
@@ -336,7 +334,9 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         tk1.setPerusteTekstikappaleId(5666l);
         tekstiKappaleViiteService.updateTekstiKappaleViite(ops1Id, tk1.getId(), tk1);
 
-        assertThat(opsPohjaSynkronointi.opetussuunnitelmanPohjallaUusiaTeksteja(ops2Id)).isTrue();
+        assertThat(opsPohjaSynkronointi.opetussuunnitelmanPohjallaUusiaTeksteja(ops2Id))
+                .extracting(OpetussuunnitelmaNimiDto::getId)
+                .isEqualTo(ops1Id);
     }
 
     @Test
@@ -345,7 +345,20 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceIT extends AbstractIntegr
         tk1.setPerusteTekstikappaleId(5666l);
         tekstiKappaleViiteService.updateTekstiKappaleViite(ops2Id, tk1.getId(), tk1);
 
-        assertThat(opsPohjaSynkronointi.opetussuunnitelmanPohjallaUusiaTeksteja(ops2Id)).isTrue();
+        assertThat(opsPohjaSynkronointi.opetussuunnitelmanPohjallaUusiaTeksteja(ops2Id))
+                .extracting(OpetussuunnitelmaNimiDto::getId)
+                .isEqualTo(ops1Id);
+    }
+
+    @Test
+    public void perusteTekstitPaivittamatta() {
+        TekstiKappaleViiteDto.Matala tk1 = addTekstikappale("pohjaOps oma peruste tekstikappale", pohjaOpsId);
+        tk1.setPerusteTekstikappaleId(5667l);
+        tekstiKappaleViiteService.updateTekstiKappaleViite(pohjaOpsId, tk1.getId(), tk1);
+
+        assertThat(opsPohjaSynkronointi.opetussuunnitelmanPohjallaUusiaTeksteja(ops2Id))
+                .extracting(OpetussuunnitelmaNimiDto::getId)
+                .isEqualTo(pohjaOpsId);
     }
 
     private List<TekstiKappaleViite> tkViitteet(Opetussuunnitelma ops) {
