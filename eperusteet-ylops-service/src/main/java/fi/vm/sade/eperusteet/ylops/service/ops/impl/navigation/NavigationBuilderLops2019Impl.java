@@ -154,7 +154,10 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 })
                 .collect(Collectors.toList());
 
-        if (!ObjectUtils.isEmpty(oa.getOppimaarat()) || !ObjectUtils.isEmpty(paikallisetOppimaarat)) {
+        boolean paikallisestiLaajennettava = Optional.ofNullable(oa).map(Lops2019OppiaineKevytDto::getKoodi).map(koodi -> koodi.getUri()).isPresent()
+        && PAIKALLISET_LAAJENNUKSET_SALLITTU_OPPIAINE_KOODIT.stream().anyMatch(sallittuLaajennusKoodi -> oa.getKoodi().getUri().startsWith(sallittuLaajennusKoodi));
+
+        if (!ObjectUtils.isEmpty(oa.getOppimaarat()) || !ObjectUtils.isEmpty(paikallisetOppimaarat) || paikallisestiLaajennettava) {
             oppiaineNodeDto.add(NavigationNodeDto.of(NavigationType.oppimaarat).meta("navigation-sub-type", "subtype"));
 
             if (!ObjectUtils.isEmpty(oppiaineJarjestykset)) {
@@ -174,18 +177,16 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                 paikallisetOppimaarat.forEach(poa -> oppiaineNodeDto.add(mapPaikallinenOppiaine((Lops2019PaikallinenOppiaineKevytDto) poa, opintojaksotMap)));
               }
             }
-        }
-  
-        if (ObjectUtils.isEmpty(oa.getModuulit()) 
-            && Optional.ofNullable(oa).map(Lops2019OppiaineKevytDto::getKoodi).map(koodi -> koodi.getUri()).isPresent()
-            && PAIKALLISET_LAAJENNUKSET_SALLITTU_OPPIAINE_KOODIT.stream().anyMatch(sallittuLaajennusKoodi -> oa.getKoodi().getUri().startsWith(sallittuLaajennusKoodi))) {
-        
-            oppiaineNodeDto.add(
-              NavigationNodeDto.of(NavigationType.uusi_paikallinen_oppiaine)
-              .meta("navigation-sub-type", "add")
-              .meta("koodi", oa.getKoodi().getUri()));
-        } else if (ObjectUtils.isEmpty(oa.getOppimaarat())) {
 
+            if (paikallisestiLaajennettava) {
+              oppiaineNodeDto.add(
+                NavigationNodeDto.of(NavigationType.uusi_paikallinen_oppiaine)
+                .meta("navigation-sub-type", "add")
+                .meta("koodi", oa.getKoodi().getUri()));
+            } 
+        }
+          
+        if (!ObjectUtils.isEmpty(oa.getModuulit()) && ObjectUtils.isEmpty(oa.getOppimaarat())) {
           oppiaineNodeDto.add(NavigationNodeDto.of(NavigationType.opintojaksot).meta("navigation-sub-type", "subtype"));
           if (oa.getKoodi() != null && oa.getKoodi().getUri() != null
                   && opintojaksotMap.containsKey(oa.getKoodi().getUri())
@@ -232,7 +233,6 @@ public class NavigationBuilderLops2019Impl implements NavigationBuilder {
                                     .meta("laajuus", m.getLaajuus())
                                     .meta("pakollinen", m.isPakollinen())));
         }
-
 
         return oppiaineNodeDto;
     }
