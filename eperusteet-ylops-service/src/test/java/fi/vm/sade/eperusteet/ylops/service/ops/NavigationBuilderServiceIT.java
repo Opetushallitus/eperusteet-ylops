@@ -22,6 +22,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.impl.Lops2019PaikallisetLaajennuksetUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.NavigationUtil;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import org.junit.Test;
@@ -216,6 +217,45 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
                 .map(KoodiDto::getUri)
                 .collect(Collectors.toSet()))
                 .contains("moduulit_bi2_1", "moduulit_bi5");
+
+        assertThat(Lops2019PaikallisetLaajennuksetUtil.isPaikallisestiLaajennettava("oppiaineet_bi")).isFalse();
+
+        assertThat(biologia.getChildren()).extracting("type")
+                .contains(NavigationType.oppimaarat, NavigationType.opintojaksot, NavigationType.moduulit);
+
+        assertThat(CollectionUtil.treeToStream(biologia, NavigationNodeDto::getChildren)
+                .noneMatch(n -> n.getType() == NavigationType.uusi_paikallinen_oppiaine)).isTrue();
+
+        NavigationNodeDto biologianOpintojaksot = biologia.getChildren().stream()
+                .filter(n -> n.getType() == NavigationType.opintojaksot)
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Biologian opintojaksojen solmu puuttuu navigoinnista"));
+
+        assertThat(biologianOpintojaksot.getMeta().get("navigation-sub-type")).isEqualTo("subtype");
+
+        assertThat(biologia.getChildren()).extracting("type")
+                .contains(NavigationType.opintojakso, NavigationType.uusi_opintojakso);
+
+        assertThat(biologia.getChildren().stream()
+                .filter(n -> n.getType() == NavigationType.uusi_opintojakso)
+                .map(n -> n.getMeta().get("koodi"))
+                .collect(Collectors.toList()))
+                .containsExactly("oppiaineet_bi");
+
+        NavigationNodeDto paikallinenBiologia = CollectionUtil.treeToStream(biologia, NavigationNodeDto::getChildren)
+                .filter(n -> n.getType() == NavigationType.poppiaine)
+                .filter(n -> "paikallinen2".equals(n.getMeta().get("koodi")))
+                .findFirst()
+                .orElseThrow(() -> new AssertionError("Paikallinen biologia-oppiaine puuttuu navigoinnista"));
+
+        assertThat(CollectionUtil.treeToStream(paikallinenBiologia, NavigationNodeDto::getChildren)
+                .filter(n -> n.getType() == NavigationType.opintojakso))
+                .hasSize(1);
+
+        assertThat(CollectionUtil.treeToStream(paikallinenBiologia, NavigationNodeDto::getChildren)
+                .filter(n -> n.getType() == NavigationType.uusi_opintojakso)
+                .map(n -> n.getMeta().get("koodi")))
+                .containsExactly("paikallinen2");
     }
 
     @Test

@@ -14,6 +14,7 @@ import fi.vm.sade.eperusteet.ylops.dto.lukio.LukiokurssiUpdateDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.OpetuksenYleisetTavoitteetPerusteOpsDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.OpetuksenYleisetTavoitteetUpdateDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.OppaineKurssiTreeStructureDto;
+import fi.vm.sade.eperusteet.ylops.service.lops2019.impl.Lops2019PaikallisetLaajennuksetUtil;
 import fi.vm.sade.eperusteet.ylops.service.ops.lukio.LukioOpetussuunnitelmaService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
@@ -40,6 +43,12 @@ public class LukioOpetussuunnitelmatController {
     @RequestMapping(value = "/rakenne", method = RequestMethod.GET)
     public LukioOpetussuunnitelmaRakenneOpsDto getRakenne(@PathVariable("opsId") Long opsId) {
         return lukioOpetussuunnitelmaService.getRakenne(opsId);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/paikallisetLaajennuksetSallitutOppiaineKoodit", method = RequestMethod.GET)
+    public List<String> getPaikallisetLaajennuksetSallitutOppiaineKoodit(@PathVariable("opsId") Long opsId) {
+        return Lops2019PaikallisetLaajennuksetUtil.getSallitutOppiaineKoodit();
     }
 
     @ResponseBody

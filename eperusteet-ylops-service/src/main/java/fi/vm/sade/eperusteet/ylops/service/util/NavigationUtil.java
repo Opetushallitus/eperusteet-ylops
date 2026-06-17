@@ -10,15 +10,17 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 @UtilityClass
 public class NavigationUtil {
 
     public static final String POST_SEPARATOR = "post_separator";
     private static final Set<NavigationType> NUMEROITAVAT_TYYPIT = Set.of(NavigationType.viite);
-    private static final Set<NavigationType> UUSI_TYYPIT = Set.of(NavigationType.uusi_tekstikappale, NavigationType.uusi_opintojakso, NavigationType.uusi_oppimaara);
+    private static final Set<NavigationType> UUSI_TYYPIT = Set.of(
+      NavigationType.uusi_tekstikappale, 
+      NavigationType.uusi_opintojakso, 
+      NavigationType.uusi_oppimaara,
+      NavigationType.uusi_paikallinen_oppiaine
+    );
 
     public static NavigationNodeDto initPublic() {
         return NavigationNodeDto.of(NavigationType.root)

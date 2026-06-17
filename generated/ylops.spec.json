@@ -7474,6 +7474,36 @@
         }
       }
     },
+    "/api/opetussuunnitelmat/lukio/{opsId}/paikallisetLaajennuksetSallitutOppiaineKoodit" : {
+      "get" : {
+        "tags" : [ "LukioOpetussuunnitelmat" ],
+        "operationId" : "getPaikallisetLaajennuksetSallitutOppiaineKoodit",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/opetussuunnitelmat/lukio/{opsId}/oppiaine/{oppiaineId}" : {
       "get" : {
         "tags" : [ "LukioOpetussuunnitelmat" ],
@@ -13993,16 +14023,16 @@
           "unpaged" : {
             "type" : "boolean"
           },
+          "pageSize" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "pageNumber" : {
             "type" : "integer",
             "format" : "int32"
           },
           "paged" : {
             "type" : "boolean"
-          },
-          "pageSize" : {
-            "type" : "integer",
-            "format" : "int32"
           }
         }
       },
