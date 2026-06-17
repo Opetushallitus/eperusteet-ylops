@@ -256,7 +256,7 @@ public class ValidointiServiceImpl implements ValidointiService {
 
     private NavigationNodeDto vuosiluokkaNavigationNode(Oppiaine oa, Oppiaineenvuosiluokka vuosiluokka, Long vlkId) {
         NavigationNodeDto node = NavigationNodeDto.builder()
-                .type(NavigationType.paikallinenoppiainevuosiluokka)
+                .type(oa.getTyyppi().equals(OppiaineTyyppi.YHTEINEN) ? NavigationType.oppiaineenvuosiluokka : NavigationType.paikallinenoppiainevuosiluokka)
                 .label(oa.getNimi() != null ? new LokalisoituTekstiDto(null, oa.getNimi().getTeksti()) : null)
                 .build()
                 .meta("oppiaineId", oa.getId())
