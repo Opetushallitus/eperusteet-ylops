@@ -2,6 +2,7 @@ package fi.vm.sade.eperusteet.ylops.resource.julkinen;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fi.vm.sade.eperusteet.ylops.dto.OpetussuunnitelmaExportDto;
+import fi.vm.sade.eperusteet.utils.dto.SivutettuTulosDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaistuQuery;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkinenDto;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
@@ -19,7 +20,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Description;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -69,8 +69,8 @@ public class ExternalController {
             @Parameter(name = "julkaistuEnnen", schema = @Schema(type = "string", format = "date"), in = ParameterIn.QUERY,
                     description = "Loppuraja julkaisuajalle: mukaan vain julkaisut, joiden julkaisuhetki on ennen annetun päivän keskiyötä (`00:00`) — annettu päivämäärä itsessään ei sisälly rajaukseen. ISO 8601 -päivämäärä, esim. `2025-10-31`.")
     })
-    public Page<OpetussuunnitelmaJulkinenDto> getOpetussuunnitelmat(@Parameter(hidden = true) OpetussuunnitelmaJulkaistuQuery query) {
-        return opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query);
+    public SivutettuTulosDto<OpetussuunnitelmaJulkinenDto> getOpetussuunnitelmat(@Parameter(hidden = true) OpetussuunnitelmaJulkaistuQuery query) {
+        return SivutettuTulosDto.of(opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query));
     }
 
     @Operation(
