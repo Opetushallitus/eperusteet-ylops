@@ -71,6 +71,7 @@ public class WebSecurityConfigurationDev {
                         DevSecurityRole.ylops().build(),
                         DevSecurityRole.ylops().crud().build(),
                         DevSecurityRole.ylops().crud().oid("1.2.246.562.10.346830761110").build(),
+                        DevSecurityRole.ylops().admin().oid("1.2.246.562.10.346830761110").build(),
                         DevSecurityRole.ylops().read().oid("1.2.246.562.10.00000000001").build()
                 )
                 .build();
@@ -176,7 +177,8 @@ public class WebSecurityConfigurationDev {
                     DevSecurityRole.ylops().crud().oid("1.2.246.562.10.68534785412").build(),
                     DevSecurityRole.ylops().crud().oid("1.2.246.562.10.83037752777").build(),
                     DevSecurityRole.ylops().crud().oid("1.2.246.562.28.11332956371").build(),
-                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.81269623245").build())
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.81269623245").build(),
+                    DevSecurityRole.ylops().crud().oid("1.2.246.562.10.96398657237").build())
                 .build();
     }
 
