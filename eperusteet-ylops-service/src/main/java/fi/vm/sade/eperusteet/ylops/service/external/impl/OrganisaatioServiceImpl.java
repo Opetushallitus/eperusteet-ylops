@@ -54,12 +54,14 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
     private static final String VIRKAILIJA_HAKU = "/virkailija/haku";
     private static final String ORGANISAATIOT = "/rest/organisaatio/";
     private static final String ORGANISAATIO_API_CHILDOIDS_PATH = "/api/{organisaatioOid}/childoids";
+    private static final String ORGANISAATIO_API_HIERARKIA_HAE = "/api/hierarkia/hae?";
     private static final String HIERARKIA_HAKU = "v2/hierarkia/hae?";
-    private static final String HAKU = "v2/hae?";
     private static final String KUNTA_KRITEERI = "kunta=";
     private static final String STATUS_KRITEERI = "&aktiiviset=true&suunnitellut=true&lakkautetut=true";
     private static final String ORGANISAATIO_KRITEERI = "oidRestrictionList=";
-    private static final String KOULUTUSTOIMIJAT_KRITEERI = "&organisaatiotyyppi=Koulutustoimija";
+
+    private static final String KOULUTUSTOIMIJA_ORGANISAATIO_TYYPPI = "organisaatiotyyppi_01";
+    private static final String RYHMA_TYYPPI = "ryhmatyypit_5#1";
 
     @Value("${cas.key}")
     private String casKey;
@@ -116,6 +118,22 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         public void init() {
             peruskouluHakuehto = "&organisaatiotyyppi=Oppilaitos";
             lukioHakuehto = "&organisaatiotyyppi=Oppilaitos";
+        }
+
+        private JsonNode getOrganisaatiotHaku(String url) {
+            OphHttpClient httpClient = restClientFactory.get(serviceUrl, false);
+            OphHttpRequest request = OphHttpRequest.Builder.get(url).build();
+            return httpClient.<JsonNode>execute(request)
+                    .expectedStatus(SC_OK)
+                    .mapWith(text -> {
+                        try {
+                            JsonNode tree = mapper.readTree(text);
+                            return tree.get("organisaatiot");
+                        } catch (IOException ex) {
+                            throw new BusinessRuleViolationException("Organisaation tietojen hakeminen epäonnistui", ex);
+                        }
+                    })
+                    .orElse(null);
         }
 
         @Cacheable("organisaatiot")
@@ -200,24 +218,11 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         }
 
         private JsonNode get(String hakuehto) {
-            OphHttpClient client = restClientFactory.get(serviceUrl, false);
-            String url = serviceUrl + ORGANISAATIOT + hakuehto + STATUS_KRITEERI;
+            return getOrganisaatiotHaku(serviceUrl + ORGANISAATIOT + hakuehto + STATUS_KRITEERI);
+        }
 
-            OphHttpRequest request = OphHttpRequest.Builder
-                    .get(url)
-                    .build();
-
-            return client.<JsonNode>execute(request)
-                    .expectedStatus(SC_OK)
-                    .mapWith(text -> {
-                        try {
-                            JsonNode tree = mapper.readTree(text);
-                            return tree.get("organisaatiot");
-                        } catch (IOException ex) {
-                            throw new BusinessRuleViolationException("Organisaation tietojen hakeminen epäonnistui", ex);
-                        }
-                    })
-                    .orElse(null);
+        private JsonNode getHierarkiaApi(String hakuehto) {
+            return getOrganisaatiotHaku(serviceUrl + ORGANISAATIO_API_HIERARKIA_HAE + hakuehto + STATUS_KRITEERI);
         }
 
         private JsonNode getLaitoksetByEhtoAndTyypit(String hakuehto, Collection<String> tyypit) {
@@ -279,8 +284,8 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
         }
 
         public List<OrganisaatioLaajaDto> getKoulutustoimijat(String kunta) {
-            final String haku = HIERARKIA_HAKU + KUNTA_KRITEERI + kunta;
-            JsonNode resultJson = get(haku);
+            final String haku = KUNTA_KRITEERI + kunta;
+            JsonNode resultJson = getHierarkiaApi(haku);
             List<OrganisaatioLaajaDto> result = new ArrayList<>();
             for (JsonNode orgJson : resultJson) {
                 try {
@@ -329,7 +334,7 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
                     }).ifPresent(tree -> {
                         for (JsonNode ryhma : tree) {
                             for (JsonNode tyyppi : ryhma.get("ryhmatyypit")) {
-                                if ("ryhmatyypit_5#1".equals(tyyppi.asText())) {
+                                if (RYHMA_TYYPPI.equals(tyyppi.asText())) {
                                     result.add(ryhma);
                                     break;
                                 }
@@ -409,10 +414,11 @@ public class OrganisaatioServiceImpl implements OrganisaatioService {
                 .map(orgs -> orgs.stream())
                 .flatMap(x -> x)
                 .filter(toimija -> toimija.getOrganisaatiotyypit() != null && toimija.getChildren() != null)
-                .filter(toimija -> toimija.getOrganisaatiotyypit().contains("KOULUTUSTOIMIJA"))
+                .filter(toimija -> toimija.getOrganisaatiotyypit().contains(KOULUTUSTOIMIJA_ORGANISAATIO_TYYPPI))
                 .map(toimija -> {
                     toimija.setChildren(toimija.getChildren().stream()
-                            .filter(alitoimija -> sallitutOppilaitostyypit.contains(alitoimija.getOppilaitostyyppi()))
+                            .filter(alitoimija -> sallitutOppilaitostyypit.contains(alitoimija.getOppilaitostyyppi()) 
+                            || (alitoimija.getMuutOppilaitosTyyppiUris() != null && alitoimija.getMuutOppilaitosTyyppiUris().stream().anyMatch(sallitutOppilaitostyypit::contains)))
                             .collect(Collectors.toList()));
                     return toimija;
                 })
