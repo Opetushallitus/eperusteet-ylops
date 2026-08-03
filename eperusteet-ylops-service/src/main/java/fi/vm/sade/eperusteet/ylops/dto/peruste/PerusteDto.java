@@ -34,7 +34,7 @@ public class PerusteDto extends PerusteBaseDto {
         }
 
         if (getTpo() != null) {
-            return getTpo().getSisalto();
+            return getTpo().getTekstiKappaleViiteSisalto();
         }
 
         if (getAipe() != null) {
