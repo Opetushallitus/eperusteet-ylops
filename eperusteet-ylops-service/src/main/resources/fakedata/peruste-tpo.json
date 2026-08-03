@@ -44,6 +44,58 @@
         },
         "lapset" : [ ],
         "_perusteenOsa" : "5280"
+      }, {
+        "id" : 4572,
+        "perusteenOsa" : {
+          "osanTyyppi" : "taiteenala",
+          "id" : 5281,
+          "luotu" : 1423731373885,
+          "muokattu" : 1423731384691,
+          "muokkaaja" : "test",
+          "nimi" : {
+            "fi" : "Musiikki"
+          },
+          "tila" : "valmis",
+          "koodi" : {
+            "uri" : "taiteenalat_musiikki",
+            "arvo" : "musiikki",
+            "nimi" : {
+              "fi" : "Musiikki"
+            }
+          },
+          "laajuus" : 800,
+          "kasvatus" : {
+            "id" : 5282,
+            "nimi" : {
+              "fi" : "Kasvatus"
+            },
+            "teksti" : {
+              "fi" : "<p>Musiikkikasvatus</p>"
+            }
+          },
+          "taiteenOsat" : [ {
+            "id" : 5290,
+            "nimi" : {
+              "fi" : "Yhteismusisointi"
+            },
+            "laajuus" : 200,
+            "kuvaus" : {
+              "_id" : "5291",
+              "fi" : "<p>Yhteismusisoinnin kuvaus</p>"
+            },
+            "tavoitteet" : [ {
+              "fi" : "Oppia soittamaan yhdessä"
+            } ]
+          }, {
+            "id" : 5292,
+            "nimi" : {
+              "fi" : "Musiikin hahmotus"
+            },
+            "laajuus" : 100
+          } ]
+        },
+        "lapset" : [ ],
+        "_perusteenOsa" : "5281"
       } ]
     }
   }
