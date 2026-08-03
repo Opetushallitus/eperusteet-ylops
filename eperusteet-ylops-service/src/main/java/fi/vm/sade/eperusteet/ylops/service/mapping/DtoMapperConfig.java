@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.mapping;
 
+import fi.vm.sade.eperusteet.ylops.domain.Kooditettu;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.dokumentti.DokumenttiKuva;
@@ -12,7 +13,11 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale_;
+import fi.vm.sade.eperusteet.ylops.domain.tpo.Taiteenala;
+import fi.vm.sade.eperusteet.ylops.domain.tpo.Taiteenosa;
+import fi.vm.sade.eperusteet.ylops.dto.KooditettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiKuvaDto;
+import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoKoodiDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineRakenneListausDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineSaveDto;
@@ -27,6 +32,9 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.dto.tpo.TaiteenalaDto;
+import fi.vm.sade.eperusteet.ylops.dto.tpo.TaiteenosaDto;
+import fi.vm.sade.eperusteet.ylops.service.external.KoodistoService;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleDto;
 import ma.glasnost.orika.CustomMapper;
@@ -47,7 +55,8 @@ public class DtoMapperConfig {
             LokalisoituTekstiConverter lokalisoituTekstiConverter,
             PerusteenLokalisoituTekstiConverter perusteenLokalisoituTekstiConverter,
             PerusteenLokalisoituTekstiToLokalisoituTekstiConverter perusteenLokalisoituTekstiToLokalisoituTekstiConverter,
-            KoodistoKoodiConverter koodistoKoodiConverter) {
+            KoodistoKoodiConverter koodistoKoodiConverter,
+            KoodistoService koodistoService) {
 
         DefaultMapperFactory factory = new DefaultMapperFactory.Builder()
                 .build();
@@ -70,6 +79,14 @@ public class DtoMapperConfig {
         factory.classMap(OpetussuunnitelmaDto.class, Opetussuunnitelma.class)
                 .fieldBToA(Opetussuunnitelma_.tekstit.getName(), Opetussuunnitelma_.tekstit.getName())
                 .fieldBToA(Opetussuunnitelma_.oppiaineet.getName(), Opetussuunnitelma_.oppiaineet.getName())
+                .byDefault()
+                .register();
+
+        factory.classMap(TaiteenalaDto.class, Taiteenala.class)
+                .byDefault()
+                .register();
+
+        factory.classMap(TaiteenosaDto.class, Taiteenosa.class)
                 .byDefault()
                 .register();
 
@@ -145,6 +162,21 @@ public class DtoMapperConfig {
                         dokumenttiKuvaDto.setKansikuva(dokumenttiKuva.getKansikuva() != null);
                         dokumenttiKuvaDto.setYlatunniste(dokumenttiKuva.getYlatunniste() != null);
                         dokumenttiKuvaDto.setAlatunniste(dokumenttiKuva.getAlatunniste() != null);
+                    }
+                })
+                .register();
+
+        factory.classMap(Kooditettu.class, KooditettuDto.class)
+                .byDefault()
+                .favorExtension(true)
+                .customize(new CustomMapper<Kooditettu, KooditettuDto>() {
+                    @Override
+                    public void mapAtoB(Kooditettu source, KooditettuDto target, MappingContext context) {
+                        super.mapAtoB(source, target, context);
+                        KoodistoKoodiDto koodistoKoodi = koodistoService.getByUri(source.getUri());
+                        if (koodistoKoodi != null) {
+                            target.setKoodistoKoodi(koodistoKoodi);
+                        }
                     }
                 })
                 .register();

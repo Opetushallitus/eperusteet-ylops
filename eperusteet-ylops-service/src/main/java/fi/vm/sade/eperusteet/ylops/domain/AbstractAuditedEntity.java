@@ -63,7 +63,11 @@ public abstract class AbstractAuditedEntity implements Serializable {
         this.updateMuokkaustiedot();
     }
 
-    // Fixme: ilman tämän kutsumista, palauttaminen ei päivitä muokkaustietoja
+    /**
+     * Kutsuttava eksplisiittisesti silloin, kun muokkaustietoja tarvitaan jo ennen flushia
+     * (esim. vastaus-DTO mapataan heti save-kutsun jälkeen) tai poiston yhteydessä,
+     * jolloin @PreUpdate ei laukea.
+     */
     public void updateMuokkaustiedot() {
         muokattu = new Date();
         muokkaaja = SecurityUtil.getAuthenticatedPrincipal().getName();
