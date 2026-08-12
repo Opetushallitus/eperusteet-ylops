@@ -296,7 +296,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     @Override
     public Integer alaOpetussuunnitelmaLukumaaraTekstikappaleTunniste(Long opsId, UUID tunniste) {
         return opetussuunnitelmaRepository.findAllByPohjaId(opsId).stream()
-                .mapToInt(opetussuunnitelma -> tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(opetussuunnitelma.getId(), tunniste.toString()) != null ? 1 : 0)
+                .mapToInt(opetussuunnitelma -> tekstikappaleviiteRepository.findAllByOpetussuunnitelmaIdAndTekstikappaleTunniste(opetussuunnitelma.getId(), tunniste.toString()).isEmpty() ? 0 : 1)
                 .sum();
     }
 
@@ -306,12 +306,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
     }
 
     private void poistaTekstikappaleAlaOpetussuunnitelmista(Long opsId, UUID tunniste) {
-        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma -> {
-            TekstiKappaleViite viite = tekstikappaleviiteRepository.findByOpetussuunnitelmaIdAndTekstikappaleTunniste(opetussuunnitelma.getId(), tunniste.toString());
-            if (viite != null) {
-                removeTekstiKappaleViite(opetussuunnitelma.getId(), viite.getId());
-            }
-        });
+        opetussuunnitelmaRepository.findAllByPohjaId(opsId).forEach(opetussuunnitelma ->
+                tekstikappaleviiteRepository.findAllByOpetussuunnitelmaIdAndTekstikappaleTunniste(opetussuunnitelma.getId(), tunniste.toString())
+                        .forEach(viite -> removeTekstiKappaleViite(opetussuunnitelma.getId(), viite.getId())));
     }
 
     @Override

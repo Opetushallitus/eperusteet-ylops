@@ -55,6 +55,7 @@ import org.hibernate.envers.NotAudited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
@@ -65,7 +66,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-
 import static fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.orEmpty;
 import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
@@ -365,6 +365,17 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
             pohjin = pohjin.getPohja();
         }
         return pohjin;
+    }
+
+    public List<Opetussuunnitelma> getPohjaHierarkia() {
+        List<Opetussuunnitelma> hierarkia = new ArrayList<>();
+        Opetussuunnitelma pohjin = this;
+        hierarkia.add(pohjin);
+        while (pohjin.getPohja() != null) {
+            pohjin = pohjin.getPohja();
+            hierarkia.add(pohjin);
+        }
+        return hierarkia;
     }
 
     public Function<Long, List<OppiaineLukiokurssi>> lukiokurssitByOppiaine() {

@@ -6,6 +6,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiainePalautettuDto;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -29,7 +30,7 @@ public interface PoistoService {
     @PreAuthorize("hasPermission(#ops.getId(), 'opetussuunnitelma', 'MUOKKAUS')")
     Lops2019PoistettuDto remove(Opetussuunnitelma ops, Poistettava poistettava, PoistetunTyyppi tyyppi);
 
-    @PreAuthorize("hasPermission(#opetussuunnitelma?.getId(), 'opetussuunnitelma', 'MUOKKAUS') or (#opetussuunnitelma?.getPohja() != null and hasPermission(#opetussuunnitelma?.getPohja().getId(), 'opetussuunnitelma', 'MUOKKAUS'))")
-    Lops2019PoistettuDto remove(Opetussuunnitelma opetussuunnitelma, Poistettava poistettava);
+    @PreAuthorize("@opsOikeus.oikeusPohjahierarkiassa(#opetussuunnitelma, 'MUOKKAUS')")
+    Lops2019PoistettuDto remove(@P("opetussuunnitelma") Opetussuunnitelma opetussuunnitelma, Poistettava poistettava);
 
 }

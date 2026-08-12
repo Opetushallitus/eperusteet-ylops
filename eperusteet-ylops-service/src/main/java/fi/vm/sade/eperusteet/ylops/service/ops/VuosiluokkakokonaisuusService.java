@@ -29,7 +29,7 @@ public interface VuosiluokkakokonaisuusService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void delete(@P("opsId") Long opsId, Long kokonaisuusId);
 
-    @PreAuthorize("hasPermission(#opetussuunnitelma.getId(), 'opetussuunnitelma', 'MUOKKAUS') or (#opetussuunnitelma.getPohja() != null and hasPermission(#opetussuunnitelma.getPohja().getId(), 'opetussuunnitelma', 'MUOKKAUS'))")
+    @PreAuthorize("@opsOikeus.oikeusPohjahierarkiassa(#opetussuunnitelma, 'MUOKKAUS')")
     void removeSisaltoalueetInKeskeinensisaltoalueet(@P("opetussuunnitelma") Opetussuunnitelma opetussuunnitelma, Oppiaineenvuosiluokkakokonaisuus vuosiluokkakokonaisuus, boolean clearSisaltoalueet);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
