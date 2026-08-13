@@ -22,10 +22,10 @@ public interface OpetussuunnitelmanMuokkaustietoService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS') or hasPermission(null, 'pohja', 'LUONTI')")
     void addOpsMuokkausTieto(@P("opsId") Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma);
 
-    @PreAuthorize("hasPermission(#opetussuunnitelma.getId(), 'opetussuunnitelma', 'MUOKKAUS') or (#opetussuunnitelma.getPohja() != null and hasPermission(#opetussuunnitelma.getPohja().getId(), 'opetussuunnitelma', 'MUOKKAUS'))")
+    @PreAuthorize("@opsOikeus.oikeusPohjahierarkiassa(#opetussuunnitelma, 'MUOKKAUS')")
     void addOpsMuokkausTieto(@P("opetussuunnitelma") Opetussuunnitelma opetussuunnitelma, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma);
 
-    @PreAuthorize("hasPermission(#opetussuunnitelma.getId(), 'opetussuunnitelma', 'MUOKKAUS') or (#opetussuunnitelma.getPohja() != null and hasPermission(#opetussuunnitelma.getPohja().getId(), 'opetussuunnitelma', 'MUOKKAUS'))")
+    @PreAuthorize("@opsOikeus.oikeusPohjahierarkiassa(#opetussuunnitelma, 'MUOKKAUS')")
     void addOpsMuokkausTieto(@P("opetussuunnitelma") Opetussuunnitelma opetussuunnitelma, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma, String lisatieto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS') or hasPermission(null, 'pohja', 'LUONTI')")
@@ -40,7 +40,7 @@ public interface OpetussuunnitelmanMuokkaustietoService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void addOpsMuokkausTieto(@P("opsId") Long opsId, HistoriaTapahtuma historiaTapahtuma, MuokkausTapahtuma muokkausTapahtuma, NavigationType navigationType, String lisatieto, Set<OpetussuunnitelmanMuokkaustietoLisaparametrit> lisaparametrit);
 
-    @PreAuthorize("hasPermission(#opetussuunnitelma.getId(), 'opetussuunnitelma', 'MUOKKAUS') or (#opetussuunnitelma.getPohja() != null and hasPermission(#opetussuunnitelma.getPohja().getId(), 'opetussuunnitelma', 'MUOKKAUS'))")
+    @PreAuthorize("@opsOikeus.oikeusPohjahierarkiassa(#opetussuunnitelma, 'MUOKKAUS')")
     void poistaOpsMuokkaustieto(@P("opetussuunnitelma") Opetussuunnitelma opetussuunnitelma, String lisatieto);
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
@@ -48,4 +48,6 @@ public interface OpetussuunnitelmanMuokkaustietoService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     OpetussuunnitelmanMuokkaustietoDto getOpetussuunnitelmanPohjanViimeisinPohjaTekstiSync(Long opsId);
+
+
 }

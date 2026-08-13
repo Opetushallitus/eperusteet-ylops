@@ -26,7 +26,7 @@ public class OpetussuunnitelmaAsyncTekstitPohjastaService {
     @Autowired
     private OpetussuunnitelmanMuokkaustietoService opetussuunnitelmanMuokkaustietoService;
 
-    @PreAuthorize("hasPermission(#opetussuunnitelma.getId(), 'opetussuunnitelma', 'MUOKKAUS') or (#opetussuunnitelma.getPohja() != null and hasPermission(#opetussuunnitelma.getPohja().getId(), 'opetussuunnitelma', 'MUOKKAUS'))")
+    @PreAuthorize("@opsOikeus.oikeusPohjahierarkiassa(#opetussuunnitelma, 'MUOKKAUS')")
     @Async
     public void syncTekstitPohjastaKaikki(@P("opetussuunnitelma") Opetussuunnitelma pohjaOps) {
         opetussuunnitelmaRepository.findAllByPohjaId(pohjaOps.getId()).forEach(opetussuunnitelma -> {
