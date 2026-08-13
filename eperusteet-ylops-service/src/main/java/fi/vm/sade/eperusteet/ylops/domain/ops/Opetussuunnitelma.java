@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.domain.tpo.TpoSisalto;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.domain.vuosiluokkakokonaisuus.Vuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
@@ -233,6 +234,11 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     private Lops2019Sisalto lops2019;
 
     @Getter
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
+            cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private TpoSisalto tpo;
+
+    @Getter
     @Audited
     @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -404,7 +410,9 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
             return KoulutustyyppiToteutus.PERUSOPETUS;
         } else if (toteutus == null && KoulutusTyyppi.LUKIOKOULUTUS.equals(koulutustyyppi)) {
             return KoulutustyyppiToteutus.LOPS;
-        } else {
+        } else if (KoulutusTyyppi.TPO.equals(koulutustyyppi)) {
+          return KoulutustyyppiToteutus.TPO;
+        } else{
             return toteutus;
         }
     }
@@ -412,6 +420,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     public void setLops2019(Lops2019Sisalto lops2019) {
         if (this.lops2019 == null) {
             this.lops2019 = lops2019;
+        }
+    }
+
+    public void setTpo(TpoSisalto tpo) {
+        if (this.tpo == null) {
+            this.tpo = tpo;
         }
     }
 

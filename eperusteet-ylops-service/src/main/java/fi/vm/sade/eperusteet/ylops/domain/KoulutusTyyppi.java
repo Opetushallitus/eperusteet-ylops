@@ -53,7 +53,6 @@ public enum KoulutusTyyppi {
                 || tyyppi.equals(LISAOPETUS.toString())
                 || tyyppi.equals(ESIOPETUS.toString())
                 || tyyppi.equals(VARHAISKASVATUS.toString())
-                || tyyppi.equals(TPO.toString())
                 || tyyppi.equals(PERUSOPETUSVALMISTAVA.toString()));
     }
 

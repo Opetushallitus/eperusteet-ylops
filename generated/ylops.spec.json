@@ -10,8 +10,8 @@
     "version" : "v3.0.0"
   },
   "servers" : [ {
-    "url" : "https://virkailija.opintopolku.fi/eperusteet-ylops-service",
-    "description" : "OPS-työkalu API"
+    "url" : "https://localhost:8081/eperusteet-ylops-service",
+    "description" : "Generated server url"
   } ],
   "paths" : {
     "/api/opetussuunnitelmat/lukio/{opsId}/oppiaine" : {
@@ -1292,6 +1292,253 @@
           }
         }, {
           "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/taiteenosat/{taiteenosaId}" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getTaiteenosa",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "taiteenosaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaiteenosaDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "updateTaiteenosa",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "taiteenosaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TaiteenosaDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaiteenosaDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/taiteenalat" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getTaiteenalat",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/TaiteenalaDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "addTaiteenala",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TaiteenalaDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaiteenalaDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/taiteenalat/{taiteenalaId}" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getTaiteenala",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "taiteenalaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaiteenalaDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "updateTaiteenala",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "taiteenalaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TaiteenalaDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaiteenalaDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "removeTaiteenala",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "taiteenalaId",
           "in" : "path",
           "required" : true,
           "schema" : {
@@ -5600,6 +5847,102 @@
         }
       }
     },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/peruste" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getPerusteSisalto",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TPOOpetuksenSisaltoDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/peruste/taiteenosat/{perusteenTaiteenosanId}" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getPerusteenTaiteenosa",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "perusteenTaiteenosanId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PerusteTaiteenosaDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/peruste/taiteenalat/{koodiUri}" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getPerusteenTaiteenala",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "koodiUri",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TpoPerusteenTaiteenalaDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/opetussuunnitelmat/{opsId}/peruste/tekstikappaleet" : {
       "get" : {
         "tags" : [ "Lops2019PerusteController" ],
@@ -6099,7 +6442,7 @@
     "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/peruste" : {
       "get" : {
         "tags" : [ "Oppiaineet" ],
-        "operationId" : "getPerusteSisalto",
+        "operationId" : "getPerusteSisalto_1",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "path",
@@ -8398,30 +8741,28 @@
         "parameters" : [ {
           "name" : "nimi",
           "in" : "query",
-          "description" : "Opetussuunnitelman nimi",
+          "description" : "Osittainen nimihaku annetulla kielellä (`kieli`): osuu opetussuunnitelman nimeen tai julkaisuun liitettyjen organisaatioiden nimiin. Tyhjä arvo jättää rajauksen käyttämättä.",
           "schema" : {
             "type" : "string"
           }
         }, {
           "name" : "kieli",
           "in" : "query",
+          "description" : "Kielikoodi (esim. `fi`, `sv`, `en`). Rajaa tuloksiin julkaisut, joissa kyseinen kieli on julkaisukielten joukossa, ja määrää millä kielellä nimikenttiä verrataan sekä tulosten lajittelujärjestyksen. Oletus: `fi`.",
           "schema" : {
-            "type" : "array",
-            "items" : {
-              "type" : "string"
-            }
+            "type" : "string"
           }
         }, {
           "name" : "perusteenDiaarinumero",
           "in" : "query",
-          "description" : "Opetussuunnitelman perusteen diaarinumero",
+          "description" : "Opetussuunnitelman perusteen diaarinumero; täsmällinen vastaavuus (`=`). Tyhjä arvo jättää rajauksen käyttämättä.",
           "schema" : {
             "type" : "string"
           }
         }, {
           "name" : "koulutustyypit",
           "in" : "query",
-          "description" : "Opetussuunnitelmien koulutustyypit",
+          "description" : "Yksi tai useampi koulutustyyppi (koodiarvo). Tuloksessa vain näihin tyyppeihin kuuluvat julkaisut; tyhjä lista ei rajaa tyypin perusteella.",
           "schema" : {
             "type" : "array",
             "items" : {
@@ -8431,13 +8772,14 @@
         }, {
           "name" : "organisaatio",
           "in" : "query",
-          "description" : "Organisaation oid",
+          "description" : "Organisaation OID tai sen osa; osittainen vastaavuus julkaisuun liitettyjen organisaatioiden OID:eihin. Tyhjä arvo jättää rajauksen käyttämättä.",
           "schema" : {
             "type" : "string"
           }
         }, {
           "name" : "sivu",
           "in" : "query",
+          "description" : "Sivutus: haettavan sivun numero (0-indeksoitu). Oletusarvo 0.",
           "schema" : {
             "type" : "integer",
             "format" : "int32"
@@ -8445,6 +8787,7 @@
         }, {
           "name" : "sivukoko",
           "in" : "query",
+          "description" : "Sivutus: yhdellä sivulla palautettavien tulosten määrä. Oletusarvo 10. Maksimi 50.",
           "schema" : {
             "type" : "integer",
             "format" : "int32"
@@ -8452,7 +8795,7 @@
         }, {
           "name" : "julkaistuJalkeen",
           "in" : "query",
-          "description" : "Alkupäivä (ISO 8601, esim. 2025-10-03)",
+          "description" : "Alkuraja julkaisuajalle: mukaan julkaisut, joiden julkaisuhetki on annetun päivän keskiyön (`00:00`) tai sen jälkeen (päivä mukana). ISO 8601 -päivämäärä, esim. `2025-10-03`.",
           "schema" : {
             "type" : "string",
             "format" : "date"
@@ -8460,7 +8803,7 @@
         }, {
           "name" : "julkaistuEnnen",
           "in" : "query",
-          "description" : "Loppupäivä (ISO 8601, esim. 2025-10-31)",
+          "description" : "Loppuraja julkaisuajalle: mukaan vain julkaisut, joiden julkaisuhetki on ennen annetun päivän keskiyötä (`00:00`) — annettu päivämäärä itsessään ei sisälly rajaukseen. ISO 8601 -päivämäärä, esim. `2025-10-31`.",
           "schema" : {
             "type" : "string",
             "format" : "date"
@@ -8472,7 +8815,7 @@
             "content" : {
               "application/json;charset=UTF-8" : {
                 "schema" : {
-                  "$ref" : "#/components/schemas/PageOpetussuunnitelmaJulkinenDto"
+                  "$ref" : "#/components/schemas/SivutettuTulosDtoOpetussuunnitelmaJulkinenDto"
                 }
               }
             }
@@ -8951,7 +9294,8 @@
               "type" : "string"
             }
           }
-        }
+        },
+        "description" : "Koulutuksen järjestäjäorganisaatio."
       },
       "Kommentti2019Dto" : {
         "type" : "object",
@@ -9143,7 +9487,8 @@
               "type" : "string"
             }
           }
-        }
+        },
+        "description" : "Opetussuunnitelmaan liitetyt kunnat (koodisto)."
       },
       "LaajaalainenosaaminenDto" : {
         "type" : "object",
@@ -9247,19 +9592,23 @@
         "properties" : {
           "id" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman yksilöivä tunniste.",
             "format" : "int64"
           },
           "julkaisukielet" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
             "items" : {
               "type" : "string",
+              "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
               "enum" : [ "FI", "SV", "SE", "RU", "EN" ]
             }
           },
           "organisaatiot" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt organisaatiot.",
             "items" : {
               "$ref" : "#/components/schemas/OrganisaatioDto"
             }
@@ -9270,6 +9619,7 @@
           "kunnat" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt kunnat (koodisto).",
             "items" : {
               "$ref" : "#/components/schemas/KoodistoDto"
             }
@@ -9277,95 +9627,122 @@
           "kuvaus" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman kuvaus lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman kuvaus lokalisoituna."
           },
           "luoja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman luoneen käyttäjän tunniste."
           },
           "luotu" : {
             "type" : "string",
+            "description" : "Luontiaika.",
             "format" : "date-time"
           },
           "muokattu" : {
             "type" : "string",
+            "description" : "Viimeisin muokkausaika.",
             "format" : "date-time"
           },
           "muokkaaja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Viimeksi muokanneen käyttäjän tunniste."
           },
           "hyvaksyjataho" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Hyväksyjätaho."
           },
           "nimi" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman nimi lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman nimi lokalisoituna."
           },
           "perusteenDiaarinumero" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman perusteen diaarinumero."
           },
           "perusteenId" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman perusteen tunniste ePerusteet-palvelussa.",
             "format" : "int64"
           },
           "tila" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tila (esim. `luonnos`, `valmis`, `julkaistu`).",
             "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
           },
           "tyyppi" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tyyppi: `ops` (varsinaisen opetussuunnitelman) tai `pohja` (pohjaopetussuunnitelma).",
             "enum" : [ "OPS", "POHJA" ]
           },
           "koulutustyyppi" : {
             "type" : "string",
+            "description" : "Koulutustyyppi (koodistoarvo, esim. `koulutustyyppi_16`).",
             "enum" : [ "PERUSTUTKINTO", "AMMATTITUTKINTO", "ERIKOISAMMATTITUTKINTO", "AIKUISTENPERUSOPETUS", "LISAOPETUS", "ESIOPETUS", "VARHAISKASVATUS", "PERUSOPETUS", "LUKIOKOULUTUS", "LUKIOVALMISTAVAKOULUTUS", "PERUSOPETUSVALMISTAVA", "AIKUISLUKIOKOULUTUS", "TPO" ]
           },
           "toteutus" : {
             "type" : "string",
+            "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
           },
           "paatospaivamaara" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman päätöspäivämäärä.",
             "format" : "date-time"
           },
           "ryhmaoid" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän OID, jos opetussuunnitelma kuuluu ryhmään."
           },
           "ryhmanNimi" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän nimi."
           },
           "esikatseltavissa" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma esikatseltavissa ennen varsinaista julkaisua."
           },
           "ainepainoitteinen" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma ainepainotteinen."
           },
           "perusteenVoimassaoloAlkaa" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon alkupäivä.",
             "format" : "date-time"
           },
           "perusteenVoimassaoloLoppuu" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon päättymispäivä.",
             "format" : "date-time"
           },
           "tuoPohjanOpintojaksot" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman opintojaksot tähän opetussuunnitelmaan."
           },
           "tuoPohjanOppimaarat" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman oppimäärät tähän opetussuunnitelmaan."
           },
           "perusteDataTuontiPvm" : {
             "type" : "string",
+            "description" : "Perustetietojen viimeisin tuontiaika.",
             "format" : "date-time"
           },
           "viimeisinSyncPvm" : {
             "type" : "string",
+            "description" : "Viimeisin synkronointiaika perusteen kanssa.",
             "format" : "date-time"
           },
           "viimeisinJulkaisuAika" : {
             "type" : "string",
+            "description" : "Viimeisimmän julkaisun ajankohta.",
             "format" : "date-time"
           },
           "pohja" : {
@@ -9744,7 +10121,8 @@
               "$ref" : "#/components/schemas/Puu"
             }
           }
-        }
+        },
+        "description" : "Opetussuunnitelman tekstirakenne puumuotona."
       },
       "TekstiKappaleDto" : {
         "type" : "object",
@@ -9865,19 +10243,23 @@
         "properties" : {
           "id" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman yksilöivä tunniste.",
             "format" : "int64"
           },
           "julkaisukielet" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
             "items" : {
               "type" : "string",
+              "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
               "enum" : [ "FI", "SV", "SE", "RU", "EN" ]
             }
           },
           "organisaatiot" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt organisaatiot.",
             "items" : {
               "$ref" : "#/components/schemas/OrganisaatioDto"
             }
@@ -9888,6 +10270,7 @@
           "kunnat" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt kunnat (koodisto).",
             "items" : {
               "$ref" : "#/components/schemas/KoodistoDto"
             }
@@ -9895,98 +10278,126 @@
           "kuvaus" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman kuvaus lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman kuvaus lokalisoituna."
           },
           "luoja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman luoneen käyttäjän tunniste."
           },
           "luotu" : {
             "type" : "string",
+            "description" : "Luontiaika.",
             "format" : "date-time"
           },
           "muokattu" : {
             "type" : "string",
+            "description" : "Viimeisin muokkausaika.",
             "format" : "date-time"
           },
           "muokkaaja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Viimeksi muokanneen käyttäjän tunniste."
           },
           "hyvaksyjataho" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Hyväksyjätaho."
           },
           "nimi" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman nimi lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman nimi lokalisoituna."
           },
           "perusteenDiaarinumero" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman perusteen diaarinumero."
           },
           "perusteenId" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman perusteen tunniste ePerusteet-palvelussa.",
             "format" : "int64"
           },
           "tila" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tila (esim. `luonnos`, `valmis`, `julkaistu`).",
             "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
           },
           "tyyppi" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tyyppi: `ops` (varsinaisen opetussuunnitelman) tai `pohja` (pohjaopetussuunnitelma).",
             "enum" : [ "OPS", "POHJA" ]
           },
           "koulutustyyppi" : {
             "type" : "string",
+            "description" : "Koulutustyyppi (koodistoarvo, esim. `koulutustyyppi_16`).",
             "enum" : [ "PERUSTUTKINTO", "AMMATTITUTKINTO", "ERIKOISAMMATTITUTKINTO", "AIKUISTENPERUSOPETUS", "LISAOPETUS", "ESIOPETUS", "VARHAISKASVATUS", "PERUSOPETUS", "LUKIOKOULUTUS", "LUKIOVALMISTAVAKOULUTUS", "PERUSOPETUSVALMISTAVA", "AIKUISLUKIOKOULUTUS", "TPO" ]
           },
           "toteutus" : {
             "type" : "string",
+            "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
           },
           "paatospaivamaara" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman päätöspäivämäärä.",
             "format" : "date-time"
           },
           "ryhmaoid" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän OID, jos opetussuunnitelma kuuluu ryhmään."
           },
           "ryhmanNimi" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän nimi."
           },
           "esikatseltavissa" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma esikatseltavissa ennen varsinaista julkaisua."
           },
           "ainepainoitteinen" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma ainepainotteinen."
           },
           "perusteenVoimassaoloAlkaa" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon alkupäivä.",
             "format" : "date-time"
           },
           "perusteenVoimassaoloLoppuu" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon päättymispäivä.",
             "format" : "date-time"
           },
           "tuoPohjanOpintojaksot" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman opintojaksot tähän opetussuunnitelmaan."
           },
           "tuoPohjanOppimaarat" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman oppimäärät tähän opetussuunnitelmaan."
           },
           "perusteDataTuontiPvm" : {
             "type" : "string",
+            "description" : "Perustetietojen viimeisin tuontiaika.",
             "format" : "date-time"
           },
           "viimeisinSyncPvm" : {
             "type" : "string",
+            "description" : "Viimeisin synkronointiaika perusteen kanssa.",
             "format" : "date-time"
           },
           "viimeisinJulkaisuAika" : {
             "type" : "string",
+            "description" : "Viimeisimmän julkaisun ajankohta.",
             "format" : "date-time"
           }
-        }
+        },
+        "description" : "Opetussuunnitelman yhteiset perustiedot."
       },
       "UnwrappedOpsVuosiluokkakokonaisuusDto" : {
         "type" : "object",
@@ -10112,6 +10523,112 @@
           },
           "_tekstiKappale" : {
             "type" : "string"
+          }
+        }
+      },
+      "TaiteenosaDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "perusteenTaiteenosanId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "paikallinenTarkennus" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "KoodistoKoodiDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "koodiUri" : {
+            "type" : "string"
+          },
+          "koodiArvo" : {
+            "type" : "string"
+          },
+          "versio" : {
+            "type" : "string"
+          },
+          "voimassaAlkuPvm" : {
+            "type" : "string"
+          },
+          "voimassaLoppuPvm" : {
+            "type" : "string"
+          },
+          "metadata" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/KoodistoMetadataDto"
+            }
+          },
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "KoodistoMetadataDto" : {
+        "type" : "object",
+        "properties" : {
+          "nimi" : {
+            "type" : "string"
+          },
+          "kieli" : {
+            "type" : "string"
+          }
+        }
+      },
+      "TaiteenalaDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "koodi" : {
+            "type" : "string"
+          },
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "paikallinenTarkennus" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "taiteenosat" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaiteenosaDto"
+            }
+          },
+          "kooditettu" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "writeOnly" : true
+          },
+          "koodistoKoodi" : {
+            "$ref" : "#/components/schemas/KoodistoKoodiDto"
           }
         }
       },
@@ -10737,9 +11254,6 @@
       "Part" : {
         "type" : "object",
         "properties" : {
-          "contentType" : {
-            "type" : "string"
-          },
           "name" : {
             "type" : "string"
           },
@@ -10750,14 +11264,17 @@
           "inputStream" : {
             "type" : "object"
           },
+          "submittedFileName" : {
+            "type" : "string"
+          },
+          "contentType" : {
+            "type" : "string"
+          },
           "headerNames" : {
             "type" : "array",
             "items" : {
               "type" : "string"
             }
-          },
-          "submittedFileName" : {
-            "type" : "string"
           }
         }
       },
@@ -10806,19 +11323,23 @@
         "properties" : {
           "id" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman yksilöivä tunniste.",
             "format" : "int64"
           },
           "julkaisukielet" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
             "items" : {
               "type" : "string",
+              "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
               "enum" : [ "FI", "SV", "SE", "RU", "EN" ]
             }
           },
           "organisaatiot" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt organisaatiot.",
             "items" : {
               "$ref" : "#/components/schemas/OrganisaatioDto"
             }
@@ -10829,6 +11350,7 @@
           "kunnat" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt kunnat (koodisto).",
             "items" : {
               "$ref" : "#/components/schemas/KoodistoDto"
             }
@@ -10836,95 +11358,122 @@
           "kuvaus" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman kuvaus lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman kuvaus lokalisoituna."
           },
           "luoja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman luoneen käyttäjän tunniste."
           },
           "luotu" : {
             "type" : "string",
+            "description" : "Luontiaika.",
             "format" : "date-time"
           },
           "muokattu" : {
             "type" : "string",
+            "description" : "Viimeisin muokkausaika.",
             "format" : "date-time"
           },
           "muokkaaja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Viimeksi muokanneen käyttäjän tunniste."
           },
           "hyvaksyjataho" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Hyväksyjätaho."
           },
           "nimi" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman nimi lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman nimi lokalisoituna."
           },
           "perusteenDiaarinumero" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman perusteen diaarinumero."
           },
           "perusteenId" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman perusteen tunniste ePerusteet-palvelussa.",
             "format" : "int64"
           },
           "tila" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tila (esim. `luonnos`, `valmis`, `julkaistu`).",
             "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
           },
           "tyyppi" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tyyppi: `ops` (varsinaisen opetussuunnitelman) tai `pohja` (pohjaopetussuunnitelma).",
             "enum" : [ "OPS", "POHJA" ]
           },
           "koulutustyyppi" : {
             "type" : "string",
+            "description" : "Koulutustyyppi (koodistoarvo, esim. `koulutustyyppi_16`).",
             "enum" : [ "PERUSTUTKINTO", "AMMATTITUTKINTO", "ERIKOISAMMATTITUTKINTO", "AIKUISTENPERUSOPETUS", "LISAOPETUS", "ESIOPETUS", "VARHAISKASVATUS", "PERUSOPETUS", "LUKIOKOULUTUS", "LUKIOVALMISTAVAKOULUTUS", "PERUSOPETUSVALMISTAVA", "AIKUISLUKIOKOULUTUS", "TPO" ]
           },
           "toteutus" : {
             "type" : "string",
+            "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
           },
           "paatospaivamaara" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman päätöspäivämäärä.",
             "format" : "date-time"
           },
           "ryhmaoid" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän OID, jos opetussuunnitelma kuuluu ryhmään."
           },
           "ryhmanNimi" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän nimi."
           },
           "esikatseltavissa" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma esikatseltavissa ennen varsinaista julkaisua."
           },
           "ainepainoitteinen" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma ainepainotteinen."
           },
           "perusteenVoimassaoloAlkaa" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon alkupäivä.",
             "format" : "date-time"
           },
           "perusteenVoimassaoloLoppuu" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon päättymispäivä.",
             "format" : "date-time"
           },
           "tuoPohjanOpintojaksot" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman opintojaksot tähän opetussuunnitelmaan."
           },
           "tuoPohjanOppimaarat" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman oppimäärät tähän opetussuunnitelmaan."
           },
           "perusteDataTuontiPvm" : {
             "type" : "string",
+            "description" : "Perustetietojen viimeisin tuontiaika.",
             "format" : "date-time"
           },
           "viimeisinSyncPvm" : {
             "type" : "string",
+            "description" : "Viimeisin synkronointiaika perusteen kanssa.",
             "format" : "date-time"
           },
           "viimeisinJulkaisuAika" : {
             "type" : "string",
+            "description" : "Viimeisimmän julkaisun ajankohta.",
             "format" : "date-time"
           },
           "julkaistu" : {
@@ -10986,19 +11535,23 @@
         "properties" : {
           "id" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman yksilöivä tunniste.",
             "format" : "int64"
           },
           "julkaisukielet" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
             "items" : {
               "type" : "string",
+              "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
               "enum" : [ "FI", "SV", "SE", "RU", "EN" ]
             }
           },
           "organisaatiot" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt organisaatiot.",
             "items" : {
               "$ref" : "#/components/schemas/OrganisaatioDto"
             }
@@ -11009,6 +11562,7 @@
           "kunnat" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt kunnat (koodisto).",
             "items" : {
               "$ref" : "#/components/schemas/KoodistoDto"
             }
@@ -11016,95 +11570,122 @@
           "kuvaus" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman kuvaus lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman kuvaus lokalisoituna."
           },
           "luoja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman luoneen käyttäjän tunniste."
           },
           "luotu" : {
             "type" : "string",
+            "description" : "Luontiaika.",
             "format" : "date-time"
           },
           "muokattu" : {
             "type" : "string",
+            "description" : "Viimeisin muokkausaika.",
             "format" : "date-time"
           },
           "muokkaaja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Viimeksi muokanneen käyttäjän tunniste."
           },
           "hyvaksyjataho" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Hyväksyjätaho."
           },
           "nimi" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman nimi lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman nimi lokalisoituna."
           },
           "perusteenDiaarinumero" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman perusteen diaarinumero."
           },
           "perusteenId" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman perusteen tunniste ePerusteet-palvelussa.",
             "format" : "int64"
           },
           "tila" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tila (esim. `luonnos`, `valmis`, `julkaistu`).",
             "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
           },
           "tyyppi" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tyyppi: `ops` (varsinaisen opetussuunnitelman) tai `pohja` (pohjaopetussuunnitelma).",
             "enum" : [ "OPS", "POHJA" ]
           },
           "koulutustyyppi" : {
             "type" : "string",
+            "description" : "Koulutustyyppi (koodistoarvo, esim. `koulutustyyppi_16`).",
             "enum" : [ "PERUSTUTKINTO", "AMMATTITUTKINTO", "ERIKOISAMMATTITUTKINTO", "AIKUISTENPERUSOPETUS", "LISAOPETUS", "ESIOPETUS", "VARHAISKASVATUS", "PERUSOPETUS", "LUKIOKOULUTUS", "LUKIOVALMISTAVAKOULUTUS", "PERUSOPETUSVALMISTAVA", "AIKUISLUKIOKOULUTUS", "TPO" ]
           },
           "toteutus" : {
             "type" : "string",
+            "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
           },
           "paatospaivamaara" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman päätöspäivämäärä.",
             "format" : "date-time"
           },
           "ryhmaoid" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän OID, jos opetussuunnitelma kuuluu ryhmään."
           },
           "ryhmanNimi" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän nimi."
           },
           "esikatseltavissa" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma esikatseltavissa ennen varsinaista julkaisua."
           },
           "ainepainoitteinen" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma ainepainotteinen."
           },
           "perusteenVoimassaoloAlkaa" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon alkupäivä.",
             "format" : "date-time"
           },
           "perusteenVoimassaoloLoppuu" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon päättymispäivä.",
             "format" : "date-time"
           },
           "tuoPohjanOpintojaksot" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman opintojaksot tähän opetussuunnitelmaan."
           },
           "tuoPohjanOppimaarat" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman oppimäärät tähän opetussuunnitelmaan."
           },
           "perusteDataTuontiPvm" : {
             "type" : "string",
+            "description" : "Perustetietojen viimeisin tuontiaika.",
             "format" : "date-time"
           },
           "viimeisinSyncPvm" : {
             "type" : "string",
+            "description" : "Viimeisin synkronointiaika perusteen kanssa.",
             "format" : "date-time"
           },
           "viimeisinJulkaisuAika" : {
             "type" : "string",
+            "description" : "Viimeisimmän julkaisun ajankohta.",
             "format" : "date-time"
           },
           "pohja" : {
@@ -11145,7 +11726,8 @@
           "_pohja" : {
             "type" : "string"
           }
-        }
+        },
+        "description" : "Pohjaopetussuunnitelman nimitiedot, jos opetussuunnitelma on luotu pohjalle."
       },
       "OppiaineOpintojaksoDto" : {
         "type" : "object",
@@ -11671,6 +12253,50 @@
           "sisalto" : {
             "$ref" : "#/components/schemas/TekstiKappaleViiteDto"
           }
+        }
+      },
+      "Laaja" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "luotu" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "muokattu" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "muokkaaja" : {
+            "type" : "string"
+          },
+          "muokkaajanNimi" : {
+            "type" : "string"
+          },
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "tila" : {
+            "type" : "string"
+          },
+          "tunniste" : {
+            "type" : "string"
+          },
+          "koodi" : {
+            "$ref" : "#/components/schemas/KoodiDto"
+          },
+          "osanTyyppi" : {
+            "type" : "string"
+          }
+        },
+        "discriminator" : {
+          "propertyName" : "osanTyyppi"
         }
       },
       "Lops2019LaajaAlainenOsaaminenDto" : {
@@ -12654,6 +13280,39 @@
           }
         }
       },
+      "PerusteTaiteenosaDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "laajuus" : {
+            "type" : "number"
+          },
+          "kuvaus" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "tavoitteet" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
       "PerusteTavoitteenArviointiDto" : {
         "type" : "object",
         "properties" : {
@@ -12793,7 +13452,7 @@
         "type" : "object",
         "properties" : {
           "sisalto" : {
-            "$ref" : "#/components/schemas/TekstiKappaleViiteDto"
+            "$ref" : "#/components/schemas/TpoSisaltoViiteDto"
           }
         }
       },
@@ -12812,6 +13471,53 @@
           },
           "perusteenOsa" : {
             "$ref" : "#/components/schemas/TekstiKappaleDto"
+          }
+        }
+      },
+      "TpoPerusteenTaiteenalaDto" : {
+        "type" : "object",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Laaja"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "laajuus" : {
+              "type" : "number"
+            },
+            "teksti" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            },
+            "taiteenOsat" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/PerusteTaiteenosaDto"
+              }
+            }
+          }
+        } ]
+      },
+      "TpoSisaltoViiteDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "perusteenOsa" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/TekstiKappaleDto"
+            }, {
+              "$ref" : "#/components/schemas/TpoPerusteenTaiteenalaDto"
+            } ]
+          },
+          "lapset" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TpoSisaltoViiteDto"
+            }
           }
         }
       },
@@ -12857,7 +13563,8 @@
             "type" : "string",
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
           }
-        }
+        },
+        "description" : "Opetussuunnitelman perusteen tiedot julkaisuhetken version mukaan."
       },
       "OrganisaatioLaajaDto" : {
         "type" : "object",
@@ -12902,6 +13609,12 @@
           "status" : {
             "type" : "string"
           },
+          "muutOppilaitosTyyppiUris" : {
+            "type" : "array",
+            "items" : {
+              "type" : "string"
+            }
+          },
           "parentPath" : {
             "type" : "array",
             "items" : {
@@ -12935,53 +13648,6 @@
           "created" : {
             "type" : "string",
             "format" : "date-time"
-          }
-        }
-      },
-      "KoodistoKoodiDto" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "koodiUri" : {
-            "type" : "string"
-          },
-          "koodiArvo" : {
-            "type" : "string"
-          },
-          "versio" : {
-            "type" : "string"
-          },
-          "voimassaAlkuPvm" : {
-            "type" : "string"
-          },
-          "voimassaLoppuPvm" : {
-            "type" : "string"
-          },
-          "metadata" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/KoodistoMetadataDto"
-            }
-          },
-          "nimi" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          }
-        }
-      },
-      "KoodistoMetadataDto" : {
-        "type" : "object",
-        "properties" : {
-          "nimi" : {
-            "type" : "string"
-          },
-          "kieli" : {
-            "type" : "string"
           }
         }
       },
@@ -13341,19 +14007,23 @@
         "properties" : {
           "id" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman yksilöivä tunniste.",
             "format" : "int64"
           },
           "julkaisukielet" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
             "items" : {
               "type" : "string",
+              "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
               "enum" : [ "FI", "SV", "SE", "RU", "EN" ]
             }
           },
           "organisaatiot" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt organisaatiot.",
             "items" : {
               "$ref" : "#/components/schemas/OrganisaatioDto"
             }
@@ -13364,6 +14034,7 @@
           "kunnat" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt kunnat (koodisto).",
             "items" : {
               "$ref" : "#/components/schemas/KoodistoDto"
             }
@@ -13371,95 +14042,122 @@
           "kuvaus" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman kuvaus lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman kuvaus lokalisoituna."
           },
           "luoja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman luoneen käyttäjän tunniste."
           },
           "luotu" : {
             "type" : "string",
+            "description" : "Luontiaika.",
             "format" : "date-time"
           },
           "muokattu" : {
             "type" : "string",
+            "description" : "Viimeisin muokkausaika.",
             "format" : "date-time"
           },
           "muokkaaja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Viimeksi muokanneen käyttäjän tunniste."
           },
           "hyvaksyjataho" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Hyväksyjätaho."
           },
           "nimi" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman nimi lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman nimi lokalisoituna."
           },
           "perusteenDiaarinumero" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman perusteen diaarinumero."
           },
           "perusteenId" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman perusteen tunniste ePerusteet-palvelussa.",
             "format" : "int64"
           },
           "tila" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tila (esim. `luonnos`, `valmis`, `julkaistu`).",
             "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
           },
           "tyyppi" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tyyppi: `ops` (varsinaisen opetussuunnitelman) tai `pohja` (pohjaopetussuunnitelma).",
             "enum" : [ "OPS", "POHJA" ]
           },
           "koulutustyyppi" : {
             "type" : "string",
+            "description" : "Koulutustyyppi (koodistoarvo, esim. `koulutustyyppi_16`).",
             "enum" : [ "PERUSTUTKINTO", "AMMATTITUTKINTO", "ERIKOISAMMATTITUTKINTO", "AIKUISTENPERUSOPETUS", "LISAOPETUS", "ESIOPETUS", "VARHAISKASVATUS", "PERUSOPETUS", "LUKIOKOULUTUS", "LUKIOVALMISTAVAKOULUTUS", "PERUSOPETUSVALMISTAVA", "AIKUISLUKIOKOULUTUS", "TPO" ]
           },
           "toteutus" : {
             "type" : "string",
+            "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
           },
           "paatospaivamaara" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman päätöspäivämäärä.",
             "format" : "date-time"
           },
           "ryhmaoid" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän OID, jos opetussuunnitelma kuuluu ryhmään."
           },
           "ryhmanNimi" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän nimi."
           },
           "esikatseltavissa" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma esikatseltavissa ennen varsinaista julkaisua."
           },
           "ainepainoitteinen" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma ainepainotteinen."
           },
           "perusteenVoimassaoloAlkaa" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon alkupäivä.",
             "format" : "date-time"
           },
           "perusteenVoimassaoloLoppuu" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon päättymispäivä.",
             "format" : "date-time"
           },
           "tuoPohjanOpintojaksot" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman opintojaksot tähän opetussuunnitelmaan."
           },
           "tuoPohjanOppimaarat" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman oppimäärät tähän opetussuunnitelmaan."
           },
           "perusteDataTuontiPvm" : {
             "type" : "string",
+            "description" : "Perustetietojen viimeisin tuontiaika.",
             "format" : "date-time"
           },
           "viimeisinSyncPvm" : {
             "type" : "string",
+            "description" : "Viimeisin synkronointiaika perusteen kanssa.",
             "format" : "date-time"
           },
           "viimeisinJulkaisuAika" : {
             "type" : "string",
+            "description" : "Viimeisimmän julkaisun ajankohta.",
             "format" : "date-time"
           },
           "pohja" : {
@@ -13559,7 +14257,7 @@
           },
           "type" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala", "peruste" ]
           },
           "meta" : {
             "type" : "object",
@@ -13618,19 +14316,23 @@
         "properties" : {
           "id" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman yksilöivä tunniste.",
             "format" : "int64"
           },
           "julkaisukielet" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
             "items" : {
               "type" : "string",
+              "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
               "enum" : [ "FI", "SV", "SE", "RU", "EN" ]
             }
           },
           "organisaatiot" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt organisaatiot.",
             "items" : {
               "$ref" : "#/components/schemas/OrganisaatioDto"
             }
@@ -13641,6 +14343,7 @@
           "kunnat" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt kunnat (koodisto).",
             "items" : {
               "$ref" : "#/components/schemas/KoodistoDto"
             }
@@ -13648,95 +14351,122 @@
           "kuvaus" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman kuvaus lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman kuvaus lokalisoituna."
           },
           "luoja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman luoneen käyttäjän tunniste."
           },
           "luotu" : {
             "type" : "string",
+            "description" : "Luontiaika.",
             "format" : "date-time"
           },
           "muokattu" : {
             "type" : "string",
+            "description" : "Viimeisin muokkausaika.",
             "format" : "date-time"
           },
           "muokkaaja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Viimeksi muokanneen käyttäjän tunniste."
           },
           "hyvaksyjataho" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Hyväksyjätaho."
           },
           "nimi" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman nimi lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman nimi lokalisoituna."
           },
           "perusteenDiaarinumero" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman perusteen diaarinumero."
           },
           "perusteenId" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman perusteen tunniste ePerusteet-palvelussa.",
             "format" : "int64"
           },
           "tila" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tila (esim. `luonnos`, `valmis`, `julkaistu`).",
             "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
           },
           "tyyppi" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tyyppi: `ops` (varsinaisen opetussuunnitelman) tai `pohja` (pohjaopetussuunnitelma).",
             "enum" : [ "OPS", "POHJA" ]
           },
           "koulutustyyppi" : {
             "type" : "string",
+            "description" : "Koulutustyyppi (koodistoarvo, esim. `koulutustyyppi_16`).",
             "enum" : [ "PERUSTUTKINTO", "AMMATTITUTKINTO", "ERIKOISAMMATTITUTKINTO", "AIKUISTENPERUSOPETUS", "LISAOPETUS", "ESIOPETUS", "VARHAISKASVATUS", "PERUSOPETUS", "LUKIOKOULUTUS", "LUKIOVALMISTAVAKOULUTUS", "PERUSOPETUSVALMISTAVA", "AIKUISLUKIOKOULUTUS", "TPO" ]
           },
           "toteutus" : {
             "type" : "string",
+            "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
           },
           "paatospaivamaara" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman päätöspäivämäärä.",
             "format" : "date-time"
           },
           "ryhmaoid" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän OID, jos opetussuunnitelma kuuluu ryhmään."
           },
           "ryhmanNimi" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän nimi."
           },
           "esikatseltavissa" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma esikatseltavissa ennen varsinaista julkaisua."
           },
           "ainepainoitteinen" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma ainepainotteinen."
           },
           "perusteenVoimassaoloAlkaa" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon alkupäivä.",
             "format" : "date-time"
           },
           "perusteenVoimassaoloLoppuu" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon päättymispäivä.",
             "format" : "date-time"
           },
           "tuoPohjanOpintojaksot" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman opintojaksot tähän opetussuunnitelmaan."
           },
           "tuoPohjanOppimaarat" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman oppimäärät tähän opetussuunnitelmaan."
           },
           "perusteDataTuontiPvm" : {
             "type" : "string",
+            "description" : "Perustetietojen viimeisin tuontiaika.",
             "format" : "date-time"
           },
           "viimeisinSyncPvm" : {
             "type" : "string",
+            "description" : "Viimeisin synkronointiaika perusteen kanssa.",
             "format" : "date-time"
           },
           "viimeisinJulkaisuAika" : {
             "type" : "string",
+            "description" : "Viimeisimmän julkaisun ajankohta.",
             "format" : "date-time"
           },
           "peruste" : {
@@ -13748,7 +14478,8 @@
           "tekstit" : {
             "$ref" : "#/components/schemas/Puu"
           }
-        }
+        },
+        "description" : "Julkaistun opetussuunnitelman sisältö julkiseen rajapintaan."
       },
       "TekstiKappaleViiteExportDto" : {
         "type" : "object",
@@ -13796,19 +14527,23 @@
         "properties" : {
           "id" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman yksilöivä tunniste.",
             "format" : "int64"
           },
           "julkaisukielet" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
             "items" : {
               "type" : "string",
+              "description" : "Kielet, joilla opetussuunnitelma on julkaistu.",
               "enum" : [ "FI", "SV", "SE", "RU", "EN" ]
             }
           },
           "organisaatiot" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt organisaatiot.",
             "items" : {
               "$ref" : "#/components/schemas/OrganisaatioDto"
             }
@@ -13819,6 +14554,7 @@
           "kunnat" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Opetussuunnitelmaan liitetyt kunnat (koodisto).",
             "items" : {
               "$ref" : "#/components/schemas/KoodistoDto"
             }
@@ -13826,95 +14562,122 @@
           "kuvaus" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman kuvaus lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman kuvaus lokalisoituna."
           },
           "luoja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman luoneen käyttäjän tunniste."
           },
           "luotu" : {
             "type" : "string",
+            "description" : "Luontiaika.",
             "format" : "date-time"
           },
           "muokattu" : {
             "type" : "string",
+            "description" : "Viimeisin muokkausaika.",
             "format" : "date-time"
           },
           "muokkaaja" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Viimeksi muokanneen käyttäjän tunniste."
           },
           "hyvaksyjataho" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Hyväksyjätaho."
           },
           "nimi" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman nimi lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman nimi lokalisoituna."
           },
           "perusteenDiaarinumero" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Opetussuunnitelman perusteen diaarinumero."
           },
           "perusteenId" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman perusteen tunniste ePerusteet-palvelussa.",
             "format" : "int64"
           },
           "tila" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tila (esim. `luonnos`, `valmis`, `julkaistu`).",
             "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
           },
           "tyyppi" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tyyppi: `ops` (varsinaisen opetussuunnitelman) tai `pohja` (pohjaopetussuunnitelma).",
             "enum" : [ "OPS", "POHJA" ]
           },
           "koulutustyyppi" : {
             "type" : "string",
+            "description" : "Koulutustyyppi (koodistoarvo, esim. `koulutustyyppi_16`).",
             "enum" : [ "PERUSTUTKINTO", "AMMATTITUTKINTO", "ERIKOISAMMATTITUTKINTO", "AIKUISTENPERUSOPETUS", "LISAOPETUS", "ESIOPETUS", "VARHAISKASVATUS", "PERUSOPETUS", "LUKIOKOULUTUS", "LUKIOVALMISTAVAKOULUTUS", "PERUSOPETUSVALMISTAVA", "AIKUISLUKIOKOULUTUS", "TPO" ]
           },
           "toteutus" : {
             "type" : "string",
+            "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
           },
           "paatospaivamaara" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman päätöspäivämäärä.",
             "format" : "date-time"
           },
           "ryhmaoid" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän OID, jos opetussuunnitelma kuuluu ryhmään."
           },
           "ryhmanNimi" : {
-            "type" : "string"
+            "type" : "string",
+            "description" : "Ryhmän nimi."
           },
           "esikatseltavissa" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma esikatseltavissa ennen varsinaista julkaisua."
           },
           "ainepainoitteinen" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma ainepainotteinen."
           },
           "perusteenVoimassaoloAlkaa" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon alkupäivä.",
             "format" : "date-time"
           },
           "perusteenVoimassaoloLoppuu" : {
             "type" : "string",
+            "description" : "Perusteen voimassaolon päättymispäivä.",
             "format" : "date-time"
           },
           "tuoPohjanOpintojaksot" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman opintojaksot tähän opetussuunnitelmaan."
           },
           "tuoPohjanOppimaarat" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Tuodaanko pohjaopetussuunnitelman oppimäärät tähän opetussuunnitelmaan."
           },
           "perusteDataTuontiPvm" : {
             "type" : "string",
+            "description" : "Perustetietojen viimeisin tuontiaika.",
             "format" : "date-time"
           },
           "viimeisinSyncPvm" : {
             "type" : "string",
+            "description" : "Viimeisin synkronointiaika perusteen kanssa.",
             "format" : "date-time"
           },
           "viimeisinJulkaisuAika" : {
             "type" : "string",
+            "description" : "Viimeisimmän julkaisun ajankohta.",
             "format" : "date-time"
           },
           "julkaistu" : {
@@ -13967,19 +14730,13 @@
       "PageOpetussuunnitelmaInfoDto" : {
         "type" : "object",
         "properties" : {
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "totalPages" : {
             "type" : "integer",
             "format" : "int32"
           },
-          "first" : {
-            "type" : "boolean"
-          },
-          "last" : {
-            "type" : "boolean"
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
           },
           "size" : {
             "type" : "integer",
@@ -13997,6 +14754,12 @@
           },
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
+          },
+          "first" : {
+            "type" : "boolean"
+          },
+          "last" : {
+            "type" : "boolean"
           },
           "numberOfElements" : {
             "type" : "integer",
@@ -14023,11 +14786,11 @@
           "unpaged" : {
             "type" : "boolean"
           },
-          "pageSize" : {
+          "pageNumber" : {
             "type" : "integer",
             "format" : "int32"
           },
-          "pageNumber" : {
+          "pageSize" : {
             "type" : "integer",
             "format" : "int32"
           },
@@ -14641,19 +15404,23 @@
         "properties" : {
           "id" : {
             "type" : "integer",
+            "description" : "Opetussuunnitelman yksilöivä tunniste.",
             "format" : "int64"
           },
           "julkaisukielet" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Kielet, joilla julkaisu on saatavilla.",
             "items" : {
               "type" : "string",
+              "description" : "Kielet, joilla julkaisu on saatavilla.",
               "enum" : [ "FI", "SV", "SE", "RU", "EN" ]
             }
           },
           "organisaatiot" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Julkaisuun liitetyt organisaatiot.",
             "items" : {
               "$ref" : "#/components/schemas/OrganisaatioDto"
             }
@@ -14661,6 +15428,7 @@
           "kunnat" : {
             "uniqueItems" : true,
             "type" : "array",
+            "description" : "Julkaisuun liitetyt kunnat (koodisto).",
             "items" : {
               "$ref" : "#/components/schemas/KoodistoDto"
             }
@@ -14668,50 +15436,53 @@
           "nimi" : {
             "type" : "object",
             "additionalProperties" : {
-              "type" : "string"
-            }
+              "type" : "string",
+              "description" : "Opetussuunnitelman nimi lokalisoituna."
+            },
+            "description" : "Opetussuunnitelman nimi lokalisoituna."
           },
           "koulutustyyppi" : {
             "type" : "string",
+            "description" : "Koulutustyyppi (koodistoarvo, esim. `koulutustyyppi_16`).",
             "enum" : [ "PERUSTUTKINTO", "AMMATTITUTKINTO", "ERIKOISAMMATTITUTKINTO", "AIKUISTENPERUSOPETUS", "LISAOPETUS", "ESIOPETUS", "VARHAISKASVATUS", "PERUSOPETUS", "LUKIOKOULUTUS", "LUKIOVALMISTAVAKOULUTUS", "PERUSOPETUSVALMISTAVA", "AIKUISLUKIOKOULUTUS", "TPO" ]
           },
           "tila" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tila (esim. `julkaistu`).",
             "enum" : [ "LUONNOS", "VALMIS", "POISTETTU", "JULKAISTU" ]
           },
           "tyyppi" : {
             "type" : "string",
+            "description" : "Opetussuunnitelman tyyppi: `ops` tai `pohja`.",
             "enum" : [ "OPS", "POHJA" ]
           },
           "esikatseltavissa" : {
-            "type" : "boolean"
+            "type" : "boolean",
+            "description" : "Onko opetussuunnitelma esikatseltavissa ennen varsinaista julkaisua."
           },
           "toteutus" : {
             "type" : "string",
+            "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
           },
           "julkaisuaika" : {
             "type" : "string",
+            "description" : "Viimeisimmän julkaisun ajankohta.",
             "format" : "date-time"
           }
-        }
+        },
+        "description" : "Julkaistun opetussuunnitelman perustiedot julkisessa rajapinnassa (esim. hakulistan tulos)."
       },
       "PageOpetussuunnitelmaJulkinenDto" : {
         "type" : "object",
         "properties" : {
-          "totalElements" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
           "totalPages" : {
             "type" : "integer",
             "format" : "int32"
           },
-          "first" : {
-            "type" : "boolean"
-          },
-          "last" : {
-            "type" : "boolean"
+          "totalElements" : {
+            "type" : "integer",
+            "format" : "int64"
           },
           "size" : {
             "type" : "integer",
@@ -14729,6 +15500,12 @@
           },
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
+          },
+          "first" : {
+            "type" : "boolean"
+          },
+          "last" : {
+            "type" : "boolean"
           },
           "numberOfElements" : {
             "type" : "integer",
@@ -14769,7 +15546,7 @@
           },
           "kohde" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala", "peruste" ]
           },
           "luotu" : {
             "type" : "string",
@@ -14801,7 +15578,7 @@
         "properties" : {
           "kohde" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala", "peruste" ]
           },
           "kohdeId" : {
             "type" : "integer",
@@ -14836,7 +15613,7 @@
           },
           "kohde" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala", "peruste" ]
           },
           "luotu" : {
             "type" : "string",
@@ -14899,6 +15676,39 @@
             "format" : "int64"
           }
         }
+      },
+      "SivutettuTulosDtoOpetussuunnitelmaJulkinenDto" : {
+        "type" : "object",
+        "properties" : {
+          "data" : {
+            "type" : "array",
+            "description" : "Hakutulosten lista.",
+            "items" : {
+              "$ref" : "#/components/schemas/OpetussuunnitelmaJulkinenDto"
+            }
+          },
+          "sivu" : {
+            "type" : "integer",
+            "description" : "Nykyisen sivun numero (0-indeksoitu).",
+            "format" : "int32"
+          },
+          "sivuja" : {
+            "type" : "integer",
+            "description" : "Sivujen kokonaismäärä.",
+            "format" : "int32"
+          },
+          "sivukoko" : {
+            "type" : "integer",
+            "description" : "Yhdellä sivulla palautettavien tulosten määrä.",
+            "format" : "int32"
+          },
+          "kokonaismäärä" : {
+            "type" : "integer",
+            "description" : "Tulosten kokonaismäärä.",
+            "format" : "int64"
+          }
+        },
+        "description" : "Sivutettu hakutulos."
       }
     }
   }
