@@ -18,6 +18,7 @@ public class OpetussuunnitelmaLuontiDto extends OpetussuunnitelmaBaseDto {
     private TekstiKappaleViiteDto.Puu tekstit;
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineDto> oppiaineet;
+    private Set<Long> perusteenVaiheIdt;
     private Luontityyppi luontityyppi = Luontityyppi.KOPIO;
 
     public enum Luontityyppi {

@@ -16,5 +16,6 @@ public enum NavigationType {
     kommentti,
     perusopetusoppiaineet, perusopetusoppiaine, perusopetuspaikallinenoppiaine, valinnaisetoppiaineet, vuosiluokkakokonaisuus, oppiaineenvuosiluokka, paikallinenoppiainevuosiluokka, uusi_oppimaara,
     tavoitteet_sisallot_arviointi, tavoitteet_ja_sisallot,
-    peruste
+    peruste,
+    aipevaihe, aipeoppiaine, aipeoppimaara, aipekurssi, uusi_vaihe
 }

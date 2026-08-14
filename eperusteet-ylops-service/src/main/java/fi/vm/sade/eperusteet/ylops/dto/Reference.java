@@ -16,9 +16,13 @@ public class Reference {
 
     private final String id;
 
-    @JsonCreator
     public Reference(String id) {
         this.id = id;
+    }
+
+    @JsonCreator
+    public static Reference fromJson(Object id) {
+        return id == null ? null : new Reference(String.valueOf(id));
     }
 
     @JsonValue
