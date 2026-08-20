@@ -12,6 +12,7 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma_;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappale_;
+import fi.vm.sade.eperusteet.ylops.dto.aipe.export.PerusteAIPEKurssiSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.dokumentti.DokumenttiKuvaDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PoistettuDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioOppiaineRakenneListausDto;
@@ -25,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.aipe.PerusteAIPEKurssiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.PerusteenLokalisoituTekstiDto;
@@ -66,7 +68,6 @@ public class DtoMapperConfig {
         OptionalSupport.register(factory);
         factory.registerMapper(new ReferenceableCollectionMergeMapper());
 
-        // Yksisuuntainen mappaus
         factory.classMap(OpetussuunnitelmaDto.class, Opetussuunnitelma.class)
                 .fieldBToA(Opetussuunnitelma_.tekstit.getName(), Opetussuunnitelma_.tekstit.getName())
                 .fieldBToA(Opetussuunnitelma_.oppiaineet.getName(), Opetussuunnitelma_.oppiaineet.getName())

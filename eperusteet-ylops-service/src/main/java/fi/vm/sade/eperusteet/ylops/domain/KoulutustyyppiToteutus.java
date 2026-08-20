@@ -12,7 +12,8 @@ public enum KoulutustyyppiToteutus {
     PERUSOPETUS("perusopetus"),
     TPO("taiteenperusopetus"),
     LOPS("lops"),
-    LOPS2019("lops2019");
+    LOPS2019("lops2019"),
+    AIPE("aipe");
 
     private final String tyyppi;
 

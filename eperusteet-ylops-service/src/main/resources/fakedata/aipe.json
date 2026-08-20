@@ -1,0 +1,168 @@
+{
+  "id" : 17001,
+  "globalVersion" : {
+    "aikaleima" : 1525271279758
+  },
+  "nimi" : {
+    "fi" : "Aikuisten perusopetuksen opetussuunnitelman perusteet",
+    "sv" : "Grunderna för läroplanen för den grundläggande utbildningen för vuxna"
+  },
+  "koulutustyyppi" : "koulutustyyppi_17",
+  "toteutus" : "aipe",
+  "koulutukset" : [ ],
+  "kielet" : [ "fi", "sv" ],
+  "kuvaus" : null,
+  "diaarinumero" : "OPH-AIPE-TEST",
+  "voimassaoloAlkaa" : 1420063200000,
+  "siirtymaPaattyy" : null,
+  "voimassaoloLoppuu" : null,
+  "muokattu" : 1525271279758,
+  "tila" : "valmis",
+  "tyyppi" : "normaali",
+  "korvattavatDiaarinumerot" : [ ],
+  "aipe" : {
+    "sisalto" : {
+      "id" : 17010,
+      "lapset" : [ {
+        "id" : 17011,
+        "perusteenOsa" : {
+          "id" : 17012,
+          "osanTyyppi" : "tekstikappale",
+          "nimi" : {
+            "fi" : "Opetussuunnitelman laatiminen"
+          },
+          "teksti" : {
+            "fi" : "<p>Teksti</p>"
+          },
+          "tila" : "valmis"
+        },
+        "lapset" : [ ]
+      } ]
+    },
+    "laajaalaisetosaamiset" : [ {
+      "id" : 2500112,
+      "tunniste" : "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa1",
+      "nimi" : {
+        "fi" : "Ajattelu ja oppimaan oppiminen"
+      }
+    }, {
+      "id" : 2500111,
+      "tunniste" : "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaa2",
+      "nimi" : {
+        "fi" : "Kulttuurinen osaaminen, vuorovaikutus ja ilmaisu"
+      }
+    } ],
+    "vaiheet" : [ {
+      "id" : 17101,
+      "nimi" : {
+        "fi" : "Alkuvaihe"
+      },
+      "tehtava" : {
+        "otsikko" : {
+          "fi" : "Vaiheen tehtävä"
+        },
+        "teksti" : {
+          "fi" : "<p>Alkuvaiheen tehtävä</p>"
+        }
+      },
+      "opetuksenKohdealueet" : [ {
+        "id" : 2530070,
+        "nimi" : {
+          "fi" : "Merkitys, arvot ja asenteet"
+        }
+      } ],
+      "vapaatTekstit" : [ ],
+      "oppiaineet" : [ {
+        "id" : 17201,
+        "nimi" : {
+          "fi" : "Äidinkieli ja kirjallisuus"
+        },
+        "koodi" : {
+          "arvo" : "AI",
+          "uri" : "oppiaineetyleissivistava2_ai",
+          "nimi" : {
+            "fi" : "Äidinkieli ja kirjallisuus"
+          }
+        },
+        "tehtava" : {
+          "teksti" : {
+            "fi" : "<p>Oppiaineen tehtävä</p>"
+          }
+        },
+        "tavoitteet" : [ {
+          "id" : 17401,
+          "tavoite" : {
+            "fi" : "Tavoite T1"
+          },
+          "laajattavoitteet" : [ "2500112", "2500111" ],
+          "kohdealueet" : [ "2530070" ]
+        } ],
+        "sisaltoalueet" : [ ],
+        "oppimaarat" : [ ],
+        "kurssit" : [ {
+          "id" : 17301,
+          "nimi" : {
+            "fi" : "Äidinkielen kurssi"
+          },
+          "koodi" : {
+            "arvo" : "äi1",
+            "uri" : "aikuistenperusopetuksenkurssit_ai1",
+            "nimi" : {
+              "fi" : "Äidinkielen kurssi"
+            }
+          },
+          "kuvaus" : {
+            "fi" : "<p>Kurssin kuvaus</p>"
+          },
+          "tavoitteet" : [ "17401" ]
+        } ]
+      } ]
+    }, {
+      "id" : 17102,
+      "nimi" : {
+        "fi" : "Päättövaihe"
+      },
+      "oppiaineet" : [ {
+        "id" : 17202,
+        "nimi" : {
+          "fi" : "Toinen kotimainen kieli"
+        },
+        "koodi" : {
+          "arvo" : "TK",
+          "uri" : "oppiaineetyleissivistava2_tk",
+          "nimi" : {
+            "fi" : "Toinen kotimainen kieli"
+          }
+        },
+        "kurssit" : [ ],
+        "oppimaarat" : [ {
+          "id" : 17203,
+          "nimi" : {
+            "fi" : "Ruotsi"
+          },
+          "koodi" : {
+            "arvo" : "RU",
+            "uri" : "oppiaineetyleissivistava2_ru",
+            "nimi" : {
+              "fi" : "Ruotsi"
+            }
+          },
+          "oppimaarat" : [ ],
+          "kurssit" : [ {
+            "id" : 17302,
+            "nimi" : {
+              "fi" : "Ruotsin kurssi"
+            },
+            "koodi" : {
+              "arvo" : "ru1",
+              "uri" : "aikuistenperusopetuksenkurssit_ru1",
+              "nimi" : {
+                "fi" : "Ruotsin kurssi"
+              }
+            }
+          } ]
+        } ]
+      } ]
+    } ]
+  }
+}

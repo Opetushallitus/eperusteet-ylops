@@ -62,7 +62,8 @@ public class OpsPohjanVaihtoImpl implements OpsPohjanVaihto {
                 KoulutustyyppiToteutus.LOPS2019,
                 KoulutustyyppiToteutus.PERUSOPETUS,
                 KoulutustyyppiToteutus.TPO,
-                KoulutustyyppiToteutus.YKSINKERTAINEN
+                KoulutustyyppiToteutus.YKSINKERTAINEN,
+                KoulutustyyppiToteutus.AIPE
         );
     }
 

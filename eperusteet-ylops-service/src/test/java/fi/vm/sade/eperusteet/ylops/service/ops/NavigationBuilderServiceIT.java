@@ -17,9 +17,11 @@ import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
+import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEVaiheDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
+import fi.vm.sade.eperusteet.ylops.service.aipe.AIPEService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OpintojaksoService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.Lops2019OppiaineService;
 import fi.vm.sade.eperusteet.ylops.service.lops2019.impl.Lops2019PaikallisetLaajennuksetUtil;
@@ -59,6 +61,9 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
+    @Autowired
+    private AIPEService aipeService;
 
     private OpetussuunnitelmaDto createOpetussuunnitelma(KoulutustyyppiToteutus koulutustyyppiToteutus) {
         OpetussuunnitelmaLuontiDto pohjaLuontiDto = new OpetussuunnitelmaLuontiDto();
@@ -290,6 +295,50 @@ public class NavigationBuilderServiceIT extends AbstractIntegrationTest {
                         "6", "5.1",
                         "7", "7.1", "7.2");
         }
+    }
+
+    @Test
+    public void testNavigationBuilder_aipe() {
+        OpetussuunnitelmaDto ops = createOpetussuunnitelmaLuonti(
+                createOpetussuunnitelma(KoulutusTyyppi.AIKUISTENPERUSOPETUS, "OPH-AIPE-TEST"),
+                KoulutusTyyppi.AIKUISTENPERUSOPETUS);
+
+        NavigationNodeDto navi = dispatcher.get(ops, NavigationBuilder.class).buildNavigation(ops.getId());
+        assertThat(navi.getType()).isEqualTo(NavigationType.root);
+        assertThat(navi.getChildren().stream()
+                .filter(node -> node.getType().equals(NavigationType.uusi_vaihe))
+                .collect(Collectors.toList())).hasSize(1);
+        assertThat(navi.getChildren().stream()
+                .noneMatch(node -> node.getType().equals(NavigationType.aipevaihe))).isTrue();
+
+        AIPEVaiheDto vaihe = aipeService.addVaihe(ops.getId(), 17101L);
+
+        navi = dispatcher.get(ops, NavigationBuilder.class).buildNavigation(ops.getId());
+        List<NavigationNodeDto> vaiheet = navi.getChildren().stream()
+                .filter(node -> node.getType().equals(NavigationType.aipevaihe))
+                .collect(Collectors.toList());
+        assertThat(vaiheet).hasSize(1);
+        assertThat(vaiheet.get(0).getId()).isEqualTo(vaihe.getId());
+        assertThat(vaiheet.get(0).getMeta().get("piilotettu")).isEqualTo(false);
+        assertThat(vaiheet.get(0).getChildren()).isNotEmpty();
+        assertThat(vaiheet.get(0).getChildren().get(0).getType()).isEqualTo(NavigationType.aipeoppiaine);
+        assertThat(vaiheet.get(0).getChildren().get(0).getChildren().get(0).getType()).isEqualTo(NavigationType.aipekurssi);
+
+        vaihe.setPiilotettu(true);
+        aipeService.updateVaihe(ops.getId(), vaihe.getId(), vaihe);
+
+        navi = dispatcher.get(ops, NavigationBuilder.class).buildNavigation(ops.getId());
+        vaiheet = navi.getChildren().stream()
+                .filter(node -> node.getType().equals(NavigationType.aipevaihe))
+                .collect(Collectors.toList());
+        assertThat(vaiheet).hasSize(1);
+        assertThat(vaiheet.get(0).getMeta().get("piilotettu")).isEqualTo(true);
+
+        NavigationNodeDto publicNavi = dispatcher.get(ops, NavigationBuilderPublic.class).buildNavigation(ops.getId(), 0);
+        assertThat(publicNavi.getChildren().stream()
+                .noneMatch(node -> node.getType().equals(NavigationType.aipevaihe))).isTrue();
+        assertThat(publicNavi.getChildren().stream()
+                .noneMatch(node -> node.getType().equals(NavigationType.uusi_vaihe))).isTrue();
     }
 
     private OpetussuunnitelmaDto createOpetussuunnitelma(KoulutusTyyppi koulutustyyppi, String diaarinumero) {

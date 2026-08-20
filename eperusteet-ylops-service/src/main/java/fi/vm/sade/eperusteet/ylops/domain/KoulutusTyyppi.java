@@ -49,8 +49,7 @@ public enum KoulutusTyyppi {
 
     public boolean isYksinkertainen() {
         return tyyppi != null
-                && (tyyppi.equals(AIKUISTENPERUSOPETUS.toString())
-                || tyyppi.equals(LISAOPETUS.toString())
+                && (tyyppi.equals(LISAOPETUS.toString())
                 || tyyppi.equals(ESIOPETUS.toString())
                 || tyyppi.equals(VARHAISKASVATUS.toString())
                 || tyyppi.equals(TPO.toString())
