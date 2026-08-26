@@ -8,8 +8,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -32,7 +30,6 @@ public class JulkaistuOpetussuunnitelmaTila implements Serializable {
     @Column(name = "julkaisu_tila")
     private JulkaisuTila julkaisutila;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @NotNull
     private Date muokattu;
 

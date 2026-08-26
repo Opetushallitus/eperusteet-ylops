@@ -5,8 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.access.vote.AffirmativeBased;
-import org.springframework.security.access.vote.RoleVoter;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,12 +16,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-
-import java.util.List;
 
 @Profile({"local"})
 @Configuration
@@ -192,22 +186,5 @@ public class WebSecurityConfigurationDev {
                     DevSecurityRole.ylops().crud().oid("1.2.246.562.10.81269623245").build(),
                     DevSecurityRole.ylops().crud().oid("1.2.246.562.10.96398657237").build())
                 .build();
-    }
-
-    @Bean
-    public CookieCsrfTokenRepository cookieCsrfTokenRepository() {
-        CookieCsrfTokenRepository cookieCsrfTokenRepository = new CookieCsrfTokenRepository();
-        cookieCsrfTokenRepository.setCookieHttpOnly(false);
-        cookieCsrfTokenRepository.setCookieName("CSRF");
-        cookieCsrfTokenRepository.setHeaderName("CSRF");
-        cookieCsrfTokenRepository.setCookiePath("/");
-        return cookieCsrfTokenRepository;
-    }
-
-    @Bean
-    public AffirmativeBased affirmativeBased() {
-        AffirmativeBased affirmativeBased = new AffirmativeBased(List.of(new RoleVoter()));
-        affirmativeBased.setAllowIfAllAbstainDecisions(true);
-        return affirmativeBased;
     }
 }

@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.domain.lukio;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import java.io.Serializable;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 @Embeddable
 public class LukioOppiaineId implements Serializable {
     @Column(name = "oppiaine_id")

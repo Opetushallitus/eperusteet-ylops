@@ -24,8 +24,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.UniqueConstraint;
 import java.io.IOException;
 import java.util.Date;
@@ -58,11 +56,9 @@ public class PerusteCache {
     @Column(name = "koulutustyyppi", nullable = false, updatable = false)
     private KoulutusTyyppi koulutustyyppi;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "voimassaolo_alkaa")
     private Date voimassaoloAlkaa;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "voimassaolo_loppuu")
     private Date voimassaoloLoppuu;
 

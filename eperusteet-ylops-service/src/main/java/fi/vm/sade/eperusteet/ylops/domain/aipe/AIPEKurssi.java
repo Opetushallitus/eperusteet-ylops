@@ -45,6 +45,11 @@ public class AIPEKurssi extends AbstractAuditedReferenceableEntity implements Hi
     @ManyToOne(fetch = FetchType.LAZY)
     private AIPEOppiaine oppiaine;
 
+    @Getter
+    @Setter
+    @Column(name = "kurssit_order")
+    private Integer kurssitOrder;
+
     public static AIPEKurssi copy(AIPEKurssi original) {
         if (original == null) {
             return null;

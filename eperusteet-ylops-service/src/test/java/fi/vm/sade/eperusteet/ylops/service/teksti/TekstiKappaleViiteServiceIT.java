@@ -4,6 +4,8 @@ import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.Kieli;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.PoistettuTekstiKappale;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.TekstiKappaleViite;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuus;
+import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuudet;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
@@ -24,7 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -176,6 +182,91 @@ public class TekstiKappaleViiteServiceIT extends AbstractIntegrationTest {
         tekstiKappaleViiteService.returnRemovedTekstikappale(kunnanOps.getId(), poistettuTekstiKappales.get(0).getId());
         assertThat(findTkNimi(kunnanOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();
         assertThat(findTkNimi(koulunOps.getId(), kunnanTeksti.getTekstiKappale().getNimi().getTekstit().get(Kieli.FI))).isNotNull();
+    }
+
+    @Test
+    public void testLapsetOrderBy() {
+        OpetussuunnitelmaDto opsDto = createLukioOpetussuunnitelma();
+        Long juuriId = opetussuunnitelmaRepository.findOne(opsDto.getId()).getTekstit().getId();
+
+        TekstiKappaleViiteDto.Matala eka = tekstiKappaleViiteService.addTekstiKappaleViite(
+                opsDto.getId(), juuriId, TestUtils.createTekstiKappaleViite());
+        TekstiKappaleViiteDto.Matala toka = tekstiKappaleViiteService.addTekstiKappaleViite(
+                opsDto.getId(), juuriId, TestUtils.createTekstiKappaleViite());
+
+        em.flush();
+        em.clear();
+
+        List<TekstiKappaleViite> lapset = opetussuunnitelmaRepository.findOne(opsDto.getId()).getTekstit().getLapset();
+        int ekaIndex = indexOf(lapset, eka.getId());
+        int tokaIndex = indexOf(lapset, toka.getId());
+        assertThat(ekaIndex).isLessThan(tokaIndex);
+        assertThat(lapset.get(ekaIndex).getLapsetOrder()).isEqualTo(ekaIndex);
+        assertThat(lapset.get(tokaIndex).getLapsetOrder()).isEqualTo(tokaIndex);
+
+        TekstiKappaleViiteDto.Puu puu = opetussuunnitelmaService.getTekstit(opsDto.getId(), TekstiKappaleViiteDto.Puu.class);
+        List<TekstiKappaleViiteDto.Puu> reordered = new ArrayList<>(puu.getLapset());
+        Collections.swap(reordered, ekaIndex, tokaIndex);
+        puu.setLapset(reordered);
+        tekstiKappaleViiteService.reorderSubTree(opsDto.getId(), puu.getId(), puu);
+
+        em.flush();
+        em.clear();
+
+        lapset = opetussuunnitelmaRepository.findOne(opsDto.getId()).getTekstit().getLapset();
+        assertThat(lapset.get(ekaIndex).getId()).isEqualTo(toka.getId());
+        assertThat(lapset.get(tokaIndex).getId()).isEqualTo(eka.getId());
+        for (int i = 0; i < lapset.size(); i++) {
+            assertThat(lapset.get(i).getLapsetOrder()).isEqualTo(i);
+        }
+    }
+
+    @Test
+    public void testAihekokonaisuudetOrderByJnro() {
+        OpetussuunnitelmaDto opsDto = createLukioOpetussuunnitelma();
+        Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsDto.getId());
+
+        Aihekokonaisuudet aks = ops.getAihekokonaisuudet();
+        if (aks == null) {
+            aks = new Aihekokonaisuudet(ops, UUID.randomUUID());
+            ops.setAihekokonaisuudet(aks);
+        }
+
+        Aihekokonaisuus toinen = new Aihekokonaisuus(aks);
+        toinen.setJnro(20L);
+        Aihekokonaisuus eka = new Aihekokonaisuus(aks);
+        eka.setJnro(10L);
+        aks.getAihekokonaisuudet().add(toinen);
+        aks.getAihekokonaisuudet().add(eka);
+        opetussuunnitelmaRepository.save(ops);
+
+        em.flush();
+        em.clear();
+
+        List<Aihekokonaisuus> jarjestetty = new ArrayList<>(
+                opetussuunnitelmaRepository.findOne(opsDto.getId()).getAihekokonaisuudet().getAihekokonaisuudet());
+        assertThat(jarjestetty).extracting(Aihekokonaisuus::getJnro)
+                .isSortedAccordingTo(Comparator.nullsLast(Long::compareTo));
+        assertThat(jarjestetty).extracting(Aihekokonaisuus::getJnro).contains(10L, 20L);
+        assertThat(indexOfJnro(jarjestetty, 10L)).isLessThan(indexOfJnro(jarjestetty, 20L));
+    }
+
+    private int indexOf(List<TekstiKappaleViite> lapset, Long id) {
+        for (int i = 0; i < lapset.size(); i++) {
+            if (id.equals(lapset.get(i).getId())) {
+                return i;
+            }
+        }
+        throw new AssertionError("viitettä ei löytynyt: " + id);
+    }
+
+    private int indexOfJnro(List<Aihekokonaisuus> aihekokonaisuudet, Long jnro) {
+        for (int i = 0; i < aihekokonaisuudet.size(); i++) {
+            if (jnro.equals(aihekokonaisuudet.get(i).getJnro())) {
+                return i;
+            }
+        }
+        throw new AssertionError("aihekokonaisuutta ei löytynyt: " + jnro);
     }
 
     private TekstiKappaleViite findTkNimi(Long opsId, String nimi) {

@@ -14,7 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderColumn;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -60,12 +60,22 @@ public class AIPEOppiaine extends AbstractAuditedReferenceableEntity implements 
     private AIPEOppiaine parent;
 
     @Getter
-    @OrderColumn(name = "kurssit_order")
+    @Setter
+    @Column(name = "oppiaineet_order")
+    private Integer oppiaineetOrder;
+
+    @Getter
+    @Setter
+    @Column(name = "oppimaarat_order")
+    private Integer oppimaaratOrder;
+
+    @Getter
+    @OrderBy("kurssitOrder")
     @OneToMany(mappedBy = "oppiaine", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AIPEKurssi> kurssit = new ArrayList<>();
 
     @Getter
-    @OrderColumn(name = "oppimaarat_order")
+    @OrderBy("oppimaaratOrder")
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AIPEOppiaine> oppimaarat = new ArrayList<>();
 
@@ -78,16 +88,22 @@ public class AIPEOppiaine extends AbstractAuditedReferenceableEntity implements 
     public void setKurssit(List<AIPEKurssi> kurssit) {
         this.kurssit.clear();
         if (kurssit != null) {
-            kurssit.forEach(k -> k.setOppiaine(this));
-            this.kurssit.addAll(kurssit);
+            for (AIPEKurssi k : kurssit) {
+                k.setOppiaine(this);
+                this.kurssit.add(k);
+            }
+            updateKurssitOrder();
         }
     }
 
     public void setOppimaarat(List<AIPEOppiaine> oppimaarat) {
         this.oppimaarat.clear();
         if (oppimaarat != null) {
-            oppimaarat.forEach(om -> om.setParent(this));
-            this.oppimaarat.addAll(oppimaarat);
+            for (AIPEOppiaine om : oppimaarat) {
+                om.setParent(this);
+                this.oppimaarat.add(om);
+            }
+            updateOppimaaratOrder();
         }
     }
 
@@ -98,6 +114,7 @@ public class AIPEOppiaine extends AbstractAuditedReferenceableEntity implements 
     public void addOppimaara(AIPEOppiaine oppimaara, int index) {
         oppimaara.setParent(this);
         oppimaarat.add(Math.max(0, Math.min(index, oppimaarat.size())), oppimaara);
+        updateOppimaaratOrder();
     }
 
     public void addKurssi(AIPEKurssi kurssi) {
@@ -107,6 +124,19 @@ public class AIPEOppiaine extends AbstractAuditedReferenceableEntity implements 
     public void addKurssi(AIPEKurssi kurssi, int index) {
         kurssi.setOppiaine(this);
         kurssit.add(Math.max(0, Math.min(index, kurssit.size())), kurssi);
+        updateKurssitOrder();
+    }
+
+    public void updateKurssitOrder() {
+        for (int i = 0; i < kurssit.size(); i++) {
+            kurssit.get(i).setKurssitOrder(i);
+        }
+    }
+
+    public void updateOppimaaratOrder() {
+        for (int i = 0; i < oppimaarat.size(); i++) {
+            oppimaarat.get(i).setOppimaaratOrder(i);
+        }
     }
 
     public static AIPEOppiaine copy(AIPEOppiaine original) {

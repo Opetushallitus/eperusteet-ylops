@@ -173,13 +173,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
         tekstikappaleviiteRepository.lock(parentViite.getRoot());
 
-        List<TekstiKappaleViite> lapset = parentViite.getLapset();
-        if (lapset == null) {
-            lapset = new ArrayList<>();
-            parentViite.setLapset(lapset);
-        }
-        lapset.add(uusiViite);
-        uusiViite.setVanhempi(parentViite);
+        parentViite.addLapsi(uusiViite);
         uusiViite = tekstikappaleviiteRepository.save(uusiViite);
 
         if (viiteDto == null || (viiteDto.getTekstiKappaleRef() == null && viiteDto.getTekstiKappale() == null)) {
@@ -286,7 +280,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
         muokkaustietoService.addOpsMuokkausTieto(opetussuunnitelmaRepository.findOne(opsId), new HistoriaTapahtumaAuditointitiedoilla(viite), MuokkausTapahtuma.POISTO);
 
         viite.setTekstiKappale(null);
-        viite.getVanhempi().getLapset().remove(viite);
+        TekstiKappaleViite vanhempi = viite.getVanhempi();
+        vanhempi.getLapset().remove(viite);
+        vanhempi.updateLapsetOrder();
         viite.setVanhempi(null);
         tekstikappaleviiteRepository.delete(viite);
 
@@ -540,6 +536,7 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
                     .map(elem -> updateTraverse(opsId, viite, elem, refs))
                     .collect(Collectors.toList()));
         }
+        viite.updateLapsetOrder();
         return tekstikappaleviiteRepository.save(viite);
     }
 
