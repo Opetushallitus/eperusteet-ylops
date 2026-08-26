@@ -40,7 +40,7 @@ public interface OppiaineRepository extends JpaWithVersioningRepository<Oppiaine
             "WHERE opetussuunnitelma.id = :opsId AND oppimaarat.nimi.tunniste = :tunniste")
     Oppiaine findOppimaaraByOpsIdAndTunniste(Long opsId, UUID tunniste);
 
-    @Query(value = "SELECT oa.oma " +
+    @Query(value = "SELECT DISTINCT oa.oma " +
             "FROM Opetussuunnitelma o " +
             "JOIN o.oppiaineet oa " +
             "JOIN oa.oppiaine a " +

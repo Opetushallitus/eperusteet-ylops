@@ -12,7 +12,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
@@ -98,7 +97,6 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     @JoinTable(name = "oppiaineen_vlkok_oppiaineenvuosiluokka",
             joinColumns = @JoinColumn(name = "oppiaineen_vlkok_id"),
             inverseJoinColumns = @JoinColumn(name = "vuosiluokat_id"))
-    @OrderColumn
     @BatchSize(size = 5)
     private Set<Oppiaineenvuosiluokka> vuosiluokat = new HashSet<>();
 

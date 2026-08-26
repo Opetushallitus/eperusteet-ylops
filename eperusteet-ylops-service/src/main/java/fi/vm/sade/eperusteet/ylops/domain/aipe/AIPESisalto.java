@@ -13,7 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.OrderColumn;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -44,12 +44,13 @@ public class AIPESisalto extends AbstractAuditedEntity implements ReferenceableE
     private Opetussuunnitelma opetussuunnitelma;
 
     @Getter
-    @OrderColumn(name = "vaiheet_order")
+    @OrderBy("vaiheetOrder")
     @OneToMany(mappedBy = "sisalto", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AIPEVaihe> vaiheet = new ArrayList<>();
 
     public void addVaihe(AIPEVaihe vaihe) {
         vaihe.setSisalto(this);
+        vaihe.setVaiheetOrder(vaiheet.size());
         vaiheet.add(vaihe);
     }
 

@@ -1,18 +1,17 @@
 package fi.vm.sade.eperusteet.ylops.domain;
 
-import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
-
 import java.io.Serializable;
+import java.security.Principal;
 import java.util.Date;
+
+import org.hibernate.envers.Audited;
+
+import fi.vm.sade.eperusteet.ylops.service.util.SecurityUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
-
 import lombok.Getter;
-import org.hibernate.envers.Audited;
 
 /**
  * Kantaluokka entiteeteille joista ylläpidetään luotu/muokattu -tietoja.
@@ -22,7 +21,6 @@ public abstract class AbstractAuditedEntity implements Serializable {
 
     @Audited
     @Column(updatable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private Date luotu;
 
     @Audited
@@ -32,7 +30,6 @@ public abstract class AbstractAuditedEntity implements Serializable {
 
     @Audited
     @Column
-    @Temporal(TemporalType.TIMESTAMP)
     private Date muokattu;
 
     @Audited
@@ -66,6 +63,11 @@ public abstract class AbstractAuditedEntity implements Serializable {
     // Fixme: ilman tämän kutsumista, palauttaminen ei päivitä muokkaustietoja
     public void updateMuokkaustiedot() {
         muokattu = new Date();
-        muokkaaja = SecurityUtil.getAuthenticatedPrincipal().getName();
+        muokkaaja = currentUsername();
+    }
+
+    private static String currentUsername() {
+        Principal principal = SecurityUtil.getAuthenticatedPrincipal();
+        return principal != null ? principal.getName() : "tuntematon";
     }
 }

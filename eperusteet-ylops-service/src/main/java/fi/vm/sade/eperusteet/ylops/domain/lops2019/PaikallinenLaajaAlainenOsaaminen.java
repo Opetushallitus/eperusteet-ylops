@@ -1,15 +1,15 @@
 package fi.vm.sade.eperusteet.ylops.domain.lops2019;
 
+import org.hibernate.envers.Audited;
+import org.hibernate.envers.RelationTargetAuditMode;
+import jakarta.validation.constraints.NotEmpty;
+
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.Audited;
-import org.hibernate.envers.RelationTargetAuditMode;
-import org.hibernate.validator.constraints.NotEmpty;
-
-import jakarta.persistence.*;
 
 @Entity
 @Audited
