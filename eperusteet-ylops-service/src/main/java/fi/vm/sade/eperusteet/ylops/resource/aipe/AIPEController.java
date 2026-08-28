@@ -63,24 +63,24 @@ public class AIPEController {
     }
 
     @RequestMapping(value = "/oppiaineet/{oppiaineId}", method = RequestMethod.GET)
-    public AIPEOppiaineDto getOppiaine(@PathVariable final Long opsId, @PathVariable final Long oppiaineId) {
+    public AIPEOppiaineDto getAipeOppiaine(@PathVariable final Long opsId, @PathVariable final Long oppiaineId) {
         return aipeService.getOppiaine(opsId, oppiaineId);
     }
 
     @RequestMapping(value = "/oppiaineet/{oppiaineId}", method = RequestMethod.PUT)
-    public AIPEOppiaineDto updateOppiaine(@PathVariable final Long opsId,
+    public AIPEOppiaineDto updateAipeOppiaine(@PathVariable final Long opsId,
                                           @PathVariable final Long oppiaineId,
                                           @RequestBody final AIPEOppiaineDto dto) {
         return aipeService.updateOppiaine(opsId, oppiaineId, dto);
     }
 
     @RequestMapping(value = "/kurssit/{kurssiId}", method = RequestMethod.GET)
-    public AIPEKurssiDto getKurssi(@PathVariable final Long opsId, @PathVariable final Long kurssiId) {
+    public AIPEKurssiDto getAipeKurssi(@PathVariable final Long opsId, @PathVariable final Long kurssiId) {
         return aipeService.getKurssi(opsId, kurssiId);
     }
 
     @RequestMapping(value = "/kurssit/{kurssiId}", method = RequestMethod.PUT)
-    public AIPEKurssiDto updateKurssi(@PathVariable final Long opsId,
+    public AIPEKurssiDto updateAipeKurssi(@PathVariable final Long opsId,
                                       @PathVariable final Long kurssiId,
                                       @RequestBody final AIPEKurssiDto dto) {
         return aipeService.updateKurssi(opsId, kurssiId, dto);
