@@ -121,7 +121,7 @@
     "/api/opetussuunnitelmat/{opsId}/aipe/oppiaineet/{oppiaineId}" : {
       "get" : {
         "tags" : [ "AIPE" ],
-        "operationId" : "getOppiaine",
+        "operationId" : "getAipeOppiaine",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "path",
@@ -154,7 +154,7 @@
       },
       "put" : {
         "tags" : [ "AIPE" ],
-        "operationId" : "updateOppiaine",
+        "operationId" : "updateAipeOppiaine",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "path",
@@ -199,7 +199,7 @@
     "/api/opetussuunnitelmat/{opsId}/aipe/kurssit/{kurssiId}" : {
       "get" : {
         "tags" : [ "AIPE" ],
-        "operationId" : "getKurssi",
+        "operationId" : "getAipeKurssi",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "path",
@@ -232,7 +232,7 @@
       },
       "put" : {
         "tags" : [ "AIPE" ],
-        "operationId" : "updateKurssi",
+        "operationId" : "updateAipeKurssi",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "path",
@@ -2020,7 +2020,7 @@
     "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}" : {
       "get" : {
         "tags" : [ "Oppiaineet" ],
-        "operationId" : "getOppiaine_1",
+        "operationId" : "getOppiaine",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "path",
@@ -2053,7 +2053,7 @@
       },
       "post" : {
         "tags" : [ "Oppiaineet" ],
-        "operationId" : "updateOppiaine_1",
+        "operationId" : "updateOppiaine",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "path",
@@ -4042,7 +4042,7 @@
     "/api/opetussuunnitelmat/lukio/{opsId}/kurssi/{kurssiId}" : {
       "post" : {
         "tags" : [ "LukioOpetussuunnitelmat" ],
-        "operationId" : "updateKurssi_1",
+        "operationId" : "updateKurssi",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "path",
@@ -15410,13 +15410,13 @@
       "PageOpetussuunnitelmaInfoDto" : {
         "type" : "object",
         "properties" : {
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "totalElements" : {
             "type" : "integer",
             "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "size" : {
             "type" : "integer",
@@ -15485,10 +15485,10 @@
           "empty" : {
             "type" : "boolean"
           },
-          "unsorted" : {
+          "sorted" : {
             "type" : "boolean"
           },
-          "sorted" : {
+          "unsorted" : {
             "type" : "boolean"
           }
         }
@@ -16156,13 +16156,13 @@
       "PageOpetussuunnitelmaJulkinenDto" : {
         "type" : "object",
         "properties" : {
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
           "totalElements" : {
             "type" : "integer",
             "format" : "int64"
+          },
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
           },
           "size" : {
             "type" : "integer",
