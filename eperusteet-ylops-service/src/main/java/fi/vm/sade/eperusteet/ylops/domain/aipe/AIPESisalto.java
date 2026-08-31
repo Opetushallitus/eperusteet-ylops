@@ -3,6 +3,7 @@ package fi.vm.sade.eperusteet.ylops.domain.aipe;
 import fi.vm.sade.eperusteet.ylops.domain.AbstractAuditedEntity;
 import fi.vm.sade.eperusteet.ylops.domain.ReferenceableEntity;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
+import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,8 +20,11 @@ import lombok.Setter;
 import org.hibernate.envers.Audited;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Audited
@@ -54,6 +58,19 @@ public class AIPESisalto extends AbstractAuditedEntity implements ReferenceableE
                 .filter(v -> v.getId() != null && v.getId().equals(id))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void updateVaiheJarjestys(List<Long> ids) {
+        Map<Long, AIPEVaihe> byId = vaiheet.stream()
+                .filter(v -> v.getId() != null)
+                .collect(Collectors.toMap(AIPEVaihe::getId, v -> v));
+        if (ids == null || ids.size() != byId.size() || !byId.keySet().equals(new HashSet<>(ids))) {
+            throw new BusinessRuleViolationException("sisaltoja-ei-voi-muuttaa-jarjestettaessa");
+        }
+        List<AIPEVaihe> reordered = ids.stream().map(byId::get).collect(Collectors.toList());
+        for (int i = 0; i < reordered.size(); i++) {
+            vaiheet.set(i, reordered.get(i));
+        }
     }
 
     public void copyFrom(AIPESisalto other) {

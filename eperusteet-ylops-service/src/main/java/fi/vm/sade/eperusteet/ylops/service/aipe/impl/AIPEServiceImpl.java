@@ -176,6 +176,13 @@ public class AIPEServiceImpl implements AIPEService {
     }
 
     @Override
+    public List<AIPEVaiheKevytDto> updateVaiheJarjestys(Long opsId, List<Long> vaiheIds) {
+        AIPESisalto sisalto = getOrCreateSisalto(getOps(opsId));
+        sisalto.updateVaiheJarjestys(vaiheIds);
+        return getVaiheet(opsId);
+    }
+
+    @Override
     public AIPEOppiaineDto getOppiaine(Long opsId, Long oppiaineId) {
         AIPEOppiaine oppiaine = requireOppiaine(opsId, oppiaineId);
         AipePerusteenSisaltoDto perusteAipe = getPerusteAipe(opsId);
