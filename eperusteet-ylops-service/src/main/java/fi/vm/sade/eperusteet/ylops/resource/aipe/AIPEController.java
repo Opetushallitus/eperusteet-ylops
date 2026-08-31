@@ -40,6 +40,12 @@ public class AIPEController {
         return aipeService.getVaiheet(opsId);
     }
 
+    @RequestMapping(value = "/vaiheet", method = RequestMethod.PUT)
+    public List<AIPEVaiheKevytDto> updateVaiheJarjestys(@PathVariable final Long opsId,
+                                                       @RequestBody final List<Long> vaiheIds) {
+        return aipeService.updateVaiheJarjestys(opsId, vaiheIds);
+    }
+
     @RequestMapping(value = "/vaiheet/{perusteenVaiheId}", method = RequestMethod.POST)
     public AIPEVaiheDto addVaihe(@PathVariable final Long opsId, @PathVariable final Long perusteenVaiheId) {
         return aipeService.addVaihe(opsId, perusteenVaiheId);

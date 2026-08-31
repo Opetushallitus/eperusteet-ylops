@@ -38,6 +38,9 @@ public interface AIPEService {
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     void removeVaihe(@P("opsId") Long opsId, Long vaiheId);
 
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    List<AIPEVaiheKevytDto> updateVaiheJarjestys(@P("opsId") Long opsId, List<Long> vaiheIds);
+
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
     AIPEOppiaineDto getOppiaine(@P("opsId") Long opsId, Long oppiaineId);
 

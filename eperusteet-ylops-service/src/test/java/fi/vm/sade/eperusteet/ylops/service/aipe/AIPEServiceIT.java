@@ -8,6 +8,7 @@ import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEKurssiDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEPerusteVaiheKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEVaiheDto;
+import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEVaiheKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.export.AIPESisaltoExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.export.AIPEVaiheExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.koodisto.KoodistoDto;
@@ -22,6 +23,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -188,6 +190,32 @@ public class AIPEServiceIT extends AbstractIntegrationTest {
         opsLuonti.setPohja(Reference.of(pohja.getId()));
         opsLuonti.setPerusteenVaiheIdt(perusteenVaiheIdt);
         return opetussuunnitelmaService.addOpetussuunnitelma(opsLuonti);
+    }
+
+    @Test
+    public void testUpdateVaiheJarjestys() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        AIPEVaiheDto vaihe1 = aipeService.addVaihe(ops.getId(), 17101L);
+        AIPEVaiheDto vaihe2 = aipeService.addVaihe(ops.getId(), 17102L);
+
+        assertThat(aipeService.getVaiheet(ops.getId()))
+                .extracting(AIPEVaiheKevytDto::getId)
+                .containsExactly(vaihe1.getId(), vaihe2.getId());
+
+        List<AIPEVaiheKevytDto> jarjestetty = aipeService.updateVaiheJarjestys(
+                ops.getId(), Arrays.asList(vaihe2.getId(), vaihe1.getId()));
+
+        assertThat(jarjestetty)
+                .extracting(AIPEVaiheKevytDto::getId)
+                .containsExactly(vaihe2.getId(), vaihe1.getId());
+        assertThat(aipeService.getVaiheet(ops.getId()))
+                .extracting(AIPEVaiheKevytDto::getId)
+                .containsExactly(vaihe2.getId(), vaihe1.getId());
+
+        assertThatThrownBy(() -> aipeService.updateVaiheJarjestys(ops.getId(), Collections.singletonList(vaihe1.getId())))
+                .isInstanceOf(BusinessRuleViolationException.class);
+        assertThatThrownBy(() -> aipeService.updateVaiheJarjestys(ops.getId(), Arrays.asList(vaihe1.getId(), 999L)))
+                .isInstanceOf(BusinessRuleViolationException.class);
     }
 
     @Test
