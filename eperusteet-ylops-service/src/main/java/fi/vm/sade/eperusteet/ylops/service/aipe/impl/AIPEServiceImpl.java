@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEPerusteVaiheKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPESisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEVaiheDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEVaiheKevytDto;
+import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoLisatieto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.export.AIPEKurssiExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.export.AIPEOppiaineExportDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.export.AIPESisaltoExportDto;
@@ -54,7 +55,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -62,6 +65,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
@@ -226,6 +230,19 @@ public class AIPEServiceImpl implements AIPEService {
         return getKurssi(opsId, kurssiId);
     }
 
+    @Override
+    public boolean onkoPuuttuviaSisaltoja(Long opsId) {
+        return kasittelePuuttuvat(opsId, false);
+    }
+
+    @Override
+    public void lisaaPuuttuvatSisallot(Long opsId) {
+        if (kasittelePuuttuvat(opsId, true)) {
+            Opetussuunnitelma ops = getOps(opsId);
+            muokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.PAIVITYS, MuokkaustietoLisatieto.AIPE_SISALTO_SYNKRONOITU);
+        }
+    }
+
     private void applyPaikallinen(AIPEVaihe vaihe, LokalisoituTekstiDto tarkennus, boolean piilotettu) {
         vaihe.setPaikallinenTarkennus(mapper.map(tarkennus, LokalisoituTeksti.class));
         vaihe.setPiilotettu(piilotettu);
@@ -283,6 +300,124 @@ public class AIPEServiceImpl implements AIPEService {
         AIPEKurssi kurssi = new AIPEKurssi();
         kurssi.setPerusteenKurssiId(perusteKurssi.getId());
         return kurssi;
+    }
+
+    private boolean kasittelePuuttuvat(Long opsId, boolean lisaa) {
+        AIPESisalto sisalto = getOrCreateSisalto(getOps(opsId));
+        AipePerusteenSisaltoDto perusteAipe = getPerusteAipe(opsId);
+        boolean puuttuvia = false;
+        for (AIPEVaihe vaihe : sisalto.getVaiheet()) {
+            PerusteAIPEVaiheDto perusteVaihe = findPerusteVaihe(perusteAipe, vaihe.getPerusteenVaiheId());
+            if (perusteVaihe == null) {
+                continue;
+            }
+            if (kasittelePuuttuvatOppiaineet(vaihe, null, vaihe.getOppiaineet(),
+                    perusteVaihe.getOppiaineet(), lisaa)) {
+                puuttuvia = true;
+                if (!lisaa) {
+                    return true;
+                }
+            }
+        }
+        return puuttuvia;
+    }
+
+    private boolean kasittelePuuttuvatOppiaineet(AIPEVaihe vaihe,
+                                                AIPEOppiaine parent,
+                                                List<AIPEOppiaine> opsOppiaineet,
+                                                List<PerusteAIPEOppiaineDto> perusteOppiaineet,
+                                                boolean lisaa) {
+        boolean puuttuvia = false;
+        List<PerusteAIPEOppiaineDto> perusteet = Optional.ofNullable(perusteOppiaineet).orElse(Collections.emptyList());
+        for (int i = 0; i < perusteet.size(); i++) {
+            PerusteAIPEOppiaineDto perusteOppiaine = perusteet.get(i);
+            AIPEOppiaine olemassa = findLocalOppiaine(opsOppiaineet, perusteOppiaine.getId());
+            if (olemassa == null) {
+                puuttuvia = true;
+                if (!lisaa) {
+                    return true;
+                }
+                AIPEOppiaine uusi = fromPeruste(perusteOppiaine);
+                if (parent != null) {
+                    parent.addOppimaara(uusi, i);
+                } else {
+                    vaihe.addOppiaine(uusi, i);
+                }
+                aipeVaiheRepository.saveAndFlush(vaihe);
+                continue;
+            }
+            if (kasittelePuuttuvatKurssit(vaihe, olemassa, perusteOppiaine.getKurssit(), lisaa)) {
+                puuttuvia = true;
+                if (!lisaa) {
+                    return true;
+                }
+            }
+            if (kasittelePuuttuvatOppiaineet(vaihe, olemassa, olemassa.getOppimaarat(),
+                    perusteOppiaine.getOppimaarat(), lisaa)) {
+                puuttuvia = true;
+                if (!lisaa) {
+                    return true;
+                }
+            }
+        }
+        if (lisaa) {
+            jarjesta(opsOppiaineet, perusteet, PerusteAIPEOppiaineDto::getId, AIPEOppiaine::getPerusteenOppiaineId);
+        }
+        return puuttuvia;
+    }
+
+    private boolean kasittelePuuttuvatKurssit(AIPEVaihe vaihe,
+                                             AIPEOppiaine oppiaine,
+                                             List<PerusteAIPEKurssiDto> perusteKurssit,
+                                             boolean lisaa) {
+        boolean puuttuvia = false;
+        List<PerusteAIPEKurssiDto> perusteet = Optional.ofNullable(perusteKurssit).orElse(Collections.emptyList());
+        for (int i = 0; i < perusteet.size(); i++) {
+            PerusteAIPEKurssiDto perusteKurssi = perusteet.get(i);
+            if (findLocalKurssi(oppiaine.getKurssit(), perusteKurssi.getId()) != null) {
+                continue;
+            }
+            puuttuvia = true;
+            if (!lisaa) {
+                return true;
+            }
+            AIPEKurssi uusi = fromPeruste(perusteKurssi);
+            oppiaine.addKurssi(uusi, i);
+            aipeVaiheRepository.saveAndFlush(vaihe);
+        }
+        if (lisaa) {
+            jarjesta(oppiaine.getKurssit(), perusteet, PerusteAIPEKurssiDto::getId, AIPEKurssi::getPerusteenKurssiId);
+        }
+        return puuttuvia;
+    }
+
+    private <T, P> void jarjesta(List<T> opsLista, List<P> perusteLista, Function<P, Long> perusteId, Function<T, Long> opsPerusteId) {
+        if (opsLista == null || opsLista.isEmpty() || perusteLista == null || perusteLista.isEmpty()) {
+            return;
+        }
+        Map<Long, Integer> jarjestys = new HashMap<>();
+        for (int i = 0; i < perusteLista.size(); i++) {
+            jarjestys.put(perusteId.apply(perusteLista.get(i)), i);
+        }
+        List<T> jarjestetty = new ArrayList<>(opsLista);
+        jarjestetty.sort(Comparator.comparingInt(item -> jarjestys.getOrDefault(opsPerusteId.apply(item), Integer.MAX_VALUE)));
+        for (int i = 0; i < jarjestetty.size(); i++) {
+            opsLista.set(i, jarjestetty.get(i));
+        }
+    }
+
+    private AIPEOppiaine findLocalOppiaine(List<AIPEOppiaine> oppiaineet, Long perusteenOppiaineId) {
+        return Optional.ofNullable(oppiaineet).orElse(Collections.emptyList()).stream()
+                .filter(oa -> Objects.equals(oa.getPerusteenOppiaineId(), perusteenOppiaineId))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private AIPEKurssi findLocalKurssi(List<AIPEKurssi> kurssit, Long perusteenKurssiId) {
+        return Optional.ofNullable(kurssit).orElse(Collections.emptyList()).stream()
+                .filter(k -> Objects.equals(k.getPerusteenKurssiId(), perusteenKurssiId))
+                .findFirst()
+                .orElse(null);
     }
 
     private AIPEVaiheDto toDto(AIPEVaihe vaihe, PerusteAIPEVaiheDto perusteVaihe) {

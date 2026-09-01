@@ -30,6 +30,16 @@ public class AIPEController {
         return aipeService.getSisalto(opsId);
     }
 
+    @RequestMapping(value = "/sisalto/onkoPuuttuvia", method = RequestMethod.GET)
+    public boolean onkoPuuttuviaSisaltoja(@PathVariable final Long opsId) {
+        return aipeService.onkoPuuttuviaSisaltoja(opsId);
+    }
+
+    @RequestMapping(value = "/sisalto/lisaaPuuttuvat", method = RequestMethod.POST)
+    public void lisaaPuuttuvatSisallot(@PathVariable final Long opsId) {
+        aipeService.lisaaPuuttuvatSisallot(opsId);
+    }
+
     @RequestMapping(value = "/peruste/vaiheet", method = RequestMethod.GET)
     public List<AIPEPerusteVaiheKevytDto> getPerusteVaiheet(@PathVariable final Long opsId) {
         return aipeService.getPerusteVaiheet(opsId);

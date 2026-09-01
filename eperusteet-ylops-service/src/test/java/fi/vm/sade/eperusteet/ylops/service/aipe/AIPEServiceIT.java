@@ -3,9 +3,14 @@ package fi.vm.sade.eperusteet.ylops.service.aipe;
 import fi.vm.sade.eperusteet.ylops.domain.KoulutusTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.Tila;
 import fi.vm.sade.eperusteet.ylops.domain.Tyyppi;
+import fi.vm.sade.eperusteet.ylops.domain.aipe.AIPEKurssi;
+import fi.vm.sade.eperusteet.ylops.domain.aipe.AIPEOppiaine;
+import fi.vm.sade.eperusteet.ylops.domain.aipe.AIPEVaihe;
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEKurssiDto;
+import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEKurssiKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEOppiaineKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEPerusteVaiheKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEVaiheDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEVaiheKevytDto;
@@ -16,6 +21,7 @@ import fi.vm.sade.eperusteet.ylops.dto.koodisto.OrganisaatioDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.repository.aipe.AIPEVaiheRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
@@ -42,6 +48,9 @@ public class AIPEServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private OpetussuunnitelmaService opetussuunnitelmaService;
+
+    @Autowired
+    private AIPEVaiheRepository aipeVaiheRepository;
 
     @Test
     public void testAddVaiheMergeHideAndDuplicate() {
@@ -226,5 +235,156 @@ public class AIPEServiceIT extends AbstractIntegrationTest {
         assertThat(perusteVaiheet).hasSize(2);
         assertThat(aipeService.getVaiheet(ops.getId())).hasSize(1);
         assertThat(aipeService.getVaiheet(ops.getId()).get(0).getPerusteenVaiheId()).isEqualTo(17101L);
+    }
+
+    @Test
+    public void testOnkoPuuttuviaSisaltojaFalseAfterAddVaihe() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        aipeService.addVaihe(ops.getId(), 17101L);
+
+        assertThat(aipeService.onkoPuuttuviaSisaltoja(ops.getId())).isFalse();
+    }
+
+    @Test
+    public void testLisaaPuuttuvaOppiaine() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        AIPEVaiheDto vaiheDto = aipeService.addVaihe(ops.getId(), 17101L);
+        assertThat(aipeService.onkoPuuttuviaSisaltoja(ops.getId())).isFalse();
+
+        AIPEVaihe vaihe = aipeVaiheRepository.findOne(vaiheDto.getId());
+        vaihe.getOppiaineet().clear();
+        aipeVaiheRepository.flush();
+
+        assertThat(aipeService.onkoPuuttuviaSisaltoja(ops.getId())).isTrue();
+        aipeService.lisaaPuuttuvatSisallot(ops.getId());
+
+        assertThat(aipeService.onkoPuuttuviaSisaltoja(ops.getId())).isFalse();
+        AIPEVaiheDto synkronoitu = aipeService.getVaihe(ops.getId(), vaiheDto.getId());
+        assertThat(synkronoitu.getOppiaineet()).hasSize(1);
+        assertThat(synkronoitu.getOppiaineet().get(0).getPerusteenOppiaineId()).isEqualTo(17201L);
+        assertThat(synkronoitu.getOppiaineet().get(0).getKurssit()).hasSize(1);
+    }
+
+    @Test
+    public void testLisaaPuuttuvaKurssi() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        AIPEVaiheDto vaiheDto = aipeService.addVaihe(ops.getId(), 17101L);
+
+        AIPEVaihe vaihe = aipeVaiheRepository.findOne(vaiheDto.getId());
+        vaihe.getOppiaineet().get(0).getKurssit().clear();
+        aipeVaiheRepository.flush();
+
+        assertThat(aipeService.onkoPuuttuviaSisaltoja(ops.getId())).isTrue();
+        aipeService.lisaaPuuttuvatSisallot(ops.getId());
+
+        assertThat(aipeService.onkoPuuttuviaSisaltoja(ops.getId())).isFalse();
+        AIPEVaiheDto synkronoitu = aipeService.getVaihe(ops.getId(), vaiheDto.getId());
+        assertThat(synkronoitu.getOppiaineet()).hasSize(1);
+        assertThat(synkronoitu.getOppiaineet().get(0).getKurssit()).hasSize(1);
+        assertThat(synkronoitu.getOppiaineet().get(0).getKurssit().get(0).getPerusteenKurssiId()).isEqualTo(17301L);
+    }
+
+    @Test
+    public void testLisaaPuuttuvaOppimaara() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        AIPEVaiheDto vaiheDto = aipeService.addVaihe(ops.getId(), 17102L);
+
+        AIPEVaihe vaihe = aipeVaiheRepository.findOne(vaiheDto.getId());
+        AIPEOppiaine oppiaine = vaihe.getOppiaineet().get(0);
+        oppiaine.getOppimaarat().clear();
+        aipeVaiheRepository.flush();
+
+        assertThat(aipeService.onkoPuuttuviaSisaltoja(ops.getId())).isTrue();
+        aipeService.lisaaPuuttuvatSisallot(ops.getId());
+
+        assertThat(aipeService.onkoPuuttuviaSisaltoja(ops.getId())).isFalse();
+        AIPEVaiheDto synkronoitu = aipeService.getVaihe(ops.getId(), vaiheDto.getId());
+        assertThat(synkronoitu.getOppiaineet()).hasSize(1);
+        assertThat(synkronoitu.getOppiaineet().get(0).getOppimaarat()).hasSize(1);
+        assertThat(synkronoitu.getOppiaineet().get(0).getOppimaarat().get(0).getPerusteenOppiaineId()).isEqualTo(17203L);
+        assertThat(synkronoitu.getOppiaineet().get(0).getOppimaarat().get(0).getKurssit()).hasSize(1);
+    }
+
+    @Test
+    public void testLisaaPuuttuvatIdempotentti() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        AIPEVaiheDto vaihe = aipeService.addVaihe(ops.getId(), 17101L);
+        Long oppiaineId = vaihe.getOppiaineet().get(0).getId();
+        Long kurssiId = vaihe.getOppiaineet().get(0).getKurssit().get(0).getId();
+
+        aipeService.lisaaPuuttuvatSisallot(ops.getId());
+
+        assertThat(aipeService.onkoPuuttuviaSisaltoja(ops.getId())).isFalse();
+        AIPEVaiheDto synkronoitu = aipeService.getVaihe(ops.getId(), vaihe.getId());
+        assertThat(synkronoitu.getOppiaineet()).hasSize(1);
+        assertThat(synkronoitu.getOppiaineet().get(0).getId()).isEqualTo(oppiaineId);
+        assertThat(synkronoitu.getOppiaineet().get(0).getKurssit()).hasSize(1);
+        assertThat(synkronoitu.getOppiaineet().get(0).getKurssit().get(0).getId()).isEqualTo(kurssiId);
+    }
+
+    @Test
+    public void testLisaaPuuttuvatEiLisaaVaiheita() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        aipeService.addVaihe(ops.getId(), 17101L);
+
+        assertThat(aipeService.getPerusteVaiheet(ops.getId())).hasSize(2);
+        assertThat(aipeService.onkoPuuttuviaSisaltoja(ops.getId())).isFalse();
+
+        aipeService.lisaaPuuttuvatSisallot(ops.getId());
+
+        assertThat(aipeService.getVaiheet(ops.getId())).hasSize(1);
+        assertThat(aipeService.getVaiheet(ops.getId()).get(0).getPerusteenVaiheId()).isEqualTo(17101L);
+    }
+
+    @Test
+    public void testLisaaPuuttuvatSailyttääPerusteenJarjestyksen() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        AIPEVaiheDto vaiheDto = aipeService.addVaihe(ops.getId(), 17101L);
+
+        AIPEVaihe vaihe = aipeVaiheRepository.findOne(vaiheDto.getId());
+        AIPEOppiaine oppiaine = vaihe.getOppiaineet().get(0);
+        AIPEKurssi perusteKurssi = oppiaine.getKurssit().get(0);
+
+        AIPEKurssi extraKurssi = new AIPEKurssi();
+        extraKurssi.setPerusteenKurssiId(88888L);
+        oppiaine.addKurssi(extraKurssi, 0);
+        oppiaine.getKurssit().remove(perusteKurssi);
+        aipeVaiheRepository.flush();
+
+        aipeService.lisaaPuuttuvatSisallot(ops.getId());
+        AIPEVaiheDto kurssiJarjestys = aipeService.getVaihe(ops.getId(), vaiheDto.getId());
+        assertThat(kurssiJarjestys.getOppiaineet().get(0).getKurssit())
+                .extracting(AIPEKurssiKevytDto::getPerusteenKurssiId)
+                .containsExactly(17301L, 88888L);
+
+        vaihe = aipeVaiheRepository.findOne(vaiheDto.getId());
+        AIPEOppiaine perusteOppiaine = vaihe.getOppiaineet().get(0);
+        AIPEOppiaine extraOppiaine = new AIPEOppiaine();
+        extraOppiaine.setPerusteenOppiaineId(99999L);
+        vaihe.addOppiaine(extraOppiaine, 0);
+        vaihe.getOppiaineet().remove(perusteOppiaine);
+        aipeVaiheRepository.flush();
+
+        aipeService.lisaaPuuttuvatSisallot(ops.getId());
+        AIPEVaiheDto oppiaineJarjestys = aipeService.getVaihe(ops.getId(), vaiheDto.getId());
+        assertThat(oppiaineJarjestys.getOppiaineet())
+                .extracting(AIPEOppiaineKevytDto::getPerusteenOppiaineId)
+                .containsExactly(17201L, 99999L);
+
+        AIPEVaiheDto oppimaaraVaiheDto = aipeService.addVaihe(ops.getId(), 17102L);
+        AIPEVaihe oppimaaraVaihe = aipeVaiheRepository.findOne(oppimaaraVaiheDto.getId());
+        AIPEOppiaine oppimaaranParent = oppimaaraVaihe.getOppiaineet().get(0);
+        AIPEOppiaine perusteOppimaara = oppimaaranParent.getOppimaarat().get(0);
+        AIPEOppiaine extraOppimaara = new AIPEOppiaine();
+        extraOppimaara.setPerusteenOppiaineId(77777L);
+        oppimaaranParent.addOppimaara(extraOppimaara, 0);
+        oppimaaranParent.getOppimaarat().remove(perusteOppimaara);
+        aipeVaiheRepository.flush();
+
+        aipeService.lisaaPuuttuvatSisallot(ops.getId());
+        AIPEVaiheDto oppimaaraJarjestys = aipeService.getVaihe(ops.getId(), oppimaaraVaiheDto.getId());
+        assertThat(oppimaaraJarjestys.getOppiaineet().get(0).getOppimaarat())
+                .extracting(AIPEOppiaineKevytDto::getPerusteenOppiaineId)
+                .containsExactly(17203L, 77777L);
     }
 }
