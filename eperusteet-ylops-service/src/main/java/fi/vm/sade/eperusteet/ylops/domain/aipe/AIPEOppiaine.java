@@ -91,6 +91,24 @@ public class AIPEOppiaine extends AbstractAuditedReferenceableEntity implements 
         }
     }
 
+    public void addOppimaara(AIPEOppiaine oppimaara) {
+        addOppimaara(oppimaara, oppimaarat.size());
+    }
+
+    public void addOppimaara(AIPEOppiaine oppimaara, int index) {
+        oppimaara.setParent(this);
+        oppimaarat.add(Math.max(0, Math.min(index, oppimaarat.size())), oppimaara);
+    }
+
+    public void addKurssi(AIPEKurssi kurssi) {
+        addKurssi(kurssi, kurssit.size());
+    }
+
+    public void addKurssi(AIPEKurssi kurssi, int index) {
+        kurssi.setOppiaine(this);
+        kurssit.add(Math.max(0, Math.min(index, kurssit.size())), kurssi);
+    }
+
     public static AIPEOppiaine copy(AIPEOppiaine original) {
         if (original == null) {
             return null;

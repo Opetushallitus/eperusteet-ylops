@@ -68,6 +68,15 @@ public class AIPEVaihe extends AbstractAuditedReferenceableEntity implements His
         }
     }
 
+    public void addOppiaine(AIPEOppiaine oppiaine) {
+        addOppiaine(oppiaine, oppiaineet.size());
+    }
+
+    public void addOppiaine(AIPEOppiaine oppiaine, int index) {
+        oppiaine.setVaihe(this);
+        oppiaineet.add(Math.max(0, Math.min(index, oppiaineet.size())), oppiaine);
+    }
+
     public static AIPEVaihe copy(AIPEVaihe original) {
         if (original == null) {
             return null;

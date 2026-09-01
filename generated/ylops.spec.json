@@ -3441,6 +3441,26 @@
         }
       }
     },
+    "/api/opetussuunnitelmat/{opsId}/aipe/sisalto/lisaaPuuttuvat" : {
+      "post" : {
+        "tags" : [ "AIPE" ],
+        "operationId" : "lisaaPuuttuvatSisallot",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        }
+      }
+    },
     "/api/opetussuunnitelmat/{id}" : {
       "get" : {
         "tags" : [ "Opetussuunnitelmat" ],
@@ -7236,6 +7256,33 @@
               "*/*" : {
                 "schema" : {
                   "$ref" : "#/components/schemas/AIPESisaltoDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/aipe/sisalto/onkoPuuttuvia" : {
+      "get" : {
+        "tags" : [ "AIPE" ],
+        "operationId" : "onkoPuuttuviaSisaltoja",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "boolean"
                 }
               }
             }
@@ -15446,13 +15493,19 @@
       "PageOpetussuunnitelmaInfoDto" : {
         "type" : "object",
         "properties" : {
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "totalElements" : {
             "type" : "integer",
             "format" : "int64"
           },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int32"
+          "first" : {
+            "type" : "boolean"
+          },
+          "last" : {
+            "type" : "boolean"
           },
           "size" : {
             "type" : "integer",
@@ -15470,12 +15523,6 @@
           },
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
-          },
-          "first" : {
-            "type" : "boolean"
-          },
-          "last" : {
-            "type" : "boolean"
           },
           "numberOfElements" : {
             "type" : "integer",
@@ -15499,12 +15546,6 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
-          "unpaged" : {
-            "type" : "boolean"
-          },
-          "paged" : {
-            "type" : "boolean"
-          },
           "pageNumber" : {
             "type" : "integer",
             "format" : "int32"
@@ -15512,6 +15553,12 @@
           "pageSize" : {
             "type" : "integer",
             "format" : "int32"
+          },
+          "unpaged" : {
+            "type" : "boolean"
+          },
+          "paged" : {
+            "type" : "boolean"
           }
         }
       },
@@ -16192,13 +16239,19 @@
       "PageOpetussuunnitelmaJulkinenDto" : {
         "type" : "object",
         "properties" : {
+          "totalPages" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
           "totalElements" : {
             "type" : "integer",
             "format" : "int64"
           },
-          "totalPages" : {
-            "type" : "integer",
-            "format" : "int32"
+          "first" : {
+            "type" : "boolean"
+          },
+          "last" : {
+            "type" : "boolean"
           },
           "size" : {
             "type" : "integer",
@@ -16216,12 +16269,6 @@
           },
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
-          },
-          "first" : {
-            "type" : "boolean"
-          },
-          "last" : {
-            "type" : "boolean"
           },
           "numberOfElements" : {
             "type" : "integer",

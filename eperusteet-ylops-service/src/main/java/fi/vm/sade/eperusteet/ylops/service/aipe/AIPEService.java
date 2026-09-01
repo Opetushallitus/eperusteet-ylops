@@ -52,4 +52,10 @@ public interface AIPEService {
 
     @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
     AIPEKurssiDto updateKurssi(@P("opsId") Long opsId, Long kurssiId, AIPEKurssiDto dto);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'LUKU')")
+    boolean onkoPuuttuviaSisaltoja(@P("opsId") Long opsId);
+
+    @PreAuthorize("hasPermission(#opsId, 'opetussuunnitelma', 'MUOKKAUS')")
+    void lisaaPuuttuvatSisallot(@P("opsId") Long opsId);
 }
