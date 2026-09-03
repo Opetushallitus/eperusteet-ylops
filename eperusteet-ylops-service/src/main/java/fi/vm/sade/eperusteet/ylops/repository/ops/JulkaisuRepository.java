@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Repository
@@ -93,12 +94,13 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
 
     @Query(nativeQuery = true,
         value = """
-                    SELECT CAST(jsonb_path_query(jsonb_lower_keys(julkaisu_data.opsdata), CAST(:query AS jsonpath)) AS text)
+                    SELECT CAST(julkaisu_data.opsdata AS text)
                     FROM opetussuunnitelman_julkaisu julkaisu
                     INNER JOIN opetussuunnitelman_julkaisu_data julkaisu_data ON julkaisu.data_id = julkaisu_data.id
                     WHERE julkaisu.ops_id = :opetussuunnitelmaId
-                    AND luotu = (SELECT MAX(luotu) FROM opetussuunnitelman_julkaisu WHERE ops_id = julkaisu.ops_id)
-                    AND (julkaisu_data->'peruste'->'id')::BIGINT NOT IN (SELECT peruste_id FROM poistetut_perusteet)
+                    AND (julkaisu_data.opsdata->'peruste'->'id')::BIGINT NOT IN (SELECT peruste_id FROM poistetut_perusteet)
+                    ORDER BY julkaisu.luotu DESC
+                    LIMIT 1
                 """)
-    String findJulkaisutByJsonPath(@Param("opetussuunnitelmaId") Long opetussuunnitelmaId, @Param("query") String query);
+    Optional<String> findLatestJulkaistuDataByOpetussuunnitelmaId(@Param("opetussuunnitelmaId") Long opetussuunnitelmaId);
 }

@@ -134,6 +134,7 @@ import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
+import fi.vm.sade.eperusteet.ylops.service.util.JulkaistuSisaltoDynamicPathResolver;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaisuService;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.ConstructedCopier;
 import fi.vm.sade.eperusteet.ylops.service.util.LambdaUtil.Copier;
@@ -154,7 +155,6 @@ import jakarta.persistence.criteria.Subquery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -453,7 +453,11 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Override
     @Transactional(readOnly = true)
     public Object getJulkaistuSisaltoObjectNode(Long id, List<String> queryList) {
-        queryList.forEach(query -> {
+        List<String> segments = queryList.stream()
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+        segments.forEach(query -> {
             if (!query.matches("[a-zA-Z0-9_]+")) {
                 throw new NotExistsException("");
             }
@@ -465,15 +469,21 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new NotExistsException("");
         }
 
-        String query = queryList.stream().reduce("$", (subquery, element) -> {
-            if (NumberUtils.isCreatable(element)) {
-                return subquery + String.format("?(@.id==%s)", element);
-            }
-            return subquery + "." + element.toLowerCase();
-        });
+        String opsdata = julkaisuRepository.findLatestJulkaistuDataByOpetussuunnitelmaId(id).orElse(null);
+        if (opsdata == null) {
+            return null;
+        }
 
         try {
-            return objectMapper.readValue(julkaisuRepository.findJulkaisutByJsonPath(id, query), Object.class);
+            JsonNode data = objectMapper.readTree(opsdata);
+            if (!(data instanceof ObjectNode objectNode)) {
+                return null;
+            }
+            JsonNode node = JulkaistuSisaltoDynamicPathResolver.resolve(objectNode, segments);
+            if (node == null || node.isNull() || node.isMissingNode()) {
+                return null;
+            }
+            return objectMapper.treeToValue(node, Object.class);
         } catch (Exception e) {
             log.error(Throwables.getStackTraceAsString(e));
             throw new NotExistsException("");
