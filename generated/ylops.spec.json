@@ -10,11 +10,7 @@
     "version" : "v3.0.0"
   },
   "servers" : [ {
-<<<<<<< HEAD
     "url" : "http://localhost:8081/eperusteet-ylops-service",
-=======
-    "url" : "https://localhost:8081/eperusteet-ylops-service",
->>>>>>> 4f759de9 (EP-5110)
     "description" : "Generated server url"
   } ],
   "paths" : {
@@ -10585,6 +10581,53 @@
         },
         "description" : "Opetussuunnitelmaan liitetyt kunnat (koodisto)."
       },
+      "KoodistoKoodiDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "koodiUri" : {
+            "type" : "string"
+          },
+          "koodiArvo" : {
+            "type" : "string"
+          },
+          "versio" : {
+            "type" : "string"
+          },
+          "voimassaAlkuPvm" : {
+            "type" : "string"
+          },
+          "voimassaLoppuPvm" : {
+            "type" : "string"
+          },
+          "metadata" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/KoodistoMetadataDto"
+            }
+          },
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "KoodistoMetadataDto" : {
+        "type" : "object",
+        "properties" : {
+          "nimi" : {
+            "type" : "string"
+          },
+          "kieli" : {
+            "type" : "string"
+          }
+        }
+      },
       "LaajaalainenosaaminenDto" : {
         "type" : "object",
         "properties" : {
@@ -10784,11 +10827,7 @@
           "toteutus" : {
             "type" : "string",
             "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
-<<<<<<< HEAD
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019", "AIPE" ]
-=======
-            "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
->>>>>>> 4f759de9 (EP-5110)
           },
           "paatospaivamaara" : {
             "type" : "string",
@@ -10870,6 +10909,12 @@
             "items" : {
               "type" : "integer",
               "format" : "int64"
+            }
+          },
+          "taiteenalat" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaiteenalaDto"
             }
           },
           "luontityyppi" : {
@@ -11232,6 +11277,65 @@
         },
         "description" : "Opetussuunnitelman tekstirakenne puumuotona."
       },
+      "TaiteenalaDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "koodi" : {
+            "type" : "string"
+          },
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "paikallinenTarkennus" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "taiteenosat" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaiteenosaDto"
+            }
+          },
+          "kooditettu" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "writeOnly" : true
+          },
+          "koodistoKoodi" : {
+            "$ref" : "#/components/schemas/KoodistoKoodiDto"
+          }
+        }
+      },
+      "TaiteenosaDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "perusteenTaiteenosanId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "paikallinenTarkennus" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
       "TekstiKappaleDto" : {
         "type" : "object",
         "properties" : {
@@ -11448,11 +11552,7 @@
           "toteutus" : {
             "type" : "string",
             "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
-<<<<<<< HEAD
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019", "AIPE" ]
-=======
-            "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
->>>>>>> 4f759de9 (EP-5110)
           },
           "paatospaivamaara" : {
             "type" : "string",
@@ -11635,112 +11735,6 @@
           },
           "_tekstiKappale" : {
             "type" : "string"
-          }
-        }
-      },
-      "TaiteenosaDto" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "perusteenTaiteenosanId" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "paikallinenTarkennus" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          }
-        }
-      },
-      "KoodistoKoodiDto" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "koodiUri" : {
-            "type" : "string"
-          },
-          "koodiArvo" : {
-            "type" : "string"
-          },
-          "versio" : {
-            "type" : "string"
-          },
-          "voimassaAlkuPvm" : {
-            "type" : "string"
-          },
-          "voimassaLoppuPvm" : {
-            "type" : "string"
-          },
-          "metadata" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/KoodistoMetadataDto"
-            }
-          },
-          "nimi" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          }
-        }
-      },
-      "KoodistoMetadataDto" : {
-        "type" : "object",
-        "properties" : {
-          "nimi" : {
-            "type" : "string"
-          },
-          "kieli" : {
-            "type" : "string"
-          }
-        }
-      },
-      "TaiteenalaDto" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "koodi" : {
-            "type" : "string"
-          },
-          "nimi" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          },
-          "paikallinenTarkennus" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          },
-          "taiteenosat" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/TaiteenosaDto"
-            }
-          },
-          "kooditettu" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            },
-            "writeOnly" : true
-          },
-          "koodistoKoodi" : {
-            "$ref" : "#/components/schemas/KoodistoKoodiDto"
           }
         }
       },
@@ -12376,9 +12370,6 @@
           "inputStream" : {
             "type" : "object"
           },
-          "submittedFileName" : {
-            "type" : "string"
-          },
           "contentType" : {
             "type" : "string"
           },
@@ -12387,6 +12378,9 @@
             "items" : {
               "type" : "string"
             }
+          },
+          "submittedFileName" : {
+            "type" : "string"
           }
         }
       },
@@ -12532,11 +12526,7 @@
           "toteutus" : {
             "type" : "string",
             "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
-<<<<<<< HEAD
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019", "AIPE" ]
-=======
-            "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
->>>>>>> 4f759de9 (EP-5110)
           },
           "paatospaivamaara" : {
             "type" : "string",
@@ -12748,11 +12738,7 @@
           "toteutus" : {
             "type" : "string",
             "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
-<<<<<<< HEAD
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019", "AIPE" ]
-=======
-            "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
->>>>>>> 4f759de9 (EP-5110)
           },
           "paatospaivamaara" : {
             "type" : "string",
@@ -14632,8 +14618,6 @@
           }
         }
       },
-<<<<<<< HEAD
-=======
       "PerusteTaiteenosaDto" : {
         "type" : "object",
         "properties" : {
@@ -14667,59 +14651,6 @@
           }
         }
       },
-      "PerusteTavoitteenArviointiDto" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "arvioinninKohde" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          },
-          "osaamisenKuvaus" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          },
-          "arvosana" : {
-            "type" : "integer",
-            "format" : "int32"
-          },
-          "hyvanOsaamisenKuvaus" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          }
-        }
-      },
-      "PerusteTekstiOsaDto" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "otsikko" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          },
-          "teksti" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          }
-        }
-      },
->>>>>>> 4f759de9 (EP-5110)
       "PerusteVersionDto" : {
         "type" : "object",
         "properties" : {
@@ -15368,7 +15299,6 @@
         "properties" : {
           "id" : {
             "type" : "integer",
-            "description" : "Opetussuunnitelman yksilöivä tunniste.",
             "format" : "int64"
           },
           "vaiheet" : {
@@ -15496,11 +15426,7 @@
           "toteutus" : {
             "type" : "string",
             "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
-<<<<<<< HEAD
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019", "AIPE" ]
-=======
-            "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
->>>>>>> 4f759de9 (EP-5110)
           },
           "paatospaivamaara" : {
             "type" : "string",
@@ -15653,11 +15579,7 @@
           },
           "type" : {
             "type" : "string",
-<<<<<<< HEAD
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe" ]
-=======
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala", "peruste" ]
->>>>>>> 4f759de9 (EP-5110)
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala" ]
           },
           "meta" : {
             "type" : "object",
@@ -15813,11 +15735,7 @@
           "toteutus" : {
             "type" : "string",
             "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
-<<<<<<< HEAD
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019", "AIPE" ]
-=======
-            "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
->>>>>>> 4f759de9 (EP-5110)
           },
           "paatospaivamaara" : {
             "type" : "string",
@@ -16028,11 +15946,7 @@
           "toteutus" : {
             "type" : "string",
             "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
-<<<<<<< HEAD
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019", "AIPE" ]
-=======
-            "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
->>>>>>> 4f759de9 (EP-5110)
           },
           "paatospaivamaara" : {
             "type" : "string",
@@ -16163,16 +16077,8 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
-<<<<<<< HEAD
           "pageable" : {
             "$ref" : "#/components/schemas/PageableObject"
-=======
-          "first" : {
-            "type" : "boolean"
-          },
-          "last" : {
-            "type" : "boolean"
->>>>>>> 4f759de9 (EP-5110)
           },
           "numberOfElements" : {
             "type" : "integer",
@@ -16199,23 +16105,16 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
-          "pageNumber" : {
-            "type" : "integer",
-            "format" : "int32"
+          "paged" : {
+            "type" : "boolean"
           },
           "pageNumber" : {
             "type" : "integer",
             "format" : "int32"
           },
-<<<<<<< HEAD
-=======
           "pageSize" : {
             "type" : "integer",
             "format" : "int32"
-          },
->>>>>>> 4f759de9 (EP-5110)
-          "paged" : {
-            "type" : "boolean"
           },
           "unpaged" : {
             "type" : "boolean"
@@ -16892,11 +16791,7 @@
           "toteutus" : {
             "type" : "string",
             "description" : "Koulutustyypin toteutusmalli (esim. `perusopetus`, `lops2019`).",
-<<<<<<< HEAD
             "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019", "AIPE" ]
-=======
-            "enum" : [ "YKSINKERTAINEN", "PERUSOPETUS", "TPO", "LOPS", "LOPS2019" ]
->>>>>>> 4f759de9 (EP-5110)
           },
           "julkaisuaika" : {
             "type" : "string",
@@ -16934,16 +16829,8 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
-<<<<<<< HEAD
           "pageable" : {
             "$ref" : "#/components/schemas/PageableObject"
-=======
-          "first" : {
-            "type" : "boolean"
-          },
-          "last" : {
-            "type" : "boolean"
->>>>>>> 4f759de9 (EP-5110)
           },
           "numberOfElements" : {
             "type" : "integer",
@@ -16987,11 +16874,7 @@
           },
           "kohde" : {
             "type" : "string",
-<<<<<<< HEAD
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe" ]
-=======
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala", "peruste" ]
->>>>>>> 4f759de9 (EP-5110)
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala" ]
           },
           "luotu" : {
             "type" : "string",
@@ -17023,11 +16906,7 @@
         "properties" : {
           "kohde" : {
             "type" : "string",
-<<<<<<< HEAD
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe" ]
-=======
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala", "peruste" ]
->>>>>>> 4f759de9 (EP-5110)
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala" ]
           },
           "kohdeId" : {
             "type" : "integer",
@@ -17062,11 +16941,7 @@
           },
           "kohde" : {
             "type" : "string",
-<<<<<<< HEAD
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe" ]
-=======
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala", "peruste" ]
->>>>>>> 4f759de9 (EP-5110)
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala" ]
           },
           "luotu" : {
             "type" : "string",
