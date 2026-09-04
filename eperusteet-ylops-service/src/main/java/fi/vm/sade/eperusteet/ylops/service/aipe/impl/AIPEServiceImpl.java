@@ -99,9 +99,12 @@ public class AIPEServiceImpl implements AIPEService {
 
     @Override
     public AIPESisaltoDto getSisalto(Long opsId) {
-        AIPESisalto sisalto = getOrCreateSisalto(getOps(opsId));
+        AIPESisalto sisalto = findSisalto(getOps(opsId));
         AipePerusteenSisaltoDto perusteAipe = getPerusteAipe(opsId);
         AIPESisaltoDto dto = new AIPESisaltoDto();
+        if (sisalto == null) {
+            return dto;
+        }
         dto.setId(sisalto.getId());
         dto.setVaiheet(sisalto.getVaiheet().stream()
                 .map(v -> toKevyt(v, findPerusteVaihe(perusteAipe, v.getPerusteenVaiheId())))
@@ -111,9 +114,12 @@ public class AIPEServiceImpl implements AIPEService {
 
     @Override
     public AIPESisaltoExportDto getExportSisalto(Long opsId) {
-        AIPESisalto sisalto = getOrCreateSisalto(getOps(opsId));
+        AIPESisalto sisalto = findSisalto(getOps(opsId));
         AipePerusteenSisaltoDto perusteAipe = getPerusteAipe(opsId);
         AIPESisaltoExportDto dto = new AIPESisaltoExportDto();
+        if (sisalto == null) {
+            return dto;
+        }
         dto.setId(sisalto.getId());
         dto.setVaiheet(sisalto.getVaiheet().stream()
                 .filter(v -> !v.isPiilotettu())
@@ -170,8 +176,7 @@ public class AIPEServiceImpl implements AIPEService {
 
     @Override
     public void removeVaihe(Long opsId, Long vaiheId) {
-        Opetussuunnitelma ops = getOps(opsId);
-        AIPESisalto sisalto = getOrCreateSisalto(ops);
+        AIPESisalto sisalto = assertExists(findSisalto(getOps(opsId)), "AIPE-sisältöä ei löytynyt");
         AIPEVaihe vaihe = sisalto.getVaihe(vaiheId);
         assertExists(vaihe, "Vaihetta ei löytynyt");
         PerusteAIPEVaiheDto perusteVaihe = findPerusteVaihe(getPerusteAipe(opsId), vaihe.getPerusteenVaiheId());
@@ -181,7 +186,7 @@ public class AIPEServiceImpl implements AIPEService {
 
     @Override
     public List<AIPEVaiheKevytDto> updateVaiheJarjestys(Long opsId, List<Long> vaiheIds) {
-        AIPESisalto sisalto = getOrCreateSisalto(getOps(opsId));
+        AIPESisalto sisalto = assertExists(findSisalto(getOps(opsId)), "AIPE-sisältöä ei löytynyt");
         sisalto.updateVaiheJarjestys(vaiheIds);
         return getVaiheet(opsId);
     }
@@ -303,7 +308,11 @@ public class AIPEServiceImpl implements AIPEService {
     }
 
     private boolean kasittelePuuttuvat(Long opsId, boolean lisaa) {
-        AIPESisalto sisalto = getOrCreateSisalto(getOps(opsId));
+        Opetussuunnitelma ops = getOps(opsId);
+        AIPESisalto sisalto = lisaa ? getOrCreateSisalto(ops) : findSisalto(ops);
+        if (sisalto == null) {
+            return false;
+        }
         AipePerusteenSisaltoDto perusteAipe = getPerusteAipe(opsId);
         boolean puuttuvia = false;
         for (AIPEVaihe vaihe : sisalto.getVaiheet()) {
@@ -617,14 +626,19 @@ public class AIPEServiceImpl implements AIPEService {
         return assertExists(opetussuunnitelmaRepository.findOne(opsId), "Pyydettyä opetussuunnitelmaa ei ole olemassa");
     }
 
+    private AIPESisalto findSisalto(Opetussuunnitelma ops) {
+        return ops.getAipe();
+    }
+
     private AIPESisalto getOrCreateSisalto(Opetussuunnitelma ops) {
-        if (ops.getAipe() == null) {
-            AIPESisalto sisalto = new AIPESisalto();
+        AIPESisalto sisalto = findSisalto(ops);
+        if (sisalto == null) {
+            sisalto = new AIPESisalto();
             sisalto.setOpetussuunnitelma(ops);
             ops.setAipe(sisalto);
             opetussuunnitelmaRepository.save(ops);
         }
-        return ops.getAipe();
+        return sisalto;
     }
 
     private AipePerusteenSisaltoDto getPerusteAipe(Long opsId) {
@@ -687,16 +701,18 @@ public class AIPEServiceImpl implements AIPEService {
     }
 
     private AIPEVaihe requireVaihe(Long opsId, Long vaiheId) {
-        AIPEVaihe vaihe = getOrCreateSisalto(getOps(opsId)).getVaihe(vaiheId);
-        return assertExists(vaihe, "Vaihetta ei löytynyt");
+        AIPESisalto sisalto = assertExists(findSisalto(getOps(opsId)), "AIPE-sisältöä ei löytynyt");
+        return assertExists(sisalto.getVaihe(vaiheId), "Vaihetta ei löytynyt");
     }
 
     private AIPEOppiaine requireOppiaine(Long opsId, Long oppiaineId) {
-        return assertExists(findOppiaine(getOrCreateSisalto(getOps(opsId)), oppiaineId), "Oppiainetta ei löytynyt");
+        AIPESisalto sisalto = assertExists(findSisalto(getOps(opsId)), "AIPE-sisältöä ei löytynyt");
+        return assertExists(findOppiaine(sisalto, oppiaineId), "Oppiainetta ei löytynyt");
     }
 
     private AIPEKurssi requireKurssi(Long opsId, Long kurssiId) {
-        return assertExists(findKurssi(getOrCreateSisalto(getOps(opsId)), kurssiId), "Kurssia ei löytynyt");
+        AIPESisalto sisalto = assertExists(findSisalto(getOps(opsId)), "AIPE-sisältöä ei löytynyt");
+        return assertExists(findKurssi(sisalto, kurssiId), "Kurssia ei löytynyt");
     }
 
     private AIPEOppiaine findOppiaine(AIPESisalto sisalto, Long oppiaineId) {
