@@ -13,8 +13,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -45,7 +43,6 @@ public class OpetussuunnitelmanJulkaisu extends AbstractReferenceableEntity {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private LokalisoituTeksti tiedote;
 
-    @Temporal(TemporalType.TIMESTAMP)
     private Date luotu;
 
     @Getter

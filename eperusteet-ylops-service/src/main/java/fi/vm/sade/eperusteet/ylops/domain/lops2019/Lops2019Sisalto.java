@@ -15,7 +15,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import jakarta.persistence.OrderColumn;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -51,7 +50,6 @@ public class Lops2019Sisalto extends AbstractAuditedEntity implements Serializab
     private Set<Lops2019Oppiaine> oppiaineet;
 
     @Getter
-    @OrderColumn
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "lops2019_sisalto_opintojakso",
         joinColumns = @JoinColumn(name = "sisalto_id"),
@@ -66,7 +64,6 @@ public class Lops2019Sisalto extends AbstractAuditedEntity implements Serializab
     private Set<Lops2019Opintojakso> piilotetutOpintojaksot = new HashSet<>();
 
     @Getter
-    @OrderColumn
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "lops2019_sisalto_oppiaine_jarjestys",
             joinColumns = @JoinColumn(name = "sisalto_id"),

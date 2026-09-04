@@ -44,8 +44,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -155,7 +153,6 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Enumerated(value = EnumType.STRING)
     private KoulutustyyppiToteutus toteutus;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Getter
     @Setter
     private Date paatospaivamaara;
@@ -258,13 +255,11 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     @Setter
     private boolean ainepainoitteinen;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Getter
     @Setter
     @Column(name = "peruste_data_tuonti_pvm")
     private Date perusteDataTuontiPvm;
 
-    @Temporal(TemporalType.TIMESTAMP)
     @Getter
     @Setter
     @Column(name = "viimeisin_sync_pvm")

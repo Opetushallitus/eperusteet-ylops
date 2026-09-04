@@ -1,22 +1,25 @@
 package fi.vm.sade.eperusteet.ylops.repository.version;
 
-import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
-import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo;
-import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo_;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.LockModeType;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
 import org.hibernate.envers.query.AuditEntity;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
+import fi.vm.sade.eperusteet.utils.revision.RevisioKommenttiHolder;
+import fi.vm.sade.eperusteet.ylops.domain.revision.Revision;
+import fi.vm.sade.eperusteet.ylops.domain.revision.RevisionInfo_;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 
 class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends SimpleJpaRepository<T, ID> implements
         JpaWithVersioningRepository<T, ID> {
@@ -58,7 +61,8 @@ class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends Simple
     @Override
     public Number getRevisionNumberForDate(Date revisionTime) {
         AuditReader auditReader = AuditReaderFactory.get(entityManager);
-        return auditReader.getRevisionNumberForDate(revisionTime);
+        return auditReader.getRevisionNumberForDate(
+                LocalDateTime.ofInstant(revisionTime.toInstant(), ZoneId.systemDefault()));
     }
 
     @Override
@@ -84,8 +88,7 @@ class JpaWithVersioningRepositoryImpl<T, ID extends Serializable> extends Simple
 
     @Override
     public void setRevisioKommentti(String kommentti) {
-        RevisionInfo currentRevision = AuditReaderFactory.get(entityManager).getCurrentRevision(RevisionInfo.class, false);
-        currentRevision.addKommentti(kommentti);
+        RevisioKommenttiHolder.set(kommentti);
     }
 
     @Override

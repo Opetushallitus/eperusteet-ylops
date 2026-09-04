@@ -128,7 +128,7 @@ public class MappingTest {
         assertThat(lokalisoituTeksti.getTunniste()).isNotEqualTo(perusteenLokalisoituTekstiDto.getTunniste());
         assertThat(lokalisoituTeksti.getTunniste()).isNotEqualTo(lokalisoituTekstiDto.getTunniste());
 
-        Mockito.verifyZeroInteractions(repository);
+        Mockito.verifyNoInteractions(repository);
     }
 
     @Test
@@ -142,7 +142,7 @@ public class MappingTest {
         assertThat(lokalisoituTeksti.getTunniste()).isNotNull();
         assertThat(lokalisoituTeksti.getTunniste()).isNotEqualTo(perusteenLokalisoituTekstiDto.getTunniste());
 
-        Mockito.verifyZeroInteractions(repository);
+        Mockito.verifyNoInteractions(repository);
     }
 
     @Test
