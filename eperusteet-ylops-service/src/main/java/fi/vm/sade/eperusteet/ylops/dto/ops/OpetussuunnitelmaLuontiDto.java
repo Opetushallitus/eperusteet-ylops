@@ -2,11 +2,13 @@ package fi.vm.sade.eperusteet.ylops.dto.ops;
 
 import fi.vm.sade.eperusteet.ylops.dto.Reference;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
+import fi.vm.sade.eperusteet.ylops.dto.tpo.TaiteenalaDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -18,6 +20,7 @@ public class OpetussuunnitelmaLuontiDto extends OpetussuunnitelmaBaseDto {
     private TekstiKappaleViiteDto.Puu tekstit;
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineDto> oppiaineet;
+    private List<TaiteenalaDto> taiteenalat;
     private Luontityyppi luontityyppi = Luontityyppi.KOPIO;
 
     public enum Luontityyppi {

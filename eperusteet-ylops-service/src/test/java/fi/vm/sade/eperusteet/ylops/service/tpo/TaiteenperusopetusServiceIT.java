@@ -43,6 +43,7 @@ public class TaiteenperusopetusServiceIT extends AbstractIntegrationTest {
 
     private static final String DIAARINUMERO = "tpo-diaarinumero";
     private static final String MUSIIKKI = "taiteenalat_musiikki";
+    private static final String TANSSI = "taiteenalat_tanssi";
 
     @Autowired
     private TaiteenperusopetusService taiteenperusopetusService;
@@ -62,7 +63,7 @@ public class TaiteenperusopetusServiceIT extends AbstractIntegrationTest {
         TPOOpetuksenSisaltoDto perusteenSisalto = taiteenperusopetusService.getPerusteSisalto(ops.getId());
         assertThat(perusteenSisalto.getTaiteenalat())
                 .extracting(taiteenala -> taiteenala.getKoodi().getUri())
-                .containsExactly(MUSIIKKI);
+                .containsExactly(MUSIIKKI, TANSSI);
 
         TpoPerusteenTaiteenalaDto musiikki = perusteenSisalto.getTaiteenalat().get(0);
         assertThat(musiikki.getNimi().get(Kieli.FI)).isEqualTo("Musiikki");
@@ -77,7 +78,7 @@ public class TaiteenperusopetusServiceIT extends AbstractIntegrationTest {
         assertThat(musiikki.getNimi().get(Kieli.FI)).isEqualTo("Musiikki");
         assertThat(musiikki.getTaiteenOsat()).hasSize(2);
 
-        assertThatThrownBy(() -> taiteenperusopetusService.getPerusteenTaiteenala(ops.getId(), "taiteenalat_tanssi"))
+        assertThatThrownBy(() -> taiteenperusopetusService.getPerusteenTaiteenala(ops.getId(), "taiteenalat_sirkus"))
                 .isInstanceOf(BusinessRuleViolationException.class);
     }
 
@@ -175,7 +176,7 @@ public class TaiteenperusopetusServiceIT extends AbstractIntegrationTest {
 
     @Test
     public void testTuntematontaTaiteenalaaEiVoiLisata() {
-        assertThatThrownBy(() -> taiteenperusopetusService.addTaiteenala(ops.getId(), taiteenala("taiteenalat_tanssi")))
+        assertThatThrownBy(() -> taiteenperusopetusService.addTaiteenala(ops.getId(), taiteenala("taiteenalat_sirkus")))
                 .isInstanceOf(BusinessRuleViolationException.class);
     }
 
@@ -208,6 +209,18 @@ public class TaiteenperusopetusServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
+    public void testTaiteenalatLisataanOpetussuunnitelmanLuonnissa() {
+        OpetussuunnitelmaDto luotu = createOps(taiteenala(MUSIIKKI), taiteenala(TANSSI));
+
+        assertThat(taiteenperusopetusService.getTaiteenalat(luotu.getId()))
+                .extracting(TaiteenalaDto::getKoodi)
+                .containsExactly(MUSIIKKI, TANSSI);
+        assertThat(taiteenperusopetusService.getTaiteenalat(luotu.getId()))
+                .extracting(taiteenala -> taiteenala.getTaiteenosat().size())
+                .containsExactly(2, 1);
+    }
+
+    @Test
     public void testExportSisaltaaTaiteenalat() {
         TaiteenalaDto taiteenala = taiteenperusopetusService.addTaiteenala(ops.getId(), taiteenala(MUSIIKKI));
 
@@ -231,7 +244,7 @@ public class TaiteenperusopetusServiceIT extends AbstractIntegrationTest {
                 .orElseThrow(() -> new AssertionError("Taiteenosa " + perusteenTaiteenosanId + " puuttuu taiteenalalta"));
     }
 
-    private OpetussuunnitelmaDto createOps() {
+    private OpetussuunnitelmaDto createOps(TaiteenalaDto... taiteenalat) {
         OpetussuunnitelmaLuontiDto pohja = new OpetussuunnitelmaLuontiDto();
         pohja.setNimi(lt(uniikkiString()));
         pohja.setTila(Tila.LUONNOS);
@@ -249,6 +262,9 @@ public class TaiteenperusopetusServiceIT extends AbstractIntegrationTest {
         luonti.setKoulutustyyppi(KoulutusTyyppi.TPO);
         luonti.setEsikatseltavissa(true);
         luonti.setPohja(Reference.of(pohjaDto.getId()));
+        if (taiteenalat.length > 0) {
+            luonti.setTaiteenalat(List.of(taiteenalat));
+        }
         asetaOrganisaatiot(luonti);
         return opetussuunnitelmaService.addOpetussuunnitelma(luonti);
     }
