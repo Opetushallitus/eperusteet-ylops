@@ -12,6 +12,7 @@ import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEKurssiKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEOppiaineKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEPerusteVaiheKevytDto;
+import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPESisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEVaiheDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.AIPEVaiheKevytDto;
 import fi.vm.sade.eperusteet.ylops.dto.aipe.export.AIPESisaltoExportDto;
@@ -28,6 +29,9 @@ import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -51,6 +55,9 @@ public class AIPEServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private AIPEVaiheRepository aipeVaiheRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Test
     public void testAddVaiheMergeHideAndDuplicate() {
@@ -161,6 +168,21 @@ public class AIPEServiceIT extends AbstractIntegrationTest {
         assertThat(vaihe.getOppiaineet()).hasSize(1);
         assertThat(vaihe.getOppiaineet().get(0).getOppimaarat()).hasSize(1);
         assertThat(vaihe.getOppiaineet().get(0).getOppimaarat().get(0).getKurssit()).hasSize(1);
+    }
+
+    @Test
+    public void testGetSisaltoEiLuoUuttaRiviaKunSisaltoOnJoOlemassa() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        Long sisaltoId = aipeService.getSisalto(ops.getId()).getId();
+        assertThat(sisaltoId).isNotNull();
+
+        entityManager.flush();
+        entityManager.clear();
+
+        opetussuunnitelmaService.buildNavigation(ops.getId(), "fi");
+        opetussuunnitelmaService.buildNavigation(ops.getId(), "fi");
+
+        assertThat(aipeService.getSisalto(ops.getId()).getId()).isEqualTo(sisaltoId);
     }
 
     private OpetussuunnitelmaDto createAipeOps() {
