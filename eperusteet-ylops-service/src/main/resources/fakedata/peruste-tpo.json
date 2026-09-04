@@ -96,6 +96,35 @@
         },
         "lapset" : [ ],
         "_perusteenOsa" : "5281"
+      }, {
+        "id" : 4573,
+        "perusteenOsa" : {
+          "osanTyyppi" : "taiteenala",
+          "id" : 5283,
+          "luotu" : 1423731373885,
+          "muokattu" : 1423731384691,
+          "muokkaaja" : "test",
+          "nimi" : {
+            "fi" : "Tanssi"
+          },
+          "tila" : "valmis",
+          "koodi" : {
+            "uri" : "taiteenalat_tanssi",
+            "arvo" : "tanssi",
+            "nimi" : {
+              "fi" : "Tanssi"
+            }
+          },
+          "taiteenOsat" : [ {
+            "id" : 5294,
+            "nimi" : {
+              "fi" : "Tanssin hahmotus"
+            },
+            "laajuus" : 100
+          } ]
+        },
+        "lapset" : [ ],
+        "_perusteenOsa" : "5283"
       } ]
     }
   }

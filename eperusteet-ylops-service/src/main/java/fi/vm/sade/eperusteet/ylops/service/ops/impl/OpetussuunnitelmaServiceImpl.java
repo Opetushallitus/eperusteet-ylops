@@ -90,6 +90,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViitePerusteTekstillaDto;
+import fi.vm.sade.eperusteet.ylops.dto.tpo.TaiteenalaDto;
 import fi.vm.sade.eperusteet.ylops.dto.util.CacheArvot;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
@@ -131,6 +132,7 @@ import fi.vm.sade.eperusteet.ylops.service.security.Permission;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
+import fi.vm.sade.eperusteet.ylops.service.tpo.TaiteenperusopetusService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaistuSisaltoDynamicPathResolver;
@@ -307,6 +309,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Lazy
     @Autowired
     private AIPEService aipeService;
+
+    @Lazy
+    @Autowired
+    private TaiteenperusopetusService taiteenperusopetusService;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -1137,7 +1143,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Valmista opetussuunnitelman pohjaa ei löytynyt");
         }
 
+        lisaaTaiteenalat(ops, opetussuunnitelmaLuontiDto);
+
         return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    private void lisaaTaiteenalat(Opetussuunnitelma ops, OpetussuunnitelmaLuontiDto luontiDto) {
+        if (CollectionUtils.isEmpty(luontiDto.getTaiteenalat())) {
+            return;
+        }
+        for (TaiteenalaDto taiteenala : luontiDto.getTaiteenalat()) {
+            taiteenperusopetusService.addTaiteenala(ops.getId(), taiteenala);
+        }
     }
 
     private void checkValidPohja(Opetussuunnitelma ops) {
