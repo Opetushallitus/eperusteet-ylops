@@ -1,9 +1,12 @@
 package fi.vm.sade.eperusteet.ylops.config;
 
-import com.fasterxml.jackson.core.StreamReadConstraints;
-import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean;
-import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator;
-import jakarta.persistence.EntityManager;
+import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+import javax.sql.DataSource;
+
 import org.flywaydb.core.Flyway;
 import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.id.enhanced.SingleNamingStrategy;
@@ -29,13 +32,13 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
-import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import com.fasterxml.jackson.core.StreamReadConstraints;
 
-@Profile("!test")
+import fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean;
+import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator;
+import jakarta.persistence.EntityManager;
+
+@Profile("!test & !docker")
 @Configuration
 @ComponentScan({"fi.vm.sade.eperusteet.ylops.service", "fi.vm.sade.eperusteet.utils", "fi.vm.sade.eperusteet.ylops.repository.impl"})
 @EnableAsync

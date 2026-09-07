@@ -48,9 +48,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
 
         perusteettomat.addAll(omat.values().stream().flatMap(x -> x.stream()).collect(Collectors.toList()));
         for (TekstiKappaleViite vanhaOma : perusteettomat) {
-            TekstiKappaleViite oma = tekstiKappaleViiteRec(vanhaOma);
-            oma.setVanhempi(ops.getTekstit());
-            ops.getTekstit().getLapset().add(oma);
+            ops.getTekstit().addLapsi(tekstiKappaleViiteRec(vanhaOma));
         }
     }
 
@@ -102,10 +100,9 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
                     .filter(pohjanTekstikappaleViite -> pohjanTekstikappaleViite.getTekstiKappale() != null)
                     .forEach(pohjanTekstikappaleViite -> {
                         TekstiKappaleViite tkv = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(pohjanTekstikappaleViite));
-                        tkv.setVanhempi(opsViite);
                         tkv.setOmistussuhde(pohjanTekstikappaleViite.getOmistussuhde());
                         tkv.setTekstiKappale(tekstiKappaleRepository.save(tkv.getTekstiKappale()));
-                        opsViite.getLapset().add(tkv);
+                        opsViite.addLapsi(tkv);
                         kopioiHierarkia(pohjanTekstikappaleViite, tkv, omat, perusteen, uuidOpsTekstikappaleMap);
 
                         if (tkv.getPerusteTekstikappaleId() != null) {
@@ -120,9 +117,7 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
                             // Omat alikappaleet
                             if (omat.containsKey(tkv.getPerusteTekstikappaleId())) {
                                 omat.get(tkv.getPerusteTekstikappaleId()).forEach(vanhaOma -> {
-                                    TekstiKappaleViite oma = tekstiKappaleViiteRec(vanhaOma);
-                                    oma.setVanhempi(tkv);
-                                    tkv.getLapset().add(oma);
+                                    tkv.addLapsi(tekstiKappaleViiteRec(vanhaOma));
                                 });
                                 omat.remove(tkv.getPerusteTekstikappaleId());
                             }
@@ -136,9 +131,11 @@ public class OpetussuunnitelmaHierarkiaKopiointiServiceImpl implements Opetussuu
     private TekstiKappaleViite tekstiKappaleViiteRec(TekstiKappaleViite vanhaOma) {
         TekstiKappaleViite oma = tekstikappaleviiteRepository.save(TekstiKappaleViite.copy(vanhaOma));
         oma.setOmistussuhde(Omistussuhde.OMA);
-        oma.setLapset(new ArrayList<>());
-        oma.getLapset().addAll(vanhaOma.getLapset().stream().map(vanhaLapsi -> tekstiKappaleViiteRec(vanhaLapsi)).collect(Collectors.toList()));
-        oma.getLapset().forEach(lapsi -> lapsi.setVanhempi(oma));
+        List<TekstiKappaleViite> lapset = vanhaOma.getLapset().stream()
+                .map(this::tekstiKappaleViiteRec)
+                .collect(Collectors.toList());
+        lapset.forEach(lapsi -> lapsi.setVanhempi(oma));
+        oma.setLapset(lapset);
         oma.setTekstiKappale(tekstiKappaleRepository.save(vanhaOma.getTekstiKappale()));
         return oma;
     }

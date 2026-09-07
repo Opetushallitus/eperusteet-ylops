@@ -187,8 +187,7 @@ public class Oppiaine extends AbstractAuditedReferenceableEntity implements Copy
     @OneToMany(mappedBy = "oppiaine", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REMOVE}, fetch = FetchType.LAZY, orphanRemoval = true)
     @NotNull(groups = Strict.class)
     @Size(min = 1, groups = Strict.class)
-    @Valid
-    private Set<Oppiaineenvuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
+    private Set<@Valid Oppiaineenvuosiluokkakokonaisuus> vuosiluokkakokonaisuudet;
 
     /**
      * oppiaine johon oppimäärä kuuluu tai null jos kyseessä itse oppiaine.

@@ -1,17 +1,16 @@
 package fi.vm.sade.eperusteet.ylops.domain.revision;
 
-import fi.vm.sade.eperusteet.ylops.service.internal.AuditRevisionListener;
+import org.hibernate.envers.RevisionEntity;
+import org.hibernate.envers.RevisionMapping;
 
+import fi.vm.sade.eperusteet.ylops.service.internal.AuditRevisionListener;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
-
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.envers.DefaultRevisionEntity;
-import org.hibernate.envers.RevisionEntity;
 
 @Entity
 @Table(name = "revinfo")
@@ -22,7 +21,7 @@ import org.hibernate.envers.RevisionEntity;
 })
 @Getter
 @Setter
-public class RevisionInfo extends DefaultRevisionEntity {
+public class RevisionInfo extends RevisionMapping {
     private static final int MAX_LEN = 1000;
 
     @Column

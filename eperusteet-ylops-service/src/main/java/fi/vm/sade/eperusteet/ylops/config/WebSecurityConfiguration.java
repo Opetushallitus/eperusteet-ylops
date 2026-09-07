@@ -1,12 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.config;
 
-import fi.vm.sade.eperusteet.ylops.repository.OphSessionMappingStorage;
-import fi.vm.sade.java_utils.security.OpintopolkuCasAuthenticationFilter;
-import fi.vm.sade.javautils.http.auth.CasAuthenticator;
-import fi.vm.sade.javautils.kayttooikeusclient.OphUserDetailsServiceImpl;
-import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
+import org.springframework.security.config.Customizer;
 
 import org.apereo.cas.client.session.SingleSignOutFilter;
 import org.apereo.cas.client.validation.Cas20ProxyTicketValidator;
@@ -22,7 +16,6 @@ import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -31,12 +24,17 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
-import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 
+import fi.vm.sade.eperusteet.utils.security.OpintopolkuCasAuthenticationFilter;
+import fi.vm.sade.eperusteet.ylops.repository.OphSessionMappingStorage;
+import fi.vm.sade.javautils.http.auth.CasAuthenticator;
+import fi.vm.sade.javautils.kayttooikeusclient.OphUserDetailsServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
-@Profile({"!local & !test"})
+@Profile({"!local & !test & !docker"})
 @Configuration
 @EnableMethodSecurity(securedEnabled = true)
 @EnableWebSecurity

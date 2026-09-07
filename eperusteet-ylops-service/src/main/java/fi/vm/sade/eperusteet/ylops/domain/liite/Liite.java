@@ -7,8 +7,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -33,7 +31,6 @@ public class Liite implements Serializable {
     @Getter
     @Size(max = 1024)
     private String nimi;
-    @Temporal(TemporalType.TIMESTAMP)
     private Date luotu;
     @Getter
     @Basic(fetch = FetchType.LAZY, optional = false)

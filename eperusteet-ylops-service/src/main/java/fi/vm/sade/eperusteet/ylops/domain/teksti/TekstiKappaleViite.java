@@ -13,9 +13,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderColumn;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
@@ -33,17 +32,6 @@ import java.util.UUID;
 @Entity
 @Audited
 @Table(name = "tekstikappaleviite")
-@NamedNativeQuery(
-        name = "TekstiKappaleViite.findRootByTekstikappaleId",
-        query
-                = "with recursive vanhemmat(id,vanhempi_id,tekstikappale_id) as "
-                + "(select tv.id, tv.vanhempi_id, tv.tekstikappale_id from tekstikappaleviite tv "
-                + "where tv.tekstikappale_id = ?1 and tv.omistussuhde in (?2,?3) "
-                + "union all "
-                + "select tv.id, tv.vanhempi_id, v.tekstikappale_id "
-                + "from tekstikappaleviite tv, vanhemmat v where tv.id = v.vanhempi_id) "
-                + "select id from vanhemmat where vanhempi_id is null"
-)
 public class TekstiKappaleViite implements ReferenceableEntity, Serializable, HistoriaTapahtuma {
 
     @Id
@@ -82,11 +70,15 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable, Hi
     private Omistussuhde omistussuhde = Omistussuhde.OMA;
 
     @OneToMany(mappedBy = "vanhempi", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @OrderColumn
+    @OrderBy("lapsetOrder")
     @Getter
-    @Setter
     @BatchSize(size = 100)
     private List<TekstiKappaleViite> lapset = new ArrayList<>();
+
+    @Getter
+    @Setter
+    @Column(name = "lapset_ORDER")
+    private Integer lapsetOrder;
 
     @Getter
     @Column(name = "peruste_tekstikappale_id")
@@ -133,9 +125,33 @@ public class TekstiKappaleViite implements ReferenceableEntity, Serializable, Hi
         return tkv;
     }
 
+    public void setLapset(List<TekstiKappaleViite> lapset) {
+        this.lapset = lapset != null ? lapset : new ArrayList<>();
+        updateLapsetOrder();
+    }
+
+    public void addLapsi(TekstiKappaleViite lapsi) {
+        if (this.lapset == null) {
+            this.lapset = new ArrayList<>();
+        }
+        lapsi.setVanhempi(this);
+        this.lapset.add(lapsi);
+        lapsi.setLapsetOrder(this.lapset.size() - 1);
+    }
+
+    public void updateLapsetOrder() {
+        if (this.lapset == null) {
+            return;
+        }
+        for (int i = 0; i < this.lapset.size(); i++) {
+            this.lapset.get(i).setLapsetOrder(i);
+        }
+    }
+
     public void kiinnitaHierarkia(TekstiKappaleViite parent) {
         this.setVanhempi(parent);
         if (lapset != null) {
+            updateLapsetOrder();
             for (TekstiKappaleViite child : lapset) {
                 child.kiinnitaHierarkia(this);
             }

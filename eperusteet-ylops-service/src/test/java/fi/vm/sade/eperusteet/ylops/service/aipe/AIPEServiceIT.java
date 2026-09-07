@@ -23,6 +23,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaLuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.repository.aipe.AIPEVaiheRepository;
+import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.ops.OpetussuunnitelmaService;
 import fi.vm.sade.eperusteet.ylops.test.AbstractIntegrationTest;
@@ -55,6 +56,9 @@ public class AIPEServiceIT extends AbstractIntegrationTest {
 
     @Autowired
     private AIPEVaiheRepository aipeVaiheRepository;
+
+    @Autowired
+    private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -247,6 +251,92 @@ public class AIPEServiceIT extends AbstractIntegrationTest {
                 .isInstanceOf(BusinessRuleViolationException.class);
         assertThatThrownBy(() -> aipeService.updateVaiheJarjestys(ops.getId(), Arrays.asList(vaihe1.getId(), 999L)))
                 .isInstanceOf(BusinessRuleViolationException.class);
+    }
+
+    @Test
+    public void testVaiheetOrderBy() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        AIPEVaiheDto vaihe1 = aipeService.addVaihe(ops.getId(), 17101L);
+        AIPEVaiheDto vaihe2 = aipeService.addVaihe(ops.getId(), 17102L);
+
+        reload();
+        List<AIPEVaihe> vaiheet = findVaiheet(ops.getId());
+        assertThat(vaiheet).extracting(AIPEVaihe::getId).containsExactly(vaihe1.getId(), vaihe2.getId());
+        assertThat(vaiheet).extracting(AIPEVaihe::getVaiheetOrder).containsExactly(0, 1);
+
+        aipeService.updateVaiheJarjestys(ops.getId(), Arrays.asList(vaihe2.getId(), vaihe1.getId()));
+        reload();
+        vaiheet = findVaiheet(ops.getId());
+        assertThat(vaiheet).extracting(AIPEVaihe::getId).containsExactly(vaihe2.getId(), vaihe1.getId());
+        assertThat(vaiheet).extracting(AIPEVaihe::getVaiheetOrder).containsExactly(0, 1);
+
+        aipeService.removeVaihe(ops.getId(), vaihe2.getId());
+        reload();
+        vaiheet = findVaiheet(ops.getId());
+        assertThat(vaiheet).extracting(AIPEVaihe::getId).containsExactly(vaihe1.getId());
+        assertThat(vaiheet).extracting(AIPEVaihe::getVaiheetOrder).containsExactly(0);
+    }
+
+    @Test
+    public void testOppiaineetKurssitJaOppimaaratOrderBy() {
+        OpetussuunnitelmaDto ops = createAipeOps();
+        AIPEVaiheDto vaiheDto = aipeService.addVaihe(ops.getId(), 17101L);
+
+        AIPEVaihe vaihe = aipeVaiheRepository.findOne(vaiheDto.getId());
+        AIPEOppiaine extraOppiaine = new AIPEOppiaine();
+        extraOppiaine.setPerusteenOppiaineId(99999L);
+        vaihe.addOppiaine(extraOppiaine, 0);
+        aipeVaiheRepository.flush();
+        entityManager.clear();
+
+        vaihe = aipeVaiheRepository.findOne(vaiheDto.getId());
+        assertThat(vaihe.getOppiaineet()).extracting(AIPEOppiaine::getPerusteenOppiaineId)
+                .containsExactly(99999L, 17201L);
+        assertThat(vaihe.getOppiaineet()).extracting(AIPEOppiaine::getOppiaineetOrder)
+                .containsExactly(0, 1);
+
+        AIPEOppiaine oppiaine = vaihe.getOppiaineet().get(1);
+        AIPEKurssi extraKurssi = new AIPEKurssi();
+        extraKurssi.setPerusteenKurssiId(88888L);
+        oppiaine.addKurssi(extraKurssi, 0);
+        aipeVaiheRepository.flush();
+        entityManager.clear();
+
+        vaihe = aipeVaiheRepository.findOne(vaiheDto.getId());
+        oppiaine = vaihe.getOppiaineet().stream()
+                .filter(oa -> oa.getPerusteenOppiaineId().equals(17201L))
+                .findFirst()
+                .orElseThrow();
+        assertThat(oppiaine.getKurssit()).extracting(AIPEKurssi::getPerusteenKurssiId)
+                .containsExactly(88888L, 17301L);
+        assertThat(oppiaine.getKurssit()).extracting(AIPEKurssi::getKurssitOrder)
+                .containsExactly(0, 1);
+
+        AIPEVaiheDto oppimaaraVaiheDto = aipeService.addVaihe(ops.getId(), 17102L);
+        AIPEVaihe oppimaaraVaihe = aipeVaiheRepository.findOne(oppimaaraVaiheDto.getId());
+        AIPEOppiaine parent = oppimaaraVaihe.getOppiaineet().get(0);
+        AIPEOppiaine extraOppimaara = new AIPEOppiaine();
+        extraOppimaara.setPerusteenOppiaineId(77777L);
+        parent.addOppimaara(extraOppimaara, 0);
+        aipeVaiheRepository.flush();
+        entityManager.clear();
+
+        oppimaaraVaihe = aipeVaiheRepository.findOne(oppimaaraVaiheDto.getId());
+        assertThat(oppimaaraVaihe.getOppiaineet().get(0).getOppimaarat())
+                .extracting(AIPEOppiaine::getPerusteenOppiaineId)
+                .containsExactly(77777L, 17203L);
+        assertThat(oppimaaraVaihe.getOppiaineet().get(0).getOppimaarat())
+                .extracting(AIPEOppiaine::getOppimaaratOrder)
+                .containsExactly(0, 1);
+    }
+
+    private void reload() {
+        entityManager.flush();
+        entityManager.clear();
+    }
+
+    private List<AIPEVaihe> findVaiheet(Long opsId) {
+        return opetussuunnitelmaRepository.findOne(opsId).getAipe().getVaiheet();
     }
 
     @Test

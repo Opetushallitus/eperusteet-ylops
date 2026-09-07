@@ -12,8 +12,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -40,10 +38,8 @@ public class Dokumentti {
     @NotNull
     private Kieli kieli;
 
-    @Temporal(TemporalType.TIMESTAMP)
     private Date aloitusaika;
 
-    @Temporal(TemporalType.TIMESTAMP)
     private Date valmistumisaika;
 
     @Enumerated(EnumType.STRING)

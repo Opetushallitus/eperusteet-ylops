@@ -66,6 +66,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.function.ObjIntConsumer;
 import java.util.stream.Collectors;
 
 import static fi.vm.sade.eperusteet.ylops.service.util.Nulls.assertExists;
@@ -181,6 +182,7 @@ public class AIPEServiceImpl implements AIPEService {
         assertExists(vaihe, "Vaihetta ei löytynyt");
         PerusteAIPEVaiheDto perusteVaihe = findPerusteVaihe(getPerusteAipe(opsId), vaihe.getPerusteenVaiheId());
         sisalto.getVaiheet().remove(vaihe);
+        sisalto.updateVaiheetOrder();
         addMuokkaustieto(opsId, vaihe, perusteVaihe != null ? perusteVaihe.getNimi() : null, MuokkausTapahtuma.POISTO);
     }
 
@@ -370,7 +372,13 @@ public class AIPEServiceImpl implements AIPEService {
             }
         }
         if (lisaa) {
-            jarjesta(opsOppiaineet, perusteet, PerusteAIPEOppiaineDto::getId, AIPEOppiaine::getPerusteenOppiaineId);
+            if (parent != null) {
+                jarjesta(opsOppiaineet, perusteet, PerusteAIPEOppiaineDto::getId, AIPEOppiaine::getPerusteenOppiaineId,
+                        AIPEOppiaine::setOppimaaratOrder);
+            } else {
+                jarjesta(opsOppiaineet, perusteet, PerusteAIPEOppiaineDto::getId, AIPEOppiaine::getPerusteenOppiaineId,
+                        AIPEOppiaine::setOppiaineetOrder);
+            }
         }
         return puuttuvia;
     }
@@ -395,12 +403,13 @@ public class AIPEServiceImpl implements AIPEService {
             aipeVaiheRepository.saveAndFlush(vaihe);
         }
         if (lisaa) {
-            jarjesta(oppiaine.getKurssit(), perusteet, PerusteAIPEKurssiDto::getId, AIPEKurssi::getPerusteenKurssiId);
+            jarjesta(oppiaine.getKurssit(), perusteet, PerusteAIPEKurssiDto::getId, AIPEKurssi::getPerusteenKurssiId,
+                    AIPEKurssi::setKurssitOrder);
         }
         return puuttuvia;
     }
 
-    private <T, P> void jarjesta(List<T> opsLista, List<P> perusteLista, Function<P, Long> perusteId, Function<T, Long> opsPerusteId) {
+    private <T, P> void jarjesta(List<T> opsLista, List<P> perusteLista, Function<P, Long> perusteId, Function<T, Long> opsPerusteId, ObjIntConsumer<T> setOrder) {
         if (opsLista == null || opsLista.isEmpty() || perusteLista == null || perusteLista.isEmpty()) {
             return;
         }
@@ -411,7 +420,9 @@ public class AIPEServiceImpl implements AIPEService {
         List<T> jarjestetty = new ArrayList<>(opsLista);
         jarjestetty.sort(Comparator.comparingInt(item -> jarjestys.getOrDefault(opsPerusteId.apply(item), Integer.MAX_VALUE)));
         for (int i = 0; i < jarjestetty.size(); i++) {
-            opsLista.set(i, jarjestetty.get(i));
+            T item = jarjestetty.get(i);
+            opsLista.set(i, item);
+            setOrder.accept(item, i);
         }
     }
 

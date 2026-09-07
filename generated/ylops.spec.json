@@ -10,7 +10,7 @@
     "version" : "v3.0.0"
   },
   "servers" : [ {
-    "url" : "https://localhost:8081/eperusteet-ylops-service",
+    "url" : "http://localhost:8081/eperusteet-ylops-service",
     "description" : "Generated server url"
   } ],
   "paths" : {
@@ -9348,6 +9348,12 @@
           "piilotettu" : {
             "type" : "boolean"
           },
+          "oppimaarat" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AIPEOppiaineKevytDto"
+            }
+          },
           "kurssit" : {
             "type" : "array",
             "items" : {
@@ -10519,7 +10525,8 @@
             "type" : "string",
             "enum" : [ "KOPIO", "VIITTEILLA", "LEGACY" ]
           }
-        }
+        },
+        "description" : "Opetussuunnitelman yhteiset perustiedot."
       },
       "OppiaineDto" : {
         "type" : "object",
@@ -11898,9 +11905,6 @@
       "Part" : {
         "type" : "object",
         "properties" : {
-          "contentType" : {
-            "type" : "string"
-          },
           "name" : {
             "type" : "string"
           },
@@ -11911,14 +11915,17 @@
           "inputStream" : {
             "type" : "object"
           },
+          "submittedFileName" : {
+            "type" : "string"
+          },
+          "contentType" : {
+            "type" : "string"
+          },
           "headerNames" : {
             "type" : "array",
             "items" : {
               "type" : "string"
             }
-          },
-          "submittedFileName" : {
-            "type" : "string"
           }
         }
       },
@@ -12352,7 +12359,8 @@
               "$ref" : "#/components/schemas/OpsOppiaineDto"
             }
           }
-        }
+        },
+        "description" : "Opetussuunnitelman yhteiset perustiedot."
       },
       "OpetussuunnitelmaNimiDto" : {
         "type" : "object",
@@ -13235,6 +13243,13 @@
           "arviointi" : {
             "$ref" : "#/components/schemas/PerusteTekstiOsaDto"
           },
+          "oppimaarat" : {
+            "uniqueItems" : true,
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/LukioPerusteOppiaineDto"
+            }
+          },
           "kurssit" : {
             "uniqueItems" : true,
             "type" : "array",
@@ -13680,6 +13695,12 @@
             "type" : "array",
             "items" : {
               "$ref" : "#/components/schemas/PerusteAIPEKurssiDto"
+            }
+          },
+          "oppimaarat" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/PerusteAIPEOppiaineDto"
             }
           }
         }
@@ -14291,6 +14312,12 @@
           },
           "parentOidPath" : {
             "type" : "string"
+          },
+          "children" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/OrganisaatioLaajaDto"
+            }
           },
           "status" : {
             "type" : "string"
@@ -15501,12 +15528,6 @@
             "type" : "integer",
             "format" : "int64"
           },
-          "first" : {
-            "type" : "boolean"
-          },
-          "last" : {
-            "type" : "boolean"
-          },
           "size" : {
             "type" : "integer",
             "format" : "int32"
@@ -15524,12 +15545,18 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
+          "pageable" : {
+            "$ref" : "#/components/schemas/PageableObject"
+          },
           "numberOfElements" : {
             "type" : "integer",
             "format" : "int32"
           },
-          "pageable" : {
-            "$ref" : "#/components/schemas/PageableObject"
+          "first" : {
+            "type" : "boolean"
+          },
+          "last" : {
+            "type" : "boolean"
           },
           "empty" : {
             "type" : "boolean"
@@ -15554,10 +15581,10 @@
             "type" : "integer",
             "format" : "int32"
           },
-          "unpaged" : {
+          "paged" : {
             "type" : "boolean"
           },
-          "paged" : {
+          "unpaged" : {
             "type" : "boolean"
           }
         }
@@ -15568,10 +15595,10 @@
           "empty" : {
             "type" : "boolean"
           },
-          "unsorted" : {
+          "sorted" : {
             "type" : "boolean"
           },
-          "sorted" : {
+          "unsorted" : {
             "type" : "boolean"
           }
         }
@@ -15667,6 +15694,12 @@
           },
           "kieliKoodiArvo" : {
             "type" : "string"
+          },
+          "oppimaarat" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/LukioOppiaineRakenneListausDto"
+            }
           },
           "kieli" : {
             "type" : "object",
@@ -16247,12 +16280,6 @@
             "type" : "integer",
             "format" : "int64"
           },
-          "first" : {
-            "type" : "boolean"
-          },
-          "last" : {
-            "type" : "boolean"
-          },
           "size" : {
             "type" : "integer",
             "format" : "int32"
@@ -16270,12 +16297,18 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
+          "pageable" : {
+            "$ref" : "#/components/schemas/PageableObject"
+          },
           "numberOfElements" : {
             "type" : "integer",
             "format" : "int32"
           },
-          "pageable" : {
-            "$ref" : "#/components/schemas/PageableObject"
+          "first" : {
+            "type" : "boolean"
+          },
+          "last" : {
+            "type" : "boolean"
           },
           "empty" : {
             "type" : "boolean"

@@ -12,7 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OrderColumn;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
@@ -56,15 +56,23 @@ public class AIPEVaihe extends AbstractAuditedReferenceableEntity implements His
     private AIPESisalto sisalto;
 
     @Getter
-    @OrderColumn(name = "oppiaineet_order")
+    @Setter
+    @Column(name = "vaiheet_order")
+    private Integer vaiheetOrder;
+
+    @Getter
+    @OrderBy("oppiaineetOrder")
     @OneToMany(mappedBy = "vaihe", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AIPEOppiaine> oppiaineet = new ArrayList<>();
 
     public void setOppiaineet(List<AIPEOppiaine> oppiaineet) {
         this.oppiaineet.clear();
         if (oppiaineet != null) {
-            oppiaineet.forEach(oa -> oa.setVaihe(this));
-            this.oppiaineet.addAll(oppiaineet);
+            for (AIPEOppiaine oa : oppiaineet) {
+                oa.setVaihe(this);
+                this.oppiaineet.add(oa);
+            }
+            updateOppiaineetOrder();
         }
     }
 
@@ -75,6 +83,13 @@ public class AIPEVaihe extends AbstractAuditedReferenceableEntity implements His
     public void addOppiaine(AIPEOppiaine oppiaine, int index) {
         oppiaine.setVaihe(this);
         oppiaineet.add(Math.max(0, Math.min(index, oppiaineet.size())), oppiaine);
+        updateOppiaineetOrder();
+    }
+
+    public void updateOppiaineetOrder() {
+        for (int i = 0; i < oppiaineet.size(); i++) {
+            oppiaineet.get(i).setOppiaineetOrder(i);
+        }
     }
 
     public static AIPEVaihe copy(AIPEVaihe original) {
