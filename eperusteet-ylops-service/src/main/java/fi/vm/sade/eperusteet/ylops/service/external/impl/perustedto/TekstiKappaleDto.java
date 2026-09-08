@@ -1,26 +1,14 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
-import fi.vm.sade.eperusteet.utils.dto.peruste.lops2019.tutkinnonrakenne.KoodiDto;
-
 @Data
-@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class TekstiKappaleDto {
-    private Long id;
-    private Date luotu;
-    private Date muokattu;
-    private String muokkaaja;
-    private String muokkaajanNimi;
-    private PerusteenLokalisoituTekstiDto nimi;
+@JsonTypeName("tekstikappale")
+public class TekstiKappaleDto extends PerusteenOsaDto.Laaja {
     private PerusteenLokalisoituTekstiDto teksti;
-    private String tila;
-    private String tunniste;
-    private String osanTyyppi;
-    private KoodiDto koodi;
 }

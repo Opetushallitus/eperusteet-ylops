@@ -1638,6 +1638,253 @@
         }
       }
     },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/taiteenosat/{taiteenosaId}" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getTaiteenosa",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "taiteenosaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaiteenosaDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "updateTaiteenosa",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "taiteenosaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TaiteenosaDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaiteenosaDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/taiteenalat" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getTaiteenalat",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/TaiteenalaDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "addTaiteenala",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TaiteenalaDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaiteenalaDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/taiteenalat/{taiteenalaId}" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getTaiteenala",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "taiteenalaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaiteenalaDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "updateTaiteenala",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "taiteenalaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/TaiteenalaDto"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TaiteenalaDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "removeTaiteenala",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "taiteenalaId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK"
+          }
+        }
+      }
+    },
     "/api/opetussuunnitelmat/{opsId}/oppiaineet" : {
       "get" : {
         "tags" : [ "Oppiaineet" ],
@@ -5987,6 +6234,102 @@
         }
       }
     },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/peruste" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getPerusteSisalto",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TPOOpetuksenSisaltoDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/peruste/taiteenosat/{perusteenTaiteenosanId}" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getPerusteenTaiteenosa",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "perusteenTaiteenosanId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/PerusteTaiteenosaDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/opetussuunnitelmat/{opsId}/taiteenperusopetus/peruste/taiteenalat/{koodiUri}" : {
+      "get" : {
+        "tags" : [ "Taiteenperusopetus" ],
+        "operationId" : "getPerusteenTaiteenala",
+        "parameters" : [ {
+          "name" : "opsId",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "koodiUri",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "OK",
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/TpoPerusteenTaiteenalaDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/opetussuunnitelmat/{opsId}/peruste/tekstikappaleet" : {
       "get" : {
         "tags" : [ "Lops2019PerusteController" ],
@@ -6486,7 +6829,7 @@
     "/api/opetussuunnitelmat/{opsId}/oppiaineet/{id}/peruste" : {
       "get" : {
         "tags" : [ "Oppiaineet" ],
-        "operationId" : "getPerusteSisalto",
+        "operationId" : "getPerusteSisalto_1",
         "parameters" : [ {
           "name" : "opsId",
           "in" : "path",
@@ -10238,6 +10581,53 @@
         },
         "description" : "Opetussuunnitelmaan liitetyt kunnat (koodisto)."
       },
+      "KoodistoKoodiDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "koodiUri" : {
+            "type" : "string"
+          },
+          "koodiArvo" : {
+            "type" : "string"
+          },
+          "versio" : {
+            "type" : "string"
+          },
+          "voimassaAlkuPvm" : {
+            "type" : "string"
+          },
+          "voimassaLoppuPvm" : {
+            "type" : "string"
+          },
+          "metadata" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/KoodistoMetadataDto"
+            }
+          },
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        }
+      },
+      "KoodistoMetadataDto" : {
+        "type" : "object",
+        "properties" : {
+          "nimi" : {
+            "type" : "string"
+          },
+          "kieli" : {
+            "type" : "string"
+          }
+        }
+      },
       "LaajaalainenosaaminenDto" : {
         "type" : "object",
         "properties" : {
@@ -10519,6 +10909,12 @@
             "items" : {
               "type" : "integer",
               "format" : "int64"
+            }
+          },
+          "taiteenalat" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaiteenalaDto"
             }
           },
           "luontityyppi" : {
@@ -10880,6 +11276,65 @@
           }
         },
         "description" : "Opetussuunnitelman tekstirakenne puumuotona."
+      },
+      "TaiteenalaDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "koodi" : {
+            "type" : "string"
+          },
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "paikallinenTarkennus" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "taiteenosat" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TaiteenosaDto"
+            }
+          },
+          "kooditettu" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            },
+            "writeOnly" : true
+          },
+          "koodistoKoodi" : {
+            "$ref" : "#/components/schemas/KoodistoKoodiDto"
+          }
+        }
+      },
+      "TaiteenosaDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "perusteenTaiteenosanId" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "paikallinenTarkennus" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          }
+        }
       },
       "TekstiKappaleDto" : {
         "type" : "object",
@@ -11915,9 +12370,6 @@
           "inputStream" : {
             "type" : "object"
           },
-          "submittedFileName" : {
-            "type" : "string"
-          },
           "contentType" : {
             "type" : "string"
           },
@@ -11926,6 +12378,9 @@
             "items" : {
               "type" : "string"
             }
+          },
+          "submittedFileName" : {
+            "type" : "string"
           }
         }
       },
@@ -12911,6 +13366,50 @@
           "sisalto" : {
             "$ref" : "#/components/schemas/TekstiKappaleViiteDto"
           }
+        }
+      },
+      "Laaja" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "luotu" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "muokattu" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "muokkaaja" : {
+            "type" : "string"
+          },
+          "muokkaajanNimi" : {
+            "type" : "string"
+          },
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "tila" : {
+            "type" : "string"
+          },
+          "tunniste" : {
+            "type" : "string"
+          },
+          "koodi" : {
+            "$ref" : "#/components/schemas/KoodiDto"
+          },
+          "osanTyyppi" : {
+            "type" : "string"
+          }
+        },
+        "discriminator" : {
+          "propertyName" : "osanTyyppi"
         }
       },
       "Lops2019LaajaAlainenOsaaminenDto" : {
@@ -14119,6 +14618,39 @@
           }
         }
       },
+      "PerusteTaiteenosaDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "nimi" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "laajuus" : {
+            "type" : "number"
+          },
+          "kuvaus" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "tavoitteet" : {
+            "type" : "array",
+            "items" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            }
+          }
+        }
+      },
       "PerusteVersionDto" : {
         "type" : "object",
         "properties" : {
@@ -14206,7 +14738,7 @@
         "type" : "object",
         "properties" : {
           "sisalto" : {
-            "$ref" : "#/components/schemas/TekstiKappaleViiteDto"
+            "$ref" : "#/components/schemas/TpoSisaltoViiteDto"
           }
         }
       },
@@ -14225,6 +14757,53 @@
           },
           "perusteenOsa" : {
             "$ref" : "#/components/schemas/TekstiKappaleDto"
+          }
+        }
+      },
+      "TpoPerusteenTaiteenalaDto" : {
+        "type" : "object",
+        "allOf" : [ {
+          "$ref" : "#/components/schemas/Laaja"
+        }, {
+          "type" : "object",
+          "properties" : {
+            "laajuus" : {
+              "type" : "number"
+            },
+            "teksti" : {
+              "type" : "object",
+              "additionalProperties" : {
+                "type" : "string"
+              }
+            },
+            "taiteenOsat" : {
+              "type" : "array",
+              "items" : {
+                "$ref" : "#/components/schemas/PerusteTaiteenosaDto"
+              }
+            }
+          }
+        } ]
+      },
+      "TpoSisaltoViiteDto" : {
+        "type" : "object",
+        "properties" : {
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "perusteenOsa" : {
+            "oneOf" : [ {
+              "$ref" : "#/components/schemas/TekstiKappaleDto"
+            }, {
+              "$ref" : "#/components/schemas/TpoPerusteenTaiteenalaDto"
+            } ]
+          },
+          "lapset" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/TpoSisaltoViiteDto"
+            }
           }
         }
       },
@@ -14361,53 +14940,6 @@
           "created" : {
             "type" : "string",
             "format" : "date-time"
-          }
-        }
-      },
-      "KoodistoKoodiDto" : {
-        "type" : "object",
-        "properties" : {
-          "id" : {
-            "type" : "integer",
-            "format" : "int64"
-          },
-          "koodiUri" : {
-            "type" : "string"
-          },
-          "koodiArvo" : {
-            "type" : "string"
-          },
-          "versio" : {
-            "type" : "string"
-          },
-          "voimassaAlkuPvm" : {
-            "type" : "string"
-          },
-          "voimassaLoppuPvm" : {
-            "type" : "string"
-          },
-          "metadata" : {
-            "type" : "array",
-            "items" : {
-              "$ref" : "#/components/schemas/KoodistoMetadataDto"
-            }
-          },
-          "nimi" : {
-            "type" : "object",
-            "additionalProperties" : {
-              "type" : "string"
-            }
-          }
-        }
-      },
-      "KoodistoMetadataDto" : {
-        "type" : "object",
-        "properties" : {
-          "nimi" : {
-            "type" : "string"
-          },
-          "kieli" : {
-            "type" : "string"
           }
         }
       },
@@ -15047,7 +15579,7 @@
           },
           "type" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala" ]
           },
           "meta" : {
             "type" : "object",
@@ -15573,6 +16105,9 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
+          "paged" : {
+            "type" : "boolean"
+          },
           "pageNumber" : {
             "type" : "integer",
             "format" : "int32"
@@ -15580,9 +16115,6 @@
           "pageSize" : {
             "type" : "integer",
             "format" : "int32"
-          },
-          "paged" : {
-            "type" : "boolean"
           },
           "unpaged" : {
             "type" : "boolean"
@@ -16342,7 +16874,7 @@
           },
           "kohde" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala" ]
           },
           "luotu" : {
             "type" : "string",
@@ -16374,7 +16906,7 @@
         "properties" : {
           "kohde" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala" ]
           },
           "kohdeId" : {
             "type" : "integer",
@@ -16409,7 +16941,7 @@
           },
           "kohde" : {
             "type" : "string",
-            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe" ]
+            "enum" : [ "root", "tiedot", "viite", "uusi_tekstikappale", "liitteet", "liite", "laajaalaiset", "laajaalainen", "oppiaineet", "oppimaarat", "oppiaine", "poppiaine", "lukiooppiaineet_2015", "lukiooppimaarat_2015", "lukiooppiaine_2015", "lukiokurssit", "lukiokurssi", "moduulit", "moduuli", "opintojaksot", "opintojakso", "uusi_opintojakso", "uusi_paikallinen_oppiaine", "opetussuunnitelma", "opetussuunnitelma_rakenne", "termi", "kommentti", "perusopetusoppiaineet", "perusopetusoppiaine", "perusopetuspaikallinenoppiaine", "valinnaisetoppiaineet", "vuosiluokkakokonaisuus", "oppiaineenvuosiluokka", "paikallinenoppiainevuosiluokka", "uusi_oppimaara", "tavoitteet_sisallot_arviointi", "tavoitteet_ja_sisallot", "peruste", "aipevaihe", "aipeoppiaine", "aipeoppimaara", "aipekurssi", "uusi_vaihe", "taiteenalat", "taiteenala", "taiteenosa", "uusi_taiteenala" ]
           },
           "luotu" : {
             "type" : "string",

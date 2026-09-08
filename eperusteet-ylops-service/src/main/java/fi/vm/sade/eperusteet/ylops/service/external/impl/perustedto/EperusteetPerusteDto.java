@@ -1,5 +1,6 @@
 package fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto;
 
+import fi.vm.sade.eperusteet.ylops.dto.peruste.TPOOpetuksenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lops2019.Lops2019SisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukiokoulutuksenPerusteenSisaltoDto;
 import lombok.AllArgsConstructor;
