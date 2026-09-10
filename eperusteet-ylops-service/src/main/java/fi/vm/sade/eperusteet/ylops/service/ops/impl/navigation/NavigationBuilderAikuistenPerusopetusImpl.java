@@ -52,8 +52,10 @@ public class NavigationBuilderAikuistenPerusopetusImpl implements NavigationBuil
         if (sisalto.getVaiheet() != null) {
             sisalto.getVaiheet().forEach(vaihe -> nodes.add(mapVaihe(vaihe)));
         }
-        nodes.add(NavigationNodeDto.of(NavigationType.uusi_vaihe)
-                .meta("navigation-sub-type", "add"));
+        if (!ObjectUtils.isEmpty(aipeService.getPerusteVaiheet(opsId))) {
+            nodes.add(NavigationNodeDto.of(NavigationType.uusi_vaihe)
+                    .meta("navigation-sub-type", "add"));
+        }
         return nodes;
     }
 
