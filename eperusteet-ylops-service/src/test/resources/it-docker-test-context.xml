@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:cache="http://www.springframework.org/schema/cache"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+       http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+       http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache.xsd
+       http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd"
+       default-lazy-init="true"
+       profile="docker">
+    <!-- Enables the caching through annotations -->
+    <cache:annotation-driven />
+
+    <context:property-placeholder
+        location="classpath:eperusteet-ylops-service.properties"
+        ignore-resource-not-found="true"
+        properties-ref="defaultProps"/>
+
+    <bean id="defaultProps" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <util:properties local-override="true">
+                <prop key="cas_key">eperusteet-service</prop>
+                <prop key="spring_security_default_access">permitAll</prop>
+                <prop key="web.url.cas">null</prop>
+            </util:properties>
+        </property>
+    </bean>
+
+    <!-- generic cache manager -->
+    <bean id="cacheManager" class="org.springframework.cache.concurrent.ConcurrentMapCacheManager"/>
+
+    <context:component-scan base-package="fi.vm.sade.eperusteet.utils"/>
+    <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.service">
+        <context:exclude-filter type="regex" expression="fi.vm.sade.eperusteet.ylops.service.external.*"/>
+        <context:exclude-filter type="annotation"
+                                expression="org.springframework.session.jdbc.config.annotation.web.http.EnableJdbcHttpSession"/>
+    </context:component-scan>
+    <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.repository.impl"/>
+    <context:component-scan base-package="fi.vm.sade.eperusteet.ylops.test.docker">
+        <context:exclude-filter type="annotation" expression="org.springframework.context.annotation.Configuration"/>
+    </context:component-scan>
+
+    <tx:annotation-driven order="100"/>
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean"/>
+
+    <bean class="org.springframework.beans.factory.config.CustomScopeConfigurer">
+        <property name="scopes">
+            <map>
+                <entry key="request">
+                    <bean class="org.springframework.context.support.SimpleThreadScope"/>
+                </entry>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="org.testcontainers.jdbc.ContainerDatabaseDriver"/>
+        <property name="url" value="jdbc:tc:postgresql:15.7:////test"/>
+        <property name="username" value="test"/>
+        <property name="password" value="test"/>
+    </bean>
+
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg ref="dataSource"/>
+    </bean>
+
+    <bean id="entityManagerFactory" lazy-init="false" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean" depends-on="flyway">
+        <property name="persistenceUnitName" value="eperusteet-ylops-pu"/>
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="fi.vm.sade.eperusteet.ylops.domain"/>
+        <property name="persistenceProviderClass" value="org.hibernate.jpa.HibernatePersistenceProvider"/>
+        <property name="jpaPropertyMap">
+            <map>
+                <entry key="hibernate.hbm2ddl.auto" value="none"/>
+                <entry key="hibernate.show_sql" value="${hibernate.show_sql:false}"/>
+                <entry key="hibernate.enable_lazy_load_no_trans" value="true"/>
+                <entry key="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+                <entry key="jakarta.persistence.sharedCache.mode" value="ENABLE_SELECTIVE"/>
+                <entry key="hibernate.cache.use_second_level_cache" value="false"/>
+                <entry key="org.hibernate.envers.audit_strategy" value="org.hibernate.envers.strategy.internal.DefaultAuditStrategy"/>
+                <entry key="org.hibernate.envers.revision_listener" value="fi.vm.sade.eperusteet.ylops.service.internal.AuditRevisionListener"/>
+                <entry key="org.hibernate.envers.allow_identifier_reuse" value="true"/>
+                <entry key="jakarta.persistence.validation.factory" value-ref="validator"/>
+                <entry key="hibernate.id.db_structure_naming_strategy" value="single"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <bean id="entityManager" primary="true" class="org.springframework.orm.jpa.support.SharedEntityManagerBean">
+        <property name="entityManagerFactory" ref="entityManagerFactory"/>
+    </bean>
+
+    <jpa:repositories base-package="fi.vm.sade.eperusteet.ylops.repository" factory-class="fi.vm.sade.eperusteet.ylops.repository.version.JpaWithVersioningRepositoryFactoryBean"/>
+
+    <bean id="expressionHandler" class="org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler">
+        <property name="permissionEvaluator" ref="testPermissionEvaluator"/>
+    </bean>
+
+    <security:method-security secured-enabled="true">
+        <security:expression-handler ref="expressionHandler"/>
+    </security:method-security>
+
+    <security:authentication-manager alias="authenticationManager">
+        <security:authentication-provider>
+            <security:user-service>
+                <security:user name="test" password="{noop}test"
+                               authorities="ROLE_USER, ROLE_APP_EPERUSTEET_YLOPS, ROLE_APP_EPERUSTEET_YLOPS_CRUD, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.00000000001, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.246.562.10.83037752777, ROLE_APP_EPERUSTEET_YLOPS_CRUD_1.2.15252345624572462"/>
+                <security:user name="testAdmin" password="{noop}test"
+                               authorities="ROLE_USER, ROLE_APP_EPERUSTEET_YLOPS, ROLE_APP_EPERUSTEET_YLOPS_CRUD, ROLE_APP_EPERUSTEET_YLOPS_ADMIN_1.2.246.562.10.00000000001"/>
+            </security:user-service>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+</beans>
