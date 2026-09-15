@@ -361,6 +361,18 @@ public class EperusteetServiceImpl implements EperusteetService {
     }
 
     @Override
+    @Cacheable("perusteenTermisto")
+    public List<TermiDto> getAllTermit(Long perusteId) {
+        TermiDto[] termit = client.exchange(
+                eperusteetServiceInternalUrl + "/api/perusteet/{perusteId}/termisto",
+                HttpMethod.GET,
+                httpEntity,
+                TermiDto[].class,
+                perusteId).getBody();
+        return termit != null ? Arrays.asList(termit) : new ArrayList<>();
+    }
+
+    @Override
     public Date viimeisinPerusteenJulkaisuaika(Long perusteId) {
         return client.exchange(eperusteetServiceInternalUrl + "/api/perusteet/{perusteId}/viimeisinjulkaisuaika", HttpMethod.GET, httpEntity, Date.class, perusteId).getBody();
     }

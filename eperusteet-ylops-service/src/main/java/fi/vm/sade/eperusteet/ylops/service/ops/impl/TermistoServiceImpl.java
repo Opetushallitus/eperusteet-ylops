@@ -45,7 +45,16 @@ public class TermistoServiceImpl implements TermistoService {
     public List<TermiDto> getTermit(Long opsId) {
         Opetussuunnitelma ops = opsit.findOne(opsId);
         List<Termi> termit = getTermitDeep(ops);
-        return mapper.mapAsList(termit, TermiDto.class);
+        List<TermiDto> termiDtot = new ArrayList<>(mapper.mapAsList(termit, TermiDto.class));
+
+        if (ops.getCachedPeruste() != null) {
+            List<TermiDto> perusteenTermit = eperusteetService.getAllTermit(ops.getCachedPeruste().getPerusteId());
+            if (perusteenTermit != null) {
+                termiDtot.addAll(perusteenTermit);
+            }
+        }
+
+        return termiDtot;
     }
 
     private List<Termi> getTermitDeep(Opetussuunnitelma ops) {

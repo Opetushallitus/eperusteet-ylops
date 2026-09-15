@@ -98,6 +98,16 @@
         </resources>
     </cache>
 
+    <cache alias="perusteenTermisto">
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+
+        <resources>
+            <heap unit="entries">100</heap>
+        </resources>
+    </cache>
+
     <cache alias="lokalisoinnit">
         <expiry>
             <ttl unit="seconds">600</ttl>

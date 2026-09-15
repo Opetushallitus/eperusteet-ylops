@@ -53,6 +53,9 @@ public interface EperusteetService {
     TermiDto getTermi(final Long perusteId, String avain);
 
     @PreAuthorize("permitAll()")
+    List<TermiDto> getAllTermit(final Long perusteId);
+
+    @PreAuthorize("permitAll()")
     Date viimeisinPerusteenJulkaisuaika(Long perusteId);
 
     @PreAuthorize("permitAll()")
