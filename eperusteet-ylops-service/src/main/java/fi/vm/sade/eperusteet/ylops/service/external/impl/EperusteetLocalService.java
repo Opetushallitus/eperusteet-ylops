@@ -211,6 +211,11 @@ public class EperusteetLocalService implements EperusteetService {
     }
 
     @Override
+    public List<TermiDto> getAllTermit(Long perusteId) {
+        return new ArrayList<>();
+    }
+
+    @Override
     public Date viimeisinPerusteenJulkaisuaika(Long perusteId) {
         return null;
     }
