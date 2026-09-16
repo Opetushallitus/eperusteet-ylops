@@ -4,11 +4,14 @@ import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import lombok.experimental.UtilityClass;
 
-import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.Comparator;
 
 @UtilityClass
 public class NavigationUtil {
@@ -19,7 +22,8 @@ public class NavigationUtil {
       NavigationType.uusi_tekstikappale, 
       NavigationType.uusi_opintojakso, 
       NavigationType.uusi_oppimaara,
-      NavigationType.uusi_paikallinen_oppiaine
+      NavigationType.uusi_paikallinen_oppiaine,
+      NavigationType.uusi_taiteenala
     );
 
     public static NavigationNodeDto initPublic() {
@@ -47,7 +51,39 @@ public class NavigationUtil {
         navigationNodeDto.setChildren(navigationNodeDto.getChildren().stream()
                 .filter(naviDto -> hasModifyPermission || !UUSI_TYYPIT.contains(naviDto.getType()))
                 .map(naviDto -> tarkistaOikeudet(naviDto, hasModifyPermission))
+                .collect(Collectors.toList()));
+        return navigationNodeDto;
+    }
+
+    public static NavigationNodeDto siirraLiitteetLoppuun(NavigationNodeDto navigationNodeDto) {
+        Stack<NavigationNodeDto> stack = new Stack<>();
+        stack.push(navigationNodeDto);
+
+        List<NavigationNodeDto> liitteet = new ArrayList<>();
+
+        while (!stack.empty()) {
+            NavigationNodeDto head = stack.pop();
+
+            liitteet.addAll(head.getChildren().stream()
+                    .filter(child -> Objects.equals(child.getType(), NavigationType.liite))
+                    .collect(Collectors.toList()));
+
+            head.setChildren(head.getChildren().stream()
+                    .filter(child -> !Objects.equals(child.getType(), NavigationType.liite))
+                    .collect(Collectors.toList()));
+
+            stack.addAll(head.getChildren());
+        }
+
+        navigationNodeDto.getChildren().addAll(liitteet);
+
+        return navigationNodeDto;
+    }
+
+    public static NavigationNodeDto siirraLisayksetLoppuun(NavigationNodeDto navigationNodeDto) {
+        navigationNodeDto.setChildren(navigationNodeDto.getChildren().stream()
                 .sorted(Comparator.comparing(naviDto -> naviDto.getType().equals(NavigationType.uusi_tekstikappale)))
+                .map(naviDto -> siirraLisayksetLoppuun(naviDto))
                 .collect(Collectors.toList()));
         return navigationNodeDto;
     }
