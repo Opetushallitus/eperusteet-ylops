@@ -1,0 +1,20 @@
+services:
+  eperusteet-ylops:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: oph
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: ylops
+    ports:
+      - "127.0.0.1:5434:5432"
+    volumes:
+      - ylops_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oph -d ylops"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+volumes:
+  ylops_data:
