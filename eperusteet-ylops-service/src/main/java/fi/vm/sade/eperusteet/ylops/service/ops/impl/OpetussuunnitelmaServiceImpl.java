@@ -59,7 +59,6 @@ import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019OpintojaksoDto;
 import fi.vm.sade.eperusteet.ylops.dto.lops2019.Lops2019PaikallinenOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.lukio.LukioAbstraktiOppiaineTuontiDto;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationNodeDto;
-import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import fi.vm.sade.eperusteet.ylops.dto.ops.MuokkaustietoLisatieto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaDto;
@@ -91,6 +90,7 @@ import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViiteDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.TekstiKappaleViitePerusteTekstillaDto;
+import fi.vm.sade.eperusteet.ylops.dto.tpo.TaiteenalaDto;
 import fi.vm.sade.eperusteet.ylops.dto.util.CacheArvot;
 import fi.vm.sade.eperusteet.ylops.repository.cache.PerusteCacheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.dokumentti.DokumenttiRepository;
@@ -132,6 +132,7 @@ import fi.vm.sade.eperusteet.ylops.service.security.Permission;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionManager;
 import fi.vm.sade.eperusteet.ylops.service.security.TargetType;
 import fi.vm.sade.eperusteet.ylops.service.security.PermissionEvaluator.RolePermission;
+import fi.vm.sade.eperusteet.ylops.service.tpo.TaiteenperusopetusService;
 import fi.vm.sade.eperusteet.ylops.service.util.CollectionUtil;
 import fi.vm.sade.eperusteet.ylops.service.util.Jarjestetty;
 import fi.vm.sade.eperusteet.ylops.service.util.JulkaistuSisaltoDynamicPathResolver;
@@ -186,7 +187,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.Stack;
 import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -309,6 +309,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Lazy
     @Autowired
     private AIPEService aipeService;
+
+    @Lazy
+    @Autowired
+    private TaiteenperusopetusService taiteenperusopetusService;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -683,7 +687,8 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     public NavigationNodeDto buildNavigation(Long opsId, String kieli) {
         Opetussuunnitelma ops = opetussuunnitelmaRepository.findOne(opsId);
         NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilder.class).buildNavigation(opsId, kieli);
-        siirraLiitteetLoppuun(navigationNodeDto);
+        NavigationUtil.siirraLiitteetLoppuun(navigationNodeDto);
+        NavigationUtil.siirraLisayksetLoppuun(navigationNodeDto);
         NavigationUtil.asetaNumerointi(navigationNodeDto);
         NavigationUtil.tarkistaOikeudet(navigationNodeDto, 
           !ops.getTyyppi().equals(Tyyppi.POHJA) &&
@@ -700,7 +705,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     )
     public NavigationNodeDto buildNavigationPublic(Long opsId, String kieli, Integer revision) {
         NavigationNodeDto navigationNodeDto = dispatcher.get(opsId, NavigationBuilderPublic.class).buildNavigation(opsId, kieli, revision);
-        siirraLiitteetLoppuun(navigationNodeDto);
+        NavigationUtil.siirraLiitteetLoppuun(navigationNodeDto);
         NavigationUtil.asetaNumerointi(navigationNodeDto);
         return navigationNodeDto;
     }
@@ -935,35 +940,6 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         muokkaustietoService.addOpsMuokkausTieto(opsId, ops, MuokkausTapahtuma.PAIVITYS);
     }
 
-    private NavigationNodeDto siirraLiitteetLoppuun(NavigationNodeDto navigationNodeDto) {
-        Stack<NavigationNodeDto> stack = new Stack<>();
-        stack.push(navigationNodeDto);
-
-        List<NavigationNodeDto> liitteet = new ArrayList<>();
-
-        while (!stack.empty()) {
-            NavigationNodeDto head = stack.pop();
-
-            // Kerätään liitteet talteen
-            liitteet.addAll(head.getChildren().stream()
-                    .filter(child -> Objects.equals(child.getType(), NavigationType.liite))
-                    .collect(Collectors.toList()));
-
-            // Poistetaan liitteet
-            head.setChildren(head.getChildren().stream()
-                    .filter(child -> !Objects.equals(child.getType(), NavigationType.liite))
-                    .collect(Collectors.toList()));
-
-            // Käydään lävitse myös lapset
-            stack.addAll(head.getChildren());
-        }
-
-        // Lisätään liitteet loppuun
-        navigationNodeDto.getChildren().addAll(liitteet);
-
-        return navigationNodeDto;
-    }
-
     private void fetchPeriytyvatPohjat(OpetussuunnitelmaKevytDto rootOps, OpetussuunnitelmaBaseDto pohjaDto) {
         if (pohjaDto == null) {
             return;
@@ -1167,7 +1143,18 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             throw new BusinessRuleViolationException("Valmista opetussuunnitelman pohjaa ei löytynyt");
         }
 
+        lisaaTaiteenalat(ops, opetussuunnitelmaLuontiDto);
+
         return mapper.map(ops, OpetussuunnitelmaDto.class);
+    }
+
+    private void lisaaTaiteenalat(Opetussuunnitelma ops, OpetussuunnitelmaLuontiDto luontiDto) {
+        if (CollectionUtils.isEmpty(luontiDto.getTaiteenalat())) {
+            return;
+        }
+        for (TaiteenalaDto taiteenala : luontiDto.getTaiteenalat()) {
+            taiteenperusopetusService.addTaiteenala(ops.getId(), taiteenala);
+        }
     }
 
     private void checkValidPohja(Opetussuunnitelma ops) {
@@ -1836,7 +1823,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             if (KoulutusTyyppi.PERUSOPETUS.equals(peruste.getKoulutustyyppi())) {
                 viiteDto = peruste.getPerusopetus().getSisalto();
             } else if (KoulutusTyyppi.TPO.equals(peruste.getKoulutustyyppi())) {
-                viiteDto = peruste.getTpo().getSisalto();
+                viiteDto = peruste.getTpo().getTekstiKappaleViiteSisalto();
             } else if (KoulutusTyyppi.VARHAISKASVATUS.equals(peruste.getKoulutustyyppi()) || KoulutusTyyppi.ESIOPETUS.equals(peruste.getKoulutustyyppi())) {
                 viiteDto = peruste.getEsiopetus().getSisalto();
             }
