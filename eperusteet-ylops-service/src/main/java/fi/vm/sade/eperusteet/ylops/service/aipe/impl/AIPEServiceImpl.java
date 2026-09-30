@@ -207,10 +207,6 @@ public class AIPEServiceImpl implements AIPEService {
     public AIPEOppiaineDto updateOppiaine(Long opsId, Long oppiaineId, AIPEOppiaineDto dto) {
         AIPEOppiaine oppiaine = requireOppiaine(opsId, oppiaineId);
         applyPaikallinen(oppiaine, dto.getPaikallinenTarkennus(), dto.isPiilotettu());
-        oppiaine.getPiilotetutTavoitteet().clear();
-        if (dto.getPiilotetutTavoitteet() != null) {
-            oppiaine.getPiilotetutTavoitteet().addAll(dto.getPiilotetutTavoitteet());
-        }
         PerusteAIPEOppiaineDto perusteOppiaine = findPerusteOppiaine(getPerusteAipe(opsId), oppiaine.getPerusteenOppiaineId());
         addMuokkaustieto(opsId, oppiaine, nimi(perusteOppiaine), MuokkausTapahtuma.PAIVITYS);
         return getOppiaine(opsId, oppiaineId);
@@ -222,16 +218,18 @@ public class AIPEServiceImpl implements AIPEService {
         AipePerusteenSisaltoDto perusteAipe = getPerusteAipe(opsId);
         PerusteAIPEKurssiDto perusteKurssi = findPerusteKurssi(perusteAipe, kurssi.getPerusteenKurssiId());
         PerusteAIPEOppiaineDto perusteOppiaine = findPerusteOppiaineForKurssi(perusteAipe, kurssi.getPerusteenKurssiId());
-        AIPEOppiaine oppiaine = kurssi.getOppiaine();
         return toDto(kurssi, perusteKurssi,
-                perusteOppiaine != null ? perusteOppiaine.getTavoitteet() : Collections.emptyList(),
-                oppiaine != null ? oppiaine.getPiilotetutTavoitteet() : Collections.emptyList());
+                perusteOppiaine != null ? perusteOppiaine.getTavoitteet() : Collections.emptyList());
     }
 
     @Override
     public AIPEKurssiDto updateKurssi(Long opsId, Long kurssiId, AIPEKurssiDto dto) {
         AIPEKurssi kurssi = requireKurssi(opsId, kurssiId);
         applyPaikallinen(kurssi, dto.getPaikallinenTarkennus(), dto.isPiilotettu());
+        kurssi.getPiilotetutTavoitteet().clear();
+        if (dto.getPiilotetutTavoitteet() != null) {
+            kurssi.getPiilotetutTavoitteet().addAll(dto.getPiilotetutTavoitteet());
+        }
         PerusteAIPEKurssiDto perusteKurssi = findPerusteKurssi(getPerusteAipe(opsId), kurssi.getPerusteenKurssiId());
         addMuokkaustieto(opsId, kurssi, nimi(perusteKurssi), MuokkausTapahtuma.PAIVITYS);
         return getKurssi(opsId, kurssiId);
@@ -480,11 +478,7 @@ public class AIPEServiceImpl implements AIPEService {
         AIPEOppiaineExportDto dto = mapper.map(oppiaine, AIPEOppiaineExportDto.class);
         PerusteAIPEOppiaineSisaltoDto sisalto = mapPerusteSisalto(perusteOppiaine, PerusteAIPEOppiaineSisaltoDto.class);
         if (sisalto != null && perusteOppiaine != null) {
-            List<Long> piilotetutTavoitteet = Optional.ofNullable(oppiaine.getPiilotetutTavoitteet())
-                    .orElse(Collections.emptyList());
-            sisalto.setTavoitteet(mapTavoitteet(perusteOppiaine.getTavoitteet(), laajaalaiset, kohdealueet).stream()
-                    .filter(tavoite -> tavoite.getId() != null && !piilotetutTavoitteet.contains(tavoite.getId()))
-                    .collect(Collectors.toList()));
+            sisalto.setTavoitteet(mapTavoitteet(perusteOppiaine.getTavoitteet(), laajaalaiset, kohdealueet));
         }
         dto.setPerusteSisalto(sisalto);
         dto.setOppimaarat(mapOppiaineetExportDto(oppiaine.getOppimaarat(),
@@ -493,24 +487,21 @@ public class AIPEServiceImpl implements AIPEService {
                 kohdealueet));
         dto.setKurssit(mapKurssitExportDto(oppiaine.getKurssit(),
                 perusteOppiaine != null ? perusteOppiaine.getKurssit() : Collections.emptyList(),
-                perusteOppiaine != null ? perusteOppiaine.getTavoitteet() : Collections.emptyList(),
-                oppiaine.getPiilotetutTavoitteet()));
+                perusteOppiaine != null ? perusteOppiaine.getTavoitteet() : Collections.emptyList()));
         return dto;
     }
 
     private AIPEKurssiDto toDto(AIPEKurssi kurssi, PerusteAIPEKurssiDto perusteKurssi,
-                               List<PerusteAIPEOpetuksentavoiteDto> oppiaineTavoitteet,
-                               List<Long> piilotetutTavoitteet) {
+                               List<PerusteAIPEOpetuksentavoiteDto> oppiaineTavoitteet) {
         AIPEKurssiDto dto = mapper.map(kurssi, AIPEKurssiDto.class);
-        dto.setPerusteSisalto(mapKurssiPerusteSisalto(perusteKurssi, oppiaineTavoitteet, piilotetutTavoitteet));
+        dto.setPerusteSisalto(mapKurssiPerusteSisalto(perusteKurssi, oppiaineTavoitteet, Collections.emptyList()));
         return dto;
     }
 
     private AIPEKurssiExportDto toExportDto(AIPEKurssi kurssi, PerusteAIPEKurssiDto perusteKurssi,
-                                           List<PerusteAIPEOpetuksentavoiteDto> oppiaineTavoitteet,
-                                           List<Long> piilotetutTavoitteet) {
+                                           List<PerusteAIPEOpetuksentavoiteDto> oppiaineTavoitteet) {
         AIPEKurssiExportDto dto = mapper.map(kurssi, AIPEKurssiExportDto.class);
-        dto.setPerusteSisalto(mapKurssiPerusteSisalto(perusteKurssi, oppiaineTavoitteet, piilotetutTavoitteet));
+        dto.setPerusteSisalto(mapKurssiPerusteSisalto(perusteKurssi, oppiaineTavoitteet, kurssi.getPiilotetutTavoitteet()));
         return dto;
     }
 
@@ -538,8 +529,7 @@ public class AIPEServiceImpl implements AIPEService {
 
     private List<AIPEKurssiExportDto> mapKurssitExportDto(List<AIPEKurssi> kurssit,
                                                          List<PerusteAIPEKurssiDto> perusteKurssit,
-                                                         List<PerusteAIPEOpetuksentavoiteDto> oppiaineTavoitteet,
-                                                         List<Long> piilotetutTavoitteet) {
+                                                         List<PerusteAIPEOpetuksentavoiteDto> oppiaineTavoitteet) {
         List<PerusteAIPEKurssiDto> perusteet = Optional.ofNullable(perusteKurssit).orElse(Collections.emptyList());
         return Optional.ofNullable(kurssit).orElse(Collections.emptyList()).stream()
                 .filter(k -> !k.isPiilotettu())
@@ -548,7 +538,7 @@ public class AIPEServiceImpl implements AIPEService {
                             .filter(p -> Objects.equals(p.getId(), k.getPerusteenKurssiId()))
                             .findFirst()
                             .orElse(null);
-                    return toExportDto(k, peruste, oppiaineTavoitteet, piilotetutTavoitteet);
+                    return toExportDto(k, peruste, oppiaineTavoitteet);
                 })
                 .collect(Collectors.toList());
     }

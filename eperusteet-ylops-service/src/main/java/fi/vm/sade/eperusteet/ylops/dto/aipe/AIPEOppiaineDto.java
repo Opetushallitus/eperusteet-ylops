@@ -21,7 +21,6 @@ public class AIPEOppiaineDto {
     private Long perusteenOppiaineId;
     private LokalisoituTekstiDto paikallinenTarkennus;
     private boolean piilotettu;
-    private List<Long> piilotetutTavoitteet = new ArrayList<>();
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<AIPEOppiaineKevytDto> oppimaarat = new ArrayList<>();
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

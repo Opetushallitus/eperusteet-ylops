@@ -6,12 +6,9 @@ import fi.vm.sade.eperusteet.ylops.domain.teksti.LokalisoituTeksti;
 import fi.vm.sade.eperusteet.ylops.domain.validation.ValidHtml;
 import fi.vm.sade.eperusteet.ylops.dto.navigation.NavigationType;
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
@@ -79,12 +76,6 @@ public class AIPEOppiaine extends AbstractAuditedReferenceableEntity implements 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<AIPEOppiaine> oppimaarat = new ArrayList<>();
 
-    @Getter
-    @ElementCollection
-    @CollectionTable(name = "aipe_oppiaine_piilotettu_tavoite", joinColumns = @JoinColumn(name = "oppiaine_id"))
-    @Column(name = "tavoite_id")
-    private List<Long> piilotetutTavoitteet = new ArrayList<>();
-
     public void setKurssit(List<AIPEKurssi> kurssit) {
         this.kurssit.clear();
         if (kurssit != null) {
@@ -147,7 +138,6 @@ public class AIPEOppiaine extends AbstractAuditedReferenceableEntity implements 
         copy.setPerusteenOppiaineId(original.getPerusteenOppiaineId());
         copy.setPaikallinenTarkennus(original.getPaikallinenTarkennus());
         copy.setPiilotettu(original.isPiilotettu());
-        copy.getPiilotetutTavoitteet().addAll(original.getPiilotetutTavoitteet());
         copy.setKurssit(original.getKurssit().stream().map(AIPEKurssi::copy).collect(Collectors.toList()));
         copy.setOppimaarat(original.getOppimaarat().stream().map(AIPEOppiaine::copy).collect(Collectors.toList()));
         return copy;

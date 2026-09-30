@@ -103,16 +103,18 @@ public class AIPEServiceIT extends AbstractIntegrationTest {
         assertThat(exportVaihe.getOppiaineet().get(0).getKurssit().get(0).getPerusteSisalto().getTavoitteet())
                 .allMatch(t -> t.getTavoite() != null);
 
-        AIPEOppiaineDto oppiaineEnnenPiilotusta = aipeService.getOppiaine(ops.getId(), vaihe.getOppiaineet().get(0).getId());
-        oppiaineEnnenPiilotusta.setPiilotetutTavoitteet(Collections.singletonList(17401L));
-        aipeService.updateOppiaine(ops.getId(), oppiaineEnnenPiilotusta.getId(), oppiaineEnnenPiilotusta);
+        AIPEKurssiDto kurssiEnnenPiilotusta = aipeService.getKurssi(ops.getId(), vaihe.getOppiaineet().get(0).getKurssit().get(0).getId());
+        kurssiEnnenPiilotusta.setPiilotetutTavoitteet(Collections.singletonList(17401L));
+        AIPEKurssiDto kurssiPiilotetullaTavoitteella = aipeService.updateKurssi(ops.getId(), kurssiEnnenPiilotusta.getId(), kurssiEnnenPiilotusta);
+        assertThat(kurssiPiilotetullaTavoitteella.getPiilotetutTavoitteet()).containsExactly(17401L);
+        assertThat(kurssiPiilotetullaTavoitteella.getPerusteSisalto().getTavoitteet())
+                .extracting(t -> t.getId())
+                .containsExactly(17401L);
         AIPESisaltoExportDto exportIlmanTavoitetta = aipeService.getExportSisalto(ops.getId());
-        assertThat(exportIlmanTavoitetta.getVaiheet().get(0).getOppiaineet().get(0).getPerusteSisalto().getTavoitteet()).isEmpty();
+        assertThat(exportIlmanTavoitetta.getVaiheet().get(0).getOppiaineet().get(0).getPerusteSisalto().getTavoitteet()).hasSize(1);
         assertThat(exportIlmanTavoitetta.getVaiheet().get(0).getOppiaineet().get(0).getKurssit().get(0).getPerusteSisalto().getTavoitteet()).isEmpty();
-        AIPEKurssiDto kurssiIlmanTavoitetta = aipeService.getKurssi(ops.getId(), vaihe.getOppiaineet().get(0).getKurssit().get(0).getId());
-        assertThat(kurssiIlmanTavoitetta.getPerusteSisalto().getTavoitteet()).isEmpty();
-        oppiaineEnnenPiilotusta.setPiilotetutTavoitteet(Collections.emptyList());
-        aipeService.updateOppiaine(ops.getId(), oppiaineEnnenPiilotusta.getId(), oppiaineEnnenPiilotusta);
+        kurssiEnnenPiilotusta.setPiilotetutTavoitteet(Collections.emptyList());
+        aipeService.updateKurssi(ops.getId(), kurssiEnnenPiilotusta.getId(), kurssiEnnenPiilotusta);
 
         assertThat(aipeService.getPerusteVaiheet(ops.getId())).hasSize(2);
         assertThat(aipeService.getVaiheet(ops.getId())).hasSize(1);
@@ -150,14 +152,14 @@ public class AIPEServiceIT extends AbstractIntegrationTest {
         assertThat(paivitetty.getPaikallinenTarkennus()).isNotNull();
 
         oppiaine.setPiilotettu(true);
-        oppiaine.setPiilotetutTavoitteet(Collections.singletonList(17401L));
         AIPEOppiaineDto paivitettyOppiaine = aipeService.updateOppiaine(ops.getId(), oppiaine.getId(), oppiaine);
         assertThat(paivitettyOppiaine.isPiilotettu()).isTrue();
-        assertThat(paivitettyOppiaine.getPiilotetutTavoitteet()).containsExactly(17401L);
 
         kurssi.setPiilotettu(true);
+        kurssi.setPiilotetutTavoitteet(Collections.singletonList(17401L));
         AIPEKurssiDto paivitettyKurssi = aipeService.updateKurssi(ops.getId(), kurssi.getId(), kurssi);
         assertThat(paivitettyKurssi.isPiilotettu()).isTrue();
+        assertThat(paivitettyKurssi.getPiilotetutTavoitteet()).containsExactly(17401L);
 
         aipeService.removeVaihe(ops.getId(), vaihe.getId());
         assertThat(aipeService.getVaiheet(ops.getId())).isEmpty();
