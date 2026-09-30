@@ -9558,13 +9558,6 @@
           "piilotettu" : {
             "type" : "boolean"
           },
-          "piilotetutTavoitteet" : {
-            "type" : "array",
-            "items" : {
-              "type" : "integer",
-              "format" : "int64"
-            }
-          },
           "oppimaarat" : {
             "type" : "array",
             "readOnly" : true,
@@ -9884,6 +9877,13 @@
           },
           "piilotettu" : {
             "type" : "boolean"
+          },
+          "piilotetutTavoitteet" : {
+            "type" : "array",
+            "items" : {
+              "type" : "integer",
+              "format" : "int64"
+            }
           },
           "perusteSisalto" : {
             "$ref" : "#/components/schemas/PerusteAIPEKurssiSisaltoDto"
@@ -11915,9 +11915,6 @@
           "inputStream" : {
             "type" : "object"
           },
-          "submittedFileName" : {
-            "type" : "string"
-          },
           "contentType" : {
             "type" : "string"
           },
@@ -11926,6 +11923,9 @@
             "items" : {
               "type" : "string"
             }
+          },
+          "submittedFileName" : {
+            "type" : "string"
           }
         }
       },
@@ -15573,6 +15573,9 @@
           "sort" : {
             "$ref" : "#/components/schemas/SortObject"
           },
+          "paged" : {
+            "type" : "boolean"
+          },
           "pageNumber" : {
             "type" : "integer",
             "format" : "int32"
@@ -15580,9 +15583,6 @@
           "pageSize" : {
             "type" : "integer",
             "format" : "int32"
-          },
-          "paged" : {
-            "type" : "boolean"
           },
           "unpaged" : {
             "type" : "boolean"

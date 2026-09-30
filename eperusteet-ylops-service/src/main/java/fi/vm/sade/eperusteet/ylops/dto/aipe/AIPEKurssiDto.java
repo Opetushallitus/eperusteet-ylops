@@ -8,6 +8,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +20,7 @@ public class AIPEKurssiDto {
     private Long perusteenKurssiId;
     private LokalisoituTekstiDto paikallinenTarkennus;
     private boolean piilotettu;
+    private List<Long> piilotetutTavoitteet = new ArrayList<>();
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private PerusteAIPEKurssiSisaltoDto perusteSisalto;
 
