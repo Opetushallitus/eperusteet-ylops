@@ -20,6 +20,7 @@ import fi.vm.sade.eperusteet.ylops.domain.oppiaine.OppiaineTyyppi;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokka;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Oppiaineenvuosiluokkakokonaisuus;
 import fi.vm.sade.eperusteet.ylops.domain.oppiaine.Tavoitteenarviointi;
+import fi.vm.sade.eperusteet.ylops.domain.oppiaine.VapaatekstiPaikallinentarkennus;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanMuokkaustietoLisaparametrit;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpsOppiaine;
@@ -1015,6 +1016,9 @@ public class OppiaineServiceImpl extends AbstractLockService<OpsOppiaineCtx> imp
         }
         if (dto.getPiilotettu() != null) {
             oavlk.setPiilotettu(dto.getPiilotettu());
+        }
+        if (dto.getVapaatTekstit() != null) {
+            oavlk.setVapaatTekstit(mapper.mapAsList(dto.getVapaatTekstit(), VapaatekstiPaikallinentarkennus.class));
         }
 
         mapper.map(oavlk, dto);

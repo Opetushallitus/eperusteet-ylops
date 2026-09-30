@@ -10756,6 +10756,12 @@
           "piilotettu" : {
             "type" : "boolean"
           },
+          "vapaatTekstit" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/VapaatekstiPaikallinentarkennusDto"
+            }
+          },
           "vuosiluokat" : {
             "uniqueItems" : true,
             "type" : "array",
