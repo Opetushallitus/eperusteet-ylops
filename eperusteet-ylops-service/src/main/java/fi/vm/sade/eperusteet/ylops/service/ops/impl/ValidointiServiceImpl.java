@@ -288,6 +288,9 @@ public class ValidointiServiceImpl implements ValidointiService {
         validoiTekstiosa(validointi, ovk.getArviointi(), oppiaineNode);
         validoiTekstiosa(validointi, ovk.getTavoitteistaJohdetutOppimisenTavoitteet(), oppiaineNode);
 
+        ovk.getVapaatTekstit().forEach(vt ->
+                validoiHtml(validointi, vt.getPaikallinenTarkennus(), oppiaineNode, ValidHtml.WhitelistType.SIMPLIFIED));
+
         ovk.getVuosiluokat().forEach(vl -> validoiOppiaineenvuosiluokka(validointi, oa, vl, kielet, vlkId));
     }
 
