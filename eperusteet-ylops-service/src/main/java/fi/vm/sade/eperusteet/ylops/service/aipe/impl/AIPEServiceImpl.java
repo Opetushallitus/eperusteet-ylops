@@ -41,6 +41,7 @@ import fi.vm.sade.eperusteet.ylops.dto.peruste.aipe.PerusteAIPEOpetuksentavoiteD
 import fi.vm.sade.eperusteet.ylops.dto.peruste.aipe.PerusteAIPEOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.aipe.PerusteAIPEVaiheDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
+import fi.vm.sade.eperusteet.ylops.repository.aipe.AIPESisaltoRepository;
 import fi.vm.sade.eperusteet.ylops.repository.aipe.AIPEVaiheRepository;
 import fi.vm.sade.eperusteet.ylops.repository.ops.OpetussuunnitelmaRepository;
 import fi.vm.sade.eperusteet.ylops.service.aipe.AIPEService;
@@ -77,6 +78,9 @@ public class AIPEServiceImpl implements AIPEService {
 
     @Autowired
     private OpetussuunnitelmaRepository opetussuunnitelmaRepository;
+
+    @Autowired
+    private AIPESisaltoRepository aipeSisaltoRepository;
 
     @Autowired
     private AIPEVaiheRepository aipeVaiheRepository;
@@ -636,8 +640,8 @@ public class AIPEServiceImpl implements AIPEService {
         if (sisalto == null) {
             sisalto = new AIPESisalto();
             sisalto.setOpetussuunnitelma(ops);
+            sisalto = aipeSisaltoRepository.save(sisalto);
             ops.setAipe(sisalto);
-            opetussuunnitelmaRepository.save(ops);
         }
         return sisalto;
     }
