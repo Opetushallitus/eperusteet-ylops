@@ -22,6 +22,8 @@
     <logger name="fi.vm" level="INFO" additivity="false">
         <appender-ref ref="STDOUT-APP"/>
     </logger>
+    <logger name="org.hibernate.orm.incubating" level="ERROR"/>
+    <logger name="org.hibernate.envers.configuration.internal.metadata" level="WARN"/>
     <root level="INFO">
         <appender-ref ref="STDOUT-CONSOLE"/>
     </root>

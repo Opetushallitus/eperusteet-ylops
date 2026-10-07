@@ -59,7 +59,7 @@ public class KayttajanTietoServiceMock implements KayttajanTietoService {
 
     @Override
     public List<KayttajanTietoDto> haeKayttajatiedot(List<String> oid) {
-        return null;
+        return Collections.emptyList();
     }
 
     @Override
