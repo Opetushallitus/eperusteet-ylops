@@ -22,7 +22,9 @@ import org.hibernate.annotations.BatchSize;
 import org.hibernate.envers.Audited;
 import org.hibernate.envers.RelationTargetAuditMode;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -83,6 +85,20 @@ public class Oppiaineenvuosiluokkakokonaisuus extends AbstractAuditedReferenceab
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "tavoitteista_johdetut_oppimisen_tavoitteet_id")
     private Tekstiosa tavoitteistaJohdetutOppimisenTavoitteet;
+
+    @Getter
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST}, orphanRemoval = true)
+    @JoinTable(name = "oppiaineen_vlkok_vapaatekstit",
+            joinColumns = @JoinColumn(name = "oppiaineen_vlkok_id"),
+            inverseJoinColumns = @JoinColumn(name = "vapaateksti_paikallinentarkennus_id"))
+    private List<VapaatekstiPaikallinentarkennus> vapaatTekstit = new ArrayList<>();
+
+    public void setVapaatTekstit(List<VapaatekstiPaikallinentarkennus> vapaatTekstit) {
+        this.vapaatTekstit.clear();
+        if (vapaatTekstit != null) {
+            this.vapaatTekstit.addAll(vapaatTekstit);
+        }
+    }
 
     @Getter
     @Setter

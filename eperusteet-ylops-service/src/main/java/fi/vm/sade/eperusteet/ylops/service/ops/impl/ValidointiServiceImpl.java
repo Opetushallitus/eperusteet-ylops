@@ -206,7 +206,7 @@ public class ValidointiServiceImpl implements ValidointiService {
 
         if (oa.getVapaatTekstit() != null) {
             oa.getVapaatTekstit().forEach(vt ->
-                    validoiHtml(validointi, vt.getPaikallinenTarkennus(), oppiaineNode, ValidHtml.WhitelistType.SIMPLIFIED));
+                    validoiHtml(validointi, vt.getPaikallinenTarkennus(), oppiaineNode, ValidHtml.WhitelistType.NORMAL));
         }
 
         oa.getVuosiluokkakokonaisuudet().forEach(ovk ->
@@ -287,6 +287,9 @@ public class ValidointiServiceImpl implements ValidointiService {
         validoiTekstiosa(validointi, ovk.getOhjaus(), oppiaineNode);
         validoiTekstiosa(validointi, ovk.getArviointi(), oppiaineNode);
         validoiTekstiosa(validointi, ovk.getTavoitteistaJohdetutOppimisenTavoitteet(), oppiaineNode);
+
+        ovk.getVapaatTekstit().forEach(vt ->
+                validoiHtml(validointi, vt.getPaikallinenTarkennus(), oppiaineNode, ValidHtml.WhitelistType.NORMAL));
 
         ovk.getVuosiluokat().forEach(vl -> validoiOppiaineenvuosiluokka(validointi, oa, vl, kielet, vlkId));
     }

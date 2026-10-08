@@ -32,7 +32,7 @@ public class VapaatekstiPaikallinentarkennus implements Serializable {
 
     @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     @Audited(targetAuditMode = RelationTargetAuditMode.NOT_AUDITED)
-    @ValidHtml(whitelist = ValidHtml.WhitelistType.SIMPLIFIED)
+    @ValidHtml(whitelist = ValidHtml.WhitelistType.NORMAL)
     private LokalisoituTeksti paikallinenTarkennus;
 
 }
