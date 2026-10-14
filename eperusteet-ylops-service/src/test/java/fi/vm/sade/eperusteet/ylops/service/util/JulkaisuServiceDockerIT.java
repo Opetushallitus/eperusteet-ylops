@@ -28,10 +28,13 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.lt;
 import static fi.vm.sade.eperusteet.ylops.test.util.TestUtils.uniikkiString;
@@ -109,6 +112,43 @@ public class JulkaisuServiceDockerIT extends AbstractDockerIntegrationTest {
         assertThat(julkaistutIds()).containsExactly(ops1.getId());
     }
 
+    @Test
+    public void testJulkaistujenSivutusSamannimisilla() {
+        startNewTransaction();
+        OpetussuunnitelmaDto ensimmainen = luoOpetussuunnitelma(pohja.getId(), "a-ensimmainen");
+        List<OpetussuunnitelmaDto> samannimiset = IntStream.range(0, 5)
+                .mapToObj(i -> luoOpetussuunnitelma(pohja.getId(), "sama-nimi"))
+                .toList();
+        endTransaction();
+
+        julkaisuService.addJulkaisu(ensimmainen.getId(), julkaisuDto());
+        samannimiset.forEach(ops -> julkaisuService.addJulkaisu(ops.getId(), julkaisuDto()));
+
+        List<Long> odotettuJarjestys = new ArrayList<>();
+        odotettuJarjestys.add(ensimmainen.getId());
+        samannimiset.stream()
+                .map(OpetussuunnitelmaDto::getId)
+                .sorted(Comparator.comparing(String::valueOf))
+                .forEach(odotettuJarjestys::add);
+
+        int sivukoko = 2;
+        List<Long> sivutetut = new ArrayList<>();
+        for (int sivu = 0; sivu < 3; sivu++) {
+            Page<OpetussuunnitelmaJulkinenDto> tulos = julkaistut(sivu, sivukoko);
+            assertThat(tulos.getTotalElements()).isEqualTo(6);
+            assertThat(tulos.getTotalPages()).isEqualTo(3);
+            assertThat(tulos.getContent()).hasSize(sivukoko);
+            tulos.getContent().forEach(ops -> sivutetut.add(ops.getId()));
+        }
+
+        assertThat(sivutetut).doesNotHaveDuplicates();
+        assertThat(sivutetut).containsExactlyElementsOf(odotettuJarjestys);
+
+        Page<OpetussuunnitelmaJulkinenDto> yliViimeisen = julkaistut(3, sivukoko);
+        assertThat(yliViimeisen.getContent()).isEmpty();
+        assertThat(yliViimeisen.getTotalElements()).isEqualTo(6);
+    }
+
     private long julkaistujenMaara() {
         return julkaistut().getTotalElements();
     }
@@ -122,6 +162,14 @@ public class JulkaisuServiceDockerIT extends AbstractDockerIntegrationTest {
     private Page<OpetussuunnitelmaJulkinenDto> julkaistut() {
         OpetussuunnitelmaJulkaistuQuery query = new OpetussuunnitelmaJulkaistuQuery();
         query.setOrganisaatio("");
+        return opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query);
+    }
+
+    private Page<OpetussuunnitelmaJulkinenDto> julkaistut(int sivu, int sivukoko) {
+        OpetussuunnitelmaJulkaistuQuery query = new OpetussuunnitelmaJulkaistuQuery();
+        query.setOrganisaatio("");
+        query.setSivu(sivu);
+        query.setSivukoko(sivukoko);
         return opetussuunnitelmaService.getAllJulkaistutOpetussuunnitelmat(query);
     }
 
