@@ -162,6 +162,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -172,6 +173,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ObjectUtils;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -437,16 +439,33 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             koulutustyypit = List.of();
         }
 
-        return julkaisuRepository.findAllJulkisetJulkaisut(
+        LocalDateTime julkaistuJalkeen = query.getJulkaistuJalkeen() != null ? query.getJulkaistuJalkeen().atStartOfDay() : null;
+        LocalDateTime julkaistuEnnen = query.getJulkaistuEnnen() != null ? query.getJulkaistuEnnen().atStartOfDay() : null;
+
+        List<OpetussuunnitelmaJulkinenDto> sisalto = julkaisuRepository.findAllJulkisetJulkaisut(
                 query.getNimi(),
                 query.getKieli(),
                 query.getPerusteenDiaarinumero(),
                 koulutustyypit,
                 query.getOrganisaatio(),
-                query.getJulkaistuJalkeen() != null ? query.getJulkaistuJalkeen().atStartOfDay() : null,
-                query.getJulkaistuEnnen() != null ? query.getJulkaistuEnnen().atStartOfDay() : null,
-                pageable)
-                .map(this::convertToOpetussuunnitelmaDto);
+                julkaistuJalkeen,
+                julkaistuEnnen,
+                pageable.getPageSize(),
+                pageable.getOffset())
+                .stream()
+                .map(this::convertToOpetussuunnitelmaDto)
+                .collect(Collectors.toList());
+
+        long lukumaara = julkaisuRepository.countJulkisetJulkaisut(
+                query.getNimi(),
+                query.getKieli(),
+                query.getPerusteenDiaarinumero(),
+                koulutustyypit,
+                query.getOrganisaatio(),
+                julkaistuJalkeen,
+                julkaistuEnnen);
+
+        return new PageImpl<>(sisalto, pageable, lukumaara);
     }
 
     @Override

@@ -3,8 +3,6 @@ package fi.vm.sade.eperusteet.ylops.repository.ops;
 import fi.vm.sade.eperusteet.ylops.domain.ops.Opetussuunnitelma;
 import fi.vm.sade.eperusteet.ylops.domain.ops.OpetussuunnitelmanJulkaisu;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaJulkaisuKevyt;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -38,12 +36,9 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
 
     OpetussuunnitelmanJulkaisu findByOpetussuunnitelmaAndRevision(Opetussuunnitelma opetussuunnitelma, int revision);
 
-    String julkaisutQuery = """
-        FROM (
-               SELECT *
+    String julkaisutWhere = """
                FROM julkaistu_opetussuunnitelma_data_view data
-               WHERE 1 = 1
-               AND (data.peruste->'id')::BIGINT NOT IN (SELECT peruste_id FROM poistetut_perusteet)
+               WHERE (data.peruste->'id')::BIGINT NOT IN (SELECT peruste_id FROM poistetut_perusteet)
                AND CAST(julkaisukielet as text) LIKE LOWER(CONCAT('%',:kieli,'%'))
                AND (:nimi LIKE '' OR LOWER(nimi->>:kieli) LIKE LOWER(CONCAT('%',:nimi,'%')) OR EXISTS (SELECT 1 FROM jsonb_array_elements(organisaatiot) elem WHERE LOWER(elem->'nimi'->>:kieli) LIKE LOWER(CONCAT('%',:nimi,'%'))))
                AND (:organisaatio LIKE '' OR EXISTS (SELECT 1 FROM jsonb_array_elements(organisaatiot) elem WHERE LOWER(elem->>'oid') LIKE LOWER(CONCAT('%',:organisaatio,'%'))))
@@ -51,15 +46,20 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
                AND (COALESCE(:koulutustyypit, NULL) IS NULL OR koulutustyyppi IN (:koulutustyypit))
                AND (COALESCE(:julkaistuJalkeen, NULL) IS NULL OR julkaisuaika >= :julkaistuJalkeen)
                AND (COALESCE(:julkaistuEnnen, NULL) IS NULL OR julkaisuaika < :julkaistuEnnen)
-               order by nimi->>:kieli asc
-            ) t
         """;
 
     @Query(nativeQuery = true,
-            value = "SELECT CAST(row_to_json(t) as text) " + julkaisutQuery,
-            countQuery = "SELECT count(*) " + julkaisutQuery
+            value = """
+                    SELECT CAST(row_to_json(t) as text)
+                    FROM (
+                        SELECT data.*
+                    """ + julkaisutWhere + """
+                        ORDER BY data.nimi->>:kieli, data.id
+                        LIMIT :sivukoko OFFSET :offset
+                    ) t
+                    """
     )
-    Page<String> findAllJulkisetJulkaisut(
+    List<String> findAllJulkisetJulkaisut(
             @Param("nimi") String nimi,
             @Param("kieli") String kieli,
             @Param("perusteenDiaarinumero") String perusteenDiaarinumero,
@@ -67,7 +67,18 @@ public interface JulkaisuRepository extends JpaRepository<OpetussuunnitelmanJulk
             @Param("organisaatio") String organisaatio,
             @Param("julkaistuJalkeen") LocalDateTime julkaistuJalkeen,
             @Param("julkaistuEnnen") LocalDateTime julkaistuEnnen,
-            Pageable pageable);
+            @Param("sivukoko") int sivukoko,
+            @Param("offset") long offset);
+
+    @Query(nativeQuery = true, value = "SELECT count(*) " + julkaisutWhere)
+    long countJulkisetJulkaisut(
+            @Param("nimi") String nimi,
+            @Param("kieli") String kieli,
+            @Param("perusteenDiaarinumero") String perusteenDiaarinumero,
+            @Param("koulutustyypit") List<String> koulutustyypit,
+            @Param("organisaatio") String organisaatio,
+            @Param("julkaistuJalkeen") LocalDateTime julkaistuJalkeen,
+            @Param("julkaistuEnnen") LocalDateTime julkaistuEnnen);
 
     @Query(nativeQuery = true, value =
         """
