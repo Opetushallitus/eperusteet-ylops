@@ -1,6 +1,7 @@
 package fi.vm.sade.eperusteet.ylops.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaBaseDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaNimiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.PerusteInfoDto;
@@ -26,4 +27,9 @@ public class OpetussuunnitelmaExportDto extends OpetussuunnitelmaBaseDto {
 
     @Schema(description = "Opetussuunnitelman tekstirakenne puumuotona.")
     private TekstiKappaleViiteExportDto.Puu tekstit;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Schema(description = "Palautetun opetussuunnitelman julkaisun versionumero. "
+            + "Kenttä puuttuu, jos palautettu sisältö ei ole julkaisu (esim. esikatselu).")
+    private Integer julkaisuRevisio;
 }

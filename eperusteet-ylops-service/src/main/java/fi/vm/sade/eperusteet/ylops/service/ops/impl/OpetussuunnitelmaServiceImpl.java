@@ -2239,6 +2239,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
         if (julkaisu != null) {
             OpetussuunnitelmaExportDto julkaistuDto = self.getOpetussuunnitelmanJulkaisuWithData(opsId, julkaisu);
             julkaistuDto.setViimeisinJulkaisuAika(julkaisu.getLuotu());
+            julkaistuDto.setJulkaisuRevisio(julkaisu.getRevision());
             return julkaistuDto;
         }
 
