@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -82,6 +83,28 @@ public class ExternalController {
     @RequestMapping(value = "/opetussuunnitelma/{opetussuunnitelmaId}", method = RequestMethod.GET)
     public ResponseEntity<OpetussuunnitelmaExportDto> getExternalOpetussuunnitelma(@PathVariable("opetussuunnitelmaId") Long opetussuunnitelmaId) {
         return new ResponseEntity<>(opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opetussuunnitelmaId), HttpStatus.OK);
+    }
+
+    @Operation(
+            parameters = {
+                    @Parameter(name = "opetussuunnitelmaId", description = "Opetussuunnitelman id", required = true),
+                    @Parameter(name = "julkaisuRevisio", description = "Opetussuunnitelman julkaisun revisio", required = true)
+            },
+            summary = "Opetussuunnitelman tietyn julkaisuversion tietojen haku"
+    )
+    @GetMapping(value = "/opetussuunnitelma/{opetussuunnitelmaId:\\d+}/v{julkaisuRevisio:\\d+}")
+    public ResponseEntity<OpetussuunnitelmaExportDto> getExternalOpetussuunnitelmaJulkaisuRevisio(
+            @PathVariable("opetussuunnitelmaId") Long opetussuunnitelmaId,
+            @PathVariable("julkaisuRevisio") Integer julkaisuRevisio) {
+        if (julkaisuRevisio < 1) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        OpetussuunnitelmaExportDto ops = opetussuunnitelmaService.getOpetussuunnitelmaJulkaistuSisalto(opetussuunnitelmaId, julkaisuRevisio);
+        if (ops == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return ResponseEntity.ok(ops);
     }
 
     @RequestMapping(value = "/opetussuunnitelma/{opetussuunnitelmaId:\\d+}/{custompath}", method = GET)
