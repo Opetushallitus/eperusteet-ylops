@@ -156,7 +156,11 @@ public class AIPEServiceImpl implements AIPEService {
             throw new NotExistsException("perusteen-vaihetta-ei-loytynyt");
         }
         AIPEVaihe vaihe = fromPeruste(perusteVaihe);
-        sisalto.addVaihe(vaihe);
+        int perusteIndeksi = perusteVaiheIndeksi(perusteAipe, perusteenVaiheId);
+        int sijainti = (int) sisalto.getVaiheet().stream()
+                .filter(v -> perusteVaiheIndeksi(perusteAipe, v.getPerusteenVaiheId()) < perusteIndeksi)
+                .count();
+        sisalto.addVaihe(vaihe, sijainti);
         vaihe = aipeVaiheRepository.saveAndFlush(vaihe);
         addMuokkaustieto(opsId, vaihe, perusteVaihe.getNimi(), MuokkausTapahtuma.LUONTI);
         return toDto(vaihe, perusteVaihe);
@@ -660,6 +664,14 @@ public class AIPEServiceImpl implements AIPEService {
                 .filter(v -> Objects.equals(v.getId(), perusteVaiheId))
                 .findFirst()
                 .orElse(null);
+    }
+
+    private int perusteVaiheIndeksi(AipePerusteenSisaltoDto aipe, Long perusteVaiheId) {
+        int indeksi = Optional.ofNullable(aipe.getVaiheet()).orElse(Collections.emptyList()).stream()
+                .map(PerusteAIPEVaiheDto::getId)
+                .collect(Collectors.toList())
+                .indexOf(perusteVaiheId);
+        return indeksi < 0 ? Integer.MAX_VALUE : indeksi;
     }
 
     private PerusteAIPEVaiheDto findPerusteVaiheForOppiaine(AipePerusteenSisaltoDto aipe, Long perusteOppiaineId) {

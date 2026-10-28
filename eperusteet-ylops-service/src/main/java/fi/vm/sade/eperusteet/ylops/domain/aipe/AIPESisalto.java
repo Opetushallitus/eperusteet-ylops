@@ -49,8 +49,12 @@ public class AIPESisalto extends AbstractAuditedEntity implements ReferenceableE
     private List<AIPEVaihe> vaiheet = new ArrayList<>();
 
     public void addVaihe(AIPEVaihe vaihe) {
+        addVaihe(vaihe, vaiheet.size());
+    }
+
+    public void addVaihe(AIPEVaihe vaihe, int sijainti) {
         vaihe.setSisalto(this);
-        vaiheet.add(vaihe);
+        vaiheet.add(sijainti, vaihe);
         updateVaiheetOrder();
     }
 
