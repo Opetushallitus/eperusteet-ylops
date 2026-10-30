@@ -33,6 +33,7 @@ public class PerusteAIPEOppiaineSisaltoDto {
     private LokalisoituTekstiDto pakollinenKurssiKuvaus;
     private LokalisoituTekstiDto syventavaKurssiKuvaus;
     private LokalisoituTekstiDto soveltavaKurssiKuvaus;
+    private LokalisoituTekstiDto kielikasvatus;
     private LokalisoituTekstiDto vapaaTeksti;
     private List<PerusteKevytTekstiKappaleDto> vapaatTekstit = new ArrayList<>();
     private List<PerusteAIPEOpetuksentavoiteSisaltoDto> tavoitteet = new ArrayList<>();
