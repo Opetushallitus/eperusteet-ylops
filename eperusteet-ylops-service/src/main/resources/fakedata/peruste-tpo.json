@@ -44,6 +44,110 @@
         },
         "lapset" : [ ],
         "_perusteenOsa" : "5280"
+      }, {
+        "id" : 4572,
+        "perusteenOsa" : {
+          "osanTyyppi" : "taiteenala",
+          "id" : 9101,
+          "nimi" : { "fi" : "Musiikki" },
+          "tila" : "valmis",
+          "koodi" : {
+            "uri" : "taiteenalat_musiikki",
+            "arvo" : "musiikki",
+            "nimi" : { "fi" : "Musiikki" }
+          },
+          "teksti" : { "fi" : "<p>Musiikin kuvaus</p>" },
+          "kasvatus" : {
+            "id" : 9141,
+            "nimi" : { "fi" : "Kasvatus" },
+            "teksti" : { "fi" : "<p>Musiikin kasvatus</p>" }
+          },
+          "vapaatTekstit" : [ ]
+        },
+        "lapset" : [ {
+          "id" : 4573,
+          "perusteenOsa" : {
+            "osanTyyppi" : "taiteenalavaihe",
+            "id" : 9111,
+            "nimi" : { "fi" : "Yleinen oppimäärä" },
+            "tila" : "valmis",
+            "laajuus" : 500,
+            "kuvaus" : { "fi" : "<p>Vaiheen kuvaus</p>" },
+            "tavoitealueet" : [ {
+              "id" : 9121,
+              "tavoiteAlueTyyppi" : "TAVOITESISALTOALUE",
+              "otsikko" : {
+                "uri" : "tavoitealue_1",
+                "arvo" : "1",
+                "nimi" : { "fi" : "Ilmaisu" }
+              },
+              "tavoitteet" : [ {
+                "uri" : "tavoite_1",
+                "arvo" : "1",
+                "nimi" : { "fi" : "Oppilas ilmaisee" }
+              } ],
+              "keskeisetSisaltoalueet" : [ { "fi" : "<p>Keskeinen sisältö</p>" } ]
+            }, {
+              "id" : 9122,
+              "tavoiteAlueTyyppi" : "TAVOITESISALTOALUE",
+              "otsikko" : {
+                "uri" : "tavoitealue_2",
+                "arvo" : "2",
+                "nimi" : { "fi" : "Kuuntelu" }
+              },
+              "tavoitteet" : [ ],
+              "keskeisetSisaltoalueet" : [ ]
+            } ],
+            "vapaatTekstit" : [ {
+              "id" : 9131,
+              "nimi" : { "fi" : "Vapaa teksti" },
+              "teksti" : { "fi" : "<p>Vapaan tekstin sisältö</p>" }
+            } ]
+          },
+          "lapset" : [ ]
+        } ]
+      }, {
+        "id" : 4574,
+        "perusteenOsa" : {
+          "osanTyyppi" : "taiteenala",
+          "id" : 9201,
+          "nimi" : { "fi" : "Tanssi" },
+          "tila" : "valmis",
+          "koodi" : {
+            "uri" : "taiteenalat_tanssi",
+            "arvo" : "tanssi",
+            "nimi" : { "fi" : "Tanssi" }
+          },
+          "teksti" : { "fi" : "<p>Tanssin kuvaus</p>" },
+          "vapaatTekstit" : [ ]
+        },
+        "lapset" : [ {
+          "id" : 4575,
+          "perusteenOsa" : {
+            "osanTyyppi" : "taiteenalavaihe",
+            "id" : 9211,
+            "nimi" : { "fi" : "Laaja oppimäärä" },
+            "tila" : "valmis",
+            "laajuus" : 1300,
+            "tavoitealueet" : [ {
+              "id" : 9221,
+              "tavoiteAlueTyyppi" : "OTSIKKO",
+              "otsikko" : {
+                "uri" : "tavoitealue_3",
+                "arvo" : "3",
+                "nimi" : { "fi" : "Liike" }
+              },
+              "tavoitteet" : [ ],
+              "keskeisetSisaltoalueet" : [ ]
+            } ],
+            "vapaatTekstit" : [ {
+              "id" : 9231,
+              "nimi" : { "fi" : "Tanssin vapaa teksti" },
+              "teksti" : { "fi" : "<p>Sisältö</p>" }
+            } ]
+          },
+          "lapset" : [ ]
+        } ]
       } ]
     }
   }
