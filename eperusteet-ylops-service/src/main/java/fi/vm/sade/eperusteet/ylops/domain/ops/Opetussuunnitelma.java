@@ -11,6 +11,7 @@ import fi.vm.sade.eperusteet.ylops.domain.cache.PerusteCache;
 import fi.vm.sade.eperusteet.ylops.domain.koodisto.KoodistoKoodi;
 import fi.vm.sade.eperusteet.ylops.domain.liite.Liite;
 import fi.vm.sade.eperusteet.ylops.domain.aipe.AIPESisalto;
+import fi.vm.sade.eperusteet.ylops.domain.tpo.TpoSisalto;
 import fi.vm.sade.eperusteet.ylops.domain.lops2019.Lops2019Sisalto;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.Aihekokonaisuudet;
 import fi.vm.sade.eperusteet.ylops.domain.lukio.LukioOppiaineJarjestys;
@@ -236,6 +237,11 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     private AIPESisalto aipe;
 
     @Getter
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "opetussuunnitelma",
+            cascade = {CascadeType.ALL}, orphanRemoval = true)
+    private TpoSisalto tpo;
+
+    @Getter
     @Audited
     @OneToMany(mappedBy = "opetussuunnitelma", fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
@@ -407,6 +413,8 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
             return KoulutustyyppiToteutus.AIPE;
         } else if (toteutus == null && KoulutusTyyppi.LUKIOKOULUTUS.equals(koulutustyyppi)) {
             return KoulutustyyppiToteutus.LOPS;
+        } else if (KoulutusTyyppi.TPO.equals(koulutustyyppi)) {
+            return KoulutustyyppiToteutus.TPO;
         } else {
             return toteutus;
         }
@@ -421,6 +429,12 @@ public class Opetussuunnitelma extends AbstractAuditedEntity
     public void setAipe(AIPESisalto aipe) {
         if (this.aipe == null) {
             this.aipe = aipe;
+        }
+    }
+
+    public void setTpo(TpoSisalto tpo) {
+        if (this.tpo == null) {
+            this.tpo = tpo;
         }
     }
 
