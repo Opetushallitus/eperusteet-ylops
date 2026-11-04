@@ -34,7 +34,7 @@ public class PerusteDto extends PerusteBaseDto {
         }
 
         if (getTpo() != null) {
-            return getTpo().getSisalto();
+            return getTpo().getTekstiKappaleViiteSisalto();
         }
 
         if (getAipe() != null) {
@@ -47,4 +47,13 @@ public class PerusteDto extends PerusteBaseDto {
 
         return null;
     }
+
+    @JsonIgnore
+    public TekstiKappaleViiteDto getSisallotTekstikappaleViitteina() {
+      if (getTpo() != null) {
+          return getTpo().getSisallotTekstikappaleViitteina();
+      }
+
+      return getTekstiKappaleViiteSisalto();
+  }
 }
