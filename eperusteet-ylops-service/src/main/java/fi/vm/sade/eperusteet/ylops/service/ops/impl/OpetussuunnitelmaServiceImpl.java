@@ -104,6 +104,9 @@ import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstiKappaleRepository;
 import fi.vm.sade.eperusteet.ylops.repository.teksti.TekstikappaleviiteRepository;
 import fi.vm.sade.eperusteet.ylops.resource.config.InitJacksonConverter;
 import fi.vm.sade.eperusteet.ylops.service.aipe.AIPEService;
+import fi.vm.sade.eperusteet.ylops.service.tpo.TaiteenperusopetusService;
+import fi.vm.sade.eperusteet.ylops.domain.tpo.Taiteenala;
+import fi.vm.sade.eperusteet.ylops.domain.tpo.TpoSisalto;
 import fi.vm.sade.eperusteet.ylops.service.exception.BusinessRuleViolationException;
 import fi.vm.sade.eperusteet.ylops.service.exception.NotExistsException;
 import fi.vm.sade.eperusteet.ylops.service.external.EperusteetService;
@@ -311,6 +314,10 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
     @Lazy
     @Autowired
     private AIPEService aipeService;
+
+    @Lazy
+    @Autowired
+    private TaiteenperusopetusService taiteenperusopetusService;
 
     private final ObjectMapper objectMapper = InitJacksonConverter.createMapper();
 
@@ -1165,6 +1172,14 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 ops = opetussuunnitelmaRepository.save(ops);
                 luoOpsPohjastaAipe(pohja, ops, opetussuunnitelmaLuontiDto);
             }
+            else if (KoulutustyyppiToteutus.TPO.equals(ops.getToteutus())) {
+                luoOpsPohjasta(pohja, ops, opetussuunnitelmaLuontiDto.getLuontityyppi());
+                TpoSisalto sisalto = new TpoSisalto();
+                sisalto.setOpetussuunnitelma(ops);
+                ops.setTpo(sisalto);
+                ops = opetussuunnitelmaRepository.save(ops);
+                lisaaTaiteenalat(pohja, ops, opetussuunnitelmaLuontiDto);
+            }
             else {
                 luoOpsPohjasta(pohja, ops, opetussuunnitelmaLuontiDto.getLuontityyppi());
 
@@ -1254,6 +1269,20 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
                 }
             }
         }
+    }
+
+    private void lisaaTaiteenalat(Opetussuunnitelma pohja, Opetussuunnitelma ops, OpetussuunnitelmaLuontiDto luontiDto) {
+        List<Long> valitut = Optional.ofNullable(luontiDto.getTaiteenalat()).orElse(Collections.emptyList());
+        if (luontiDto.getLuontityyppi() == OpetussuunnitelmaLuontiDto.Luontityyppi.KOPIO && pohja.getTpo() != null) {
+            pohja.getTpo().getTaiteenalat().stream()
+                    .filter(ta -> valitut.contains(ta.getPerusteenTaiteenalaId()))
+                    .map(Taiteenala::copy)
+                    .forEach(ops.getTpo()::addTaiteenala);
+        }
+        List<Long> lisattavat = valitut.stream()
+                .filter(id -> !ops.getTpo().hasPerusteenTaiteenala(id))
+                .collect(Collectors.toList());
+        taiteenperusopetusService.addTaiteenalat(ops.getId(), lisattavat);
     }
 
     private void luoOpsPohjasta(Opetussuunnitelma pohja, Opetussuunnitelma ops, OpetussuunnitelmaLuontiDto.Luontityyppi luontityyppi) {
@@ -1855,7 +1884,7 @@ public class OpetussuunnitelmaServiceImpl implements OpetussuunnitelmaService {
             if (KoulutusTyyppi.PERUSOPETUS.equals(peruste.getKoulutustyyppi())) {
                 viiteDto = peruste.getPerusopetus().getSisalto();
             } else if (KoulutusTyyppi.TPO.equals(peruste.getKoulutustyyppi())) {
-                viiteDto = peruste.getTpo().getSisalto();
+                viiteDto = peruste.getTpo().getTekstiKappaleViiteSisalto();
             } else if (KoulutusTyyppi.VARHAISKASVATUS.equals(peruste.getKoulutustyyppi()) || KoulutusTyyppi.ESIOPETUS.equals(peruste.getKoulutustyyppi())) {
                 viiteDto = peruste.getEsiopetus().getSisalto();
             }

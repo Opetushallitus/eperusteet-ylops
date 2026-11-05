@@ -26,6 +26,7 @@ import fi.vm.sade.eperusteet.ylops.dto.ops.OpetussuunnitelmaInfoDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.OppiaineLaajaDto;
 import fi.vm.sade.eperusteet.ylops.dto.ops.PoistettuOppiaineDto;
+import fi.vm.sade.eperusteet.ylops.dto.peruste.TPOOpetuksenSisaltoDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.aipe.PerusteAIPEKurssiDto;
 import fi.vm.sade.eperusteet.ylops.dto.peruste.lukio.LukioPerusteOppiaineDto;
 import fi.vm.sade.eperusteet.ylops.dto.teksti.LokalisoituTekstiDto;
@@ -64,6 +65,7 @@ public class DtoMapperConfig {
         factory.getConverterFactory().registerConverter(new PassThroughConverter(LokalisoituTekstiDto.class));
         factory.getConverterFactory().registerConverter(new PassThroughConverter(PerusteenLokalisoituTekstiDto.class));
         factory.getConverterFactory().registerConverter(new PassThroughConverter(Instant.class));
+        factory.getConverterFactory().registerConverter(new PassThroughConverter(TPOOpetuksenSisaltoDto.class));
         factory.getConverterFactory().registerConverter(new OrganisaatioConverter());
         OptionalSupport.register(factory);
         factory.registerMapper(new ReferenceableCollectionMergeMapper());

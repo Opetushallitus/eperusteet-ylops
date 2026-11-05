@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -19,6 +20,7 @@ public class OpetussuunnitelmaLuontiDto extends OpetussuunnitelmaBaseDto {
     private Set<OpsVuosiluokkakokonaisuusDto> vuosiluokkakokonaisuudet;
     private Set<OpsOppiaineDto> oppiaineet;
     private Set<Long> perusteenVaiheIdt;
+    private List<Long> taiteenalat;
     private Luontityyppi luontityyppi = Luontityyppi.KOPIO;
 
     public enum Luontityyppi {
