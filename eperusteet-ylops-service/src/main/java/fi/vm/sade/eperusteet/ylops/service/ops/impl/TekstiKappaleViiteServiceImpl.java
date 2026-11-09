@@ -123,9 +123,9 @@ public class TekstiKappaleViiteServiceImpl implements TekstiKappaleViiteService 
 
         TekstiKappaleViiteDto.Matala tekstiKappaleViite = getTekstiKappaleViite(opsId, viiteId);
 
-        if (perusteDto.getTekstiKappaleViiteSisalto() != null) {
+        if (perusteDto.getSisallotTekstikappaleViitteina() != null) {
             return CollectionUtil.treeToStream(
-                        perusteDto.getTekstiKappaleViiteSisalto(),
+                        perusteDto.getSisallotTekstikappaleViitteina(),
                         fi.vm.sade.eperusteet.ylops.service.external.impl.perustedto.TekstiKappaleViiteDto::getLapset)
                 .filter(viiteDto -> viiteDto.getTekstiKappale() != null && tekstiKappaleViite != null
                         && Objects.equals(tekstiKappaleViite.getPerusteTekstikappaleId(), viiteDto.getTekstiKappale().getId()))

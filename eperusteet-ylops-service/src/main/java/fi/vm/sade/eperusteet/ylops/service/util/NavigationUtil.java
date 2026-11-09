@@ -19,7 +19,9 @@ public class NavigationUtil {
       NavigationType.uusi_tekstikappale, 
       NavigationType.uusi_opintojakso, 
       NavigationType.uusi_oppimaara,
-      NavigationType.uusi_paikallinen_oppiaine
+      NavigationType.uusi_paikallinen_oppiaine,
+      NavigationType.uusi_taiteenala,
+      NavigationType.uusi_opintokokonaisuus
     );
 
     public static NavigationNodeDto initPublic() {
